@@ -15,7 +15,10 @@ miscdir = $(prefix)/misc
 dist_misc_SCRIPTS = \
 misc/cpu_os_detection.sh \
 misc/check_unique_symbols.sh \
-misc/check_source_manifests.sh
+misc/check_source_manifests.sh \
+misc/check_mpfr_shared_load.py \
+misc/check_mpfr_elf_dependencies.sh \
+misc/check_mpfr_pkgconfig.sh
 
 MPLAPACK_UNIQUE_SYMBOL_ARCHIVES =
 if ENABLE_GMP
@@ -57,6 +60,32 @@ check-local:
 	CXX="$(CXX)" NM="$(NM)" OBJDUMP="$(OBJDUMP)" \
 	  $(SHELL) $(top_srcdir)/misc/check_unique_symbols.sh $(MPLAPACK_UNIQUE_SYMBOL_ARCHIVES)
 	$(SHELL) $(top_srcdir)/misc/check_source_manifests.sh $(top_srcdir)
+if ENABLE_MPFR
+if HAVE_PYTHON3
+	@for mpfr_dir in \
+		$(top_builddir)/mplapack/reference/.libs \
+		$(top_builddir)/mpblas/optimized/mpfr/.libs; do \
+		for mpfr_lib in \
+			"$$mpfr_dir"/libmplapack_mpfr.so* \
+			"$$mpfr_dir"/libmplapack_mpfr.dylib \
+			"$$mpfr_dir"/libmplapack_mpfr.*.dylib \
+			"$$mpfr_dir"/libmplapack_mpfr.dll \
+			"$$mpfr_dir"/libmplapack_mpfr_opt.so* \
+			"$$mpfr_dir"/libmplapack_mpfr_opt.dylib \
+			"$$mpfr_dir"/libmplapack_mpfr_opt.*.dylib \
+			"$$mpfr_dir"/libmplapack_mpfr_opt.dll; do \
+			if test -f "$$mpfr_lib"; then \
+				runtime_dirs="$(top_builddir)/mplapack/reference/.libs:$(top_builddir)/mpblas/optimized/mpfr/.libs:$(MPC_LIBDIR):$(MPFR_LIBDIR):$(GMP_LIBDIR)"; \
+				LD_LIBRARY_PATH="$$runtime_dirs$${LD_LIBRARY_PATH:+:$$LD_LIBRARY_PATH}" \
+				DYLD_LIBRARY_PATH="$$runtime_dirs$${DYLD_LIBRARY_PATH:+:$$DYLD_LIBRARY_PATH}" \
+				PATH="$$runtime_dirs$${runtime_dirs:+:}$$PATH" \
+				$(PYTHON3) $(top_srcdir)/misc/check_mpfr_shared_load.py "$$mpfr_lib" || exit $$?; \
+				$(SHELL) $(top_srcdir)/misc/check_mpfr_elf_dependencies.sh "$$mpfr_lib" || test $$? -eq 77; \
+			fi; \
+		done; \
+	done
+endif
+endif
 
 mplapack_includedir = $(includedir)/mplapack
 mplapack_include_HEADERS = \
@@ -215,6 +244,8 @@ $(MPLAPACK_PKGCONFIG_FILES): cmake/mplapack.pc.cmake.in
 	    -e "s|@PC_FLAVOR@|$$pc_flavor|g" \
 	    -e 's|@PC_DESCRIPTION@|$(PACKAGE_DESCRIPTION)|g' \
 	    -e 's|@PC_VERSION@|$(PACKAGE_VERSION)|g' \
+	    -e "s|@PC_REQUIRES@|$$(case $$pc_name in mplapack_mpfr|mplapack_mpfr_opt) echo 'mpc mpfr gmp';; *) echo ;; esac)|g" \
+	    -e "s|@PC_LIBS_PRIVATE@|$$(case $$pc_name in mplapack_mpfr_opt) echo '$(OPENMP_CXXFLAGS)';; *) echo ;; esac)|g" \
 	    $(srcdir)/cmake/mplapack.pc.cmake.in > '$@'
 
 EXTRA_DIST = \
@@ -223,6 +254,11 @@ cmake/tests/CMakeLists.txt \
 cmake/tests/consume/CMakeLists.txt \
 cmake/tests/ComparePkgConfig.cmake \
 cmake/tests/consume/main.cpp \
+cmake/tests/consume/mpfr_main.cpp \
+misc/mpfr_pkgconfig_consumer.cpp \
+misc/check_mpfr_shared_load.py \
+misc/check_mpfr_elf_dependencies.sh \
+misc/check_mpfr_pkgconfig.sh \
 benchmark/Rgetrf1.plt.in \
 benchmark/Rgetrf2.plt.in \
 benchmark/Rgetrf3.plt.in \

@@ -132,6 +132,17 @@ foreach(_target IN LISTS MPLAPACK_INSTALL_TARGETS)
   string(REGEX REPLACE "^mplapack_" "" PC_FLAVOR "${_target}")
   set(PC_DESCRIPTION "${PROJECT_DESCRIPTION}")
   set(PC_VERSION "${PROJECT_VERSION}")
+  if(_target STREQUAL "mplapack_mpfr" OR
+     _target STREQUAL "mplapack_mpfr_opt")
+    set(PC_REQUIRES "mpc mpfr gmp")
+  else()
+    set(PC_REQUIRES "")
+  endif()
+  if(_target STREQUAL "mplapack_mpfr_opt" AND OpenMP_CXX_FOUND)
+    set(PC_LIBS_PRIVATE "${OpenMP_CXX_FLAGS}")
+  else()
+    set(PC_LIBS_PRIVATE "")
+  endif()
   configure_file(
     "${CMAKE_CURRENT_SOURCE_DIR}/cmake/mplapack.pc.cmake.in"
     "${CMAKE_CURRENT_BINARY_DIR}/pkgconfig/${_target}.pc"

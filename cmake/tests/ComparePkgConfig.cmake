@@ -18,4 +18,18 @@ foreach(_flavor IN LISTS FLAVORS)
     message(FATAL_ERROR
       "Autotools/CMake pkg-config mismatch for ${_name}")
   endif()
+
+  if(_flavor STREQUAL "mplapack_mpfr" OR
+     _flavor STREQUAL "mplapack_mpfr_opt")
+    file(READ "${_cmake_pc}" _pc_content)
+    if(NOT _pc_content MATCHES "Requires: mpc mpfr gmp")
+      message(FATAL_ERROR
+        "MPFR pkg-config metadata lacks its public dependency closure: ${_cmake_pc}")
+    endif()
+    file(READ "${_autotools_pc}" _pc_content)
+    if(NOT _pc_content MATCHES "Requires: mpc mpfr gmp")
+      message(FATAL_ERROR
+        "MPFR pkg-config metadata lacks its public dependency closure: ${_autotools_pc}")
+    endif()
+  endif()
 endforeach()

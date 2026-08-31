@@ -123,6 +123,12 @@ AC_PROG_CXX
 MPLAPACK_STRIP_FLAG([CXX], [-std=*])
 MPLAPACK_STRIP_FLAG([CXXFLAGS], [-std=*])
 
+dnl The shared-library and package-consumer regression checks use Python when
+dnl it is available.  The build remains usable without Python.
+AC_PATH_PROG([PYTHON3], [python3])
+AC_SUBST([PYTHON3])
+AM_CONDITIONAL([HAVE_PYTHON3], [test -n "$PYTHON3"])
+
 AS_CASE([$with_cxx_standard],
     [17],         [MPLAPACK_CXX_STANDARD=17],
     [20],         [MPLAPACK_CXX_STANDARD=20],
@@ -1902,7 +1908,7 @@ AC_SUBST([GMPFRXX_MKII_INCLUDEDIR])
 AC_SUBST([GMPFRXX_MKII_CPPFLAGS])
 AC_ARG_WITH(system-gmp,
 AS_HELP_STRING([--with-system-gmp=PREFIX],
-            [ ="yes" if it is at the default location (/usr/local/lib), or alternative prefix path to gmp library]
+            [ ="yes" if it is at the default location (/usr), or alternative prefix path to gmp library]
           ),
           GMP_PATHSET=1,
           GMP_PATHSET=0;
@@ -1911,7 +1917,10 @@ AS_HELP_STRING([--with-system-gmp=PREFIX],
 GMP_INCLUDEDIR=$highest_abs_top_builddir/external/i/GMP/include/
 GMP_LIBDIR=$highest_abs_top_builddir/external/i/GMP/lib/
 if test  $GMP_PATHSET = 1 ; then
-        if test $with_system_gmp != "yes"; then
+        if test $with_system_gmp = "yes"; then
+                GMP_INCLUDEDIR="/usr/include"
+                GMP_LIBDIR="/usr/lib"
+        else
                 GMP_INCLUDEDIR="$with_system_gmp/include"
                 GMP_LIBDIR="$with_system_gmp/lib"
         fi
@@ -1927,11 +1936,13 @@ if test x$enable_gmp = x"yes" -o x$enable_mpfr = x"yes" -o x$enable_test = x"yes
         if test x$HAVE_GMP_HEADER = xyes; then
             save_LDFLAGS="$LDFLAGS"
             LDFLAGS="$LDFLAGS -L$GMP_LIBDIR"
-            AC_CHECK_LIB(gmp, __gmpz_init, [GMP_LIBS="-lgmp"; HAVE_GMP=yes])
+            AC_CHECK_LIB(gmp, __gmpz_init, [HAVE_GMP=yes])
             LDFLAGS=$save_LDFLAGS
         fi
         if test x$HAVE_GMP != xyes; then
             AC_MSG_RESULT([No GMP C library found; using internal one instead])
+            GMP_INCLUDEDIR=$highest_abs_top_builddir/external/i/GMP/include/
+            GMP_LIBDIR=$highest_abs_top_builddir/external/i/GMP/lib/
         else
             AC_MSG_RESULT([GMP C library found: using GMP library comes with the system])
             SYSTEM_GMP=yes
@@ -1950,7 +1961,7 @@ dnl GMP library end
 dnl MPFR library start
 AC_ARG_WITH(system-mpfr,
 AS_HELP_STRING([--with-system-mpfr=PREFIX],
-	    [ ="yes" if it is at the default location (/usr/local/lib), or alternative prefix path to mpfr library]
+	    [ ="yes" if it is at the default location (/usr), or alternative prefix path to mpfr library]
 	  ),
 	  MPFR_PATHSET=1,
 	  MPFR_PATHSET=0;
@@ -1959,7 +1970,10 @@ AS_HELP_STRING([--with-system-mpfr=PREFIX],
 MPFR_INCLUDEDIR=$highest_abs_top_builddir/external/i/MPFR/include/
 MPFR_LIBDIR=$highest_abs_top_builddir/external/i/MPFR/lib/
 if test  $MPFR_PATHSET = 1 ; then
-	if test $with_system_mpfr != "yes"; then
+	if test $with_system_mpfr = "yes"; then
+		MPFR_INCLUDEDIR="/usr/include"
+		MPFR_LIBDIR="/usr/lib"
+	else
 		MPFR_INCLUDEDIR="$with_system_mpfr/include"
 		MPFR_LIBDIR="$with_system_mpfr/lib"
 	fi
@@ -1973,11 +1987,13 @@ if test x$enable_mpfr = x"yes" -o x$enable_test = x"yes"; then
         if test x$HAVE_MPFR_HEADER = xyes; then
             save_LDFLAGS="$LDFLAGS"
             LDFLAGS="$LDFLAGS -L$MPFR_LIBDIR -L$GMP_LIBDIR"
-            AC_CHECK_LIB(mpfr, mpfr_init, [MPFR_LIBS="-lmpfr -lgmp"; HAVE_MPFR=yes])
+            AC_CHECK_LIB(mpfr, mpfr_init, [HAVE_MPFR=yes], [], [-lgmp])
             LDFLAGS=$save_LDFLAGS
         fi
         if test x$HAVE_MPFR != xyes; then
             AC_MSG_RESULT([No MPFR library found; using internal one instead])
+			MPFR_INCLUDEDIR=$highest_abs_top_builddir/external/i/MPFR/include/
+			MPFR_LIBDIR=$highest_abs_top_builddir/external/i/MPFR/lib/
         else
             AC_MSG_RESULT([MPFR found: using MPFR comes with the system])
             SYSTEM_MPFR=yes
@@ -1997,7 +2013,7 @@ dnl MPFR library end
 dnl MPC library start
 AC_ARG_WITH(system-mpc,
 AS_HELP_STRING([--with-system-mpc=PREFIX],
-	    [ ="yes" if it is at the default location (/usr/local/lib), or alternative prefix path to mpc library]
+	    [ ="yes" if it is at the default location (/usr), or alternative prefix path to mpc library]
 	  ),
 	  MPC_PATHSET=1,
 	  MPC_PATHSET=0;
@@ -2006,7 +2022,10 @@ AS_HELP_STRING([--with-system-mpc=PREFIX],
 MPC_INCLUDEDIR=$highest_abs_top_builddir/external/i/MPC/include/
 MPC_LIBDIR=$highest_abs_top_builddir/external/i/MPC/lib/
 if test  $MPC_PATHSET = 1 ; then
-	if test $with_system_mpc != "yes"; then
+	if test $with_system_mpc = "yes"; then
+		MPC_INCLUDEDIR="/usr/include"
+		MPC_LIBDIR="/usr/lib"
+	else
 		MPC_INCLUDEDIR="$with_system_mpc/include"
 		MPC_LIBDIR="$with_system_mpc/lib"
 	fi
@@ -2020,11 +2039,13 @@ if test x$enable_mpfr = x"yes" -o x$enable_test = x"yes"; then
         if test x$HAVE_MPC_HEADER = xyes; then
             save_LDFLAGS="$LDFLAGS"
             LDFLAGS="$LDFLAGS -L$MPC_LIBDIR -L$MPFR_LIBDIR -L$GMP_LIBDIR"
-            AC_CHECK_LIB(mpc, mpc_init2, [MPC_LIBS="-lmpc -lmpfr -lgmp"; HAVE_MPC=yes])
+            AC_CHECK_LIB(mpc, mpc_init2, [HAVE_MPC=yes], [], [-lmpfr -lgmp])
             LDFLAGS=$save_LDFLAGS
         fi
         if test x$HAVE_MPC != xyes; then
             AC_MSG_RESULT([No MPC library found; using internal one instead])
+			MPC_INCLUDEDIR=$highest_abs_top_builddir/external/i/MPC/include/
+			MPC_LIBDIR=$highest_abs_top_builddir/external/i/MPC/lib/
         else
             AC_MSG_RESULT([MPC library found: using MPC library comes with the system])
             SYSTEM_MPC=yes
@@ -2039,6 +2060,19 @@ fi
 AM_CONDITIONAL(SYSTEM_MPC, test x$SYSTEM_MPC = xyes)
 AC_SUBST(MPC_INCLUDEDIR, [$MPC_INCLUDEDIR])
 AC_SUBST(MPC_LIBDIR, [$MPC_LIBDIR])
+
+dnl Canonical link closure for the MPFR backend.  These are link libraries,
+dnl not linker options, so libtool targets consume them through LIBADD.  Keep
+dnl the complete closure here so system and bundled dependency builds use the
+dnl same generated Makefile interface.
+GMP_LIBS="-L$GMP_LIBDIR -lgmp"
+MPFR_LIBS="-L$MPFR_LIBDIR -lmpfr $GMP_LIBS"
+MPC_LIBS="-L$MPC_LIBDIR -lmpc $MPFR_LIBS"
+MPLAPACK_MPFR_LIBS="$MPC_LIBS"
+AC_SUBST([GMP_LIBS])
+AC_SUBST([MPFR_LIBS])
+AC_SUBST([MPC_LIBS])
+AC_SUBST([MPLAPACK_MPFR_LIBS])
 dnl MPC library end
 
 dnl QD library start
@@ -2085,7 +2119,7 @@ AC_SUBST([DD_CXXFLAGS])
 
 AC_ARG_WITH(system-qd,
 AS_HELP_STRING([--with-system-qd=PREFIX],
-	    [ ="yes" if it is at the default location (/usr/local/lib), or alternative prefix path to qd library]
+	    [ ="yes" if it is at the default location (/usr), or alternative prefix path to qd library]
 	  ),
 	  QD_PATHSET=1,
 	  QD_PATHSET=0;
@@ -2094,7 +2128,10 @@ AS_HELP_STRING([--with-system-qd=PREFIX],
 QD_INCLUDEDIR=$highest_abs_top_builddir/external/i/QD/include/
 QD_LIBDIR=$highest_abs_top_builddir/external/i/QD/lib/
 if test  $QD_PATHSET = 1 ; then
-	if test $with_system_qd != "yes"; then
+	if test $with_system_qd = "yes"; then
+		QD_INCLUDEDIR="/usr/include"
+		QD_LIBDIR="/usr/lib"
+	else
 		QD_INCLUDEDIR="$with_system_qd/include"
 		QD_LIBDIR="$with_system_qd/lib"
 	fi
@@ -2114,6 +2151,8 @@ if test x$enable_qd = x"yes" -o x$enable_dd = x"yes" -o x$enable_test = x"yes"; 
         fi
         if test x$HAVE_QD != xyes; then
               AC_MSG_RESULT([No QD library found; using internal one instead])
+			QD_INCLUDEDIR=$highest_abs_top_builddir/external/i/QD/include/
+			QD_LIBDIR=$highest_abs_top_builddir/external/i/QD/lib/
         else
               AC_MSG_RESULT([QD library found: using QD library comes with the system])
               SYSTEM_QD=yes

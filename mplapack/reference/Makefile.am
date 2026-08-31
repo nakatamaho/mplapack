@@ -45,12 +45,13 @@ endif
 if ENABLE_MPFR
 libmplapack_mpfr_la_CPPFLAGS = $(GMPFRXX_MKII_CPPFLAGS) $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR)  -I$(MPC_INCLUDEDIR) -DMPLAPACK_BUILD_WITH_MPFR
 libmplapack_mpfr_la_SOURCES = $(MPLAPACK_SOURCES) $(MPBLAS_REFERENCE_SOURCES)
+libmplapack_mpfr_la_LIBADD = $(MPLAPACK_MPFR_LIBS)
 libmplapack_mpfr_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO) -Wl,-rpath,$(libdir)
 if IS_MACOS
 libmplapack_mpfr_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif
 if IS_MINGW
-libmplapack_mpfr_la_LDFLAGS += -no-undefined -L$(MPC_LIBDIR) -lmpc -L$(MPFR_LIBDIR) -lmpfr -L$(GMP_LIBDIR) -lgmp
+libmplapack_mpfr_la_LDFLAGS += -no-undefined
 endif
 endif
 
