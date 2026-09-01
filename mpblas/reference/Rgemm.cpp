@@ -26,8 +26,8 @@
  *
  */
 
-// Derived from BLAS routine DGEMM.
-// Original BLAS authors:
+// Derived from LAPACK routine DGEMM.
+// Original LAPACK authors:
 //   Univ. of Tennessee
 //   Univ. of California Berkeley
 //   Univ. of Colorado Denver
