@@ -91,9 +91,9 @@ foreach(_b ${_backends})
   endforeach()
 endforeach()
 
-# MPFR-only regression for operation precision that intentionally differs
-# from the gmpfrxx/MPFR thread default. It is separate from the generic BLAS
-# comparison tests because it requires explicit variable MPFR precisions.
+# MPFR-only regression for the caller-selected uniform operation precision.
+# It is separate from the generic BLAS comparison tests because it requires
+# explicit variable MPFR precisions and exercises the public precision scope.
 foreach(_backend_library mplapack_mpfr mplapack_mpfr_opt)
   if(NOT TARGET ${_backend_library})
     continue()
@@ -113,6 +113,10 @@ foreach(_backend_library mplapack_mpfr mplapack_mpfr_opt)
   target_link_libraries(${_exe} PRIVATE
     "$<TARGET_FILE:${_backend_library}>"
     MPC::MPC MPFR::MPFR)
+  if(_backend_library STREQUAL "mplapack_mpfr_opt")
+    target_link_libraries(${_exe} PRIVATE mplapack_mpfr)
+    add_dependencies(${_exe} mplapack_mpfr)
+  endif()
   add_dependencies(${_exe} ${_backend_library})
   if(TARGET OpenMP::OpenMP_CXX)
     target_link_libraries(${_exe} PRIVATE OpenMP::OpenMP_CXX)

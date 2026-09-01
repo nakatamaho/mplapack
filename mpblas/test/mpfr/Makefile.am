@@ -132,11 +132,11 @@ complex_test_mpfr_LDFLAGS=$(libdepends) $(mplibs) $(refblas)
 
 Rgemm_precision_test_mpfr_SOURCES=Rgemm.precision.test.cpp
 Rgemm_precision_test_mpfr_CXXFLAGS=$(test_cxxflags)
-Rgemm_precision_test_mpfr_LDFLAGS=$(libdepends) $(mplibs)
+Rgemm_precision_test_mpfr_LDFLAGS=$(libdepends) $(mplibs) -L$(top_builddir)/mplapack/reference -lmplapack_mpfr
 
 Rgemm_precision_test_mpfr_opt_SOURCES=Rgemm.precision.test.cpp
 Rgemm_precision_test_mpfr_opt_CXXFLAGS=$(test_cxxflags)
-Rgemm_precision_test_mpfr_opt_LDFLAGS=$(opt_libdepends) $(mplibs)
+Rgemm_precision_test_mpfr_opt_LDFLAGS=$(opt_libdepends) $(mplibs) -L$(top_builddir)/mplapack/reference -lmplapack_mpfr
 
 iCamax_test_mpfr_opt_SOURCES=../common/iCamax.test.cpp $(test_srcdepends)
 iCamax_test_mpfr_opt_CXXFLAGS=$(test_cxxflags)
