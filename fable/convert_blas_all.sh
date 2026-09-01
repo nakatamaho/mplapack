@@ -126,6 +126,7 @@ case "${LAPACK_VERSION}" in
         patch < "${SCRIPT_DIR}/${LAPACK_VERSION}/blas/patch-Crotg.cpp"
         patch < "${SCRIPT_DIR}/${LAPACK_VERSION}/blas/patch-RCnrm2.cpp"
         patch < "${SCRIPT_DIR}/${LAPACK_VERSION}/blas/patch-Rnrm2.cpp"
+        patch < "${SCRIPT_DIR}/${LAPACK_VERSION}/blas/patch-Rgemm.cpp"
         patch < "${SCRIPT_DIR}/${LAPACK_VERSION}/blas/patch-Rrotg.cpp"
         patch < "${SCRIPT_DIR}/${LAPACK_VERSION}/blas/patch-Rrotmg.cpp"
         ;;

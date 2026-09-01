@@ -1,7 +1,7 @@
 #CTBSV, CTPSV might have bugs or intrinsically inaccurate
 #Rnrm2 should be checked more
 check_PROGRAMS = $(mpblas_mpfr_test_PROGRAMS) 
-mpblas_mpfr_smoke_TESTS = arithmetic.test_mpfr complex.test_mpfr
+mpblas_mpfr_smoke_TESTS = arithmetic.test_mpfr complex.test_mpfr Rgemm.precision.test.mpfr Rgemm.precision.test.mpfr_opt
 mpblas_mpfr_smoke_WRAPPERS = $(mpblas_mpfr_smoke_TESTS:%=run_%.sh)
 mpblas_mpfr_test_WRAPPERS = $(mpblas_mpfr_test_PROGRAMS:%=run_%.sh)
 TESTS = $(mpblas_mpfr_smoke_WRAPPERS)
@@ -22,6 +22,7 @@ run_%.sh: Makefile
 mpblas_mpfr_test_PROGRAMS = \
 arithmetic.test_mpfr \
 complex.test_mpfr \
+Rgemm.precision.test.mpfr Rgemm.precision.test.mpfr_opt \
 iCamax.test.mpfr_opt iCamax.test.mpfr   \
 iRamax.test.mpfr_opt iRamax.test.mpfr   \
 Mlsame.test.mpfr_opt Mlsame.test.mpfr   \
@@ -128,6 +129,14 @@ arithmetic_test_mpfr_LDFLAGS=$(libdepends) $(mplibs) $(refblas)
 complex_test_mpfr_SOURCES=../common/complex.test.cpp $(test_srcdepends)
 complex_test_mpfr_CXXFLAGS=$(test_cxxflags)
 complex_test_mpfr_LDFLAGS=$(libdepends) $(mplibs) $(refblas)
+
+Rgemm_precision_test_mpfr_SOURCES=Rgemm.precision.test.cpp
+Rgemm_precision_test_mpfr_CXXFLAGS=$(test_cxxflags)
+Rgemm_precision_test_mpfr_LDFLAGS=$(libdepends) $(mplibs)
+
+Rgemm_precision_test_mpfr_opt_SOURCES=Rgemm.precision.test.cpp
+Rgemm_precision_test_mpfr_opt_CXXFLAGS=$(test_cxxflags)
+Rgemm_precision_test_mpfr_opt_LDFLAGS=$(opt_libdepends) $(mplibs)
 
 iCamax_test_mpfr_opt_SOURCES=../common/iCamax.test.cpp $(test_srcdepends)
 iCamax_test_mpfr_opt_CXXFLAGS=$(test_cxxflags)

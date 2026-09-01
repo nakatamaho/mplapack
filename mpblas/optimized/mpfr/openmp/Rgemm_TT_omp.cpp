@@ -35,6 +35,7 @@ void Rgemm_TT_omp(mplapackint m, mplapackint n, mplapackint k, mpfr_class alpha,
 //Form  C := alpha*A'*B' + beta*C.
     mplapackint i, j, l;
     mpfr_class temp;
+    temp.set_prec(mplapack_mpfr_rgemm_operation_precision(false, false, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc));
     for (j = 0; j < n; j++) {
 	if (beta == 0.0) {
 	    for (i = 0; i < m; i++) {
@@ -48,7 +49,7 @@ void Rgemm_TT_omp(mplapackint m, mplapackint n, mplapackint k, mpfr_class alpha,
     }
 //main loop
 #ifdef _OPENMP
-#pragma omp parallel for private(i, j, l, temp)
+#pragma omp parallel for private(i, j, l) firstprivate(temp)
 #endif
     for (j = 0; j < n; j++) {
         for (i = 0; i < m; i++) {

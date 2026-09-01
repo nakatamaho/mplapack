@@ -90,3 +90,35 @@ foreach(_b ${_backends})
     endforeach()
   endforeach()
 endforeach()
+
+# MPFR-only regression for operation precision that intentionally differs
+# from the gmpfrxx/MPFR thread default. It is separate from the generic BLAS
+# comparison tests because it requires explicit variable MPFR precisions.
+foreach(_backend_library mplapack_mpfr mplapack_mpfr_opt)
+  if(NOT TARGET ${_backend_library})
+    continue()
+  endif()
+  if(_backend_library MATCHES "_opt$")
+    set(_variant "mpfr_opt")
+  else()
+    set(_variant "mpfr")
+  endif()
+  set(_exe "Rgemm_precision_test_${_variant}")
+  add_executable(${_exe} "${CMAKE_CURRENT_SOURCE_DIR}/mpfr/Rgemm.precision.test.cpp")
+  target_compile_definitions(${_exe} PRIVATE MPLAPACK_BUILD_WITH_MPFR MPLAPACK_INTERNAL)
+  target_include_directories(${_exe} PRIVATE
+    "${CMAKE_BINARY_DIR}/include"
+    "${CMAKE_SOURCE_DIR}/include"
+    "${MPLAPACK_GMPFRXX_MKII_ROOT}/include")
+  target_link_libraries(${_exe} PRIVATE
+    "$<TARGET_FILE:${_backend_library}>"
+    MPC::MPC MPFR::MPFR)
+  add_dependencies(${_exe} ${_backend_library})
+  if(TARGET OpenMP::OpenMP_CXX)
+    target_link_libraries(${_exe} PRIVATE OpenMP::OpenMP_CXX)
+  endif()
+  set_target_properties(${_exe} PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${_variant}"
+    BUILD_RPATH "$<TARGET_FILE_DIR:${_backend_library}>")
+  add_test(NAME mpblas_${_variant}_Rgemm_precision COMMAND ${_exe})
+endforeach()

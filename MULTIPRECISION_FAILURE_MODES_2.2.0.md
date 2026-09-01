@@ -165,6 +165,18 @@ smaller and the exponent range is wider.
 
 ---
 
+## Category E — Variable-precision MPFR operation state
+
+Unlike fixed-precision backends, MPFR objects carry precision per value. A
+default-constructed arithmetic work variable can therefore have a different
+precision from every BLAS operand and output.
+
+| Pattern | Mechanism | Diagnostic fingerprint | Mitigation | Status |
+|---|---|---|---|---|
+| **E1. BLAS temporaries inherit an unrelated gmpfrxx/MPFR default** | A routine declares `REAL temp = 0.0` or `REAL temp;`. For MPFR this constructs `temp` at the thread default. Assignment evaluates a high-precision expression into that lower-precision destination before the value reaches C. | A 1024-bit `Rgemm` identity product loses `2^-700` when the default is 512 bits, but passes when the default is raised to 2048 bits. Left and right identity can differ because different GEMM branches place different operands in the temporary. | `Rgemm` derives one explicit operation precision from all participating arithmetic objects before entering its loops and changes every significant accumulator to that precision. Optimized OpenMP workers receive a first-private copy. The TLS/default state is never changed. | Fixed for real MPFR `Rgemm`; the same source pattern remains a risk in other BLAS/LAPACK routines and must be gated separately. See `docs/mpfr-rgemm-operation-precision.md`. |
+
+---
+
 ## Related infrastructure (Category B, arithmetic_params layer)
 
 The `mplapack_arithmetic_params.h` layer introduced during 2.2.0 is the

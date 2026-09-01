@@ -273,6 +273,29 @@ inline mpfr_class castREAL_mpfr(mplapackint a) {
 
 inline double cast2double(mpfr_class a) { return a.get_d(); }
 
+inline void mplapack_mpfr_accumulate_matrix_precision(mpfr_prec_t &precision, const mpfr_class *matrix, mplapackint rows, mplapackint columns, mplapackint leading_dimension) {
+    for (mplapackint column = 0; column < columns; ++column) {
+        for (mplapackint row = 0; row < rows; ++row) {
+            precision = std::max(precision, matrix[row + column * leading_dimension].precision());
+        }
+    }
+}
+
+// Return the precision used by Rgemm work temporaries. The scan is performed
+// once outside the numerical loops and deliberately ignores the unrelated
+// gmpfrxx/MPFR default precision.
+inline mpfr_prec_t mplapack_mpfr_rgemm_operation_precision(bool nota, bool notb, mplapackint m, mplapackint n, mplapackint k, const mpfr_class &alpha, const mpfr_class *a, mplapackint lda, const mpfr_class *b, mplapackint ldb, const mpfr_class &beta, const mpfr_class *c, mplapackint ldc) {
+    mpfr_prec_t precision = std::max(alpha.precision(), beta.precision());
+    const mplapackint a_rows = nota ? m : k;
+    const mplapackint a_columns = nota ? k : m;
+    const mplapackint b_rows = notb ? k : n;
+    const mplapackint b_columns = notb ? n : k;
+    mplapack_mpfr_accumulate_matrix_precision(precision, a, a_rows, a_columns, lda);
+    mplapack_mpfr_accumulate_matrix_precision(precision, b, b_rows, b_columns, ldb);
+    mplapack_mpfr_accumulate_matrix_precision(precision, c, m, n, ldc);
+    return precision;
+}
+
 inline mpfr_class pi(mpfr_class dummy) {
     mpfr_class _PI;
     _PI = const_pi(mpfrxx::mpfr_class::default_precision());
