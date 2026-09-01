@@ -1,117 +1,110 @@
-# MPFR `Rgemm` operation precision
+# MPFR `Rgemm` precision context
 
 ## Scope
 
-This document defines the precision used by real MPFR `Rgemm` work
-temporaries. It applies to both the reference `libmplapack_mpfr` routine and
-the MPFR optimized `libmplapack_mpfr_opt` dispatcher and OpenMP kernels.
-The public `Rgemm` ABI is unchanged.
+This document defines the caller contract and worker-thread precision context
+for real MPFR `Rgemm`. It applies to the reference `libmplapack_mpfr` routine
+and to the MPFR optimized `libmplapack_mpfr_opt` dispatcher and OpenMP
+kernels. The public `Rgemm` ABI is unchanged.
 
-## Failure mode
+## Uniform-precision calling contract
 
-Before this rule was introduced, `Rgemm` declared an ordinary
-`mpfrxx::mpfr_class` accumulator. Its default constructor used the unrelated
-gmpfrxx/MPFR thread default. Assigning a high-precision expression into that
-object rounded the expression to the default precision before it contributed
-to the output. For example, a 1024-bit identity product lost the `2^-700`
-part of `1 + 2^-700` when the thread default was 512 bits.
+For one valid MPFR `Rgemm` invocation, the caller selects one precision `p`
+and ensures that:
 
-Changing `MPFRXX_DEFAULT_PRECISION_BITS` could therefore change a result even
-though `alpha`, `beta`, A, B, and C had not changed. That dependency was a
-library defect, not a caller requirement.
+- the current executing thread's MPFR default precision is `p`;
+- `alpha` and `beta` have precision `p`; and
+- every participating element of A, B, and C has precision `p`.
 
-For the original 1024-bit, 512-bit-default reproducer, targeted source
-inspection and micro-tests gave this precision flow:
+Mixed-precision calls are unsupported. `Rgemm` does not scan operands, choose
+the maximum precision, promote values, or reconcile mismatches. The caller is
+responsible for normalizing all values before the call.
 
-| Intermediate | Precision before the fix |
-|---|---:|
-| A element | 1024 bits |
-| B element | 1024 bits |
-| C element | 1024 bits |
-| `alpha` and `beta` | 1024 bits |
-| expression-constructed product | 1024 bits |
-| reference/optimized `temp` destination | 512 bits |
-| OpenMP private `temp` | worker thread default, normally 512 bits |
-| final expression destination C | 1024 bits, after `temp` had already rounded |
+The intended usage is:
 
-Copy construction preserves the source precision, and assignment or compound
-assignment evaluates at the existing destination precision. Thus the loss
-occurred when a 1024-bit product was assigned into `temp`; raising C's
-precision afterward could not recover the discarded contribution.
+```cpp
+const mpfr_prec_t p = 1024;
 
-## Operation-precision rule
+// Construct or promote alpha, beta, A, B, and C to p bits.
+{
+    MplapackMpfrPrecisionScope scope(p);
+    Rgemm("N", "N", m, n, k, alpha, A, lda, B, ldb, beta, C, ldc);
+}
+```
 
-For a valid, nontrivial MPFR `Rgemm` call, the operation precision is the
-maximum precision of:
+## Why the contract is required
 
-- `alpha` and `beta`;
-- every logical A element referenced by `op(A)`;
-- every logical B element referenced by `op(B)`; and
-- every logical C element.
+Default-constructed `mpfrxx::mpfr_class` objects use the current thread's
+MPFR default precision. Therefore an algorithm-local declaration such as
+`REAL temp;` has precision `p` when the caller has established the contract.
 
-The scan observes matrix dimensions, transpose flags, and leading dimensions,
-and runs once outside the numerical loops. It does not inspect padding.
-Uniform-precision arrays remain the normal and recommended MPFR BLAS usage;
-for such calls the rule reduces to their common precision. A mixed-precision
-direct caller still gets an explicit maximum work precision, while each C
-element retains its own MPFR destination precision when a result is stored.
+If the caller leaves the default at a lower precision, assignment of a
+higher-precision expression into that temporary can lose information. A
+1024-bit identity product, for example, can lose the `2^-700` contribution
+from `1 + 2^-700` when the current default is only 512 bits.
 
-## Temporary construction
+This is a caller precondition. MPLAPACK does not repair a mismatched call.
 
-The reference routine changes its generated `temp` accumulator to the derived
-operation precision before arithmetic begins. The optimized MPFR kernels do
-the same. OpenMP workers receive a first-private copy of that explicitly
-precisioned object, so worker-thread defaults do not affect the calculation.
+## OpenMP worker context
 
-The implementation does not change the MPFR default precision, the gmpfrxx
-thread default, or the rounding mode. There is no precision scope to restore,
-and a caller observes exactly the same default before and after `Rgemm`.
+MPFR default precision is thread-local in the supported TLS-enabled build and
+is not automatically inherited by OpenMP workers. An optimized OpenMP kernel
+therefore reads one already-valid caller object, currently `alpha`, to obtain
+the caller-selected precision:
+
+```cpp
+const mpfr_prec_t precision = alpha.precision();
+```
+
+This is propagation, not precision discovery. The kernel does not inspect or
+compare the other operands. It enters `MplapackMpfrPrecisionScope(precision)`
+at each worker before constructing default-precision temporaries. The scope
+restores that worker's previous default when the parallel region exits.
+
+The same rule applies to other MPFR OpenMP arithmetic kernels. The current
+tree has no separate MPFR OpenMP `Rgemv` implementation; `Rgemv` uses the
+generated reference path.
+
+Non-TLS MPFR builds have shared underlying default state and cannot provide
+independent simultaneous worker precisions. They must not be treated as
+having the TLS-enabled threading semantics described here.
 
 ## Generated-source workflow
 
 `mpblas/reference/Rgemm.cpp` is generated by FABLE from LAPACK 3.12.1
-`BLAS/SRC/dgemm.f`. The authoritative MPLAPACK adjustment is:
-
-```text
-fable/3.12.1/blas/patch-Rgemm.cpp
-```
-
-`fable/convert_blas_all.sh` applies that patch after conversion. The complete
-regeneration entry point remains:
+`BLAS/SRC/dgemm.f`. There is no MPFR precision patch in the FABLE pipeline;
+the generated routine retains its generic default-constructed temporaries.
+The complete regeneration entry point remains:
 
 ```sh
 LAPACK_VERSION=3.12.1 fable/go.sh
 ```
 
 The files under `mpblas/optimized/mpfr/` are hand-maintained optimized MPFR
-sources and carry the corresponding explicit-temporary change directly.
+sources. Their OpenMP worker entry contexts carry the caller-selected
+precision without changing algorithm-local temporary declarations.
 
 ## Regression coverage
 
-`mpblas/test/mpfr/Rgemm.precision.test.cpp` deliberately poisons the thread
-default and tests operation precisions from 32 through 2048 bits. It covers
-left and right identity, `NN`, `TN`, `NT`, and `TT`, nontrivial `alpha` and
-`beta`, multi-term accumulation, default restoration, and a mixed-precision
-scan whose highest-precision value is not element zero. It also executes a
-direct mixed-precision call with 128-bit A, 1024-bit B and C, and differently
-precisioned `alpha` and `beta`. The same source is linked against reference
-and optimized MPFR libraries by both Autotools and CMake.
+`mpblas/test/mpfr/Rgemm.precision.test.cpp` sets outside defaults different
+from the operation precision and tests operations from 32 through 2048 bits.
+It covers identity and transpose branches, nontrivial `alpha` and `beta`,
+multi-term accumulation, uniform caller construction, scope restoration,
+nested scopes, exception restoration, default construction, and explicit
+object independence. It is linked against both the reference and optimized
+MPFR libraries by Autotools and CMake.
 
-## Performance
-
-Precision discovery is linear in the logical storage size of A, B, and C and
-occurs once per call. No precision query, allocation, or matrix scan was added
-to the multiply-add inner loop. The existing GEMM loop structure is preserved.
+Mixed-precision direct calls are outside the supported contract and are not
+used as a correctness requirement.
 
 ## Related routines and `Rgesv`
 
-This change is intentionally limited to `Rgemm`. Other generated MPFR BLAS
-routines contain default-constructed or `0.0`-constructed work variables. In
-particular, `Rgemv`, `Rdot`, `Rger`, and `Rtrsm` contain accumulators or scale
-temporaries with the same potential dependency.
+The uniform contract is intended to apply to all MPLAPACK MPFR routines.
+Every routine that creates default-constructed arithmetic temporaries must be
+called with the corresponding caller default already established. Any
+parallel implementation must establish the same caller-selected precision
+in each arithmetic worker.
 
-`Rgesv` calls `Rgetrf` and `Rgetrs`. Those paths reach `Rgemm`, `Rtrsm`, and
-recursive `Rgetrf2`; `Rgetrf2` also has default-precision real temporaries.
-Consequently the precision risk for `Rgesv` is **YES** until that path receives
-its own operation-precision audit and regression. Fixing `Rgemm` alone is not
-evidence that MPFR `Rgesv` is operation-precision safe.
+`Rgesv` calls `Rgetrf` and `Rgetrs`. Those paths reach routines with default
+precision real temporaries and require a separate audit before a complete
+threaded precision guarantee is claimed for the full `Rgesv` workflow.

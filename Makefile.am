@@ -181,6 +181,7 @@ mplapack_include_HEADERS += \
     include/mpblas_mpfr.h \
     include/mplapack_arithmetic_params_mpfr.h \
     include/mplapack_mpfr.h \
+    include/mplapack_mpfr_precision.h \
     include/mplapack_utils_mpfr.h
 endif
 

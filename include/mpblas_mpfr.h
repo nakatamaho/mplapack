@@ -34,6 +34,7 @@
 #include <mplapack_gmpfrxx_mkII_config.h>
 #include <mpfrxx_mkII.h>
 #include <mpcxx_mkII.h>
+#include <mplapack_mpfr_precision.h>
 using namespace mpfrxx;
 #include "mplapack_config.h"
 #include "mplapack_utils_mpfr.h"
