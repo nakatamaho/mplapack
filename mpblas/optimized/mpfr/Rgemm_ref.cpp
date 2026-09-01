@@ -143,7 +143,6 @@ void Rgemm_ref(const char *transa, const char *transb, INTEGER m, INTEGER n, INT
 	}
 	return;
     }
-    temp.set_prec(mplapack_mpfr_rgemm_operation_precision(nota, notb, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc));
 //Start the operations.
     if (notb) {
 	if (nota) {

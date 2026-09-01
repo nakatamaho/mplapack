@@ -92,11 +92,18 @@ void Raxpy_omp(mplapackint n, mpfr_class da, mpfr_class * dx, mplapackint incx, 
 
     if (incx == 1 && incy == 1 ) {
 #ifdef _OPENMP
-#pragma omp parallel for
+    const mpfr_prec_t precision = da.precision();
+#pragma omp parallel firstprivate(precision) private(i)
+    {
+        MplapackMpfrPrecisionScope worker_scope(precision);
+#pragma omp for
 #endif
       for (i = 0; i < n; i++) {
 	dy[i] += da * dx[i];
       }
+#ifdef _OPENMP
+    }
+#endif
       return; 
     }
 

@@ -82,7 +82,7 @@ mpfr_class Rdot_omp(mplapackint n, mpfr_class * dx, mplapackint incx, mpfr_class
     mplapackint ix = 0;
     mplapackint iy = 0;
     mplapackint i;
-    mpfr_class temp, templ;
+    mpfr_class temp;
 
     temp = 0.0;
 
@@ -95,10 +95,16 @@ mpfr_class Rdot_omp(mplapackint n, mpfr_class * dx, mplapackint incx, mpfr_class
     if (incx == 1 && incy == 1) {
 //no reduction for multiple precision
 #ifdef _OPENMP
-#pragma omp parallel private (i, templ) shared(temp, dx, dy, n)
+    const mpfr_prec_t precision = n > 0 ? dx[0].precision() : mpfrxx::default_precision_bits();
+#pragma omp parallel firstprivate(precision) private(i) shared(temp, dx, dy, n)
 #endif
 	{
-	    templ = 0.0;
+#ifdef _OPENMP
+            MplapackMpfrPrecisionScope worker_scope(precision);
+            mpfr_class templ = 0.0;
+#else
+            mpfr_class templ = 0.0;
+#endif
 #ifdef _OPENMP
 #pragma omp for
 #endif

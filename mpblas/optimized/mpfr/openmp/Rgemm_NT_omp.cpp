@@ -34,8 +34,6 @@ void Rgemm_NT_omp(mplapackint m, mplapackint n, mplapackint k, mpfr_class alpha,
 {
 //Form  C := alpha*A*B' + beta*C.
     mplapackint i, j, l;
-    mpfr_class temp;
-    temp.set_prec(mplapack_mpfr_rgemm_operation_precision(true, false, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc));
     for (j = 0; j < n; j++) {
 	if (beta == 0.0) {
 	    for (i = 0; i < m; i++) {
@@ -49,7 +47,14 @@ void Rgemm_NT_omp(mplapackint m, mplapackint n, mplapackint k, mpfr_class alpha,
     }
 //main loop
 #ifdef _OPENMP
-#pragma omp parallel for private(i, j, l) firstprivate(temp)
+    const mpfr_prec_t precision = alpha.precision();
+#pragma omp parallel private(i, j, l) firstprivate(precision)
+    {
+        MplapackMpfrPrecisionScope worker_scope(precision);
+        mpfr_class temp;
+#pragma omp for
+#else
+    mpfr_class temp;
 #endif
     for (j = 0; j < n; j++) {
 	for (l = 0; l < k; l++) {
@@ -57,7 +62,10 @@ void Rgemm_NT_omp(mplapackint m, mplapackint n, mplapackint k, mpfr_class alpha,
 	    for (i = 0; i < m; i++) {
 		C[i + j * ldc] += temp * A[i + l * lda];
 	    }
-	}
+	    }
     }
+#ifdef _OPENMP
+    }
+#endif
     return;
 }
