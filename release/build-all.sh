@@ -587,8 +587,16 @@ make_dist() {
     log "Running configure..."
     ./configure > "$distdir/configure.log" 2>&1
 
+    # GNU tar's POSIX/PAX writer otherwise records filesystem atime/ctime
+    # values, which makes two clean source archives differ even when their
+    # source trees have identical file contents.  Keep release archives
+    # independent of checkout location and extraction time.
+    local source_date_epoch="${SOURCE_DATE_EPOCH:-0}"
+    local release_tar_options="${TAR_OPTIONS:-}"
+    release_tar_options="${release_tar_options:+$release_tar_options }--mtime=@${source_date_epoch} --owner=0 --group=0 --numeric-owner --sort=name --pax-option=delete=atime,delete=ctime"
     log "Running make dist..."
-    make dist > "$distdir/make_dist.log" 2>&1
+    SOURCE_DATE_EPOCH="$source_date_epoch" TAR_OPTIONS="$release_tar_options" \
+        make dist > "$distdir/make_dist.log" 2>&1
 
     TARBALL=$(ls -t mplapack-*.tar.xz | head -1)
     TARBALL=$(abspath "$TARBALL")
