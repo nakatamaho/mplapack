@@ -310,7 +310,7 @@ $(MPLAPACK_PKGCONFIG_FILES): cmake/mplapack.pc.cmake.in
 		*) echo ;; esac)|g" \
 	    -e "s|@PC_REQUIRES_PRIVATE@|$$(case $$pc_name in *) echo ;; esac)|g" \
 	    -e "s|@PC_CFLAGS_EXTRA@|$$(case $$pc_name in \
-		mplapack_gmp|mplapack_gmp_opt) echo '$(GMP_PC_CFLAGS)';; \
+		mplapack_gmp|mplapack_gmp_opt|mplapack_mpfr|mplapack_mpfr_opt) echo '$(GMP_PC_CFLAGS)';; \
 		mplapack_qd|mplapack_qd_opt|mplapack_dd|mplapack_dd_opt|mplapack_dd_opt_cuda) echo '$(QD_PC_CFLAGS)';; \
 		*) echo ;; esac)|g" \
 	    -e "s|@PC_LIBS_EXTRA@|$$(case $$pc_name in \
