@@ -331,6 +331,7 @@ cmake/tests/consume/CMakeLists.txt \
 cmake/tests/ComparePkgConfig.cmake \
 cmake/tests/consume/main.cpp \
 cmake/tests/consume/mpfr_main.cpp \
+include/mplapack_mpfr_precision.h \
 misc/mpfr_pkgconfig_consumer.cpp \
 misc/check_mpfr_shared_load.py \
 misc/check_mpfr_elf_dependencies.sh \
