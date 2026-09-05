@@ -296,6 +296,30 @@ $(MPLAPACK_PKGCONFIG_FILES): cmake/mplapack.pc.cmake.in
 	@pc_name='$@'; \
 	pc_name=$${pc_name%.pc}; \
 	pc_flavor=$${pc_name#mplapack_}; \
+	pc_requires=; \
+	pc_requires_private=; \
+	pc_cflags_extra=; \
+	pc_libs_extra=; \
+	pc_libs_private=; \
+	case "$$pc_name" in \
+	    mplapack_mpfr|mplapack_mpfr_opt) \
+	        pc_requires='mpc mpfr gmp'; \
+	        test "$$pc_name" = mplapack_mpfr_opt && pc_libs_private='$(OPENMP_CXXFLAGS)';; \
+	    mplapack_gmp|mplapack_gmp_opt) \
+	        pc_requires='$(GMP_PC_REQUIRES)'; \
+	        pc_cflags_extra='$(GMP_PC_CFLAGS)'; \
+	        pc_libs_extra='$(GMP_PC_LIBS)';; \
+	    mplapack_qd|mplapack_qd_opt|mplapack_dd|mplapack_dd_opt|mplapack_dd_opt_cuda) \
+	        pc_requires='$(QD_PC_REQUIRES)'; \
+	        pc_cflags_extra='$(QD_PC_CFLAGS)'; \
+	        pc_libs_extra='$(QD_PC_LIBS)'; \
+	        case "$$pc_name" in \
+	            mplapack_qd|mplapack_qd_opt|mplapack_dd|mplapack_dd_opt) \
+	                pc_libs_private='$(QD_PC_LIBS_PRIVATE)';; \
+	            mplapack_dd_opt_cuda) \
+	                pc_libs_private='$(QD_PC_LIBS_PRIVATE) $(CUDA_LIBS) -lcudart';; \
+	        esac;; \
+	esac; \
 	sed -e 's|@PC_PREFIX@|$(prefix)|g' \
 	    -e 's|@PC_LIBDIR@|$(libdir)|g' \
 	    -e 's|@PC_INCLUDEDIR@|$(includedir)/mplapack|g' \
@@ -303,25 +327,11 @@ $(MPLAPACK_PKGCONFIG_FILES): cmake/mplapack.pc.cmake.in
 	    -e "s|@PC_FLAVOR@|$$pc_flavor|g" \
 	    -e 's|@PC_DESCRIPTION@|$(PACKAGE_DESCRIPTION)|g' \
 	    -e 's|@PC_VERSION@|$(PACKAGE_VERSION)|g' \
-	    -e "s|@PC_REQUIRES@|$$(case $$pc_name in \
-		mplapack_mpfr|mplapack_mpfr_opt) echo 'mpc mpfr gmp';; \
-		mplapack_gmp|mplapack_gmp_opt) echo '$(GMP_PC_REQUIRES)';; \
-		mplapack_qd|mplapack_qd_opt|mplapack_dd|mplapack_dd_opt|mplapack_dd_opt_cuda) echo '$(QD_PC_REQUIRES)';; \
-		*) echo ;; esac)|g" \
-	    -e "s|@PC_REQUIRES_PRIVATE@|$$(case $$pc_name in *) echo ;; esac)|g" \
-	    -e "s|@PC_CFLAGS_EXTRA@|$$(case $$pc_name in \
-		mplapack_gmp|mplapack_gmp_opt) echo '$(GMP_PC_CFLAGS)';; \
-		mplapack_qd|mplapack_qd_opt|mplapack_dd|mplapack_dd_opt|mplapack_dd_opt_cuda) echo '$(QD_PC_CFLAGS)';; \
-		*) echo ;; esac)|g" \
-	    -e "s|@PC_LIBS_EXTRA@|$$(case $$pc_name in \
-		mplapack_gmp|mplapack_gmp_opt) echo '$(GMP_PC_LIBS)';; \
-		mplapack_qd|mplapack_qd_opt|mplapack_dd|mplapack_dd_opt|mplapack_dd_opt_cuda) echo '$(QD_PC_LIBS)';; \
-		*) echo ;; esac)|g" \
-	    -e "s|@PC_LIBS_PRIVATE@|$$(case $$pc_name in \
-		mplapack_mpfr_opt) echo '$(OPENMP_CXXFLAGS)';; \
-		mplapack_qd|mplapack_qd_opt|mplapack_dd|mplapack_dd_opt) echo '$(QD_PC_LIBS_PRIVATE)';; \
-		mplapack_dd_opt_cuda) echo '$(QD_PC_LIBS_PRIVATE) $(CUDA_LIBS) -lcudart';; \
-		*) echo ;; esac)|g" \
+	    -e "s|@PC_REQUIRES@|$$pc_requires|g" \
+	    -e "s|@PC_REQUIRES_PRIVATE@|$$pc_requires_private|g" \
+	    -e "s|@PC_CFLAGS_EXTRA@|$$pc_cflags_extra|g" \
+	    -e "s|@PC_LIBS_EXTRA@|$$pc_libs_extra|g" \
+	    -e "s|@PC_LIBS_PRIVATE@|$$pc_libs_private|g" \
 	    $(srcdir)/cmake/mplapack.pc.cmake.in > '$@'
 
 EXTRA_DIST = \
