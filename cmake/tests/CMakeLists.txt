@@ -92,6 +92,33 @@ function(mplapack_add_backend_runtime_tests flavor dependency)
     return()
   endif()
 
+  if(APPLE AND dependency STREQUAL "qd")
+    # Only the disposable build-tree loader needs the dependency build path.
+    get_filename_component(_dependency_dir "${QD_LIBRARY}" DIRECTORY)
+    add_executable("${_target}_load_probe"
+      "${PROJECT_SOURCE_DIR}/misc/check_shared_load.c")
+    set_target_properties("${_target}_load_probe" PROPERTIES
+      BUILD_RPATH "${_dependency_dir}")
+    add_test(NAME "${_target}_shared_clean_load"
+      COMMAND "${CMAKE_COMMAND}" -E env
+        --unset=DYLD_LIBRARY_PATH --unset=DYLD_FALLBACK_LIBRARY_PATH
+        --unset=DYLD_INSERT_LIBRARIES
+        "$<TARGET_FILE:${_target}_load_probe>" "$<TARGET_FILE:${_target}>")
+    add_executable("${_target}_installed_load_probe"
+      "${PROJECT_SOURCE_DIR}/misc/check_shared_load.c")
+    set_target_properties("${_target}_installed_load_probe" PROPERTIES
+      SKIP_BUILD_RPATH TRUE)
+    add_test(NAME "${_target}_installed_clean_load"
+      COMMAND "${CMAKE_COMMAND}" -E env
+        --unset=DYLD_LIBRARY_PATH --unset=DYLD_FALLBACK_LIBRARY_PATH
+        --unset=DYLD_INSERT_LIBRARIES
+        "$<TARGET_FILE:${_target}_installed_load_probe>"
+        "${_consume_install_prefix}/${CMAKE_INSTALL_LIBDIR}/$<TARGET_FILE_NAME:${_target}>")
+    set_tests_properties("${_target}_installed_clean_load" PROPERTIES
+      FIXTURES_REQUIRED "${_consume_install_fixture}")
+    return()
+  endif()
+
   find_package(Python3 COMPONENTS Interpreter QUIET)
   if(Python3_Interpreter_FOUND)
     set(_runtime_dirs "$<TARGET_FILE_DIR:${_target}>")

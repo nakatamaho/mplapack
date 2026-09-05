@@ -61,6 +61,11 @@ MPLAPACK_UNIQUE_SYMBOL_ARCHIVES += $(top_builddir)/mpblas/optimized/binary128/op
 endif
 endif
 
+QD_SHARED_LOAD = $(PYTHON3) $(top_srcdir)/misc/check_backend_shared_load.py
+if IS_MACOS
+QD_SHARED_LOAD = CC="$(CC)" $(SHELL) $(top_srcdir)/misc/check_macos_shared_load.sh $(top_srcdir)/misc/check_shared_load.c build "$(QD_LIBDIR)"
+endif
+
 check-local:
 	CXX="$(CXX)" NM="$(NM)" OBJDUMP="$(OBJDUMP)" \
 	  $(SHELL) $(top_srcdir)/misc/check_unique_symbols.sh $(MPLAPACK_UNIQUE_SYMBOL_ARCHIVES)
@@ -118,7 +123,7 @@ if ENABLE_QD
 				runtime_dirs="$(top_builddir)/mplapack/reference/.libs:$(top_builddir)/mpblas/optimized/qd/.libs:$(QD_LIBDIR)"; \
 				LD_LIBRARY_PATH="$$runtime_dirs$${LD_LIBRARY_PATH:+:$$LD_LIBRARY_PATH}" \
 				DYLD_LIBRARY_PATH="$$runtime_dirs$${DYLD_LIBRARY_PATH:+:$$DYLD_LIBRARY_PATH}" \
-				$(PYTHON3) $(top_srcdir)/misc/check_backend_shared_load.py "$$backend_lib" || exit $$?; \
+				$(QD_SHARED_LOAD) "$$backend_lib" || exit $$?; \
 				$(SHELL) $(top_srcdir)/misc/check_backend_elf_dependencies.sh "$$backend_lib" qd || test $$? -eq 77; \
 			fi; \
 		done
@@ -133,7 +138,7 @@ if ENABLE_DD
 				runtime_dirs="$(top_builddir)/mplapack/reference/.libs:$(top_builddir)/mpblas/optimized/dd/.libs:$(QD_LIBDIR)"; \
 				LD_LIBRARY_PATH="$$runtime_dirs$${LD_LIBRARY_PATH:+:$$LD_LIBRARY_PATH}" \
 				DYLD_LIBRARY_PATH="$$runtime_dirs$${DYLD_LIBRARY_PATH:+:$$DYLD_LIBRARY_PATH}" \
-				$(PYTHON3) $(top_srcdir)/misc/check_backend_shared_load.py "$$backend_lib" || exit $$?; \
+				$(QD_SHARED_LOAD) "$$backend_lib" || exit $$?; \
 				$(SHELL) $(top_srcdir)/misc/check_backend_elf_dependencies.sh "$$backend_lib" qd || test $$? -eq 77; \
 			fi; \
 		done
@@ -143,6 +148,22 @@ endif
 if ENABLE_TEST
 	$(SHELL) $(top_srcdir)/misc/check_backend_support_libraries.sh \
 	  $(top_builddir) $(top_srcdir) $(GMP_LIBDIR) $(QD_LIBDIR)
+endif
+
+# distcheck runs this after install. The installed probe has no build RPATH.
+if IS_MACOS
+installcheck-local:
+	@set -e; for flavor in qd dd; do \
+		for build_lib in \
+		  "$(top_builddir)/mplapack/reference/.libs/libmplapack_$$flavor.dylib" \
+		  "$(top_builddir)/mpblas/optimized/$$flavor/.libs/libmplapack_$${flavor}_opt.dylib"; do \
+			if test -f "$$build_lib"; then \
+				CC="$(CC)" $(SHELL) $(top_srcdir)/misc/check_macos_shared_load.sh \
+				  $(top_srcdir)/misc/check_shared_load.c installed "" \
+				  "$(DESTDIR)$(libdir)/$${build_lib##*/}"; \
+			fi; \
+		done; \
+	done
 endif
 
 mplapack_includedir = $(includedir)/mplapack
@@ -335,6 +356,8 @@ $(MPLAPACK_PKGCONFIG_FILES): cmake/mplapack.pc.cmake.in
 	    $(srcdir)/cmake/mplapack.pc.cmake.in > '$@'
 
 EXTRA_DIST = \
+misc/check_shared_load.c \
+misc/check_macos_shared_load.sh \
 cmake/mplapack.pc.cmake.in \
 cmake/tests/CMakeLists.txt \
 cmake/tests/consume/CMakeLists.txt \

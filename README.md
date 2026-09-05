@@ -331,6 +331,15 @@ be run with the temporary installation's library directories in the loader
 path; no consumer-side preloading or manually added MPFR dependency flags are
 required.
 
+On macOS, QD/DD shared-load QA uses a small native `dlopen()` probe. During
+`make check`, only that probe carries the bundled QD build directory as an
+RPATH; it neither links nor preloads QD. After `make install`, run
+`make installcheck` to load the installed reference and optimized libraries
+with a separate probe that has no build-directory RPATH or DYLD library
+overrides. `make distcheck` runs both stages automatically. CMake provides
+corresponding build-tree and installed-library tests. These checks do not
+add build-directory RPATHs to installed MPLAPACK libraries.
+
 ## Experimental CMake Build
 
 MPLAPACK also has an experimental CMake build. The autotools build above remains
