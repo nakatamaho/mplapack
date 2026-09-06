@@ -61,9 +61,10 @@ MPLAPACK_UNIQUE_SYMBOL_ARCHIVES += $(top_builddir)/mpblas/optimized/binary128/op
 endif
 endif
 
-QD_SHARED_LOAD = $(PYTHON3) $(top_srcdir)/misc/check_backend_shared_load.py
 if IS_MACOS
 QD_SHARED_LOAD = CC="$(CC)" $(SHELL) $(top_srcdir)/misc/check_macos_shared_load.sh $(top_srcdir)/misc/check_shared_load.c build "$(QD_LIBDIR)"
+else
+QD_SHARED_LOAD = $(PYTHON3) $(top_srcdir)/misc/check_backend_shared_load.py
 endif
 
 check-local:
