@@ -326,6 +326,7 @@ $(MPLAPACK_PKGCONFIG_FILES): cmake/mplapack.pc.cmake.in
 	case "$$pc_name" in \
 	    mplapack_mpfr|mplapack_mpfr_opt) \
 	        pc_requires='mpc mpfr gmp'; \
+	        pc_cflags_extra='$(GMP_PC_CFLAGS)'; \
 	        test "$$pc_name" = mplapack_mpfr_opt && pc_libs_private='$(OPENMP_CXXFLAGS)';; \
 	    mplapack_gmp|mplapack_gmp_opt) \
 	        pc_requires='$(GMP_PC_REQUIRES)'; \
