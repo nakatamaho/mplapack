@@ -391,6 +391,23 @@ fi
 
 AC_SUBST([OPENMP_CXXFLAGS])
 
+dnl AC_OPENMP provides compiler flags, but libtool uses -nostdlib when it
+dnl links shared libraries.  Keep the OpenMP runtime as a separate library
+dnl dependency so optimized shared libraries retain it in DT_NEEDED.
+OPENMP_LIBS=""
+case " $CXX $OPENMP_CXXFLAGS " in
+    *" icpx "*|*" icx "*|* -qopenmp "*)
+        OPENMP_LIBS="-liomp5"
+        ;;
+    *" clang++ "*|*" clang "*)
+        OPENMP_LIBS="-lomp"
+        ;;
+    *" -fopenmp "*)
+        OPENMP_LIBS="-lgomp"
+        ;;
+esac
+AC_SUBST([OPENMP_LIBS])
+
 dnl Checking host name
 AC_CANONICAL_HOST
 IS_MINGW=0
@@ -2661,6 +2678,7 @@ esac
 AC_MSG_NOTICE([OpenMP:            $OPENMP_STATUS])
 if test "x$OPENMP_STATUS" = "xenabled"; then
   AC_MSG_NOTICE([  C++ flags:      $OPENMP_CXXFLAGS])
+  AC_MSG_NOTICE([  Libraries:      $OPENMP_LIBS])
   AC_MSG_NOTICE([  Runtime:        $OPENMP_RUNTIME])
 fi
 AC_MSG_NOTICE([])

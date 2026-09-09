@@ -90,8 +90,8 @@ Raxpy.cpp Raxpy_ref.cpp openmp/Raxpy_omp.cpp \
 $(MPLAPACK_OPT_REFERENCE_SOURCES) \
 $(MPLAPACK_QD_OPTIMIZED_SOURCES)
 
-libmplapack_qd_opt_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO) -Wl,-rpath,$(libdir) $(OPENMP_CXXFLAGS)
-libmplapack_qd_opt_la_LIBADD = $(QD_LIBADD)
+libmplapack_qd_opt_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO) -Wl,-rpath,$(libdir)
+libmplapack_qd_opt_la_LIBADD = $(QD_LIBADD) $(OPENMP_LIBS)
 if IS_MACOS
 libmplapack_qd_opt_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif

@@ -327,7 +327,7 @@ $(MPLAPACK_PKGCONFIG_FILES): cmake/mplapack.pc.cmake.in
 	    mplapack_mpfr|mplapack_mpfr_opt) \
 	        pc_requires='mpc mpfr gmp'; \
 	        pc_cflags_extra='$(GMP_PC_CFLAGS)'; \
-	        test "$$pc_name" = mplapack_mpfr_opt && pc_libs_private='$(OPENMP_CXXFLAGS)';; \
+	        ;; \
 	    mplapack_gmp|mplapack_gmp_opt) \
 	        pc_requires='$(GMP_PC_REQUIRES)'; \
 	        pc_cflags_extra='$(GMP_PC_CFLAGS)'; \
@@ -342,6 +342,9 @@ $(MPLAPACK_PKGCONFIG_FILES): cmake/mplapack.pc.cmake.in
 	            mplapack_dd_opt_cuda) \
 	                pc_libs_private='$(QD_PC_LIBS_PRIVATE) $(CUDA_LIBS) -lcudart';; \
 	        esac;; \
+	esac; \
+	case "$$pc_name" in \
+	    *_opt|*_opt_cuda|*_opt_opencl) pc_libs_private="$$pc_libs_private $(OPENMP_LIBS)";; \
 	esac; \
 	sed -e 's|@PC_PREFIX@|$(prefix)|g' \
 	    -e 's|@PC_LIBDIR@|$(libdir)|g' \
