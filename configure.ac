@@ -396,7 +396,7 @@ dnl links shared libraries.  Keep the OpenMP runtime as a separate library
 dnl dependency so optimized shared libraries retain it in DT_NEEDED.
 OPENMP_LIBS=""
 case " $CXX $OPENMP_CXXFLAGS " in
-    *" icpx "*|*" icx "*|* -qopenmp "*)
+    *" icpx "*|*" icx "*|*" -qopenmp "*)
         OPENMP_LIBS="-liomp5"
         ;;
     *" clang++ "*|*" clang "*)
