@@ -1,0 +1,40 @@
+=== precision: gmp ===
+ L Loop Index =            1
+ M = 
+          10
+ N = 
+           5
+ L Loop Index =            2
+ M = 
+          20
+ N = 
+          10
+ L Loop Index =            3
+ M = 
+          30
+ N = 
+          11
+ L Loop Index =            4
+ M = 
+          50
+ N = 
+          20
+ >>>>>>>>>>>>>>>>>>>>>>>>>>
+  Test summary for Rgedmd :
+ >>>>>>>>>>>>>>>>>>>>>>>>>>
+ 
+ >>>> Z - U*V test PASSED.
+ >>>> A*U test PASSED. 
+ >>>> Rezidual computation test PASSED.
+ >>>> Rgedmd :: ALL TESTS PASSED.
+ 
+ >>>>>>>>>>>>>>>>>>>>>>>>>>
+  Test summary for Rgedmdq :
+ >>>>>>>>>>>>>>>>>>>>>>>>>>
+ 
+ >>>> Rgedmd and Rgedmdq computed singularvalues test PASSED.
+ >>>> F - Q*R test PASSED.
+ >>>> Rezidual computation test PASSED.
+ >>>>>>> Rgedmdq :: ALL TESTS PASSED.
+ 
+ Test completed.

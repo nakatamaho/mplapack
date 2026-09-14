@@ -8,6 +8,16 @@ BSD-style license, supplemental to the original LAPACK license.
 
 # News
 
+* 2026-09-15  MPLAPACK 3.0.1 has been released. Available from
+  <https://github.com/nakatamaho/mplapack/releases/tag/v3.0.1>. This patch
+  release fixes shared and static dependency metadata for the MPFR, GMP, QD,
+  and DD backends across Autotools, CMake, libtool, and pkg-config, and fixes
+  precision-header packaging and OpenMP/CMake/macOS release-build issues.
+  Tier1 completed 12/12 jobs, Tier3 completed 2/2 jobs, and Ubuntu 24.04
+  amd64/arm64 tarball smoke builds completed. See
+  [CHANGES.3.0.1.md](CHANGES.3.0.1.md) and
+  [doc/Release3.0.1.md](doc/Release3.0.1.md).
+
 * 2026-08-29  MPLAPACK 3.0.0 has been released. Available from
   <https://github.com/nakatamaho/mplapack/releases/tag/v3.0.0>. This release
   completes the GMP/MPFR C++ wrapper migration to `gmpfrxx_mkII`, refreshes the
