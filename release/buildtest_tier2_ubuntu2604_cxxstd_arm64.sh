@@ -60,13 +60,13 @@ safe_rmdir() {
     esac
 }
 
-: "${MPLAPACK_REMOTE_WORKDIR:=${HOME}/tmp/mplapack-tier3-ubuntu2604-cxxstd-arm64}"
+: "${MPLAPACK_REMOTE_WORKDIR:=${HOME}/tmp/mplapack-tier2-ubuntu2604-cxxstd-arm64}"
 : "${MPLAPACK_REF:=master}"
 : "${MPLAPACK_DISTRO_VERSION:=26.04}"
 : "${MPLAPACK_DOCKER_BASE:=ubuntu:${MPLAPACK_DISTRO_VERSION}}"
-: "${MPLAPACK_DOCKERFILE:=release/docker/tier3/Dockerfile.ubuntu-cxxstd}"
+: "${MPLAPACK_DOCKERFILE:=release/docker/tier2/Dockerfile.ubuntu-cxxstd}"
 : "${MPLAPACK_DOCKER_CONTEXT:=release/docker}"
-: "${MPLAPACK_IMAGE_TAG:=mplapack-tier3-ubuntu2604-cxxstd-arm64:latest}"
+: "${MPLAPACK_IMAGE_TAG:=mplapack-tier2-ubuntu2604-cxxstd-arm64:latest}"
 : "${MPLAPACK_CCACHE_DIR:=/Users/maho/.ccache}"
 : "${MPLAPACK_CCACHE_MAXSIZE:=80G}"
 : "${MPLAPACK_COLIMA_CPUS:=$(sysctl -n hw.ncpu 2>/dev/null || echo 10)}"
@@ -97,7 +97,7 @@ else
     old_pid=""
     [ -f "${LOCKDIR}/pid" ] && old_pid="$(cat "${LOCKDIR}/pid" 2>/dev/null || true)"
     if [ -n "${old_pid}" ] && [ "${old_pid}" != "$$" ] && kill -0 "${old_pid}" 2>/dev/null; then
-        log "Another tier3-ubuntu2604-cxxstd-arm64 build is running (pid: ${old_pid}); stopping it."
+        log "Another tier2-ubuntu2604-cxxstd-arm64 build is running (pid: ${old_pid}); stopping it."
         kill "${old_pid}" 2>/dev/null || true
         for _wait_i in $(seq 1 60); do
             kill -0 "${old_pid}" 2>/dev/null || break
@@ -236,4 +236,4 @@ fi
 
 log_ccache_end_once
 
-log "=== ALL TIER3 DOCKER BUILD STEPS COMPLETED SUCCESSFULLY ==="
+log "=== ALL TIER2 DOCKER BUILD STEPS COMPLETED SUCCESSFULLY ==="

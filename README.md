@@ -119,11 +119,25 @@ BSD-style license, supplemental to the original LAPACK license.
 
 | Tier | Guarantee | Platforms |
 |---|---|---|
-| **Tier 1** | Dedicated release `buildtest` target; `make distcheck` + full test suite | macOS 15/26 (amd64/arm64), Ubuntu 24.04/26.04 (amd64/arm64), Windows / MinGW-w64 via Ubuntu 24.04/26.04 (amd64), Ubuntu 24.04/26.04 Intel oneAPI (amd64), Debian 12/13 i386 |
-| **Tier 2** | Docker branch build matrix coverage via `make tier2`; no dedicated release `buildtest` target | Other Debian/Ubuntu architectures and versions, Alpine Linux 3.19–3.23, Rocky Linux 8/9/10, Fedora 42/43, openSUSE Leap 15.6/16.0, openSUSE Tumbleweed |
-| **Tier 3** | Build-only Docker coverage for selected non-release-gating checks via `make tier3`; otherwise patches accepted | Ubuntu 26.04 amd64 C++ standard variants; other platforms |
+| **Tier 1** | Dedicated release `buildtest` target; buildability, `make distcheck`, and full test suite | macOS 15/26 (amd64/arm64), Ubuntu 24.04/26.04 (amd64/arm64), Windows / MinGW-w64 via Ubuntu 24.04/26.04 (amd64), Ubuntu 24.04/26.04 Intel oneAPI (amd64), Debian 12/13 i386 |
+| **Tier 2** | Release-tarball smoke build and C++ standard buildability; no numerical QA | Ubuntu 24.04 tarball builds (amd64/arm64) and Ubuntu 26.04 C++ standard builds (amd64/arm64) |
+| **Tier 3** | Other Docker/ref-matrix buildability; initially partial and non-gating | Other Debian/Ubuntu architectures and versions, Alpine Linux 3.19–3.23, Rocky Linux 8/9/10, Fedora 42/43, openSUSE Leap 15.6/16.0, openSUSE Tumbleweed |
 
-Release test targets are run from `release/`. `make tier1` runs dedicated remote buildtests; `make tier2` runs the Docker branch matrix entries from `release/build-matrix.conf`; `make tier3` runs build-only non-release-gating checks.
+Release test targets are run from `release/`. `make tier1` runs the dedicated
+remote buildtests, while `make tier2` runs the release-tarball smoke tests and
+C++ standard buildability checks. `make tier3` runs the other Docker/ref-matrix
+buildability checks; `make tier3-partial` runs the initial partial subset.
+
+The release criterion is that Tier 1 and Tier 2 pass. Tier 3 is initially a
+post-release, partial, non-gating check; partial Tier 3 coverage is the first
+additional criterion planned for the next release. This policy is used for the
+3.0.1 release and subsequent releases.
+
+Patch-release numbering distinguishes the release scope. Odd patch releases
+(`x.y.1`, `x.y.3`, `x.y.5`, `x.y.7`, and `x.y.9`) are supplemental releases and
+include accumulated Tier 3 patches. Even patch releases (`x.y.2`, `x.y.4`,
+`x.y.6`, and `x.y.8`) do not include Tier 3 patches. Before the next release,
+partial Tier 3 coverage is run first as the first additional QA criterion.
 
 | Tier | Make target | OS | CPU | Host | Backend |
 |---|---|---|---|---|---|
@@ -139,8 +153,8 @@ Release test targets are run from `release/`. `make tier1` runs dedicated remote
 | Tier 1 | `tier1-ubuntu2604-inteloneapi-amd64` | Ubuntu 26.04 | amd64 | `172.27.109.80` | Docker + Intel oneAPI |
 | Tier 1 | `tier1-debian12-i386` | Debian 12 | i386 | `172.27.109.80` | Docker |
 | Tier 1 | `tier1-debian13-i386` | Debian 13 | i386 | `172.27.109.80` | Docker |
-| Tier 3 | `tier3-ubuntu2604-cxxstd-arm64` | Ubuntu 26.04 | arm64 | `172.27.109.40` | Docker/Colima build-only |
-| Tier 3 | `tier3-ubuntu2604-cxxstd-amd64` | Ubuntu 26.04 | amd64 | `172.27.109.80` | Docker build-only |
+| Tier 2 | `tier2-ubuntu2604-cxxstd-arm64` | Ubuntu 26.04 | arm64 | `172.27.109.40` | Docker/Colima build-only |
+| Tier 2 | `tier2-ubuntu2604-cxxstd-amd64` | Ubuntu 26.04 | amd64 | `172.27.109.80` | Docker build-only |
 
 Dedicated release buildtest scripts are in `release/`:
 ```
@@ -151,8 +165,8 @@ release/buildtest_tier1_ubuntu_amd64.sh
 release/buildtest_tier1_ubuntu_arm64.sh
 release/buildtest_tier1_ubuntu_inteloneapi_amd64.sh
 release/buildtest_tier1_debian_i386.sh
-release/buildtest_tier3_ubuntu2604_cxxstd_arm64.sh
-release/buildtest_tier3_ubuntu2604_cxxstd_amd64.sh
+release/buildtest_tier2_ubuntu2604_cxxstd_arm64.sh
+release/buildtest_tier2_ubuntu2604_cxxstd_amd64.sh
 ```
 
 # How to Build and Install
@@ -543,9 +557,9 @@ See [CHANGES.2.2.1.md](CHANGES.2.2.1.md) for the full change summary.
   Ubuntu 18/20/22 stay on the `libquadmath` path for their full support
   window — `libquadmath` support cannot be dropped yet.
 
-## MPLAPACK 2.1.0 Release Process
+## Historical MPLAPACK 2.1.0 Release Process
 
-### Tier-S Representative Gate Matrix (Release Blockers)
+### Historical Tier-S Representative Gate Matrix
 
 Tier 1 platforms run the full pipeline including `make distcheck`. Tier 2 platforms run the Docker branch matrix from `release/build-matrix.conf`.
 
@@ -563,11 +577,11 @@ Tier 1 platforms run the full pipeline including `make distcheck`. Tier 2 platfo
 | 10 | 2 | Debian 12/13 | ppc64le, s390x, riscv64, mips64le | GCC | N/A | ✅ | build only | - |
 | 11 | 2 | Debian 13 | amd64 | GCC | ✅ | ✅ | build only | - |
 
-### Tier Policy
+### Historical Tier Policy
 
-> **Tier 1 (release blockers):** `make distcheck` must pass on all Tier 1 platforms.
-> **Tier 2 (matrix coverage):** Docker branch build matrix coverage; not release-blocking.
-> **Tier 3 (patches accepted):** no CI coverage.
+The tier policy in this section was used for the 2.1.0 release and is retained
+for historical reference. See [Supported Platforms](#supported-platforms) for
+the current policy and release criteria.
 
 #### CPU Architecture Tiers
 

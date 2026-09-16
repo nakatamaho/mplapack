@@ -539,8 +539,8 @@ release/buildtest_tier1_ubuntu_amd64.sh \
 release/buildtest_tier1_ubuntu_inteloneapi_amd64.sh \
 release/buildtest_tier1_ubuntu_arm64.sh \
 release/buildtest_tier1_debian_i386.sh \
-release/buildtest_tier3_ubuntu2604_cxxstd_arm64.sh \
-release/buildtest_tier3_ubuntu2604_cxxstd_amd64.sh \
+release/buildtest_tier2_ubuntu2604_cxxstd_arm64.sh \
+release/buildtest_tier2_ubuntu2604_cxxstd_amd64.sh \
 release/check-installed-benchmarks.sh \
 release/check-installed-examples.sh \
 release/docker/common/entrypoint.sh \
@@ -566,8 +566,8 @@ release/docker/matrix/Dockerfile.suse \
 release/docker/matrix/run-ubuntu-intel-build.sh \
 release/docker/matrix/run-ubuntu-mingw64-build.sh \
 release/docker/tarball/Dockerfile.ubuntu \
-release/docker/tier3/Dockerfile.ubuntu-cxxstd \
-release/docker/tier3/run-ubuntu-cxxstd-build.sh \
+release/docker/tier2/Dockerfile.ubuntu-cxxstd \
+release/docker/tier2/run-ubuntu-cxxstd-build.sh \
 release/dist-cache.sh \
 release/make-source-snapshot.sh \
 release/run-remote-linux-docker.sh \

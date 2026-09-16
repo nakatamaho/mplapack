@@ -1,5 +1,5 @@
 # Dockerfile.ubuntu-cxxstd
-# Ubuntu build-only environment for Tier 3 C++ standard coverage.
+# Ubuntu build-only environment for Tier 2 C++ standard coverage.
 ARG BASE=ubuntu:26.04
 FROM ${BASE}
 
@@ -31,6 +31,6 @@ ENV MPLAPACK_REPO=https://github.com/nakatamaho/mplapack.git
 ENV MPLAPACK_REF="master"
 
 WORKDIR /work
-COPY tier3/run-ubuntu-cxxstd-build.sh /run-ubuntu-cxxstd-build.sh
+COPY tier2/run-ubuntu-cxxstd-build.sh /run-ubuntu-cxxstd-build.sh
 RUN chmod +x /run-ubuntu-cxxstd-build.sh
 CMD ["/run-ubuntu-cxxstd-build.sh"]
