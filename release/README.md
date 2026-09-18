@@ -33,7 +33,9 @@ name|base_image|archs|dockerfile|source_type
 - `tarball`: Build from release tarball (no autoreconf)
 
 Tier 1 targets run the dedicated release buildtest and full QA. Tier 2 runs
-release-tarball smoke builds plus the C++ standard buildability checks. Tier 3
+the release-tarball smoke builds plus the C++ standard buildability checks. The
+tarball rows in `build-matrix.conf` are the two
+`tier2-ubuntu2404-tarball-*` targets. Tier 3
 runs the other Docker/ref-matrix buildability checks and is initially a partial,
 non-gating post-release check.
 
@@ -150,7 +152,9 @@ make tier3
 make tier3-partial
 ```
 
-`make tarball` runs remote tarball Docker rows in parallel after the tarball is created.
+`make tarball` runs the Tier 2 remote tarball Docker rows in parallel after the
+tarball is created. It remains available as a standalone tarball smoke-test
+target; `make tier2` runs this phase together with the C++ standard checks.
 
 ### Testing Existing Tarball
 
@@ -256,8 +260,8 @@ cuda130-ubuntu24|nvidia/cuda:13.0.0-devel-ubuntu24.04|linux/amd64|matrix/Dockerf
 
 # Remote tarball Docker rows:
 # name|host|target_dir|dockerfile|command|remote-tarball-docker|docker_base|arch|ccache_dir|ccache_maxsize
-tarball-ubuntu24|172.27.109.80|/home/maho/tmp/mplapack-tarball-ubuntu2404-amd64|tarball/Dockerfile.ubuntu|bash|remote-tarball-docker|ubuntu:24.04|linux/amd64|/home/maho/.ccache|200G
-tarball-ubuntu24|172.27.109.40|/Users/maho/tmp/mplapack-tarball-ubuntu2404-arm64|tarball/Dockerfile.ubuntu|bash|remote-tarball-docker|ubuntu:24.04|linux/arm64|/Users/maho/.ccache|80G
+tier2-ubuntu2404-tarball-amd64|172.27.109.80|/home/maho/tmp/mplapack-tarball-ubuntu2404-amd64|tarball/Dockerfile.ubuntu|bash|remote-tarball-docker|ubuntu:24.04|linux/amd64|/home/maho/.ccache|200G
+tier2-ubuntu2404-tarball-arm64|172.27.109.40|/Users/maho/tmp/mplapack-tarball-ubuntu2404-arm64|tarball/Dockerfile.ubuntu|bash|remote-tarball-docker|ubuntu:24.04|linux/arm64|/Users/maho/.ccache|80G
 ```
 
 Create corresponding Dockerfile under `release/docker/matrix/`, `release/docker/distcheck/`, or `release/docker/tarball/` as appropriate. Matrix rows use paths relative to `release/docker/`.

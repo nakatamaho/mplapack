@@ -157,6 +157,8 @@ partial Tier 3 coverage is run first as the first additional QA criterion.
 | Tier 1 | `tier1-debian13-i386` | Debian 13 | i386 | `172.27.109.80` | Docker |
 | Tier 2 | `tier2-ubuntu2604-cxxstd-arm64` | Ubuntu 26.04 | arm64 | `172.27.109.40` | Docker/Colima build-only |
 | Tier 2 | `tier2-ubuntu2604-cxxstd-amd64` | Ubuntu 26.04 | amd64 | `172.27.109.80` | Docker build-only |
+| Tier 2 | `tier2-ubuntu2404-tarball-arm64` | Ubuntu 24.04 release tarball | arm64 | `172.27.109.40` | Docker/Colima build-only |
+| Tier 2 | `tier2-ubuntu2404-tarball-amd64` | Ubuntu 24.04 release tarball | amd64 | `172.27.109.80` | Docker build-only |
 
 Dedicated release buildtest scripts are in `release/`:
 ```
