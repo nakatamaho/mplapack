@@ -16,7 +16,9 @@ BSD-style license, supplemental to the original LAPACK license.
   Tier1 completed 12/12 jobs, Tier3 completed 2/2 jobs, and Ubuntu 24.04
   amd64/arm64 tarball smoke builds completed. See
   [CHANGES.3.0.1.md](CHANGES.3.0.1.md) and
-  [doc/Release3.0.1.md](doc/Release3.0.1.md).
+  [doc/Release3.0.1.md](doc/Release3.0.1.md). MPLAPACK 3.0.1 can now be
+  used with the [octave-mplapack](https://github.com/nakatamaho/octave-mplapack)
+  interoperability layer.
 
 * 2026-08-29  MPLAPACK 3.0.0 has been released. Available from
   <https://github.com/nakatamaho/mplapack/releases/tag/v3.0.0>. This release
