@@ -32,5 +32,7 @@ ENV MPLAPACK_REF="master"
 
 WORKDIR /work
 COPY tier2/run-ubuntu-cxxstd-build.sh /run-ubuntu-cxxstd-build.sh
+COPY common/checkout-source.sh /usr/local/bin/checkout-source.sh
 RUN chmod +x /run-ubuntu-cxxstd-build.sh
+RUN chmod +x /usr/local/bin/checkout-source.sh
 CMD ["/run-ubuntu-cxxstd-build.sh"]

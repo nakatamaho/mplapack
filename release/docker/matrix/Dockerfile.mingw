@@ -18,5 +18,7 @@ ENV MPLAPACK_REF="master"
 
 WORKDIR /work
 COPY matrix/run-ubuntu-mingw64-build.sh /run-ubuntu-mingw64-build.sh
+COPY common/checkout-source.sh /usr/local/bin/checkout-source.sh
 RUN chmod +x /run-ubuntu-mingw64-build.sh
+RUN chmod +x /usr/local/bin/checkout-source.sh
 CMD ["/run-ubuntu-mingw64-build.sh"]

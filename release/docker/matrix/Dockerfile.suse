@@ -54,6 +54,8 @@ ENV MPLAPACK_REPO=https://github.com/nakatamaho/mplapack.git
 ENV MPLAPACK_REF="master"
 
 WORKDIR /work
+COPY common/checkout-source.sh /usr/local/bin/checkout-source.sh
+RUN chmod +x /usr/local/bin/checkout-source.sh
 
 CMD ["/bin/bash", "-lc", "\
 set -euxo pipefail; \
@@ -61,12 +63,7 @@ echo '=== ccache stats (before) ==='; ccache -s; \
 \
 # Fresh checkout every run \
 rm -rf /work/mplapack; \
-git clone --depth 1 --branch \"$MPLAPACK_REF\" \"$MPLAPACK_REPO\" /work/mplapack || { \
-  # If shallow clone fails, clone then checkout the requested ref \
-  git clone \"$MPLAPACK_REPO\" /work/mplapack; \
-  cd /work/mplapack; \
-  git checkout \"$MPLAPACK_REF\"; \
-}; \
+/usr/local/bin/checkout-source.sh \"$MPLAPACK_REPO\" \"$MPLAPACK_REF\" /work/mplapack; \
 cd /work/mplapack; \
 git log -1; \
 \

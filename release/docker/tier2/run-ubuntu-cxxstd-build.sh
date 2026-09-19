@@ -22,15 +22,9 @@ prepare_source() {
         SOURCE_KIND=tarball
         echo "Using source tarball: ${MPLAPACK_SOURCE_TARBALL}"
     elif [ -f "${MPLAPACK_REPO}" ]; then
-        git clone --no-checkout "${MPLAPACK_REPO}" /work/mplapack-source
-        cd /work/mplapack-source
-        git checkout "${MPLAPACK_REF}"
+        /usr/local/bin/checkout-source.sh "${MPLAPACK_REPO}" "${MPLAPACK_REF}" /work/mplapack-source
     else
-        git clone --depth 1 --branch "${MPLAPACK_REF}" "${MPLAPACK_REPO}" /work/mplapack-source || {
-            git clone "${MPLAPACK_REPO}" /work/mplapack-source
-            cd /work/mplapack-source
-            git checkout "${MPLAPACK_REF}"
-        }
+        /usr/local/bin/checkout-source.sh "${MPLAPACK_REPO}" "${MPLAPACK_REF}" /work/mplapack-source
     fi
     cd /work/mplapack-source
     if [ "${SOURCE_KIND}" = "git" ]; then

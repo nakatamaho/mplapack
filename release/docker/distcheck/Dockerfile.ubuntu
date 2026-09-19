@@ -30,5 +30,7 @@ ENV MPLAPACK_REPO=https://github.com/nakatamaho/mplapack.git
 ENV MPLAPACK_REF="master"
 WORKDIR /work
 COPY distcheck/run-ubuntu-distcheck.sh /run-ubuntu-distcheck.sh
+COPY common/checkout-source.sh /usr/local/bin/checkout-source.sh
 RUN chmod +x /run-ubuntu-distcheck.sh
+RUN chmod +x /usr/local/bin/checkout-source.sh
 CMD ["/run-ubuntu-distcheck.sh"]

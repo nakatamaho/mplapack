@@ -43,18 +43,8 @@ if [ -n "${MPLAPACK_SOURCE_TARBALL:-}" ]; then
     SOURCE_KIND=tarball
     echo "Using source tarball: ${MPLAPACK_SOURCE_TARBALL}"
 else
-    if [ -f "$MPLAPACK_REPO" ]; then
-        git clone --no-checkout "$MPLAPACK_REPO" /work/mplapack
-        cd /work/mplapack
-        git checkout "$MPLAPACK_REF"
-    else
-        git clone --depth 1 --branch "$MPLAPACK_REF" "$MPLAPACK_REPO" /work/mplapack || {
-            git clone "$MPLAPACK_REPO" /work/mplapack
-            cd /work/mplapack
-            git checkout "$MPLAPACK_REF"
-        }
-        cd /work/mplapack
-    fi
+    /usr/local/bin/checkout-source.sh "$MPLAPACK_REPO" "$MPLAPACK_REF" /work/mplapack
+    cd /work/mplapack
     git log -1
 fi
 

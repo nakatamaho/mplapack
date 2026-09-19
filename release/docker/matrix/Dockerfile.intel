@@ -16,5 +16,7 @@ ENV MPLAPACK_REF="master"
 
 WORKDIR /work
 COPY matrix/run-ubuntu-intel-build.sh /run-ubuntu-intel-build.sh
+COPY common/checkout-source.sh /usr/local/bin/checkout-source.sh
 RUN chmod +x /run-ubuntu-intel-build.sh
+RUN chmod +x /usr/local/bin/checkout-source.sh
 CMD ["/run-ubuntu-intel-build.sh"]
