@@ -22,15 +22,9 @@ prepare_source() {
         SOURCE_KIND=tarball
         echo "Using source tarball: ${MPLAPACK_SOURCE_TARBALL}"
     elif [ -f "${MPLAPACK_REPO}" ]; then
-        git clone --no-checkout "${MPLAPACK_REPO}" /work/mplapack-source
-        cd /work/mplapack-source
-        git checkout "${MPLAPACK_REF}"
+        /usr/local/bin/checkout-source.sh "${MPLAPACK_REPO}" "${MPLAPACK_REF}" /work/mplapack-source
     else
-        git clone --depth 1 --branch "${MPLAPACK_REF}" "${MPLAPACK_REPO}" /work/mplapack-source || {
-            git clone "${MPLAPACK_REPO}" /work/mplapack-source
-            cd /work/mplapack-source
-            git checkout "${MPLAPACK_REF}"
-        }
+        /usr/local/bin/checkout-source.sh "${MPLAPACK_REPO}" "${MPLAPACK_REF}" /work/mplapack-source
     fi
     cd /work/mplapack-source
     if [ "${SOURCE_KIND}" = "git" ]; then
@@ -46,10 +40,10 @@ ccache -s || true
 
 prepare_source
 
-RECONFIG_SCRIPTS="${MPLAPACK_TIER3_RECONFIG_SCRIPTS:-misc/reconfig.ubuntu26.04.c++17.sh misc/reconfig.ubuntu26.04.c++20.sh misc/reconfig.ubuntu26.04.c++23.sh misc/reconfig.ubuntu26.04.c++26.sh misc/reconfig.ubuntu26.04.gnuc++20.sh misc/reconfig.ubuntu26.04.gnuc++23.sh misc/reconfig.ubuntu26.04.gnuc++26.sh}"
+RECONFIG_SCRIPTS="${MPLAPACK_TIER2_RECONFIG_SCRIPTS:-misc/reconfig.ubuntu26.04.c++17.sh misc/reconfig.ubuntu26.04.c++20.sh misc/reconfig.ubuntu26.04.c++23.sh misc/reconfig.ubuntu26.04.c++26.sh misc/reconfig.ubuntu26.04.gnuc++20.sh misc/reconfig.ubuntu26.04.gnuc++23.sh misc/reconfig.ubuntu26.04.gnuc++26.sh}"
 
 for reconfig_script in ${RECONFIG_SCRIPTS}; do
-    echo "=== TIER3 BUILD START: ${reconfig_script} ==="
+    echo "=== TIER2 BUILD START: ${reconfig_script} ==="
     rm -rf /work/mplapack
     mkdir -p /work/mplapack
     cp -a /work/mplapack-source/. /work/mplapack/
@@ -57,9 +51,9 @@ for reconfig_script in ${RECONFIG_SCRIPTS}; do
     test -f "${reconfig_script}"
     bash -x "${reconfig_script}"
     make -j"${MAKE_JOBS}"
-    echo "=== TIER3 BUILD OK: ${reconfig_script} ==="
+    echo "=== TIER2 BUILD OK: ${reconfig_script} ==="
 done
 
 echo '=== ccache stats (after) ==='
 ccache -s || true
-echo "=== ALL TIER3 C++ STANDARD BUILDS COMPLETED SUCCESSFULLY ==="
+echo "=== ALL TIER2 C++ STANDARD BUILDS COMPLETED SUCCESSFULLY ==="

@@ -10,6 +10,9 @@ cd release/
 # Full test cycle (ref → make dist → tarball)
 make
 
+# Release-gating checks (Tier 1 + Tier 2)
+make release-gate
+
 # Git ref matrix builds only
 make ref
 
@@ -29,7 +32,35 @@ name|base_image|archs|dockerfile|source_type
 - `ref`: Build from `MPLAPACK_REF` git ref (requires autoreconf)
 - `tarball`: Build from release tarball (no autoreconf)
 
-Docker matrix entries are build-only checks; dedicated Tier 1 targets run `make distcheck`.
+Tier 1 targets run the dedicated release buildtest and full QA. Tier 2 runs
+the release-tarball smoke builds plus the C++ standard buildability checks. The
+tarball rows in `build-matrix.conf` are the two
+`tier2-ubuntu2404-tarball-*` targets. Tier 3
+runs the other Docker/ref-matrix buildability checks and is initially a partial,
+non-gating post-release check.
+
+The release criterion is that Tier 1 and Tier 2 pass. For the next release,
+partial Tier 3 coverage is the first additional criterion.
+
+Patch-release numbering distinguishes the release scope. Odd patch releases
+(`x.y.1`, `x.y.3`, `x.y.5`, `x.y.7`, and `x.y.9`) are supplemental releases and
+include accumulated Tier 3 patches. Even patch releases (`x.y.2`, `x.y.4`,
+`x.y.6`, and `x.y.8`) do not include Tier 3 patches. Before the next release,
+run partial Tier 3 coverage first as the first additional QA criterion.
+
+## QA Policy
+
+The policy is intentionally split by purpose:
+
+- **Tier 1:** dedicated remote buildtests; buildability, `make distcheck`, and
+  the full numerical QA suite. This remains release-gating.
+- **Tier 2:** release-tarball smoke builds and Ubuntu 26.04 C++ standard
+  buildability. This is buildability-only and release-gating.
+- **Tier 3:** the remaining Docker/ref matrix. This is buildability-only,
+  initially partial, and not release-gating. Use `make tier3-partial` for the
+  initial subset and `make tier3` for the full remaining matrix.
+
+The policy applies to the 3.0.1 supplemental release and subsequent releases.
 
 ### Supported Configurations
 
@@ -66,6 +97,10 @@ This runs:
 2. `make dist` to generate tarball
 3. Tarball tests on all configurations
 
+For the release criterion, use `make release-gate`, which runs Tier 1 and then
+Tier 2. The Tier 2 target uses the generated release tarball unless an explicit
+`TARBALL=/path/to/mplapack-x.y.z.tar.xz` is supplied.
+
 ### Filtered Runs
 
 ```bash
@@ -89,7 +124,7 @@ make tier1
 make tier1-macos
 make tier1-linux
 
-# Tier 2 Docker matrix tests
+# Tier 2 release-gating tests: tarball + C++ standard buildability
 make tier2
 make tier1-macos-amd64   # SSH to macOS amd64 host and run Tier 1 buildtest
 make tier1-macos-arm64   # SSH to macOS arm64 host and run Tier 1 buildtest
@@ -109,9 +144,17 @@ make ref-cuda
 make tarball-ubuntu
 make tarball-amd64   # runs the amd64 tarball smoke test on 172.27.109.80 Docker
 make tarball-arm64   # runs the arm64 tarball smoke test on 172.27.109.40 Docker/Colima
+
+# Tier 3 other Docker/ref-matrix buildability (initially partial/non-gating)
+make tier3
+
+# First partial Tier 3 check for the next release (Ubuntu amd64 by default)
+make tier3-partial
 ```
 
-`make tarball` runs remote tarball Docker rows in parallel after the tarball is created.
+`make tarball` runs the Tier 2 remote tarball Docker rows in parallel after the
+tarball is created. It remains available as a standalone tarball smoke-test
+target; `make tier2` runs this phase together with the C++ standard checks.
 
 ### Testing Existing Tarball
 
@@ -217,8 +260,8 @@ cuda130-ubuntu24|nvidia/cuda:13.0.0-devel-ubuntu24.04|linux/amd64|matrix/Dockerf
 
 # Remote tarball Docker rows:
 # name|host|target_dir|dockerfile|command|remote-tarball-docker|docker_base|arch|ccache_dir|ccache_maxsize
-tarball-ubuntu24|172.27.109.80|/home/maho/tmp/mplapack-tarball-ubuntu2404-amd64|tarball/Dockerfile.ubuntu|bash|remote-tarball-docker|ubuntu:24.04|linux/amd64|/home/maho/.ccache|200G
-tarball-ubuntu24|172.27.109.40|/Users/maho/tmp/mplapack-tarball-ubuntu2404-arm64|tarball/Dockerfile.ubuntu|bash|remote-tarball-docker|ubuntu:24.04|linux/arm64|/Users/maho/.ccache|80G
+tier2-ubuntu2404-tarball-amd64|172.27.109.80|/home/maho/tmp/mplapack-tarball-ubuntu2404-amd64|tarball/Dockerfile.ubuntu|bash|remote-tarball-docker|ubuntu:24.04|linux/amd64|/home/maho/.ccache|200G
+tier2-ubuntu2404-tarball-arm64|172.27.109.40|/Users/maho/tmp/mplapack-tarball-ubuntu2404-arm64|tarball/Dockerfile.ubuntu|bash|remote-tarball-docker|ubuntu:24.04|linux/arm64|/Users/maho/.ccache|80G
 ```
 
 Create corresponding Dockerfile under `release/docker/matrix/`, `release/docker/distcheck/`, or `release/docker/tarball/` as appropriate. Matrix rows use paths relative to `release/docker/`.
@@ -242,6 +285,7 @@ Create corresponding Dockerfile under `release/docker/matrix/`, `release/docker/
 | distcheck/Dockerfile.intel | Tier 1 Intel oneAPI release distcheck |
 | distcheck/Dockerfile.mingw | Tier 1 MinGW-w64 release distcheck |
 | tarball/Dockerfile.ubuntu | Ubuntu tarball smoke test |
+| tier2/Dockerfile.ubuntu-cxxstd | Tier 2 Ubuntu C++ standard buildability |
 
 ## Troubleshooting
 
@@ -276,7 +320,7 @@ Intel oneAPI base toolkit is free but some features require registration. The ba
 
 Wine configuration may need initialization:
 ```bash
-docker run --rm mplapack-ubuntu22-mingw64-amd64 winecfg
+make tier1-ubuntu2404-mingw64-amd64
 ```
 
 ### CUDA build succeeds but tests fail
@@ -384,8 +428,11 @@ release/
 │   │   ├── Dockerfile.debian-i386
 │   │   ├── Dockerfile.intel
 │   │   └── Dockerfile.mingw
-│   └── tarball/
-│       └── Dockerfile.ubuntu
+│   ├── tarball/
+│   │   └── Dockerfile.ubuntu
+│   └── tier2/
+│       ├── Dockerfile.ubuntu-cxxstd
+│       └── run-ubuntu-cxxstd-build.sh
 └── logs/                  # Build logs (gitignored)
     └── YYYYMMDD_HHMMSS/
         ├── dist/

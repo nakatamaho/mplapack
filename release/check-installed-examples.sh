@@ -15,6 +15,7 @@ if [ "$#" -gt 0 ]; then
 fi
 make_args=("$@")
 IFS=',' read -r -a makefile_names <<< "${makefile_spec}"
+make_program="${MAKE:-make}"
 
 case "${prefix}" in
     /*) ;;
@@ -26,10 +27,17 @@ esac
 
 example_dirs=(
     "${prefix}/share/examples/mpblas"
-    "${prefix}/share/examples/mplapack/00_LinearEquations"
+    "${prefix}/share/examples/mplapack/00_GeneralLinearEquations"
+    "${prefix}/share/examples/mplapack/01_PositiveDefiniteLinearEquations"
+    "${prefix}/share/examples/mplapack/02_LeastSquares"
     "${prefix}/share/examples/mplapack/03_SymmetricEigenproblems"
     "${prefix}/share/examples/mplapack/04_NonsymmetricEigenproblems"
     "${prefix}/share/examples/mplapack/05_SingularValueDecomposition"
+    "${prefix}/share/examples/mplapack/06_SymmetricIndefiniteLinearEquations"
+    "${prefix}/share/examples/mplapack/07_GeneralizedSymmetricDefiniteEigenproblems"
+    "${prefix}/share/examples/mplapack/08_GeneralizedNonsymmetricEigenproblems"
+    "${prefix}/share/examples/mplapack/09_GeneralizedSingularValueDecomposition"
+    "${prefix}/share/examples/mplapack/90_PrecisionComparison"
 )
 
 for example_dir in "${example_dirs[@]}"; do
@@ -50,7 +58,7 @@ for example_dir in "${example_dirs[@]}"; do
     fi
 
     echo "=== Checking installed examples: ${example_dir} (${selected_makefile}) ==="
-    make_cmd=(make -f "${selected_makefile}")
+    make_cmd=("${make_program}" -f "${selected_makefile}")
     if [ -n "${jobs}" ]; then
         make_cmd+=("-j${jobs}")
     fi

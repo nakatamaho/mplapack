@@ -94,6 +94,19 @@ get_make_jobs() {
     printf '4\n'
 }
 
+select_make_cmd() {
+    if [ -n "${MPLAPACK_MAKE:-}" ]; then
+        printf '%s\n' "${MPLAPACK_MAKE}"
+        return
+    fi
+    if command -v gmake >/dev/null 2>&1; then
+        printf 'gmake\n'
+        return
+    fi
+    echo "ERROR: gmake not found; macOS tier1 parallel distcheck requires GNU make. Install gmake or set MPLAPACK_MAKE." >&2
+    exit 1
+}
+
 # ---------------------------------------------------------------------------
 # Safe directory / prefix removal
 # ---------------------------------------------------------------------------
@@ -229,7 +242,14 @@ export DISTCHECK_CONFIGURE_FLAGS
 log "ARCH: ${ARCH}"
 log "DISTCHECK_CONFIGURE_FLAGS: ${DISTCHECK_CONFIGURE_FLAGS}"
 MAKE_JOBS="$(get_make_jobs)"
-log "MAKE_JOBS: ${MAKE_JOBS}"
+if [ -n "${MPLAPACK_MAKE_JOBS:-}" ]; then
+    log "MAKE_JOBS (MPLAPACK_MAKE_JOBS override): ${MAKE_JOBS}"
+else
+    log "MAKE_JOBS (physical cores): ${MAKE_JOBS}"
+fi
+MAKE_CMD="$(select_make_cmd)"
+export MAKE="${MAKE_CMD}"
+log "MAKE_CMD: ${MAKE_CMD}"
 
 : "${MPLAPACK_CCACHE_DIR:=/Users/maho/.ccache}"
 : "${MPLAPACK_CCACHE_MAXSIZE:=80G}"
@@ -421,8 +441,8 @@ else
     run_step "configure"      env CC="ccache gcc-mp-15" CXX="ccache g++-mp-15" FC="ccache gfortran-mp-15" \
                               ./configure --prefix="${PREFIX_DIR}" ${DISTCHECK_CONFIGURE_FLAGS}
 fi
-run_step "make"           make -j"${MAKE_JOBS}"
-run_step "make_install"   make install
+run_step "make"           "${MAKE_CMD}" -j"${MAKE_JOBS}"
+run_step "make_install"   "${MAKE_CMD}" install
 run_step "check_installed_examples" bash release/check-installed-examples.sh "${PREFIX_DIR}" Makefile.macos "${MAKE_JOBS}"
 run_step "check_installed_benchmarks" bash release/check-installed-benchmarks.sh "${PREFIX_DIR}"
 
@@ -440,7 +460,7 @@ else
     log "Using distributed configure files from source tarball; skipping autoreconf."
 fi
 run_step "make_distcheck" env CC="ccache gcc" CXX="ccache g++" FC="ccache gfortran-mp-15" \
-                          make distcheck MAKEFLAGS="-j${MAKE_JOBS}" DISTCHECK_CONFIGURE_FLAGS="${DISTCHECK_CONFIGURE_FLAGS}"
+                          "${MAKE_CMD}" -j"${MAKE_JOBS}" distcheck DISTCHECK_CONFIGURE_FLAGS="${DISTCHECK_CONFIGURE_FLAGS}"
 run_step "collect_test_results" collect_test_results
 
 log_ccache_end_once

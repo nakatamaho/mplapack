@@ -22,8 +22,9 @@ export MPLAPACK_SOURCE_MODE MPLAPACK_SOURCE_TARBALL MPLAPACK_SOURCE_METADATA MPL
 TIER1_TARGETS := tier1-macos-arm64 tier1-macos-amd64 tier1-ubuntu2404-arm64 tier1-ubuntu2604-arm64 tier1-ubuntu2404-amd64 tier1-ubuntu2604-amd64 tier1-ubuntu2404-mingw64-amd64 tier1-ubuntu2604-mingw64-amd64 tier1-ubuntu2404-inteloneapi-amd64 tier1-ubuntu2604-inteloneapi-amd64 tier1-debian12-i386 tier1-debian13-i386
 TIER1_MACOS_TARGETS := tier1-macos-arm64 tier1-macos-amd64
 TIER1_LINUX_TARGETS := tier1-ubuntu2404-arm64 tier1-ubuntu2604-arm64 tier1-ubuntu2404-amd64 tier1-ubuntu2604-amd64 tier1-ubuntu2404-mingw64-amd64 tier1-ubuntu2604-mingw64-amd64 tier1-ubuntu2404-inteloneapi-amd64 tier1-ubuntu2604-inteloneapi-amd64 tier1-debian12-i386 tier1-debian13-i386
-TIER2_TARGETS :=
-TIER3_TARGETS := tier3-ubuntu2604-cxxstd-arm64 tier3-ubuntu2604-cxxstd-amd64
+TIER2_CXXSTD_TARGETS := tier2-ubuntu2604-cxxstd-arm64 tier2-ubuntu2604-cxxstd-amd64
+TIER3_PARTIAL_FILTER_NAME ?= ubuntu
+TIER3_PARTIAL_FILTER_ARCH ?= amd64
 LEGACY_QA_IMAGE_TAGS := \
     mplapack-tier1-ubuntu-amd64:latest \
     mplapack-tier1-ubuntu-arm64:latest \
@@ -33,12 +34,12 @@ LEGACY_QA_IMAGE_TAGS := \
 RUN_REMOTE_TARGETS = CONF_FILE=$(CONF_FILE) LOGDIR=$(LOGDIR) PROJECT_ROOT=$(PROJECT_ROOT) SUCCESS_DIR=$(SUCCESS_DIR) FAILED_DIR=$(FAILED_DIR) MACOS_REMOTE_SSH=$(MACOS_REMOTE_SSH) REMOTE_LINUX_SSH=$(REMOTE_LINUX_SSH) ./run-remote-targets-by-host.sh
 WITH_SOURCE_TARBALL = set -a; . "$(SOURCE_INFO_FILE)"; set +a;
 
-.PHONY: all ref tarball dist prepare-dist-source clean clean-remote clean-remote-realclean clean-all realclean clean-success clean-failed clean-test-results list help
+.PHONY: all ref tarball dist prepare-dist-source release-gate clean clean-remote clean-remote-realclean clean-all realclean clean-success clean-failed clean-test-results list help
 .PHONY: intel mingw cuda ubuntu debian fedora rocky suse alpine
 .PHONY: amd64 arm64 ppc64le i386 s390x mips64le
 .PHONY: ref-ubuntu ref-debian ref-amd64 ref-cuda ref-rocky ref-suse
 .PHONY: tarball-ubuntu tarball-amd64 tarball-arm64
-.PHONY: tier1 tier1-macos tier1-linux tier2 tier3 tier1-macos-arm64 tier1-macos-amd64 tier1-ubuntu2404-arm64 tier1-ubuntu2604-arm64 tier1-ubuntu2404-amd64 tier1-ubuntu2604-amd64 tier1-ubuntu2404-mingw64-amd64 tier1-ubuntu2604-mingw64-amd64 tier1-ubuntu2404-inteloneapi-amd64 tier1-ubuntu2604-inteloneapi-amd64 tier1-debian12-i386 tier1-debian13-i386 tier3-ubuntu2604-cxxstd-arm64 tier3-ubuntu2604-cxxstd-amd64
+.PHONY: tier1 tier1-macos tier1-linux tier2 tier3 tier3-partial tier1-macos-arm64 tier1-macos-amd64 tier1-ubuntu2404-arm64 tier1-ubuntu2604-arm64 tier1-ubuntu2404-amd64 tier1-ubuntu2604-amd64 tier1-ubuntu2404-mingw64-amd64 tier1-ubuntu2604-mingw64-amd64 tier1-ubuntu2404-inteloneapi-amd64 tier1-ubuntu2604-inteloneapi-amd64 tier1-debian12-i386 tier1-debian13-i386 tier2-ubuntu2604-cxxstd-arm64 tier2-ubuntu2604-cxxstd-amd64
 .PHONY: ccache-stats ccache-clear
 
 # === Main Targets ===
@@ -57,7 +58,7 @@ prepare-dist-source: $(SOURCE_INFO_FILE)
 $(SOURCE_INFO_FILE):
 	@PROJECT_ROOT=$(PROJECT_ROOT) LOGDIR=$(LOGDIR) MPLAPACK_SOURCE_INFO_FILE=$(SOURCE_INFO_FILE) ./make-source-snapshot.sh
 
-tier1 tier1-macos tier1-linux $(TIER1_TARGETS) tier2 tier3 $(TIER3_TARGETS) tarball tarball-ubuntu tarball-amd64 tarball-arm64: prepare-dist-source
+tier1 tier1-macos tier1-linux $(TIER1_TARGETS) $(TIER2_CXXSTD_TARGETS) tarball tarball-ubuntu tarball-amd64 tarball-arm64: prepare-dist-source
 
 tarball:
 	@$(WITH_SOURCE_TARBALL) TARBALL="$$MPLAPACK_SOURCE_TARBALL" ./build-all.sh tarball
@@ -107,10 +108,23 @@ tier1:
 	@$(RUN_REMOTE_TARGETS) $(TIER1_TARGETS)
 
 tier2:
-	@MPLAPACK_LOG_PREFIX=tier2- ./build-all.sh ref
+	@if [ -n "$(TARBALL)" ]; then \
+		$(MAKE) --no-print-directory tarball-with TARBALL="$(TARBALL)"; \
+		MPLAPACK_SOURCE_MODE=dist MPLAPACK_SOURCE_TARBALL="$(TARBALL)" $(RUN_REMOTE_TARGETS) $(TIER2_CXXSTD_TARGETS); \
+	else \
+		$(MAKE) --no-print-directory tarball; \
+		$(WITH_SOURCE_TARBALL) MPLAPACK_SOURCE_MODE=dist $(RUN_REMOTE_TARGETS) $(TIER2_CXXSTD_TARGETS); \
+	fi
 
 tier3:
-	@MPLAPACK_SOURCE_MODE=$${MPLAPACK_SOURCE_MODE:-ref} $(RUN_REMOTE_TARGETS) $(TIER3_TARGETS)
+	@MPLAPACK_LOG_PREFIX=tier3- ./build-all.sh ref
+
+tier3-partial:
+	@FILTER_NAME="$(TIER3_PARTIAL_FILTER_NAME)" FILTER_ARCH="$(TIER3_PARTIAL_FILTER_ARCH)" MPLAPACK_LOG_PREFIX=tier3-partial- ./build-all.sh ref
+
+release-gate:
+	@$(MAKE) --no-print-directory tier1
+	@$(MAKE) --no-print-directory tier2
 
 tier1-macos:
 	@$(RUN_REMOTE_TARGETS) $(TIER1_MACOS_TARGETS)
@@ -154,11 +168,11 @@ tier1-debian12-i386:
 tier1-debian13-i386:
 	@REMOTE_LINUX_SSH=$(REMOTE_LINUX_SSH) ./run-remote-linux-docker.sh tier1-debian13-i386
 
-tier3-ubuntu2604-cxxstd-arm64:
-	@MPLAPACK_SOURCE_MODE=$${MPLAPACK_SOURCE_MODE:-ref} REMOTE_LINUX_SSH=$(REMOTE_LINUX_SSH) ./run-remote-linux-docker.sh tier3-ubuntu2604-cxxstd-arm64
+tier2-ubuntu2604-cxxstd-arm64:
+	@MPLAPACK_SOURCE_MODE=$${MPLAPACK_SOURCE_MODE:-dist} REMOTE_LINUX_SSH=$(REMOTE_LINUX_SSH) ./run-remote-linux-docker.sh tier2-ubuntu2604-cxxstd-arm64
 
-tier3-ubuntu2604-cxxstd-amd64:
-	@MPLAPACK_SOURCE_MODE=$${MPLAPACK_SOURCE_MODE:-ref} REMOTE_LINUX_SSH=$(REMOTE_LINUX_SSH) ./run-remote-linux-docker.sh tier3-ubuntu2604-cxxstd-amd64
+tier2-ubuntu2604-cxxstd-amd64:
+	@MPLAPACK_SOURCE_MODE=$${MPLAPACK_SOURCE_MODE:-dist} REMOTE_LINUX_SSH=$(REMOTE_LINUX_SSH) ./run-remote-linux-docker.sh tier2-ubuntu2604-cxxstd-amd64
 
 i386:
 	@FILTER_ARCH=386 ./build-all.sh ref
@@ -351,7 +365,10 @@ help:
 	@echo "  make tier1-ubuntu2604-inteloneapi-amd64 - run Tier 1 Ubuntu 26.04 Intel oneAPI amd64 test"
 	@echo "  make tier1-debian12-i386 - run Tier 1 Debian 12 i386 test"
 	@echo "  make tier1-debian13-i386 - run Tier 1 Debian 13 i386 test"
-	@echo "  make tier2              - run Tier 2 Docker build matrix"
+	@echo "  make tier2              - run release tarball + C++ standard buildability (release gate)"
+	@echo "  make tier3              - run other Docker/ref-matrix buildability (initially non-gating)"
+	@echo "  make tier3-partial      - run partial Tier 3 buildability (default: Ubuntu amd64)"
+	@echo "  make release-gate       - run Tier 1 and Tier 2 release criteria"
 	@echo "  make arm64       - aarch64"
 	@echo "  make ppc64le     - PowerPC 64-bit LE"
 	@echo "  make i386        - x86 32-bit"

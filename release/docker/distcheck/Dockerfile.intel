@@ -9,6 +9,7 @@ RUN apt-get update && apt-get install -y \
     autoconf \
     automake \
     libtool \
+    cmake \
     pkg-config \
     ccache \
     python3 \
@@ -43,5 +44,7 @@ ENV MPLAPACK_REF="master"
 
 WORKDIR /work
 COPY distcheck/run-ubuntu-intel-distcheck.sh /run-ubuntu-intel-distcheck.sh
+COPY common/checkout-source.sh /usr/local/bin/checkout-source.sh
 RUN chmod +x /run-ubuntu-intel-distcheck.sh
+RUN chmod +x /usr/local/bin/checkout-source.sh
 CMD ["/run-ubuntu-intel-distcheck.sh"]

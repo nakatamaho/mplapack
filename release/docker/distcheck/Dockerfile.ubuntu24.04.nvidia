@@ -10,6 +10,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     autoconf \
     automake \
     libtool \
+    cmake \
     ccache \
     python3 \
     git \
@@ -36,5 +37,7 @@ ENV MPLAPACK_REF="master"
 
 WORKDIR /work
 COPY distcheck/run-ubuntu-nvidia-distcheck.sh /run-ubuntu-nvidia-distcheck.sh
+COPY common/checkout-source.sh /usr/local/bin/checkout-source.sh
 RUN chmod +x /run-ubuntu-nvidia-distcheck.sh
+RUN chmod +x /usr/local/bin/checkout-source.sh
 CMD ["/run-ubuntu-nvidia-distcheck.sh"]
