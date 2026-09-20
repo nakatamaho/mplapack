@@ -90,11 +90,12 @@ xlintstrfC_mpfr_opt_CXXFLAGS = $(cxxflags)
 
 MPFR_PROFILES = default binary64 binary128
 
-MPFR_ENV_default   =
+# The default profile uses the same finite exponent range as MPLAPACK 3.0.1.
+MPFR_ENV_default   = MPLAPACK_MPFR_EMAX=32768 MPLAPACK_MPFR_EMIN=-32765
 MPFR_ENV_binary64  = MPLAPACK_MPFR_EMAX=1024  MPLAPACK_MPFR_EMIN=-1021  MPLAPACK_MPFR_PRECISION=53
 MPFR_ENV_binary128 = MPLAPACK_MPFR_EMAX=16384 MPLAPACK_MPFR_EMIN=-16381 MPLAPACK_MPFR_PRECISION=113
 
-MPFR_PROFILE_LABEL_default   = default
+MPFR_PROFILE_LABEL_default   = default (emin=-32765 emax=32768)
 MPFR_PROFILE_LABEL_binary64  = binary64 (prec=53 emin=-1021 emax=1024)
 MPFR_PROFILE_LABEL_binary128 = binary128 (prec=113 emin=-16381 emax=16384)
 

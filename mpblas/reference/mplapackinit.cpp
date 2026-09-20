@@ -166,7 +166,7 @@ static bool mpfr_set_exp_range_from_env_or_abort(void) {
 void __attribute__((constructor)) mplapack_initialize_mpfr(void);
 void mplapack_initialize_mpfr(void) {
     // Apply MPFR exponent range from environment variables (if set).
-    bool env_exp_set = mpfr_set_exp_range_from_env_or_abort();
+    mpfr_set_exp_range_from_env_or_abort();
 
     // Default settings.
     mpreal::default_rnd = mpfr_get_default_rounding_mode();
@@ -179,36 +179,6 @@ void mplapack_initialize_mpfr(void) {
     mpcomplex::default_base = 10;
     mpcomplex::double_bits = -1;
 
-    // If no explicit exponent range was given via environment variables,
-    // limit emin/emax to \pm (precision *64).  The MPFR default exponent
-    // range is astronomically wide relative to the mantissa width, which
-    // causes bisection-based eigenvalue routines (Rstebz, Rlarrb, etc.)
-    // to require an infeasible number of iterations.
-    if (!env_exp_set) {
-        mpfr_exp_t default_emax = static_cast<mpfr_exp_t>(mpreal::default_prec) * 64;
-        // Start from an IEEE-like asymmetric exponent range: emin = 3 - emax.
-        // This keeps LAPACK scaling formulas (e.g. Blue-style scaling)
-        // aligned with the intended IEEE-style emin/emax relationship.
-        mpfr_exp_t default_emin = -default_emax + 3;
-
-        // Clamp to MPFR's allowable range.
-        const mpfr_exp_t emin_min = mpfr_get_emin_min();
-        const mpfr_exp_t emax_max = mpfr_get_emax_max();
-        if (default_emin < emin_min)
-            default_emin = emin_min;
-        if (default_emax > emax_max)
-            default_emax = emax_max;
-
-        if (mpfr_set_emin(default_emin) != 0) {
-            std::fprintf(stderr, "mplapack: mpfr_set_emin(%ld) failed\n", (long)default_emin);
-            std::abort();
-        }
-        if (mpfr_set_emax(default_emax) != 0) {
-            std::fprintf(stderr, "mplapack: mpfr_set_emax(%ld) failed\n", (long)default_emax);
-            std::abort();
-        }
-    }
-
     // Optional: set global precision for both mpreal and mpcomplex.
     {
         bool have = false;
@@ -217,21 +187,6 @@ void mplapack_initialize_mpfr(void) {
             mpreal::default_prec = prec;
             mpcomplex::default_real_prec = prec;
             mpcomplex::default_imag_prec = prec;
-
-            // Re-adjust emin/emax for the new precision if no explicit
-            // exponent range was given via environment variables.
-            if (!env_exp_set) {
-                mpfr_exp_t adjusted_emax = static_cast<mpfr_exp_t>(prec) * 64;
-                mpfr_exp_t adjusted_emin = -adjusted_emax;
-                const mpfr_exp_t emin_min = mpfr_get_emin_min();
-                const mpfr_exp_t emax_max = mpfr_get_emax_max();
-                if (adjusted_emin < emin_min)
-                    adjusted_emin = emin_min;
-                if (adjusted_emax > emax_max)
-                    adjusted_emax = emax_max;
-                mpfr_set_emin(adjusted_emin);
-                mpfr_set_emax(adjusted_emax);
-            }
         }
     }
 
