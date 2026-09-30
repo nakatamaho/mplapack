@@ -67,19 +67,14 @@ check: work/$(CHECK_STAMP)
 
 install: work/$(INSTALL_STAMP)
 
-# dlfcn-win32 does not provide an uninstall target. Remove the files
-# installed by this wrapper directly from its private prefix instead.
+# This private prefix contains build dependencies, not installation files.
+# Keep it available for the DESTDIR install after uninstall in distcheck.
 uninstall:
-	-rm -f \
-	  $(DLFCN_WIN32_PREFIX)/bin/libdl.dll \
-	  $(DLFCN_WIN32_PREFIX)/include/dlfcn.h \
-	  $(DLFCN_WIN32_PREFIX)/lib/libdl.a \
-	  $(DLFCN_WIN32_PREFIX)/lib/libdl.dll.a \
-	  $(DLFCN_WIN32_PREFIX)/lib/libdl.lib
+	@:
 
 distdir:
 
 clean-local:
 	rm -rf work
 distclean-local:
-	rm -rf work
+	rm -rf work "$(DLFCN_WIN32_PREFIX)"
