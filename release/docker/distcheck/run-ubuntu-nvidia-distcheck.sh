@@ -78,6 +78,10 @@ rm -rf "$MPLAPACK_TEST_RESULTS_STAGING"
 mkdir -p "$MPLAPACK_TEST_RESULTS_STAGING"
 echo "MPLAPACK_TEST_RESULTS_STAGING=$MPLAPACK_TEST_RESULTS_STAGING"
 
+if [ "$DISTRO_VERSION" = "26.04" ] && [ "$(dpkg --print-architecture)" = "amd64" ]; then
+    bash /usr/local/bin/check-fable-reproduction.sh /work/mplapack "$MAKE_JOBS"
+fi
+
 if [ "$SOURCE_KIND" = "git" ]; then
     bash "$RECONFIG_SCRIPT"
 else

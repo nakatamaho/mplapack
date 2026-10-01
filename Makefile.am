@@ -545,6 +545,8 @@ release/check-installed-benchmarks.sh \
 release/check-installed-examples.sh \
 release/docker/common/entrypoint.sh \
 release/docker/common/tarball-smoke.sh \
+release/docker/common/check-fable-reproduction.sh \
+release/docker/common/compare-fable-outputs.py \
 release/docker/distcheck/Dockerfile.debian-i386 \
 release/docker/distcheck/Dockerfile.intel \
 release/docker/distcheck/Dockerfile.mingw \

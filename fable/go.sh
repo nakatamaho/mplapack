@@ -299,6 +299,12 @@ if not cpp_files:
 
 lines = makefile_am.read_text().splitlines(keepends=True)
 
+# The merged-library layout keeps the BLAS distribution manifest here.
+if variable_name == "MPBLAS_SOURCES" and any(
+    line.startswith("MPBLAS_REFERENCE_FILES = ") for line in lines
+):
+    variable_name = "MPBLAS_REFERENCE_FILES"
+
 start = None
 prefix = f"{variable_name} = "
 for i, line in enumerate(lines):
@@ -346,11 +352,11 @@ subdir = Path(sys.argv[3])
 text = makefile_am.read_text()
 lines = text.splitlines(keepends=True)
 
-# --- Find *_SOURCES block ---
+# --- Find the libtool target's source block, not a helper manifest ---
 start = end = None
 var = None
 for i, line in enumerate(lines):
-    m = re.match(r'^(\S+_SOURCES)\s*=', line)
+    m = re.match(r'^(lib\S+_la_SOURCES)\s*=', line)
     if m:
         var = m.group(1)
         start = i
@@ -359,12 +365,13 @@ for i, line in enumerate(lines):
             end += 1
         break
 if start is None:
-    raise SystemExit(f"No *_SOURCES block found in {makefile_am}")
+    raise SystemExit(f"No libtool *_SOURCES block found in {makefile_am}")
 
 block_lines = lines[start:end]
 
 # --- Separate local lines from reference lines ---
 local_parts = []
+shared_parts = []
 for idx, line in enumerate(block_lines):
     if idx == 0:
         # First line: strip "<var> = " prefix, keep any sources on it
@@ -378,7 +385,10 @@ for idx, line in enumerate(block_lines):
         continue  # auto-generated ― will be replaced
     content = line.rstrip('\n').rstrip().rstrip('\\').strip()
     if content:
-        local_parts.append(line)
+        if content.startswith('$('):
+            shared_parts.append(content)
+        else:
+            local_parts.append(line)
 
 # --- Determine which reference files to include ---
 all_ref_cpps = sorted(p.name for p in reference_dir.glob('*.cpp'))
@@ -398,8 +408,9 @@ needed_refs = [name for name in all_ref_cpps if name not in local_names]
 result = []
 has_local = any(p.strip().rstrip('\\').strip() for p in local_parts)
 has_refs = len(needed_refs) > 0
+has_shared = bool(shared_parts)
 
-if has_local or has_refs:
+if has_local or has_refs or has_shared:
     result.append(f'{var} = \\\n')
     for part in local_parts:
         t = part.rstrip('\n').rstrip()
@@ -407,9 +418,12 @@ if has_local or has_refs:
             t += ' \\'
         result.append(t + '\n')
     for i, name in enumerate(needed_refs):
-        is_last = (i == len(needed_refs) - 1)
+        is_last = (i == len(needed_refs) - 1 and not has_shared)
         suffix = ' \\' if not is_last else ''
         result.append(f'../../reference/{name}{suffix}\n')
+    for i, part in enumerate(shared_parts):
+        suffix = ' \\' if i != len(shared_parts) - 1 else ''
+        result.append(f'{part}{suffix}\n')
 else:
     result.append(f'{var} =\n')
 

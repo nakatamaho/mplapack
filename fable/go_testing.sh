@@ -76,6 +76,7 @@ for target_dir in "${GENERATED_CLEAN_DIRS[@]}"; do
     "${target_dir}"
     -maxdepth 1
     -type f
+    ! -name '*.am'
     "("
       -name '*'
     ")"
@@ -447,6 +448,9 @@ variable_name = sys.argv[3]
 path_prefix = sys.argv[4]
 
 cpp_files = sorted(path.name for path in source_dir.glob("*.cpp"))
+if variable_name == "EIG_SOURCES":
+    # The override library owns this symbol, not the common EIG library.
+    cpp_files = [name for name in cpp_files if name != "iMlaenv.cpp"]
 if not cpp_files:
     raise SystemExit(f"No .cpp files found in {source_dir}")
 

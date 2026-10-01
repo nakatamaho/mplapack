@@ -62,6 +62,16 @@ The policy is intentionally split by purpose:
 
 The policy applies to the 3.0.1 supplemental release and subsequent releases.
 
+Tier 1 Ubuntu 26.04 amd64 also checks Fable source reproduction. It checks out
+the same Git ref as the QA run in an isolated directory, runs `fable/go.sh`
+and `fable/go_testing.sh` (the testing generator), and compares library/test
+C++ sources, public headers, source lists, and test inputs against the actual
+release source tree. Any generation error, added/removed output, or content
+difference fails Tier 1. The subsequent standard build and numerical QA cover
+the reproduced sources. Fable is obtained from Git even in tarball mode.
+The Git SHA, generation log, and comparison report are retained under
+`fable-reproduction/` in the results directory.
+
 ### Supported Configurations
 
 | Category | Environments |

@@ -14,6 +14,10 @@ RUN apt-get update && apt-get install -y \
     libopenblas-dev \
     ccache \
     python3 \
+    python-is-python3 \
+    parallel \
+    universal-ctags \
+    clang-format \
     git \
     xz-utils \
     bzip2 \
@@ -31,6 +35,7 @@ ENV MPLAPACK_REF="master"
 WORKDIR /work
 COPY distcheck/run-ubuntu-distcheck.sh /run-ubuntu-distcheck.sh
 COPY common/checkout-source.sh /usr/local/bin/checkout-source.sh
+COPY common/check-fable-reproduction.sh common/compare-fable-outputs.py /usr/local/bin/
 RUN chmod +x /run-ubuntu-distcheck.sh
 RUN chmod +x /usr/local/bin/checkout-source.sh
 CMD ["/run-ubuntu-distcheck.sh"]

@@ -27,3 +27,12 @@
          resid = Clansy("1", "Upper", n, lq, l, rwork);
          result[2 - 1] = resid / (eps * max((INTEGER)1, n));
          //
+@@ -376,7 +376,7 @@
+         // Compute |C*Q - C*Q| / |C|
+         //
+         Cgemm("N", "N", m, n, n, -one, c, m, q, n, one, cf, m);
+-        resid = Clange("1", n, m, df, n, rwork);
++        resid = Clange("1", m, n, cf, m, rwork);
+         if (cnorm > zero) {
+             result[5 - 1] = resid / (eps * max((INTEGER)1, n) * cnorm);
+         } else {

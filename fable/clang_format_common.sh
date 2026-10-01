@@ -62,6 +62,20 @@ fable_clang_format_inplace() {
     "$CLANG_FORMAT" -i -style "$fable_clang_format_style" "$@"
 }
 
+# Keep the established declaration order across the gmpfrxx type migration.
+# Only temporary sort keys use the former names; emitted types stay unchanged.
+fable_sort_prototypes() {
+    case "$1" in
+        gmp)
+            sed 's/^mpfc_class /mpc_class /' | LC_ALL=C sort | sed 's/^mpc_class /mpfc_class /'
+            ;;
+        mpfr)
+            sed 's/^mpfr_class /mpreal /' | LC_ALL=C sort | sed 's/^mpreal /mpfr_class /'
+            ;;
+        *) LC_ALL=C sort ;;
+    esac
+}
+
 fable_clang_format_stdout() {
     fable_find_clang_format
     "$CLANG_FORMAT" -style "$fable_clang_format_header_style" "$@"

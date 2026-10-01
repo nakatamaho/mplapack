@@ -1,8 +1,9 @@
 #!/bin/bash
 fable_script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+fable_repo_root="$(cd "${fable_script_dir}/.." && pwd)"
 . "${fable_script_dir}/clang_format_common.sh"
 
-cd ~/mplapack/mplapack/reference
+cd "${fable_repo_root}/mplapack/reference"
 
 if [ `uname` = "Linux" ]; then
     SED=sed
@@ -138,14 +139,19 @@ for mplib in $MPLIBS; do
         sed -i -e "s/\<Rroundup_lwork\>/Rroundup_lwork_${mplib}/g" mplapack_${mplib}.h
     fi
 
-    fable_clang_format_stdout mplapack_${mplib}.h | LC_ALL=C sort > l ; mv l mplapack_${mplib}.h
-    cat ~/mplapack/mplapack/reference/mplapack_${mplib}.h.in mplapack_${mplib}.h > ~/mplapack/include/mplapack_${mplib}.h
+    fable_clang_format_stdout mplapack_${mplib}.h | fable_sort_prototypes "$mplib" > l ; mv l mplapack_${mplib}.h
+    {
+        cat "${fable_repo_root}/mplapack/reference/mplapack_${mplib}.h.in"
+        # Preserve the established MPFR header separator after the template.
+        if [ "$mplib" = mpfr ]; then printf '\n'; fi
+        cat mplapack_${mplib}.h
+    } > "${fable_repo_root}/include/mplapack_${mplib}.h"
     rm mplapack_${mplib}.h
-    echo "#endif" >> ~/mplapack/include/mplapack_${mplib}.h
+    echo "#endif" >> "${fable_repo_root}/include/mplapack_${mplib}.h"
 
 done
 
-mv header_all ~/mplapack/mplapack/reference/mplapack_generic.h
+mv header_all "${fable_repo_root}/mplapack/reference/mplapack_generic.h"
 
 for f in mplapack_generic.h; do
 fable_clang_format_inplace "$f"
@@ -189,6 +195,6 @@ cat <<'EOF'
 /* MPLAPACK prototypes */
 
 EOF
-LC_ALL=C sort ~/mplapack/mplapack/reference/mplapack_generic.h
+LC_ALL=C sort "${fable_repo_root}/mplapack/reference/mplapack_generic.h"
 printf "\n#endif\n"
-} > ~/mplapack/include/mplapack_generic.h
+} > "${fable_repo_root}/include/mplapack_generic.h"

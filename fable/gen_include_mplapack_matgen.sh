@@ -1,8 +1,9 @@
 #!/bin/bash
 fable_script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+fable_repo_root="$(cd "${fable_script_dir}/.." && pwd)"
 . "${fable_script_dir}/clang_format_common.sh"
 
-cd ~/mplapack/mplapack/test/matgen
+cd "${fable_repo_root}/mplapack/test/matgen"
 
 if [ `uname` = "Linux" ]; then
     SED=sed
@@ -106,10 +107,15 @@ for mplib in $MPLIBS; do
         sed -i -e "s/iMparmq/iMparmq_${mplib}/g" mplapack_matgen_${mplib}.h
     fi
 
-    fable_clang_format_stdout mplapack_matgen_${mplib}.h | LC_ALL=C sort > l ; mv l mplapack_matgen_${mplib}.h
-    cat ~/mplapack/mplapack/test/matgen/mplapack_matgen_${mplib}.h.in mplapack_matgen_${mplib}.h > ~/mplapack/include/mplapack_matgen_${mplib}.h
+    fable_clang_format_stdout mplapack_matgen_${mplib}.h | fable_sort_prototypes "$mplib" > l ; mv l mplapack_matgen_${mplib}.h
+    {
+        cat "${fable_repo_root}/mplapack/test/matgen/mplapack_matgen_${mplib}.h.in"
+        # Preserve the established MPFR header separator after the template.
+        if [ "$mplib" = mpfr ]; then printf '\n'; fi
+        cat mplapack_matgen_${mplib}.h
+    } > "${fable_repo_root}/include/mplapack_matgen_${mplib}.h"
     rm mplapack_matgen_${mplib}.h
-    echo "#endif" >> ~/mplapack/include/mplapack_matgen_${mplib}.h
+    echo "#endif" >> "${fable_repo_root}/include/mplapack_matgen_${mplib}.h"
 
 done
 
