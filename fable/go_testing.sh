@@ -76,6 +76,7 @@ for target_dir in "${GENERATED_CLEAN_DIRS[@]}"; do
     "${target_dir}"
     -maxdepth 1
     -type f
+    ! -name '*.am'
     "("
       -name '*'
     ")"

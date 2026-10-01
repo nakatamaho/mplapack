@@ -1,8 +1,9 @@
 #!/bin/bash
 fable_script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+fable_repo_root="$(cd "${fable_script_dir}/.." && pwd)"
 . "${fable_script_dir}/clang_format_common.sh"
 
-cd ~/mplapack/mplapack/test/eig/common
+cd "${fable_repo_root}/mplapack/test/eig/common"
 
 if [ `uname` = "Linux" ]; then
     SED=sed
@@ -138,9 +139,9 @@ for mplib in $MPLIBS; do
     fi
 
     fable_clang_format_stdout mplapack_eig_${mplib}.h | LC_ALL=C sort > l ; mv l mplapack_eig_${mplib}.h 
-    cat ~/mplapack/mplapack/test/eig/common/mplapack_eig_${mplib}.h.in mplapack_eig_${mplib}.h > ~/mplapack/include/mplapack_eig_${mplib}.h
+    cat "${fable_repo_root}/mplapack/test/eig/common/mplapack_eig_${mplib}.h.in" mplapack_eig_${mplib}.h > "${fable_repo_root}/include/mplapack_eig_${mplib}.h"
     rm mplapack_eig_${mplib}.h
-    echo "#endif" >> ~/mplapack/include/mplapack_eig_${mplib}.h
+    echo "#endif" >> "${fable_repo_root}/include/mplapack_eig_${mplib}.h"
 
 
 done

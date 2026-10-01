@@ -97,6 +97,7 @@ find_args=(
   "${MPBLAS_REF}"
   -maxdepth 1
   -type f
+  ! -name '*.am'
     "("
       -name '*'
     ")"

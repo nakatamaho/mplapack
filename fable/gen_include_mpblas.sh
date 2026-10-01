@@ -1,5 +1,6 @@
 #!/bin/bash
 fable_script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+fable_repo_root="$(cd "${fable_script_dir}/.." && pwd)"
 . "${fable_script_dir}/clang_format_common.sh"
 
 if [ `uname` = "Linux" ]; then
@@ -8,7 +9,7 @@ else
     SED=gsed
 fi
 
-cd ~/mplapack/mpblas/reference
+cd "${fable_repo_root}/mpblas/reference"
 
 FILES=`ls *cpp | grep -v mplapackinit.cpp`
 
@@ -88,9 +89,9 @@ for mplib in $MPLIBS; do
     fi
 
     fable_clang_format_stdout mpblas_${mplib}.h | LC_ALL=C sort > l ; mv l mpblas_${mplib}.h 
-    cat ~/mplapack/mpblas/reference/mpblas_${mplib}.h.in mpblas_${mplib}.h > ~/mplapack/include/mpblas_${mplib}.h
+    cat "${fable_repo_root}/mpblas/reference/mpblas_${mplib}.h.in" mpblas_${mplib}.h > "${fable_repo_root}/include/mpblas_${mplib}.h"
     rm mpblas_${mplib}.h
-    echo "#endif" >> ~/mplapack/include/mpblas_${mplib}.h
+    echo "#endif" >> "${fable_repo_root}/include/mpblas_${mplib}.h"
 
 done
 mv header_all mpblas_generic.h
