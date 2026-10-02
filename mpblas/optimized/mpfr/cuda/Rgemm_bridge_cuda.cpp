@@ -48,6 +48,12 @@
  * Rgemm_rt_cuda.cu), whose result equals the CPU Rgemm exactly.
  * MPLAPACK_MPFR_CUDA_FORCE_RUNTIME=1 sends 512/1024-bit calls to the
  * runtime-precision kernels too; MPLAPACK_MPFR_CUDA_RUNTIME=0 disables them.
+ *
+ * MPLAPACK_MPFR_CUDA_WINOGRAD_CUTOFF=N (N > 0) computes 512/1024-bit calls
+ * with min(m, n, k) > N by the Winograd variant of Strassen's algorithm
+ * (Rgemm_winograd_cuda.h), recursing down to blocks of size N.  The result
+ * then differs from the CPU Rgemm within a normwise error bound.  It is off
+ * by default.
  */
 
 #include <mpblas_mpfr.h>
@@ -55,6 +61,7 @@
 #include <vector>
 #include "Rgemm_kernel_cuda.h"
 #include "Rgemm_rt_cuda.h"
+#include "Rgemm_winograd_cuda.h"
 
 static_assert(GMP_NUMB_BITS == 64 && sizeof(mp_limb_t) == sizeof(cu_fp::cu_limb), "mpfr cuda Rgemm requires 64-bit GMP limbs");
 static_assert(MPFR_ZERO_KIND == mplapack_mpfr_cuda::RT_ZERO_KIND && MPFR_REGULAR_KIND == mplapack_mpfr_cuda::RT_REGULAR_KIND, "MPFR custom kinds differ");
@@ -90,6 +97,12 @@ bool runtime_enabled()
 {
     static const bool enabled = env_long("MPLAPACK_MPFR_CUDA_RUNTIME", 1) != 0;
     return enabled;
+}
+
+long winograd_cutoff()
+{
+    static const long v = env_long("MPLAPACK_MPFR_CUDA_WINOGRAD_CUTOFF", 0);
+    return v;
 }
 
 bool force_runtime()
@@ -156,6 +169,17 @@ template <int PB> bool pack_matrix(const mpfr_class *X, mplapackint ld, long row
     return true;
 }
 
+// Packs op(X) (rows x cols) with leading dimension rows; trans: X is stored transposed.
+template <int PB> bool pack_op_matrix(const mpfr_class *X, mplapackint ld, bool trans, long rows, long cols, std::vector<real_t<PB>> &out, mpfr_exp_t bound)
+{
+    out.resize((size_t)rows * cols);
+    for (long j = 0; j < cols; j++)
+        for (long i = 0; i < rows; i++)
+            if (!pack<PB>((trans ? X[j + i * ld] : X[i + j * ld]).get_mpfr_t(), out[i + j * rows], bound))
+                return false;
+    return true;
+}
+
 template <int PB> bool run(bool nota, bool notb, mplapackint m, mplapackint n, mplapackint k, const mpfr_class &alpha, const mpfr_class *A, mplapackint lda, const mpfr_class *B, mplapackint ldb, const mpfr_class &beta, mpfr_class *C, mplapackint ldc)
 {
     typedef real_t<PB> F;
@@ -175,9 +199,16 @@ template <int PB> bool run(bool nota, bool notb, mplapackint m, mplapackint n, m
     F a, b;
     if (!pack<PB>(alpha.get_mpfr_t(), a, bound) || !pack<PB>(beta.get_mpfr_t(), b, bound))
         return false;
+    const long cutoff = winograd_cutoff();
+    const bool use_winograd = cutoff > 0 && m > cutoff && n > cutoff && k > cutoff;
     std::vector<F> pA, pB, pC;
-    if (!pack_matrix<PB>(A, lda, s.lda, nota ? k : m, pA, bound) || !pack_matrix<PB>(B, ldb, s.ldb, notb ? n : k, pB, bound))
+    if (use_winograd) {
+        // op(A) and op(B) explicitly: m x k and k x n
+        if (!pack_op_matrix<PB>(A, lda, !nota, m, k, pA, bound) || !pack_op_matrix<PB>(B, ldb, !notb, k, n, pB, bound))
+            return false;
+    } else if (!pack_matrix<PB>(A, lda, s.lda, nota ? k : m, pA, bound) || !pack_matrix<PB>(B, ldb, s.ldb, notb ? n : k, pB, bound)) {
         return false;
+    }
     if (s.beta_zero) {
         // C is overwritten without being read; only its precision matters.
         for (long j = 0; j < n; j++)
@@ -189,7 +220,8 @@ template <int PB> bool run(bool nota, bool notb, mplapackint m, mplapackint n, m
         return false;
     }
 
-    if (mplapack_mpfr_cuda::gemm<PB>(s, a, b, pA.data(), pB.data(), pC.data()) != 0)
+    const int rc = use_winograd ? mplapack_mpfr_cuda::gemm_winograd<PB>(s, a, b, pA.data(), pB.data(), pC.data(), cutoff) : mplapack_mpfr_cuda::gemm<PB>(s, a, b, pA.data(), pB.data(), pC.data());
+    if (rc != 0)
         return false;
     for (size_t t = 0; t < pC.size(); t++)
         if (!fits<PB>(pC[t]))

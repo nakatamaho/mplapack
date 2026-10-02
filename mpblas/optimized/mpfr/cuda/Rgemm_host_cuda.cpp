@@ -36,6 +36,7 @@
 
 #include <vector>
 #include "Rgemm_kernel_cuda.h"
+#include "Rgemm_winograd_cuda.h"
 
 namespace mplapack_mpfr_cuda {
 
@@ -57,6 +58,15 @@ template <int PB> int gemm(const gemm_shape &s, const real_t<PB> &alpha, const r
 }
 
 int device_count() { return 1; }
+
+template <int PB> int gemm_winograd(const gemm_shape &s, const real_t<PB> &alpha, const real_t<PB> &beta, const real_t<PB> *A, const real_t<PB> *B, real_t<PB> *C, long cutoff)
+{
+    gemm_winograd_host<PB>(s, alpha, beta, A, B, C, cutoff);
+    return 0;
+}
+
+template int gemm_winograd<512>(const gemm_shape &, const real_t<512> &, const real_t<512> &, const real_t<512> *, const real_t<512> *, real_t<512> *, long);
+template int gemm_winograd<1024>(const gemm_shape &, const real_t<1024> &, const real_t<1024> &, const real_t<1024> *, const real_t<1024> *, real_t<1024> *, long);
 
 template int gemm<512>(const gemm_shape &, const real_t<512> &, const real_t<512> &, const real_t<512> *, const real_t<512> *, real_t<512> *);
 template int gemm<1024>(const gemm_shape &, const real_t<1024> &, const real_t<1024> &, const real_t<1024> *, const real_t<1024> *, real_t<1024> *);

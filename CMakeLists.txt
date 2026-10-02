@@ -552,6 +552,36 @@ if(MPLAPACK_BUILD_TESTS)
       set_tests_properties(mpfr_cuda_Rgemm_${_variant}_runtime PROPERTIES
         SKIP_RETURN_CODE 77
         ENVIRONMENT "OMP_NUM_THREADS=1;MPLAPACK_MPFR_CUDA_FORCE_RUNTIME=1")
+
+      # Winograd (Strassen) path: exact on integers, bounded on reals, and
+      # the GPU backend equal to the host one.
+      set(_wexe mpfr_cuda_Rgemm_winograd_${_variant}_test)
+      add_executable(${_wexe}
+        "${_mplapack_mpfr_cuda_dir}/test/Rgemm_winograd_cuda_test.cpp"
+        "${_mplapack_mpfr_cuda_dir}/Rgemm_bridge_cuda.cpp"
+        "${_fixed}"
+        "${_mplapack_mpfr_cuda_dir}/Rgemm_rt_cuda.cu")
+      if(_variant STREQUAL "host")
+        target_compile_definitions(${_wexe} PRIVATE MPLAPACK_MPFR_CUDA_HOST_EMULATION)
+        target_link_libraries(${_wexe} PRIVATE mplapack_mpfr_opt CUDA::cudart)
+      else()
+        target_link_libraries(${_wexe} PRIVATE mplapack_mpfr_opt "${MPLAPACK_MPC_CUDA_LIBRARY}" CUDA::cudart)
+      endif()
+      target_include_directories(${_wexe} PRIVATE
+        "${MPLAPACK_MPC_CUDA_INCLUDE_DIR}" "${_mplapack_mpfr_cuda_dir}")
+      target_compile_options(${_wexe} PRIVATE "$<$<COMPILE_LANGUAGE:CUDA>:-fmad=false>")
+      set_target_properties(${_wexe} PROPERTIES
+        CUDA_ARCHITECTURES "${MPLAPACK_CUDA_ARCHITECTURES}"
+        CUDA_STANDARD 17
+        CUDA_STANDARD_REQUIRED ON
+        CUDA_SEPARABLE_COMPILATION ON
+        CUDA_RESOLVE_DEVICE_SYMBOLS ON)
+      if(_mplapack_mpc_cuda_bundled)
+        add_dependencies(${_wexe} mpc_cuda_bundled)
+      endif()
+      add_test(NAME mpfr_cuda_Rgemm_winograd_${_variant} COMMAND ${_wexe})
+      set_tests_properties(mpfr_cuda_Rgemm_winograd_${_variant} PROPERTIES
+        SKIP_RETURN_CODE 77 ENVIRONMENT "OMP_NUM_THREADS=1")
     endforeach()
   endif()
   add_subdirectory(mplapack/test)

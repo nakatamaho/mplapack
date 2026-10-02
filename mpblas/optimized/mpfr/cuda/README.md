@@ -15,6 +15,17 @@ The GPU arithmetic comes from [mpc_cuda](https://github.com/tkouya/mpc_cuda)
 Both perform the same operations in the same order as
 `openmp/Rgemm_*_omp.cpp`.
 
+### Winograd (Strassen) variant
+
+With `MPLAPACK_MPFR_CUDA_WINOGRAD_CUTOFF=N` (N > 0), 512/1024-bit calls with
+`min(m, n, k) > N` use the Winograd variant of Strassen's algorithm
+(`Rgemm_winograd_cuda.h`), 7 block products instead of 8 per level, recursing
+until a dimension is at most N; odd dimensions are padded with a zero row or
+column at that level. The schedule follows `mul_mpfmatrix_winograd_even()` of
+[BNCmatmul](https://github.com/tkouya/bncmatmul). It is off by default: the
+result differs from the conventional `Rgemm` in rounding, and its error is
+bounded normwise rather than elementwise. All temporaries stay on the GPU.
+
 ## Building
 
 mpc_cuda needs CUDA 13 (nvcc 12.0 rejects its early-clobber `"=&l"` asm
@@ -66,6 +77,7 @@ Environment variables:
 | `MPLAPACK_MPFR_CUDA_MIN_MNK=N` | minimum `m*n*k` for the GPU path |
 | `MPLAPACK_MPFR_CUDA_RUNTIME=0` | no GPU for precisions other than 512/1024 |
 | `MPLAPACK_MPFR_CUDA_FORCE_RUNTIME=1` | use the `cu_mpfr` kernels for 512/1024 bits too |
+| `MPLAPACK_MPFR_CUDA_WINOGRAD_CUTOFF=N` | Winograd/Strassen for 512/1024 bits when `min(m,n,k) > N` (default 0: off) |
 | `MPLAPACK_MPFR_CUDA_RT_BLOCKS`, `MPLAPACK_MPFR_CUDA_RT_THREADS` | thread pool of the `cu_mpfr` kernels (default 256 x 32) |
 | `MPLAPACK_MPFR_CUDA_VERBOSE=1` | print CUDA errors that cause a CPU fallback |
 
@@ -86,6 +98,13 @@ precision through the `cu_mpfr` kernels.
   to the system MPFR (libmpc_cuda's own host code needs a GPU). No GPU needed.
 - `device`: the kernels run on the GPU; skipped when no device is present.
 
+`mpfr_cuda_Rgemm_winograd_{host,device}` check the Winograd path at
+512/1024 bits with cutoffs 1, 2, 3 and 8: integer matrices (no rounding) must
+equal the CPU `Rgemm` exactly for odd/even sizes, all transpose combinations
+and general `alpha`/`beta`; random real matrices must agree within
+`2^(20-p) * (k |alpha| max|A| max|B| + |beta| max|C|)`; and the GPU backend
+must equal the host backend bit for bit.
+
 They run with `OMP_NUM_THREADS=1`: the OpenMP CPU `Rgemm` used as the
 reference creates its temporaries in each worker thread at that thread's MPFR
 default precision, which is not the caller's precision.
@@ -94,4 +113,6 @@ default precision, which is not the caller's precision.
 
 - Only `Rgemm` is accelerated.
 - One thread per element of `C`, no shared-memory tiling yet.
+- The Winograd variant exists for 512/1024 bits only (not for the `cu_mpfr`
+  kernels) and allocates its temporaries with `cudaMalloc` at every level.
 - Not yet measured on a GPU.
