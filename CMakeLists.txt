@@ -82,7 +82,9 @@ option(MPLAPACK_ENABLE_OPT       "Build optimized libraries"                ON)
 option(MPLAPACK_ENABLE_CUDA      "Build the DD CUDA accelerator library"    OFF)
 option(MPLAPACK_ENABLE_MPFR_CUDA "Build the MPFR CUDA accelerator library (512/1024-bit Rgemm)" OFF)
 set(MPLAPACK_MPC_CUDA_INCLUDE_DIR "" CACHE PATH
-    "Include directory of mpc_cuda (contains mpc_cuda/cu_freal.cuh); needed by the MPFR CUDA library and its host test")
+    "Include directory of an installed mpc_cuda (contains mpc_cuda.cuh); empty: build external/mpc_cuda")
+set(MPLAPACK_MPC_CUDA_LIBRARY "" CACHE FILEPATH
+    "libmpc_cuda.a of an installed mpc_cuda (default: <include dir>/../lib/libmpc_cuda.a)")
 option(MPLAPACK_ENABLE_OPENCL    "Build the binary128 OpenCL library"       OFF)
 option(MPLAPACK_ENABLE_GMPFRXX_MKII "Use bundled gmpfrxx_mkII for GMP/MPFR backends" ON)
 set(MPLAPACK_CUDA_ARCHITECTURES "70;80;90" CACHE STRING
@@ -157,11 +159,35 @@ if(MPLAPACK_ENABLE_MPFR_CUDA AND NOT (MPLAPACK_ENABLE_MPFR AND MPLAPACK_ENABLE_O
   message(FATAL_ERROR
     "MPLAPACK_ENABLE_MPFR_CUDA requires MPLAPACK_ENABLE_MPFR=ON and MPLAPACK_ENABLE_OPT=ON")
 endif()
-if(MPLAPACK_ENABLE_MPFR_CUDA OR MPLAPACK_MPC_CUDA_INCLUDE_DIR)
-  if(NOT EXISTS "${MPLAPACK_MPC_CUDA_INCLUDE_DIR}/mpc_cuda/cu_freal.cuh")
-    message(FATAL_ERROR
-      "MPLAPACK_MPC_CUDA_INCLUDE_DIR must point to the mpc_cuda include directory "
-      "(containing mpc_cuda/cu_freal.cuh); see https://github.com/tkouya/mpc_cuda")
+set(_mplapack_mpc_cuda_bundled OFF)
+if(MPLAPACK_ENABLE_MPFR_CUDA)
+  if(MPLAPACK_MPC_CUDA_INCLUDE_DIR)
+    if(NOT EXISTS "${MPLAPACK_MPC_CUDA_INCLUDE_DIR}/mpc_cuda.cuh")
+      message(FATAL_ERROR
+        "MPLAPACK_MPC_CUDA_INCLUDE_DIR must point to the mpc_cuda include directory "
+        "(containing mpc_cuda.cuh); see https://github.com/tkouya/mpc_cuda")
+    endif()
+    if(NOT MPLAPACK_MPC_CUDA_LIBRARY)
+      set(MPLAPACK_MPC_CUDA_LIBRARY "${MPLAPACK_MPC_CUDA_INCLUDE_DIR}/../lib/libmpc_cuda.a")
+    endif()
+    if(NOT EXISTS "${MPLAPACK_MPC_CUDA_LIBRARY}")
+      message(FATAL_ERROR
+        "MPLAPACK_MPC_CUDA_LIBRARY must point to libmpc_cuda.a built for MPLAPACK_CUDA_ARCHITECTURES")
+    endif()
+  else()
+    # Build the bundled mpc_cuda (external/mpc_cuda); it targets one architecture.
+    list(LENGTH MPLAPACK_CUDA_ARCHITECTURES _mplapack_cuda_arch_count)
+    if(NOT _mplapack_cuda_arch_count EQUAL 1)
+      message(FATAL_ERROR
+        "The bundled mpc_cuda is built for one GPU architecture: set "
+        "MPLAPACK_CUDA_ARCHITECTURES to a single value (e.g. 90 or 121), or give an "
+        "installed mpc_cuda with MPLAPACK_MPC_CUDA_INCLUDE_DIR")
+    endif()
+    set(_mplapack_mpc_cuda_bundled ON)
+    set(_mplapack_mpc_cuda_root "${CMAKE_CURRENT_BINARY_DIR}/external/i/MPC_CUDA")
+    set(MPLAPACK_MPC_CUDA_INCLUDE_DIR "${_mplapack_mpc_cuda_root}/include")
+    set(MPLAPACK_MPC_CUDA_LIBRARY "${_mplapack_mpc_cuda_root}/lib/libmpc_cuda.a")
+    file(MAKE_DIRECTORY "${MPLAPACK_MPC_CUDA_INCLUDE_DIR}")
   endif()
 endif()
 if(MPLAPACK_ENABLE_CUDA OR MPLAPACK_ENABLE_MPFR_CUDA)
@@ -318,23 +344,61 @@ if(MPLAPACK_ENABLE_CUDA)
   list(APPEND MPLAPACK_INSTALL_TARGETS mplapack_dd_opt_cuda)
 endif()
 
+if(_mplapack_mpc_cuda_bundled)
+  include(ExternalProject)
+  set(_mplapack_external "${CMAKE_CURRENT_SOURCE_DIR}/external")
+  set(_mplapack_mpc_cuda_nvcc "${CMAKE_CUDA_COMPILER}")
+  if(CMAKE_CUDA_HOST_COMPILER)
+    string(APPEND _mplapack_mpc_cuda_nvcc " -ccbin ${CMAKE_CUDA_HOST_COMPILER}")
+  endif()
+  # mpc_cuda builds from the GMP/MPFR/MPC sources of external/{gmp,mpfr,mpc}
+  # and must not be built in parallel.
+  ExternalProject_Add(mpc_cuda_bundled
+    URL "${_mplapack_external}/mpc_cuda/download/mpc_cuda-0.0.1-abd9407.tar.xz"
+    URL_HASH SHA256=bcac28655a62d381ffe38fc09704aca39f45610d1f697c351b4fc0acaa2278e7
+    PREFIX "${CMAKE_CURRENT_BINARY_DIR}/external/mpc_cuda"
+    PATCH_COMMAND
+      ${CMAKE_COMMAND} -E tar xf "${_mplapack_external}/gmp/download/gmp-6.3.0.tar.xz"
+      COMMAND ${CMAKE_COMMAND} -E tar xf "${_mplapack_external}/mpfr/download/mpfr-4.2.2.tar.bz2"
+      COMMAND ${CMAKE_COMMAND} -E tar xf "${_mplapack_external}/mpc/download/mpc-1.4.1.tar.xz"
+    CONFIGURE_COMMAND <SOURCE_DIR>/configure "--prefix=${_mplapack_mpc_cuda_root}"
+      "--with-cuda-arch=sm_${MPLAPACK_CUDA_ARCHITECTURES}" "NVCC=${_mplapack_mpc_cuda_nvcc}"
+    BUILD_IN_SOURCE ON
+    BUILD_COMMAND ${CMAKE_COMMAND} -E env MAKEFLAGS= make -j1
+    INSTALL_COMMAND ${CMAKE_COMMAND} -E env MAKEFLAGS= make -j1 install
+    BUILD_BYPRODUCTS "${MPLAPACK_MPC_CUDA_LIBRARY}")
+endif()
+
 if(MPLAPACK_ENABLE_MPFR_CUDA)
   # cuda/Rgemm.cpp shadows optimized/mpfr/Rgemm.cpp; the *_cuda files are helpers.
   set(_mplapack_mpfr_cuda_dir "${CMAKE_CURRENT_SOURCE_DIR}/mpblas/optimized/mpfr/cuda")
   mplapack_add_accelerator_backend(mpfr cuda
     "${_mplapack_mpfr_cuda_dir}/Rgemm.cpp"
     "${_mplapack_mpfr_cuda_dir}/Rgemm_bridge_cuda.cpp"
-    "${_mplapack_mpfr_cuda_dir}/Rgemm_device_cuda.cu")
+    "${_mplapack_mpfr_cuda_dir}/Rgemm_device_cuda.cu"
+    "${_mplapack_mpfr_cuda_dir}/Rgemm_rt_cuda.cu")
   target_sources(mplapack_mpfr_opt_cuda PRIVATE
-    "${_mplapack_mpfr_cuda_dir}/Rgemm_kernel_cuda.h")
+    "${_mplapack_mpfr_cuda_dir}/Rgemm_kernel_cuda.h"
+    "${_mplapack_mpfr_cuda_dir}/Rgemm_rt_cuda.h")
   target_include_directories(mplapack_mpfr_opt_cuda
     PUBLIC "$<BUILD_INTERFACE:${MPLAPACK_GMPFRXX_MKII_ROOT}/include>"
     PRIVATE "${MPLAPACK_MPC_CUDA_INCLUDE_DIR}" "${_mplapack_mpfr_cuda_dir}")
-  target_link_libraries(mplapack_mpfr_opt_cuda PUBLIC MPC::MPC MPFR::MPFR GMP::GMP CUDA::cudart)
+  target_link_libraries(mplapack_mpfr_opt_cuda
+    PUBLIC MPC::MPC MPFR::MPFR GMP::GMP CUDA::cudart
+    PRIVATE "${MPLAPACK_MPC_CUDA_LIBRARY}")
+  # cu_mpfr (Rgemm_rt_cuda.cu) is relocatable device code from libmpc_cuda.a;
+  # resolve it inside the library so that C++ programs can link it normally.
+  target_compile_options(mplapack_mpfr_opt_cuda PRIVATE
+    "$<$<COMPILE_LANGUAGE:CUDA>:-fmad=false>")
   set_target_properties(mplapack_mpfr_opt_cuda PROPERTIES
     CUDA_ARCHITECTURES "${MPLAPACK_CUDA_ARCHITECTURES}"
     CUDA_STANDARD 17
-    CUDA_STANDARD_REQUIRED ON)
+    CUDA_STANDARD_REQUIRED ON
+    CUDA_SEPARABLE_COMPILATION ON
+    CUDA_RESOLVE_DEVICE_SYMBOLS ON)
+  if(_mplapack_mpc_cuda_bundled)
+    add_dependencies(mplapack_mpfr_opt_cuda mpc_cuda_bundled)
+  endif()
   mplapack_add_unique_symbol_post_build(mplapack_mpfr_opt_cuda)
   list(APPEND MPLAPACK_INSTALL_TARGETS mplapack_mpfr_opt_cuda)
 endif()
@@ -439,38 +503,56 @@ if(MPLAPACK_BUILD_TESTS)
   find_package(LAPACK)
   find_library(MPLAPACK_GFORTRAN_LIBRARY NAMES gfortran)
   add_subdirectory(mpblas/test)
-  if(MPLAPACK_ENABLE_MPFR AND MPLAPACK_ENABLE_OPT AND MPLAPACK_MPC_CUDA_INCLUDE_DIR)
-    # The CUDA Rgemm kernels run on the host here, so this needs no GPU and no
-    # CUDA toolkit; it checks them bit for bit against the CPU Rgemm.
+  if(MPLAPACK_ENABLE_MPFR_CUDA)
+    # Rgemm_cuda_test.cpp checks the GPU Rgemm bit for bit against the CPU
+    # Rgemm.  The host variant runs the kernels' element code on the host
+    # (cu_mpfr mapped to the system MPFR) and needs no GPU; the device variant
+    # is skipped when no device is present.
+    # Each runs twice: default dispatch, and with every precision forced to
+    # the runtime-precision (cu_mpfr) kernels.  OMP_NUM_THREADS=1 because the
+    # OpenMP CPU Rgemm used as the reference creates its temporaries at the
+    # worker threads' MPFR default precision.
     set(_mplapack_mpfr_cuda_dir "${CMAKE_CURRENT_SOURCE_DIR}/mpblas/optimized/mpfr/cuda")
-    add_executable(mpfr_cuda_Rgemm_host_test
-      "${_mplapack_mpfr_cuda_dir}/test/Rgemm_cuda_test.cpp"
-      "${_mplapack_mpfr_cuda_dir}/Rgemm_bridge_cuda.cpp"
-      "${_mplapack_mpfr_cuda_dir}/Rgemm_host_cuda.cpp")
-    target_include_directories(mpfr_cuda_Rgemm_host_test PRIVATE
-      "${MPLAPACK_MPC_CUDA_INCLUDE_DIR}" "${_mplapack_mpfr_cuda_dir}")
-    target_link_libraries(mpfr_cuda_Rgemm_host_test PRIVATE mplapack_mpfr_opt)
-    add_test(NAME mpfr_cuda_Rgemm_host COMMAND mpfr_cuda_Rgemm_host_test)
-    # One thread: the OpenMP CPU Rgemm used as the reference creates its
-    # temporaries at the worker threads' MPFR default precision.
-    set_tests_properties(mpfr_cuda_Rgemm_host PROPERTIES ENVIRONMENT "OMP_NUM_THREADS=1")
-    if(MPLAPACK_ENABLE_MPFR_CUDA)
-      # Same check with the kernels on the GPU; skipped when no device is present.
-      add_executable(mpfr_cuda_Rgemm_device_test
+    foreach(_variant host device)
+      if(_variant STREQUAL "host")
+        set(_fixed "${_mplapack_mpfr_cuda_dir}/Rgemm_host_cuda.cpp")
+      else()
+        set(_fixed "${_mplapack_mpfr_cuda_dir}/Rgemm_device_cuda.cu")
+      endif()
+      set(_exe mpfr_cuda_Rgemm_${_variant}_test)
+      add_executable(${_exe}
         "${_mplapack_mpfr_cuda_dir}/test/Rgemm_cuda_test.cpp"
         "${_mplapack_mpfr_cuda_dir}/Rgemm_bridge_cuda.cpp"
-        "${_mplapack_mpfr_cuda_dir}/Rgemm_device_cuda.cu")
-      target_include_directories(mpfr_cuda_Rgemm_device_test PRIVATE
+        "${_fixed}"
+        "${_mplapack_mpfr_cuda_dir}/Rgemm_rt_cuda.cu")
+      if(_variant STREQUAL "host")
+        target_compile_definitions(${_exe} PRIVATE MPLAPACK_MPFR_CUDA_HOST_EMULATION)
+      endif()
+      target_include_directories(${_exe} PRIVATE
         "${MPLAPACK_MPC_CUDA_INCLUDE_DIR}" "${_mplapack_mpfr_cuda_dir}")
-      target_link_libraries(mpfr_cuda_Rgemm_device_test PRIVATE mplapack_mpfr_opt CUDA::cudart)
-      set_target_properties(mpfr_cuda_Rgemm_device_test PROPERTIES
+      target_compile_options(${_exe} PRIVATE "$<$<COMPILE_LANGUAGE:CUDA>:-fmad=false>")
+      if(_variant STREQUAL "host")
+        target_link_libraries(${_exe} PRIVATE mplapack_mpfr_opt CUDA::cudart)
+      else()
+        target_link_libraries(${_exe} PRIVATE mplapack_mpfr_opt "${MPLAPACK_MPC_CUDA_LIBRARY}" CUDA::cudart)
+      endif()
+      set_target_properties(${_exe} PROPERTIES
         CUDA_ARCHITECTURES "${MPLAPACK_CUDA_ARCHITECTURES}"
         CUDA_STANDARD 17
-        CUDA_STANDARD_REQUIRED ON)
-      add_test(NAME mpfr_cuda_Rgemm_device COMMAND mpfr_cuda_Rgemm_device_test)
-      set_tests_properties(mpfr_cuda_Rgemm_device PROPERTIES
+        CUDA_STANDARD_REQUIRED ON
+        CUDA_SEPARABLE_COMPILATION ON
+        CUDA_RESOLVE_DEVICE_SYMBOLS ON)
+      if(_mplapack_mpc_cuda_bundled)
+        add_dependencies(${_exe} mpc_cuda_bundled)
+      endif()
+      add_test(NAME mpfr_cuda_Rgemm_${_variant} COMMAND ${_exe})
+      add_test(NAME mpfr_cuda_Rgemm_${_variant}_runtime COMMAND ${_exe})
+      set_tests_properties(mpfr_cuda_Rgemm_${_variant} PROPERTIES
         SKIP_RETURN_CODE 77 ENVIRONMENT "OMP_NUM_THREADS=1")
-    endif()
+      set_tests_properties(mpfr_cuda_Rgemm_${_variant}_runtime PROPERTIES
+        SKIP_RETURN_CODE 77
+        ENVIRONMENT "OMP_NUM_THREADS=1;MPLAPACK_MPFR_CUDA_FORCE_RUNTIME=1")
+    endforeach()
   endif()
   add_subdirectory(mplapack/test)
   add_subdirectory(mplapack/test/compare)

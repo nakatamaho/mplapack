@@ -34,7 +34,10 @@
  * Rgemm_device_cuda.cu (real GPU).
  *
  * For every eligible call the GPU path must return true and produce the
- * same MPFR value, limb for limb, as the CPU; a zero may differ only in sign.
+ * same MPFR value, limb for limb, as the CPU.  With the fixed-precision
+ * kernels (512/1024 bits) a zero may differ in sign; the runtime-precision
+ * kernels (other precisions, or all with MPLAPACK_MPFR_CUDA_FORCE_RUNTIME=1)
+ * must match exactly, signed zeros included.
  * Ineligible calls must return false and leave C unchanged.
  */
 
@@ -78,14 +81,22 @@ void random_value(mpfr_class &x)
         mpfr_neg(x.get_mpfr_t(), x.get_mpfr_t(), MPFR_RNDN);
 }
 
-bool same_bits(const mpfr_class &a, const mpfr_class &b)
+bool force_runtime = false;
+
+// The fixed-precision kernels have no signed zero.
+bool signed_zero_may_differ(int prec) { return !force_runtime && (prec == 512 || prec == 1024); }
+
+bool same_bits(const mpfr_class &a, const mpfr_class &b, bool zero_sign_may_differ = false)
 {
     mpfr_srcptr x = a.get_mpfr_t(), y = b.get_mpfr_t();
     if (mpfr_get_prec(x) != mpfr_get_prec(y))
         return false;
     if (mpfr_zero_p(x) && mpfr_zero_p(y)) {
-        if (mpfr_signbit(x) != mpfr_signbit(y))
+        if (mpfr_signbit(x) != mpfr_signbit(y)) {
+            if (!zero_sign_may_differ)
+                return false;
             signed_zero_diffs++;
+        }
         return true;
     }
     if (!mpfr_regular_p(x) || !mpfr_regular_p(y))
@@ -118,7 +129,9 @@ void check_eligible(int prec, const char *ta, const char *tb, mplapackint m, mpl
     else if (alpha_kind == 1)
         alpha = -0.5;
     else
-        random_value(alpha);
+        do // Rgemm returns before the GPU path when alpha == 0
+            random_value(alpha);
+        while (alpha == 0.0);
 
     std::vector<mpfr_class> Cref(C0), Cgpu(C0);
     Rgemm(ta, tb, m, n, k, alpha, A.data(), lda, B.data(), ldb, beta, Cref.data(), ldc);
@@ -133,7 +146,7 @@ void check_eligible(int prec, const char *ta, const char *tb, mplapackint m, mpl
         for (mplapackint i = 0; i < ldc; i++) {
             size_t t = i + j * ldc;
             checked++;
-            if (!same_bits(Cref[t], Cgpu[t])) {
+            if (!same_bits(Cref[t], Cgpu[t], signed_zero_may_differ(prec))) {
                 if (bad == 0)
                     mpfr_printf("FAIL prec=%d %s%s m=%ld n=%ld k=%ld beta=%g alpha_kind=%d at (%ld,%ld): cpu=%.20Re gpu=%.20Re\n", prec, ta, tb, (long)m, (long)n, (long)k, beta_d, alpha_kind, (long)i, (long)j, Cref[t].get_mpfr_t(), Cgpu[t].get_mpfr_t());
                 bad++;
@@ -157,7 +170,7 @@ void check_ineligible(int prec)
     struct {
         const char *what;
         int kind;
-    } cases[] = {{"NaN in A", 0}, {"Inf in B", 1}, {"mixed precision in C", 2}, {"exponent near emax", 3}};
+    } cases[] = {{"NaN in A", 0}, {"Inf in B", 1}, {"mixed precision in C", 2}, {"exponent near emax", 3}, {"rounding mode not RNDN", 4}};
     for (auto &c : cases) {
         std::vector<mpfr_class> A2(A), B2(B), C2(C);
         if (c.kind == 0)
@@ -169,7 +182,10 @@ void check_ineligible(int prec)
         if (c.kind == 3)
             mpfr_set_ui_2exp(A2[2].get_mpfr_t(), 1, mpfr_get_emax() - 1, MPFR_RNDN);
         std::vector<mpfr_class> before(C2);
+        if (c.kind == 4)
+            mpfr_set_default_rounding_mode(MPFR_RNDZ);
         bool used = Rgemm_mpfr_cuda(true, true, m, n, k, alpha, A2.data(), m, B2.data(), k, beta, C2.data(), m);
+        mpfr_set_default_rounding_mode(MPFR_RNDN);
         bool unchanged = true;
         for (size_t t = 0; t < C2.size(); t++)
             if (mpfr_get_prec(C2[t].get_mpfr_t()) != mpfr_get_prec(before[t].get_mpfr_t()) || (!mpfr_nan_p(before[t].get_mpfr_t()) && !same_bits(C2[t], before[t])))
@@ -193,7 +209,12 @@ int main()
     gmp_randinit_default(rng);
     gmp_randseed_ui(rng, 20261002);
 
-    const int precs[] = {512, 1024};
+    const char *fr = std::getenv("MPLAPACK_MPFR_CUDA_FORCE_RUNTIME");
+    force_runtime = fr != NULL && fr[0] != '\0' && fr[0] != '0';
+
+    // 512 and 1024 use the fixed-precision kernels (unless forced to the
+    // runtime-precision ones); the others use the runtime-precision kernels.
+    const int precs[] = {512, 1024, 64, 200, 256, 333, 2048};
     const char *trans[] = {"N", "T"};
     const double betas[] = {0.0, 1.0, 0.75, -1.25};
     const mplapackint shapes[][3] = {{1, 1, 1}, {7, 5, 3}, {37, 29, 41}, {16, 64, 8}};
@@ -208,7 +229,7 @@ int main()
         check_ineligible(prec);
     }
 
-    // Default precision other than 512/1024: never eligible.
+    // Operands of a precision other than the default one: never eligible.
     mpfrxx::set_default_precision_bits(256);
     {
         std::vector<mpfr_class> A(64), B(64), C(64);
@@ -216,8 +237,10 @@ int main()
         fill(B);
         fill(C);
         mpfr_class alpha = 1.0, beta = 1.0;
-        if (Rgemm_mpfr_cuda(true, true, 8, 8, 8, alpha, A.data(), 8, B.data(), 8, beta, C.data(), 8)) {
-            std::printf("FAIL prec=256 call was taken by the GPU path\n");
+        mpfrxx::set_default_precision_bits(320);
+        bool used = Rgemm_mpfr_cuda(true, true, 8, 8, 8, alpha, A.data(), 8, B.data(), 8, beta, C.data(), 8);
+        if (used) {
+            std::printf("FAIL operands at 256 bits with default precision 320 were taken by the GPU path\n");
             failures++;
         }
     }

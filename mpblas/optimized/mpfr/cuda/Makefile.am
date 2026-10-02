@@ -6,13 +6,22 @@ include $(top_srcdir)/mplapack/reference/accelerator-sources.am
 # - *_cuda.* files are helpers and never shadow.
 MPLAPACK_MPFR_CUDA_LAPACK_OPTIMIZED_SOURCES =
 
+# The CUDA sources are relocatable device code (Rgemm_rt_cuda.cu calls the
+# cu_mpfr device functions of libmpc_cuda.a); Rgemm_dlink_cuda.lo is their
+# device link, so that C++ programs can link the library normally.
+NVCC_MPFR_CUDA_FLAGS = $(NVCC_GLIBC_FEATURE_FLAGS) -std=c++17 -rdc=true -fmad=false -I$(MPC_CUDA_INCLUDEDIR) -I$(srcdir) $(MPFR_CUDA_GENCODE)
+
 .cu.o:
-	$(NVCC) $(NVCC_GLIBC_FEATURE_FLAGS) $(MPFR_CUDA_GENCODE) -std=c++17 -I$(MPC_CUDA_INCLUDEDIR) -I$(srcdir) -o $@ -c $< $(CUDA_CFLAGS)
+	$(NVCC) $(NVCC_MPFR_CUDA_FLAGS) -o $@ -c $< $(CUDA_CFLAGS)
 
 .cu.lo:
-	$(top_srcdir)/misc/cudalt.py $@ $(NVCC) $(NVCC_GLIBC_FEATURE_FLAGS) -std=c++17 -I$(MPC_CUDA_INCLUDEDIR) -I$(srcdir) --compiler-options=\"$(CFLAGS) $(DEFAULT_INCLUDES) $(CPPFLAGS) \" $(MPFR_CUDA_GENCODE) -c $<
+	$(top_srcdir)/misc/cudalt.py $@ $(NVCC) $(NVCC_MPFR_CUDA_FLAGS) --compiler-options=\"$(CFLAGS) $(DEFAULT_INCLUDES) $(CPPFLAGS) \" -c $<
 
-MPFR_CUDA_GENCODE = -gencode arch=compute_80,code=sm_80 -gencode arch=compute_90,code=sm_90 -m64 -O3
+Rgemm_dlink_cuda.lo: Rgemm_device_cuda.lo Rgemm_rt_cuda.lo
+	$(top_srcdir)/misc/cudalt.py $@ $(NVCC) $(MPFR_CUDA_GENCODE) -dlink .libs/Rgemm_device_cuda.o .libs/Rgemm_rt_cuda.o $(MPC_CUDA_LIBRARY)
+
+# Must match the architecture libmpc_cuda.a was built for (--with-mpfr-cuda-arch).
+MPFR_CUDA_GENCODE = -gencode arch=compute_$(MPFR_CUDA_ARCH),code=sm_$(MPFR_CUDA_ARCH) -m64 -O3
 NVCC_GLIBC_FEATURE_FLAGS = -U_GNU_SOURCE -D_XOPEN_SOURCE=700
 
 MPLAPACK_MPFR_CUDA_CPPFLAGS = $(GMPFRXX_MKII_CPPFLAGS) -I. -I$(srcdir) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR) -I$(MPC_CUDA_INCLUDEDIR) $(OPENMP_CXXFLAGS) -DMPLAPACK_BUILD_WITH_MPFR
@@ -101,10 +110,13 @@ libmplapack_mpfr_opt_cuda_la_SOURCES = \
 ../../../reference/mplapackinit.cpp \
 $(MPLAPACK_ACCEL_REFERENCE_SOURCES) \
 $(MPLAPACK_MPFR_CUDA_LAPACK_OPTIMIZED_SOURCES) \
-Rgemm.cpp Rgemm_bridge_cuda.cpp Rgemm_device_cuda.cu Rgemm_kernel_cuda.h
+Rgemm.cpp Rgemm_bridge_cuda.cpp Rgemm_device_cuda.cu Rgemm_kernel_cuda.h \
+Rgemm_rt_cuda.cu Rgemm_rt_cuda.h
 
 libmplapack_mpfr_opt_cuda_la_LDFLAGS = $(AM_LDFLAGS) $(CUDA_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO) -Wl,-rpath,$(libdir)
-libmplapack_mpfr_opt_cuda_la_LIBADD = $(CUDA_LIBS) -lcudart $(MPLAPACK_MPFR_LIBS) $(OPENMP_LIBS)
+libmplapack_mpfr_opt_cuda_la_LIBADD = Rgemm_dlink_cuda.lo $(MPC_CUDA_LIBRARY) $(CUDA_LIBS) -lcudart $(MPLAPACK_MPFR_LIBS) $(OPENMP_LIBS)
+EXTRA_libmplapack_mpfr_opt_cuda_la_DEPENDENCIES = Rgemm_dlink_cuda.lo
+CLEANFILES = Rgemm_dlink_cuda.lo .libs/Rgemm_dlink_cuda.o Rgemm_dlink_cuda.o
 if IS_MACOS
 libmplapack_mpfr_opt_cuda_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif

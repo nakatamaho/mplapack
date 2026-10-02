@@ -482,9 +482,19 @@ AM_CONDITIONAL(ENABLE_CUDA, test x$enable_cuda = xyes)
 AC_ARG_ENABLE(mpfr-cuda,
 AS_HELP_STRING([--enable-mpfr-cuda], [Build libmplapack_mpfr_opt_cuda: 512/1024-bit MPFR Rgemm on CUDA (needs mpc_cuda)]))
 AC_ARG_WITH(mpc-cuda-includedir,
-AS_HELP_STRING([--with-mpc-cuda-includedir=DIR], [mpc_cuda include directory, containing mpc_cuda/cu_freal.cuh]),
+AS_HELP_STRING([--with-mpc-cuda-includedir=DIR], [mpc_cuda include directory, containing mpc_cuda.cuh]),
 [MPC_CUDA_INCLUDEDIR="$withval"], [MPC_CUDA_INCLUDEDIR=""])
+AC_ARG_WITH(mpc-cuda-library,
+AS_HELP_STRING([--with-mpc-cuda-library=FILE], [mpc_cuda static library (default: DIR/../lib/libmpc_cuda.a for --with-mpc-cuda-includedir=DIR)]),
+[MPC_CUDA_LIBRARY="$withval"], [MPC_CUDA_LIBRARY=""])
+AC_ARG_WITH(mpfr-cuda-arch,
+AS_HELP_STRING([--with-mpfr-cuda-arch=N], [CUDA compute capability for libmplapack_mpfr_opt_cuda, the one libmpc_cuda.a was built for (e.g. 90, 121; default 90)]),
+[MPFR_CUDA_ARCH="$withval"], [MPFR_CUDA_ARCH=90])
+MPC_CUDA_DIR=
+AC_SUBST(MPC_CUDA_DIR)
 AC_SUBST(MPC_CUDA_INCLUDEDIR)
+AC_SUBST(MPC_CUDA_LIBRARY)
+AC_SUBST(MPFR_CUDA_ARCH)
 
 AC_ARG_WITH(cudatoolkithome,
 AS_HELP_STRING([--with-cudatoolkithome], [Specify path to CUDA Toolkit (default: /usr/local/cuda)]),
@@ -739,8 +749,22 @@ if test x$enable_mpfr_cuda = xyes; then
   if test x$enable_mpfr != xyes; then
     AC_MSG_ERROR([--enable-mpfr-cuda requires --enable-mpfr])
   fi
-  if test ! -f "$MPC_CUDA_INCLUDEDIR/mpc_cuda/cu_freal.cuh"; then
-    AC_MSG_ERROR([--enable-mpfr-cuda requires --with-mpc-cuda-includedir=DIR containing mpc_cuda/cu_freal.cuh (https://github.com/tkouya/mpc_cuda)])
+  if test -z "$MPC_CUDA_INCLUDEDIR"; then
+    dnl Build the bundled mpc_cuda (external/mpc_cuda).
+    MPC_CUDA_DIR=mpc_cuda
+    MPC_CUDA_INCLUDEDIR="`pwd`/external/i/MPC_CUDA/include"
+    MPC_CUDA_LIBRARY="`pwd`/external/i/MPC_CUDA/lib/libmpc_cuda.a"
+    AC_MSG_NOTICE([MPFR CUDA: using the bundled mpc_cuda for sm_$MPFR_CUDA_ARCH])
+  else
+    if test ! -f "$MPC_CUDA_INCLUDEDIR/mpc_cuda.cuh"; then
+      AC_MSG_ERROR([--with-mpc-cuda-includedir=DIR must contain mpc_cuda.cuh (https://github.com/tkouya/mpc_cuda)])
+    fi
+    if test -z "$MPC_CUDA_LIBRARY"; then
+      MPC_CUDA_LIBRARY="$MPC_CUDA_INCLUDEDIR/../lib/libmpc_cuda.a"
+    fi
+    if test ! -f "$MPC_CUDA_LIBRARY"; then
+      AC_MSG_ERROR([libmpc_cuda.a not found; give it with --with-mpc-cuda-library=FILE])
+    fi
   fi
 fi
 AM_CONDITIONAL(ENABLE_MPFR_CUDA, test x$enable_mpfr_cuda = xyes)
@@ -3085,6 +3109,7 @@ mpblas/optimized/qd/Makefile
 mpblas/optimized/dd/Makefile
 mpblas/optimized/dd/cuda/Makefile
 mpblas/optimized/mpfr/cuda/Makefile
+external/mpc_cuda/Makefile
 mpblas/optimized/double/Makefile
 mpblas/optimized/binary80/Makefile
 mpblas/optimized/binary128/Makefile
