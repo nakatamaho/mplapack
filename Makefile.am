@@ -32,6 +32,9 @@ endif
 if ENABLE_MPFR
 MPLAPACK_UNIQUE_SYMBOL_ARCHIVES += $(top_builddir)/mplapack/reference/.libs/libmplapack_mpfr.a
 MPLAPACK_UNIQUE_SYMBOL_ARCHIVES += $(top_builddir)/mpblas/optimized/mpfr/.libs/libmplapack_mpfr_opt.a
+if ENABLE_MPFR_CUDA
+MPLAPACK_UNIQUE_SYMBOL_ARCHIVES += $(top_builddir)/mpblas/optimized/mpfr/cuda/.libs/libmplapack_mpfr_opt_cuda.a
+endif
 endif
 if ENABLE_QD
 MPLAPACK_UNIQUE_SYMBOL_ARCHIVES += $(top_builddir)/mplapack/reference/.libs/libmplapack_qd.a
@@ -287,6 +290,9 @@ MPLAPACK_PKGCONFIG_FILES += mplapack_gmp.pc mplapack_gmp_opt.pc
 endif
 if ENABLE_MPFR
 MPLAPACK_PKGCONFIG_FILES += mplapack_mpfr.pc mplapack_mpfr_opt.pc
+if ENABLE_MPFR_CUDA
+MPLAPACK_PKGCONFIG_FILES += mplapack_mpfr_opt_cuda.pc
+endif
 endif
 if ENABLE_QD
 MPLAPACK_PKGCONFIG_FILES += mplapack_qd.pc mplapack_qd_opt.pc
@@ -324,10 +330,12 @@ $(MPLAPACK_PKGCONFIG_FILES): cmake/mplapack.pc.cmake.in
 	pc_libs_extra=; \
 	pc_libs_private=; \
 	case "$$pc_name" in \
-	    mplapack_mpfr|mplapack_mpfr_opt) \
+	    mplapack_mpfr|mplapack_mpfr_opt|mplapack_mpfr_opt_cuda) \
 	        pc_requires='mpc mpfr gmp'; \
 	        pc_cflags_extra='$(GMP_PC_CFLAGS)'; \
-	        ;; \
+	        case "$$pc_name" in \
+	            mplapack_mpfr_opt_cuda) pc_libs_private='$(CUDA_LIBS) -lcudart';; \
+	        esac;; \
 	    mplapack_gmp|mplapack_gmp_opt) \
 	        pc_requires='$(GMP_PC_REQUIRES)'; \
 	        pc_cflags_extra='$(GMP_PC_CFLAGS)'; \

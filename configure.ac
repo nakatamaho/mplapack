@@ -479,6 +479,13 @@ AC_ARG_ENABLE(cuda,
 [  --enable-cuda    Enable compiler level cuda])
 AM_CONDITIONAL(ENABLE_CUDA, test x$enable_cuda = xyes)
 
+AC_ARG_ENABLE(mpfr-cuda,
+AS_HELP_STRING([--enable-mpfr-cuda], [Build libmplapack_mpfr_opt_cuda: 512/1024-bit MPFR Rgemm on CUDA (needs mpc_cuda)]))
+AC_ARG_WITH(mpc-cuda-includedir,
+AS_HELP_STRING([--with-mpc-cuda-includedir=DIR], [mpc_cuda include directory, containing mpc_cuda/cu_freal.cuh]),
+[MPC_CUDA_INCLUDEDIR="$withval"], [MPC_CUDA_INCLUDEDIR=""])
+AC_SUBST(MPC_CUDA_INCLUDEDIR)
+
 AC_ARG_WITH(cudatoolkithome,
 AS_HELP_STRING([--with-cudatoolkithome], [Specify path to CUDA Toolkit (default: /usr/local/cuda)]),
 [ CUDATOOLKITHOME="$withval"],
@@ -728,6 +735,15 @@ if test x$enable_test = x"yes"; then
     enable_mpfr=yes
 fi
 AM_CONDITIONAL(ENABLE_MPFR, test x$enable_mpfr = xyes)
+if test x$enable_mpfr_cuda = xyes; then
+  if test x$enable_mpfr != xyes; then
+    AC_MSG_ERROR([--enable-mpfr-cuda requires --enable-mpfr])
+  fi
+  if test ! -f "$MPC_CUDA_INCLUDEDIR/mpc_cuda/cu_freal.cuh"; then
+    AC_MSG_ERROR([--enable-mpfr-cuda requires --with-mpc-cuda-includedir=DIR containing mpc_cuda/cu_freal.cuh (https://github.com/tkouya/mpc_cuda)])
+  fi
+fi
+AM_CONDITIONAL(ENABLE_MPFR_CUDA, test x$enable_mpfr_cuda = xyes)
 
 dnl enable QD version of MPLAPACK.
 AC_ARG_ENABLE(qd,
@@ -3068,6 +3084,7 @@ mpblas/optimized/mpfr/Makefile
 mpblas/optimized/qd/Makefile
 mpblas/optimized/dd/Makefile
 mpblas/optimized/dd/cuda/Makefile
+mpblas/optimized/mpfr/cuda/Makefile
 mpblas/optimized/double/Makefile
 mpblas/optimized/binary80/Makefile
 mpblas/optimized/binary128/Makefile
