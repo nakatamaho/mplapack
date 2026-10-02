@@ -1,5 +1,6 @@
 DLFCN_WIN32VERSION=1.4.2
 DLFCN_WIN32_DISTFILE=dlfcn-win32/download/dlfcn-win32-$(DLFCN_WIN32VERSION).tar.gz
+DLFCN_WIN32_PREFIX=$(abs_builddir)/../i/DLFCN_WIN32
 MAKEFLAGS =
 
 EXTRACT_STAMP=.dlfcn-win32_extract_done
@@ -39,7 +40,7 @@ work/$(PATCH_STAMP): work/$(EXTRACT_STAMP)
 	touch $(abs_builddir)/work/$(PATCH_STAMP)
 
 work/$(CONFIGURE_STAMP): work/$(PATCH_STAMP)
-	cd $(abs_builddir)/work/install/dlfcn-win32-$(DLFCN_WIN32VERSION); ./configure --enable-wine=wine --cross-prefix=x86_64-w64-mingw32- --prefix=$(abs_builddir)/../i/DLFCN_WIN32/
+	cd $(abs_builddir)/work/install/dlfcn-win32-$(DLFCN_WIN32VERSION); ./configure --enable-wine=wine --cross-prefix=x86_64-w64-mingw32- --prefix=$(DLFCN_WIN32_PREFIX)/
 	touch $(abs_builddir)/work/$(CONFIGURE_STAMP)
 
 work/$(BUILD_STAMP): work/$(CONFIGURE_STAMP)
@@ -66,12 +67,14 @@ check: work/$(CHECK_STAMP)
 
 install: work/$(INSTALL_STAMP)
 
+# This private prefix contains build dependencies, not installation files.
+# Keep it available for the DESTDIR install after uninstall in distcheck.
 uninstall:
-	-+cd $(abs_builddir)/work/install/dlfcn-win32-$(DLFCN_WIN32VERSION) ; ${MAKE} uninstall
+	@:
 
 distdir:
 
 clean-local:
 	rm -rf work
 distclean-local:
-	rm -rf work
+	rm -rf work "$(DLFCN_WIN32_PREFIX)"
