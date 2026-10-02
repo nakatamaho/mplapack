@@ -1,5 +1,7 @@
 SUBDIRS = .
 lib_LTLIBRARIES =
+# Install each override before its dependent support library: libtool relinks
+# installed libraries against the destination libdir during make install.
 # Backend check targets are scheduled in parallel by GNU make.  Keep
 # Automake's standard check-recursive recipe, but limit its recursion to this
 # directory; check-am below starts each backend check as an independent target.
@@ -11,43 +13,43 @@ csd.in glm.in gqr.in gsv.in lse.in nep.in se2.in sep.in svd.in
 mplapack_eigdir = $(prefix)/lib/$(target)/mplapack/test/eig
 
 if ENABLE_MPFR
-lib_LTLIBRARIES += libeig_mpfr.la libeig_override_mpfr.la libeig_mpfr_opt.la libeig_override_mpfr_opt.la
+lib_LTLIBRARIES += libeig_override_mpfr.la libeig_mpfr.la libeig_override_mpfr_opt.la libeig_mpfr_opt.la
 SUBDIRS += mpfr
 CHECK_BACKENDS += mpfr
 endif
 
 if ENABLE_GMP
-lib_LTLIBRARIES += libeig_gmp.la libeig_override_gmp.la libeig_gmp_opt.la libeig_override_gmp_opt.la
+lib_LTLIBRARIES += libeig_override_gmp.la libeig_gmp.la libeig_override_gmp_opt.la libeig_gmp_opt.la
 SUBDIRS += gmp
 CHECK_BACKENDS += gmp
 endif
 
 if ENABLE_DD
-lib_LTLIBRARIES += libeig_dd.la libeig_override_dd.la libeig_dd_opt.la libeig_override_dd_opt.la
+lib_LTLIBRARIES += libeig_override_dd.la libeig_dd.la libeig_override_dd_opt.la libeig_dd_opt.la
 SUBDIRS += dd
 CHECK_BACKENDS += dd
 endif
 
 if ENABLE_QD
-lib_LTLIBRARIES += libeig_qd.la libeig_override_qd.la libeig_qd_opt.la libeig_override_qd_opt.la
+lib_LTLIBRARIES += libeig_override_qd.la libeig_qd.la libeig_override_qd_opt.la libeig_qd_opt.la
 SUBDIRS += qd
 CHECK_BACKENDS += qd
 endif
 
 if ENABLE_DOUBLE
-lib_LTLIBRARIES += libeig_double.la libeig_override_double.la libeig_double_opt.la libeig_override_double_opt.la
+lib_LTLIBRARIES += libeig_override_double.la libeig_double.la libeig_override_double_opt.la libeig_double_opt.la
 SUBDIRS += double
 CHECK_BACKENDS += double
 endif
 
 if ENABLE_BINARY80
-lib_LTLIBRARIES += libeig_binary80.la libeig_override_binary80.la libeig_binary80_opt.la libeig_override_binary80_opt.la
+lib_LTLIBRARIES += libeig_override_binary80.la libeig_binary80.la libeig_override_binary80_opt.la libeig_binary80_opt.la
 SUBDIRS += binary80
 CHECK_BACKENDS += binary80
 endif
 
 if ENABLE_BINARY128
-lib_LTLIBRARIES += libeig_binary128.la libeig_override_binary128.la libeig_binary128_opt.la libeig_override_binary128_opt.la
+lib_LTLIBRARIES += libeig_override_binary128.la libeig_binary128.la libeig_override_binary128_opt.la libeig_binary128_opt.la
 SUBDIRS += binary128
 CHECK_BACKENDS += binary128
 endif

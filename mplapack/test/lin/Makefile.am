@@ -1,5 +1,7 @@
 SUBDIRS = .
 lib_LTLIBRARIES =
+# Install each override before its dependent support library: libtool relinks
+# installed libraries against the destination libdir during make install.
 # Backend check targets are scheduled in parallel by GNU make.  Keep
 # Automake's standard check-recursive recipe, but limit its recursion to this
 # directory; check-am below starts each backend check as an independent target.
@@ -9,43 +11,43 @@ mplapack_lin_DATA = Ctest.in Ctest_rfp.in Rtest.in Rtest_rfp.in
 mplapack_lindir = $(prefix)/lib/$(target)/mplapack/test/lin
 
 if ENABLE_MPFR
-lib_LTLIBRARIES += liblin_mpfr.la liblin_override_mpfr.la liblin_mpfr_opt.la liblin_override_mpfr_opt.la
+lib_LTLIBRARIES += liblin_override_mpfr.la liblin_mpfr.la liblin_override_mpfr_opt.la liblin_mpfr_opt.la
 SUBDIRS += mpfr
 CHECK_BACKENDS += mpfr
 endif
 
 if ENABLE_GMP
-lib_LTLIBRARIES += liblin_gmp.la liblin_override_gmp.la liblin_gmp_opt.la liblin_override_gmp_opt.la
+lib_LTLIBRARIES += liblin_override_gmp.la liblin_gmp.la liblin_override_gmp_opt.la liblin_gmp_opt.la
 SUBDIRS += gmp
 CHECK_BACKENDS += gmp
 endif
 
 if ENABLE_DD
-lib_LTLIBRARIES += liblin_dd.la liblin_override_dd.la liblin_dd_opt.la liblin_override_dd_opt.la
+lib_LTLIBRARIES += liblin_override_dd.la liblin_dd.la liblin_override_dd_opt.la liblin_dd_opt.la
 SUBDIRS += dd
 CHECK_BACKENDS += dd
 endif
 
 if ENABLE_QD
-lib_LTLIBRARIES += liblin_qd.la liblin_override_qd.la liblin_qd_opt.la liblin_override_qd_opt.la
+lib_LTLIBRARIES += liblin_override_qd.la liblin_qd.la liblin_override_qd_opt.la liblin_qd_opt.la
 SUBDIRS += qd
 CHECK_BACKENDS += qd
 endif
 
 if ENABLE_DOUBLE
-lib_LTLIBRARIES += liblin_double.la liblin_override_double.la liblin_double_opt.la liblin_override_double_opt.la
+lib_LTLIBRARIES += liblin_override_double.la liblin_double.la liblin_override_double_opt.la liblin_double_opt.la
 SUBDIRS += double
 CHECK_BACKENDS += double
 endif
 
 if ENABLE_BINARY80
-lib_LTLIBRARIES += liblin_binary80.la liblin_override_binary80.la liblin_binary80_opt.la liblin_override_binary80_opt.la
+lib_LTLIBRARIES += liblin_override_binary80.la liblin_binary80.la liblin_override_binary80_opt.la liblin_binary80_opt.la
 SUBDIRS += binary80
 CHECK_BACKENDS += binary80
 endif
 
 if ENABLE_BINARY128
-lib_LTLIBRARIES += liblin_binary128.la liblin_override_binary128.la liblin_binary128_opt.la liblin_override_binary128_opt.la
+lib_LTLIBRARIES += liblin_override_binary128.la liblin_binary128.la liblin_override_binary128_opt.la liblin_binary128_opt.la
 SUBDIRS += binary128
 CHECK_BACKENDS += binary128
 endif

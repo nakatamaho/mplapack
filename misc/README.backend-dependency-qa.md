@@ -51,3 +51,13 @@ driver's common-block definitions present, or classify those references
 separately. Public backend libraries must have no unresolved relocations.
 Use `sh misc/check_backend_support_libraries.sh <top-builddir>` for this
 classification; unexpected unresolved component/backend symbols still fail.
+
+After building the primary, MATGEN, LIN, and EIG libraries, run
+`sh misc/check_backend_support_install.sh <top-builddir>` to exercise their
+first installation into a fresh temporary DESTDIR. Use a configured prefix
+without previously installed support libraries, since libtool may otherwise
+find an old override there and mask an installation-order failure. The test
+installs the prerequisites and then the support libraries using the generated
+Automake rules, without running numerical tests. Each override must appear
+before its dependent library in `lib_LTLIBRARIES` so install-time relinking
+can find it. The temporary installation is removed when the test exits.

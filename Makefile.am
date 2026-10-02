@@ -254,6 +254,7 @@ misc/check_backend_pkgconfig.sh \
 misc/check_backend_elf_dependencies.sh \
 misc/check_backend_shared_load.py \
 misc/check_backend_support_libraries.sh \
+misc/check_backend_support_install.sh \
 misc/backend_gmp_pkgconfig_consumer.cpp \
 misc/backend_mpfr_pkgconfig_consumer.cpp \
 misc/backend_qd_pkgconfig_consumer.cpp \
