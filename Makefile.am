@@ -208,10 +208,34 @@ pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = $(MPLAPACK_PKGCONFIG_FILES)
 CLEANFILES = $(MPLAPACK_PKGCONFIG_FILES)
 
-$(MPLAPACK_PKGCONFIG_FILES): cmake/mplapack.pc.cmake.in
+$(MPLAPACK_PKGCONFIG_FILES): Makefile cmake/mplapack.pc.cmake.in
 	@pc_name='$@'; \
 	pc_name=$${pc_name%.pc}; \
 	pc_flavor=$${pc_name#mplapack_}; \
+	pc_libs_private=''; \
+	pc_cflags_extra=''; \
+	pc_libs_extra=''; \
+	case "$$pc_name" in \
+	    mplapack_gmp|mplapack_gmp_opt) \
+	        pc_cflags_extra='$(GMP_PC_CFLAGS)'; pc_libs_extra='$(GMP_PC_LIBS)'; \
+	        pc_libs_private='$(GMP_PC_LIBS_PRIVATE)';; \
+	    mplapack_mpfr|mplapack_mpfr_opt) \
+	        pc_cflags_extra='$(MPC_PC_CFLAGS) $(MPFR_PC_CFLAGS) $(GMP_PC_CFLAGS)'; \
+	        pc_libs_extra='$(MPC_PC_LIBS) $(MPFR_PC_LIBS) $(GMP_PC_LIBS)'; \
+	        pc_libs_private='$(GMP_PC_LIBS_PRIVATE)';; \
+	    mplapack_qd|mplapack_qd_opt|mplapack_dd|mplapack_dd_opt|mplapack_dd_opt_cuda) \
+	        pc_cflags_extra='$(QD_PC_CFLAGS)'; pc_libs_extra='$(QD_PC_LIBS)'; \
+	        pc_libs_private='$(QD_PC_LIBS_PRIVATE)';; \
+	esac; \
+	case "$$pc_name" in \
+	    mplapack_dd|mplapack_dd_opt|mplapack_dd_opt_cuda) pc_cflags_extra="$$pc_cflags_extra $(DD_CXXFLAGS)";; \
+	esac; \
+	case "$$pc_name" in \
+	    *_opt|*_opt_cuda|*_opt_opencl) pc_libs_private="$$pc_libs_private $(OPENMP_PC_LIBS)";; \
+	esac; \
+	pc_cflags_extra=`printf '%s' "$$pc_cflags_extra" | sed 's/^ *//;s/ *$$//;s/  */ /g'`; \
+	pc_libs_extra=`printf '%s' "$$pc_libs_extra" | sed 's/^ *//;s/ *$$//;s/  */ /g'`; \
+	pc_libs_private=`printf '%s' "$$pc_libs_private" | sed 's/^ *//;s/ *$$//;s/  */ /g'`; \
 	sed -e 's|@PC_PREFIX@|$(prefix)|g' \
 	    -e 's|@PC_LIBDIR@|$(libdir)|g' \
 	    -e 's|@PC_INCLUDEDIR@|$(includedir)/mplapack|g' \
@@ -219,9 +243,21 @@ $(MPLAPACK_PKGCONFIG_FILES): cmake/mplapack.pc.cmake.in
 	    -e "s|@PC_FLAVOR@|$$pc_flavor|g" \
 	    -e 's|@PC_DESCRIPTION@|$(PACKAGE_DESCRIPTION)|g' \
 	    -e 's|@PC_VERSION@|$(PACKAGE_VERSION)|g' \
+	    -e "s|@PC_LIBS_PRIVATE@|$$pc_libs_private|g" \
+	    -e "s|@PC_CFLAGS_EXTRA@|$$pc_cflags_extra|g" \
+	    -e "s|@PC_LIBS_EXTRA@|$$pc_libs_extra|g" \
 	    $(srcdir)/cmake/mplapack.pc.cmake.in > '$@'
 
 EXTRA_DIST = \
+misc/README.backend-dependency-qa.md \
+misc/check_backend_pkgconfig.sh \
+misc/check_backend_elf_dependencies.sh \
+misc/check_backend_shared_load.py \
+misc/check_backend_support_libraries.sh \
+misc/backend_gmp_pkgconfig_consumer.cpp \
+misc/backend_mpfr_pkgconfig_consumer.cpp \
+misc/backend_qd_pkgconfig_consumer.cpp \
+misc/backend_dd_pkgconfig_consumer.cpp \
 cmake/mplapack.pc.cmake.in \
 cmake/tests/CMakeLists.txt \
 cmake/tests/consume/CMakeLists.txt \

@@ -106,12 +106,12 @@ Rgemm.cu Rgemm_cuda.cu Rgemm_fermi.cu Rgemm_tesla.cu \
 Rsyrk.cu Rsyrk_cuda.cu dd_real_cuda.h
 
 libmplapack_dd_opt_cuda_la_LDFLAGS = $(AM_LDFLAGS) $(CUDA_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO) -Wl,-rpath,$(libdir)
-libmplapack_dd_opt_cuda_la_LIBADD = $(CUDA_LIBS) -lcudart -L$(QD_LIBDIR) -lqd
+libmplapack_dd_opt_cuda_la_LIBADD = $(CUDA_LIBS) -lcudart $(QD_LIBADD) $(OPENMP_LIBS)
 if IS_MACOS
 libmplapack_dd_opt_cuda_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif
 if IS_MINGW
-libmplapack_dd_opt_cuda_la_LDFLAGS += -fopenmp -no-undefined
+libmplapack_dd_opt_cuda_la_LDFLAGS += -no-undefined
 endif
 
 EXTRA_DIST = \

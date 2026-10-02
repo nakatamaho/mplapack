@@ -33,7 +33,9 @@ if ENABLE_MPFR
 libmatgen_mpfr_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR)  -I$(MPC_INCLUDEDIR) -I$(top_srcdir)/mpfrc++ -D___MPLAPACK_BUILD_WITH_MPFR___ -D___MPLAPACK_INTERNAL___
 libmatgen_mpfr_opt_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR)  -I$(MPC_INCLUDEDIR) -I$(top_srcdir)/mpfrc++ -D___MPLAPACK_BUILD_WITH_MPFR___ -D___MPLAPACK_INTERNAL___
 libmatgen_mpfr_la_SOURCES = $(MATGEN_SOURCES)
+libmatgen_mpfr_la_LIBADD = $(top_builddir)/mplapack/reference/libmplapack_mpfr.la $(MPLAPACK_MPFR_LIBS)
 libmatgen_mpfr_opt_la_SOURCES = $(MATGEN_SOURCES)
+libmatgen_mpfr_opt_la_LIBADD = $(top_builddir)/mpblas/optimized/mpfr/libmplapack_mpfr_opt.la $(MPLAPACK_MPFR_LIBS)
 libmatgen_mpfr_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
 libmatgen_mpfr_opt_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
 if IS_MACOS
@@ -46,7 +48,9 @@ if ENABLE_GMP
 libmatgen_gmp_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(GMP_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_GMP___ -D___MPLAPACK_INTERNAL___
 libmatgen_gmp_opt_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(GMP_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_GMP___ -D___MPLAPACK_INTERNAL___
 libmatgen_gmp_la_SOURCES = $(MATGEN_SOURCES)
+libmatgen_gmp_la_LIBADD = $(top_builddir)/mplapack/reference/libmplapack_gmp.la $(GMP_LIBS)
 libmatgen_gmp_opt_la_SOURCES = $(MATGEN_SOURCES)
+libmatgen_gmp_opt_la_LIBADD = $(top_builddir)/mpblas/optimized/gmp/libmplapack_gmp_opt.la $(GMP_LIBS)
 libmatgen_gmp_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
 libmatgen_gmp_opt_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
 if IS_MACOS
@@ -59,7 +63,9 @@ if ENABLE_QD
 libmatgen_qd_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(QD_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_QD___ @qd_extra_cxxflags@ -D___MPLAPACK_INTERNAL___
 libmatgen_qd_opt_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(QD_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_QD___ @qd_extra_cxxflags@ -D___MPLAPACK_INTERNAL___
 libmatgen_qd_la_SOURCES = $(MATGEN_SOURCES)
+libmatgen_qd_la_LIBADD = $(top_builddir)/mplapack/reference/libmplapack_qd.la $(QD_LIBADD)
 libmatgen_qd_opt_la_SOURCES = $(MATGEN_SOURCES)
+libmatgen_qd_opt_la_LIBADD = $(top_builddir)/mpblas/optimized/qd/libmplapack_qd_opt.la $(QD_LIBADD)
 libmatgen_qd_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
 libmatgen_qd_opt_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
 if IS_MACOS
@@ -72,7 +78,9 @@ if ENABLE_DD
 libmatgen_dd_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(QD_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_DD___ @qd_extra_cxxflags@ -D___MPLAPACK_INTERNAL___
 libmatgen_dd_opt_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(QD_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_DD___ @qd_extra_cxxflags@ -D___MPLAPACK_INTERNAL___
 libmatgen_dd_la_SOURCES = $(MATGEN_SOURCES)
+libmatgen_dd_la_LIBADD = $(top_builddir)/mplapack/reference/libmplapack_dd.la $(QD_LIBADD)
 libmatgen_dd_opt_la_SOURCES = $(MATGEN_SOURCES)
+libmatgen_dd_opt_la_LIBADD = $(top_builddir)/mpblas/optimized/dd/libmplapack_dd_opt.la $(QD_LIBADD)
 libmatgen_dd_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
 libmatgen_dd_opt_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
 if IS_MACOS

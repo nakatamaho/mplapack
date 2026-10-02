@@ -360,6 +360,7 @@ AC_DEFUN([AX_FIND_QUADMATH], [
 
 LT_INIT([win32-dll])
 AM_INIT_AUTOMAKE([subdir-objects -Wno-portability dist-xz no-dist-gzip])
+AM_MAINTAINER_MODE([disable])
 AC_CONFIG_MACRO_DIR([m4])
 
 dnl OpenMP Compiler flags.
@@ -375,6 +376,47 @@ if test x"$is_intelcxx" = x"1"; then
 fi
 
 AC_SUBST([OPENMP_CXXFLAGS])
+
+dnl Libtool may omit the compiler's implicit OpenMP runtime when linking
+dnl shared libraries. Record it as a library dependency, not a compiler flag.
+AC_ARG_VAR([OPENMP_LIBS], [OpenMP runtime libraries for optimized targets])
+if test "x$enable_openmp" = xno || test "x$OPENMP_CXXFLAGS" = x; then
+    OPENMP_LIBS=""
+else
+    if test "x$OPENMP_LIBS" = x; then
+        case " $OPENMP_CXXFLAGS " in
+            *" -fopenmp=libgomp "*) OPENMP_LIBS="-lgomp" ;;
+            *" -fopenmp=libomp "*) OPENMP_LIBS="-lomp" ;;
+            *" -qopenmp "*|*" -fiopenmp "*|*" -fopenmp=libiomp5 "*)
+                OPENMP_LIBS="-liomp5" ;;
+            *)
+                dnl Inspect compiler macros instead of its command name so
+                dnl absolute paths and compiler wrappers work as well.
+                AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
+#if !defined(__INTEL_COMPILER) && !defined(__INTEL_LLVM_COMPILER)
+#error Not an Intel compiler
+#endif
+int main() { return 0; }
+                ]])], [OPENMP_LIBS="-liomp5"], [
+                    AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
+#ifndef __clang__
+#error Not a Clang compiler
+#endif
+int main() { return 0; }
+                    ]])], [OPENMP_LIBS="-lomp"], [OPENMP_LIBS="-lgomp"])
+                ]) ;;
+        esac
+    fi
+    AC_MSG_CHECKING([whether the explicit OpenMP runtime links])
+    mplapack_saved_LIBS=$LIBS
+    LIBS="$OPENMP_LIBS $LIBS"
+    AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <omp.h>]],
+        [[return omp_get_num_threads() < 1;]])],
+        [AC_MSG_RESULT([yes])],
+        [AC_MSG_FAILURE([cannot link the OpenMP runtime; set OPENMP_LIBS to the compiler's runtime libraries])])
+    LIBS=$mplapack_saved_LIBS
+fi
+AC_SUBST([OPENMP_LIBS])
 
 dnl Checking host name
 AC_CANONICAL_HOST
@@ -2094,6 +2136,101 @@ AC_SUBST(QD_INCLUDEDIR, [$QD_INCLUDEDIR])
 AC_SUBST(QD_LIBDIR, [$QD_LIBDIR])
 dnl QD library end
 
+dnl Canonical backend link dependencies. Default system installations use
+dnl the compiler's search paths; explicit and bundled prefixes retain -L.
+GMP_LIBS="-L$GMP_LIBDIR -lgmpxx -lgmp"
+MPFR_LIBS="-L$MPFR_LIBDIR -lmpfr"
+MPC_LIBS="-L$MPC_LIBDIR -lmpc"
+QD_LIBADD="-L$QD_LIBDIR -lqd -lm"
+GMP_PC_CFLAGS='-I${prefix}/include'
+GMP_PC_LIBS='-L${libdir} -lgmpxx -lgmp'
+MPFR_PC_CFLAGS='-I${prefix}/include'
+MPFR_PC_LIBS='-L${libdir} -lmpfr'
+MPC_PC_CFLAGS='-I${prefix}/include'
+MPC_PC_LIBS='-L${libdir} -lmpc'
+QD_PC_CFLAGS='-I${prefix}/include'
+QD_PC_LIBS='-L${libdir} -lqd'
+QD_PC_LIBS_PRIVATE='-lm'
+GMP_PC_LIBS_PRIVATE=""
+if test x"$SYSTEM_GMP" = xyes; then
+    GMP_PC_CFLAGS="-I$GMP_INCLUDEDIR"
+    GMP_PC_LIBS="$GMP_LIBS"
+    if test x"$with_system_gmp" = xyes; then
+        GMP_LIBS="-lgmpxx -lgmp"
+        GMP_PC_CFLAGS=""
+        GMP_PC_LIBS="$GMP_LIBS"
+    fi
+fi
+if test x"$SYSTEM_MPFR" = xyes; then
+    MPFR_PC_CFLAGS="-I$MPFR_INCLUDEDIR"
+    MPFR_PC_LIBS="$MPFR_LIBS"
+    if test x"$with_system_mpfr" = xyes; then
+        MPFR_LIBS="-lmpfr"
+        MPFR_PC_CFLAGS=""
+        MPFR_PC_LIBS="$MPFR_LIBS"
+    fi
+fi
+if test x"$SYSTEM_MPC" = xyes; then
+    MPC_PC_CFLAGS="-I$MPC_INCLUDEDIR"
+    MPC_PC_LIBS="$MPC_LIBS"
+    if test x"$with_system_mpc" = xyes; then
+        MPC_LIBS="-lmpc"
+        MPC_PC_CFLAGS=""
+        MPC_PC_LIBS="$MPC_LIBS"
+    fi
+fi
+if test x"$SYSTEM_QD" = xyes; then
+    QD_PC_CFLAGS="-I$QD_INCLUDEDIR"
+    QD_PC_LIBS="-L$QD_LIBDIR -lqd"
+    if test x"$with_system_qd" = xyes; then
+        QD_LIBADD="-lqd -lm"
+        QD_PC_CFLAGS=""
+        QD_PC_LIBS="-lqd"
+    fi
+fi
+AC_PATH_PROG([MPLAPACK_PKG_CONFIG], [pkg-config])
+dnl Preserve static metadata when a matching system module is available,
+dnl but never make an installed MPLAPACK .pc require that module to exist.
+if test -n "$MPLAPACK_PKG_CONFIG"; then
+    if test x"$SYSTEM_GMP" = xyes && test x"$with_system_gmp" = xyes; then
+        if "$MPLAPACK_PKG_CONFIG" --exists gmp; then
+            GMP_PC_LIBS_PRIVATE=`"$MPLAPACK_PKG_CONFIG" --libs --static gmp`
+            mplapack_pc_options=`"$MPLAPACK_PKG_CONFIG" --cflags-only-other gmp`
+            GMP_PC_CFLAGS="$GMP_PC_CFLAGS $mplapack_pc_options"
+        fi
+    fi
+    if test x"$SYSTEM_QD" = xyes && test x"$with_system_qd" = xyes; then
+        if "$MPLAPACK_PKG_CONFIG" --exists qd; then
+            QD_PC_LIBS_PRIVATE=`"$MPLAPACK_PKG_CONFIG" --libs --static qd`
+            QD_PC_LIBS_PRIVATE="$QD_PC_LIBS_PRIVATE -lm"
+            mplapack_pc_options=`"$MPLAPACK_PKG_CONFIG" --cflags-only-other qd`
+            QD_PC_CFLAGS="$QD_PC_CFLAGS $mplapack_pc_options"
+        fi
+    fi
+fi
+MPLAPACK_MPFR_LIBS="$MPC_LIBS $MPFR_LIBS $GMP_LIBS"
+OPENMP_PC_LIBS="$OPENMP_LIBS"
+if test -n "$OPENMP_LIBS" && test x"$IS_MINGW" != x1; then
+    AC_CHECK_LIB([pthread], [pthread_create],
+        [OPENMP_PC_LIBS="$OPENMP_PC_LIBS -lpthread"], [])
+fi
+AC_SUBST([OPENMP_PC_LIBS])
+AC_SUBST([GMP_LIBS])
+AC_SUBST([MPFR_LIBS])
+AC_SUBST([MPC_LIBS])
+AC_SUBST([QD_LIBADD])
+AC_SUBST([MPLAPACK_MPFR_LIBS])
+AC_SUBST([GMP_PC_CFLAGS])
+AC_SUBST([GMP_PC_LIBS])
+AC_SUBST([GMP_PC_LIBS_PRIVATE])
+AC_SUBST([MPFR_PC_CFLAGS])
+AC_SUBST([MPFR_PC_LIBS])
+AC_SUBST([MPC_PC_CFLAGS])
+AC_SUBST([MPC_PC_LIBS])
+AC_SUBST([QD_PC_CFLAGS])
+AC_SUBST([QD_PC_LIBS])
+AC_SUBST([QD_PC_LIBS_PRIVATE])
+
 need_internal_gmplib=no
 if test x$enable_gmp = x"yes" || test x$enable_mpfr = x"yes" && test x$SYSTEM_GMP != x"yes"; then
     need_internal_gmplib=yes
@@ -2367,6 +2504,7 @@ esac
 AC_MSG_NOTICE([OpenMP:            $OPENMP_STATUS])
 if test "x$OPENMP_STATUS" = "xenabled"; then
   AC_MSG_NOTICE([  C++ flags:      $OPENMP_CXXFLAGS])
+  AC_MSG_NOTICE([  Libraries:      $OPENMP_LIBS])
   AC_MSG_NOTICE([  Runtime:        $OPENMP_RUNTIME])
 fi
 AC_MSG_NOTICE([])

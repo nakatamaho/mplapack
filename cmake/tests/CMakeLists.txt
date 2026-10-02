@@ -13,7 +13,9 @@ set(_consume_install_fixture mplapack_consume_install)
 # Forward the locations already resolved by the parent so a non-system QD
 # installation works for both the build-tree and installed-package checks.
 set(_consume_dependency_args "")
-foreach(_var QD_INCLUDE_DIR QD_LIBRARY)
+foreach(_var QD_INCLUDE_DIR QD_LIBRARY GMP_INCLUDE_DIR GMP_LIBRARY
+    GMPXX_INCLUDE_DIR GMPXX_LIBRARY MPFR_INCLUDE_DIR MPFR_LIBRARY
+    MPC_INCLUDE_DIR MPC_LIBRARY)
   if(DEFINED ${_var} AND NOT "${${_var}}" STREQUAL "")
     list(APPEND _consume_dependency_args "-D${_var}=${${_var}}")
   endif()
@@ -33,6 +35,11 @@ function(mplapack_add_consume_tests flavor)
   endif()
 
   set(_buildtree_dir "${_consume_root}/buildtree_${flavor}")
+  string(REGEX REPLACE "_opt.*$" "" _backend "${flavor}")
+  set(_consumer_source "${PROJECT_SOURCE_DIR}/misc/backend_${_backend}_pkgconfig_consumer.cpp")
+  if(_backend STREQUAL "dd")
+    set(_consumer_source "${_consume_source_dir}/main.cpp")
+  endif()
   set(_buildtree_fixture "mplapack_consume_buildtree_${flavor}")
   add_test(NAME "consume_buildtree_${flavor}_configure"
     COMMAND "${CMAKE_COMMAND}"
@@ -40,6 +47,7 @@ function(mplapack_add_consume_tests flavor)
       -B "${_buildtree_dir}"
       "-Dmplapack_DIR=${CMAKE_BINARY_DIR}"
       "-DMPLAPACK_CONSUME_TARGET=${_target}"
+      "-DMPLAPACK_CONSUME_SOURCE=${_consumer_source}"
       ${_consume_dependency_args})
   set_tests_properties("consume_buildtree_${flavor}_configure" PROPERTIES
     FIXTURES_SETUP "${_buildtree_fixture}")
@@ -56,6 +64,7 @@ function(mplapack_add_consume_tests flavor)
       -B "${_installed_dir}"
       "-Dmplapack_DIR=${_consume_install_prefix}/${CMAKE_INSTALL_LIBDIR}/cmake/mplapack"
       "-DMPLAPACK_CONSUME_TARGET=${_target}"
+      "-DMPLAPACK_CONSUME_SOURCE=${_consumer_source}"
       ${_consume_dependency_args})
   set_tests_properties("consume_installed_${flavor}_configure" PROPERTIES
     FIXTURES_REQUIRED "${_consume_install_fixture}"
@@ -67,8 +76,10 @@ function(mplapack_add_consume_tests flavor)
     FIXTURES_REQUIRED "${_installed_fixture}")
 endfunction()
 
-mplapack_add_consume_tests(dd)
-mplapack_add_consume_tests(dd_opt)
+foreach(_backend gmp mpfr qd dd)
+  mplapack_add_consume_tests(${_backend})
+  mplapack_add_consume_tests(${_backend}_opt)
+endforeach()
 
 set(MPLAPACK_AUTOTOOLS_PKGCONFIG_DIR "" CACHE PATH
     "Autotools build directory containing per-flavor .pc files to compare")
@@ -78,5 +89,6 @@ if(MPLAPACK_AUTOTOOLS_PKGCONFIG_DIR)
       "-DCMAKE_PC_DIR=${CMAKE_BINARY_DIR}/pkgconfig"
       "-DAUTOTOOLS_PC_DIR=${MPLAPACK_AUTOTOOLS_PKGCONFIG_DIR}"
       "-DFLAVORS=${MPLAPACK_INSTALL_TARGETS}"
+      "-DOPENMP_RUNTIME_LIBS=${OpenMP_CXX_LIB_NAMES}"
       -P "${CMAKE_CURRENT_SOURCE_DIR}/ComparePkgConfig.cmake")
 endif()

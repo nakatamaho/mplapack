@@ -91,9 +91,10 @@ $(MPLAPACK_OPT_REFERENCE_SOURCES) \
 $(MPLAPACK_DOUBLE_OPTIMIZED_SOURCES)
 
 libmplapack_double_opt_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO) -Wl,-rpath,$(libdir)
+libmplapack_double_opt_la_LIBADD = $(OPENMP_LIBS)
 if IS_MACOS
 libmplapack_double_opt_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif
 if IS_MINGW
-libmplapack_double_opt_la_LDFLAGS += -fopenmp -no-undefined
+libmplapack_double_opt_la_LDFLAGS += -no-undefined
 endif
