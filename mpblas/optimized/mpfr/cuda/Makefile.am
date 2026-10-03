@@ -1,7 +1,7 @@
 include $(top_srcdir)/mplapack/reference/accelerator-sources.am
 
 # Layered basename shadowing:
-# - cuda/Rgemm.cpp replaces ../Rgemm.cpp; it computes 512/1024-bit calls on
+# - cuda/Rgemm.cpp replaces ../Rgemm.cpp; it computes eligible calls on
 #   the GPU and otherwise runs the same OpenMP code as ../Rgemm.cpp.
 # - *_cuda.* files are helpers and never shadow.
 MPLAPACK_MPFR_CUDA_LAPACK_OPTIMIZED_SOURCES =

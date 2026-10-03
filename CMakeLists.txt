@@ -80,7 +80,7 @@ option(MPLAPACK_ENABLE_BINARY128 "Build the binary128 backend"             ON)
 option(MPLAPACK_ENABLE_BINARY80  "Build the binary80 backend (x86 only)"  OFF)
 option(MPLAPACK_ENABLE_OPT       "Build optimized libraries"                ON)
 option(MPLAPACK_ENABLE_CUDA      "Build the DD CUDA accelerator library"    OFF)
-option(MPLAPACK_ENABLE_MPFR_CUDA "Build the MPFR CUDA accelerator library (512/1024-bit Rgemm)" OFF)
+option(MPLAPACK_ENABLE_MPFR_CUDA "Build the MPFR CUDA accelerator library (Rgemm on the GPU)" OFF)
 set(MPLAPACK_MPC_CUDA_INCLUDE_DIR "" CACHE PATH
     "Include directory of an installed mpc_cuda (contains mpc_cuda.cuh); empty: build external/mpc_cuda")
 set(MPLAPACK_MPC_CUDA_LIBRARY "" CACHE FILEPATH

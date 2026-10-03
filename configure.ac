@@ -480,7 +480,7 @@ AC_ARG_ENABLE(cuda,
 AM_CONDITIONAL(ENABLE_CUDA, test x$enable_cuda = xyes)
 
 AC_ARG_ENABLE(mpfr-cuda,
-AS_HELP_STRING([--enable-mpfr-cuda], [Build libmplapack_mpfr_opt_cuda: 512/1024-bit MPFR Rgemm on CUDA (needs mpc_cuda)]))
+AS_HELP_STRING([--enable-mpfr-cuda], [Build libmplapack_mpfr_opt_cuda: MPFR Rgemm on CUDA (needs mpc_cuda)]))
 AC_ARG_WITH(mpc-cuda-includedir,
 AS_HELP_STRING([--with-mpc-cuda-includedir=DIR], [mpc_cuda include directory, containing mpc_cuda.cuh]),
 [MPC_CUDA_INCLUDEDIR="$withval"], [MPC_CUDA_INCLUDEDIR=""])

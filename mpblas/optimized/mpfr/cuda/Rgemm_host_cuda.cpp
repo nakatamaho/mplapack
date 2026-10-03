@@ -65,10 +65,10 @@ template <int PB> int gemm_winograd(const gemm_shape &s, const real_t<PB> &alpha
     return 0;
 }
 
-template int gemm_winograd<512>(const gemm_shape &, const real_t<512> &, const real_t<512> &, const real_t<512> *, const real_t<512> *, real_t<512> *, long);
-template int gemm_winograd<1024>(const gemm_shape &, const real_t<1024> &, const real_t<1024> &, const real_t<1024> *, const real_t<1024> *, real_t<1024> *, long);
+#define MPLAPACK_MPFR_CUDA_INSTANTIATE_WINOGRAD(PB) template int gemm_winograd<PB>(const gemm_shape &, const real_t<PB> &, const real_t<PB> &, const real_t<PB> *, const real_t<PB> *, real_t<PB> *, long);
+MPLAPACK_MPFR_CUDA_FIXED_PRECISIONS(MPLAPACK_MPFR_CUDA_INSTANTIATE_WINOGRAD)
 
-template int gemm<512>(const gemm_shape &, const real_t<512> &, const real_t<512> &, const real_t<512> *, const real_t<512> *, real_t<512> *);
-template int gemm<1024>(const gemm_shape &, const real_t<1024> &, const real_t<1024> &, const real_t<1024> *, const real_t<1024> *, real_t<1024> *);
+#define MPLAPACK_MPFR_CUDA_INSTANTIATE_GEMM(PB) template int gemm<PB>(const gemm_shape &, const real_t<PB> &, const real_t<PB> &, const real_t<PB> *, const real_t<PB> *, real_t<PB> *);
+MPLAPACK_MPFR_CUDA_FIXED_PRECISIONS(MPLAPACK_MPFR_CUDA_INSTANTIATE_GEMM)
 
 } // namespace mplapack_mpfr_cuda

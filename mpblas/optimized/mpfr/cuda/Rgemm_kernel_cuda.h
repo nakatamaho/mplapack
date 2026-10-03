@@ -27,7 +27,7 @@
  */
 
 /*
- * Fixed-precision (512/1024-bit) MPFR-compatible Rgemm kernels.
+ * Fixed-precision (256/512/768/1024/2048-bit) MPFR-compatible Rgemm kernels.
  *
  * Values are cu_fp::cu_freal<PB> from mpc_cuda (https://github.com/tkouya/mpc_cuda):
  * the significand layout is the MPFR one and + - * are bit-exact with MPFR
@@ -46,6 +46,10 @@
 namespace mplapack_mpfr_cuda {
 
 template <int PB> using real_t = cu_fp::cu_freal<PB>;
+
+// Precisions (bits) served by the fixed-precision kernels; X(PB) is expanded
+// for each of them (explicit instantiations, dispatch).
+#define MPLAPACK_MPFR_CUDA_FIXED_PRECISIONS(X) X(256) X(512) X(768) X(1024) X(2048)
 
 // Operands are packed column-major: A is nrowa x ncola with lda = nrowa,
 // B is nrowb x ncolb with ldb = nrowb, C is m x n with ldc = m.

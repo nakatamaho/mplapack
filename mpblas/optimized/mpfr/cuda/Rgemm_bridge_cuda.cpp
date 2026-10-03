@@ -42,14 +42,14 @@
  *   - m*n*k >= MPLAPACK_MPFR_CUDA_MIN_MNK (default 32768), and
  *   - MPLAPACK_MPFR_CUDA is not set to 0.
  *
- * p = 512 or 1024 uses the fixed-precision kernels (cu_fp::cu_freal<p>,
+ * p = 256, 512, 768, 1024 or 2048 uses the fixed-precision kernels (cu_fp::cu_freal<p>,
  * Rgemm_device_cuda.cu); the result equals the CPU Rgemm except that a zero
  * is always +0.  Any other p uses the runtime-precision kernels (cu_mpfr,
  * Rgemm_rt_cuda.cu), whose result equals the CPU Rgemm exactly.
- * MPLAPACK_MPFR_CUDA_FORCE_RUNTIME=1 sends 512/1024-bit calls to the
+ * MPLAPACK_MPFR_CUDA_FORCE_RUNTIME=1 sends those calls to the
  * runtime-precision kernels too; MPLAPACK_MPFR_CUDA_RUNTIME=0 disables them.
  *
- * MPLAPACK_MPFR_CUDA_WINOGRAD_CUTOFF=N (N > 0) computes 512/1024-bit calls
+ * MPLAPACK_MPFR_CUDA_WINOGRAD_CUTOFF=N (N > 0) computes fixed-precision calls
  * with min(m, n, k) > N by the Winograd variant of Strassen's algorithm
  * (Rgemm_winograd_cuda.h), recursing down to blocks of size N.  The result
  * then differs from the CPU Rgemm within a normwise error bound.  It is off
@@ -369,10 +369,15 @@ bool Rgemm_mpfr_cuda(bool nota, bool notb, mplapackint m, mplapackint n, mplapac
     // The CPU code rounds temporaries to the default precision.
     const mpfr_prec_t prec = mpfrxx::default_precision_bits();
     if (!force_runtime()) {
-        if (prec == 512)
-            return run<512>(nota, notb, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc);
-        if (prec == 1024)
-            return run<1024>(nota, notb, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc);
+        switch (prec) {
+#define MPLAPACK_MPFR_CUDA_DISPATCH(PB) \
+    case PB:                            \
+        return run<PB>(nota, notb, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc);
+            MPLAPACK_MPFR_CUDA_FIXED_PRECISIONS(MPLAPACK_MPFR_CUDA_DISPATCH)
+#undef MPLAPACK_MPFR_CUDA_DISPATCH
+        default:
+            break;
+        }
     }
     if (!runtime_enabled())
         return false;

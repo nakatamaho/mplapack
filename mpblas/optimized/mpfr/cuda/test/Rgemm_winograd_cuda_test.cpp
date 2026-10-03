@@ -29,7 +29,7 @@
 
 /*
  * Checks the Winograd (Strassen) path of the CUDA Rgemm
- * (MPLAPACK_MPFR_CUDA_WINOGRAD_CUTOFF), at 512 and 1024 bits:
+ * (MPLAPACK_MPFR_CUDA_WINOGRAD_CUTOFF), at 256, 512, 768, 1024 and 2048 bits:
  *
  * 1. Integer matrices: no rounding occurs, so Rgemm_mpfr_cuda must equal
  *    the CPU Rgemm exactly, for odd and even sizes, all transpose
@@ -197,7 +197,7 @@ int main()
         return rc;
     }
 
-    for (int prec : {512, 1024}) {
+    for (int prec : {256, 512, 768, 1024, 2048}) {
         mpfrxx::set_default_precision_bits(prec);
         for (const char *ta : trans)
             for (const char *tb : trans)
@@ -207,8 +207,11 @@ int main()
                 }
     }
     long cutoff = std::atol(cut);
+    check_backend<256>(37, 29, 41, cutoff);
     check_backend<512>(37, 29, 41, cutoff);
+    check_backend<768>(33, 17, 40, cutoff);
     check_backend<1024>(64, 64, 64, cutoff);
+    check_backend<2048>(16, 16, 16, cutoff);
 
     gmp_randclear(rng);
     std::printf("%s: cutoff %ld, %ld elements compared, %d failures\n", failures ? "FAILED" : "PASSED", cutoff, checked, failures);

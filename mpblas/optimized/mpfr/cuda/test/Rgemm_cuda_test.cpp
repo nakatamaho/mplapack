@@ -35,7 +35,7 @@
  *
  * For every eligible call the GPU path must return true and produce the
  * same MPFR value, limb for limb, as the CPU.  With the fixed-precision
- * kernels (512/1024 bits) a zero may differ in sign; the runtime-precision
+ * kernels (256/512/768/1024/2048 bits) a zero may differ in sign; the runtime-precision
  * kernels (other precisions, or all with MPLAPACK_MPFR_CUDA_FORCE_RUNTIME=1)
  * must match exactly, signed zeros included.
  * Ineligible calls must return false and leave C unchanged.
@@ -84,7 +84,7 @@ void random_value(mpfr_class &x)
 bool force_runtime = false;
 
 // The fixed-precision kernels have no signed zero.
-bool signed_zero_may_differ(int prec) { return !force_runtime && (prec == 512 || prec == 1024); }
+bool signed_zero_may_differ(int prec) { return !force_runtime && (prec == 256 || prec == 512 || prec == 768 || prec == 1024 || prec == 2048); }
 
 bool same_bits(const mpfr_class &a, const mpfr_class &b, bool zero_sign_may_differ = false)
 {
@@ -212,9 +212,9 @@ int main()
     const char *fr = std::getenv("MPLAPACK_MPFR_CUDA_FORCE_RUNTIME");
     force_runtime = fr != NULL && fr[0] != '\0' && fr[0] != '0';
 
-    // 512 and 1024 use the fixed-precision kernels (unless forced to the
+    // 256, 512, 768, 1024 and 2048 use the fixed-precision kernels (unless forced to the
     // runtime-precision ones); the others use the runtime-precision kernels.
-    const int precs[] = {512, 1024, 64, 200, 256, 333, 2048};
+    const int precs[] = {256, 512, 768, 1024, 2048, 64, 200, 333, 4096};
     const char *trans[] = {"N", "T"};
     const double betas[] = {0.0, 1.0, 0.75, -1.25};
     const mplapackint shapes[][3] = {{1, 1, 1}, {7, 5, 3}, {37, 29, 41}, {16, 64, 8}};

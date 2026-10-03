@@ -9,15 +9,20 @@ The GPU arithmetic comes from [mpc_cuda](https://github.com/tkouya/mpc_cuda)
 
 | Precision | Kernels | Arithmetic | Result vs CPU `Rgemm` |
 |---|---|---|---|
-| 512, 1024 bits | `Rgemm_device_cuda.cu` | `cu_fp::cu_freal<PB>`: fixed precision, significand in registers | identical, except that a zero is always `+0` |
+| 256, 512, 768, 1024, 2048 bits | `Rgemm_device_cuda.cu` | `cu_fp::cu_freal<PB>`: fixed precision, significand in registers | identical, except that a zero is always `+0` |
 | any other | `Rgemm_rt_cuda.cu` (port of mpc_cuda `demos/matmul_mpfr.cu`) | `cu_mpfr`: MPFR 4.2.2 compiled for the device | identical, signed zeros included |
 
 Both perform the same operations in the same order as
-`openmp/Rgemm_*_omp.cpp`.
+`openmp/Rgemm_*_omp.cpp`. The fixed precisions are listed once, in
+`MPLAPACK_MPFR_CUDA_FIXED_PRECISIONS` (`Rgemm_kernel_cuda.h`). mpc_cuda
+reports that `cu_freal` keeps the significand in registers up to about 1024
+bits; at 2048 bits it spills to local memory and is several times slower per
+operation, which may make the `cu_mpfr` kernels
+(`MPLAPACK_MPFR_CUDA_FORCE_RUNTIME=1`) competitive there.
 
 ### Winograd (Strassen) variant
 
-With `MPLAPACK_MPFR_CUDA_WINOGRAD_CUTOFF=N` (N > 0), 512/1024-bit calls with
+With `MPLAPACK_MPFR_CUDA_WINOGRAD_CUTOFF=N` (N > 0), fixed-precision calls with
 `min(m, n, k) > N` use the Winograd variant of Strassen's algorithm
 (`Rgemm_winograd_cuda.h`), 7 block products instead of 8 per level, recursing
 until a dimension is at most N; odd dimensions are padded with a zero row or
@@ -75,9 +80,9 @@ Environment variables:
 |---|---|
 | `MPLAPACK_MPFR_CUDA=0` | never use the GPU |
 | `MPLAPACK_MPFR_CUDA_MIN_MNK=N` | minimum `m*n*k` for the GPU path |
-| `MPLAPACK_MPFR_CUDA_RUNTIME=0` | no GPU for precisions other than 512/1024 |
-| `MPLAPACK_MPFR_CUDA_FORCE_RUNTIME=1` | use the `cu_mpfr` kernels for 512/1024 bits too |
-| `MPLAPACK_MPFR_CUDA_WINOGRAD_CUTOFF=N` | Winograd/Strassen for 512/1024 bits when `min(m,n,k) > N` (default 0: off) |
+| `MPLAPACK_MPFR_CUDA_RUNTIME=0` | no GPU for precisions other than 256/512/768/1024/2048 |
+| `MPLAPACK_MPFR_CUDA_FORCE_RUNTIME=1` | use the `cu_mpfr` kernels for 256/512/768/1024/2048 bits too |
+| `MPLAPACK_MPFR_CUDA_WINOGRAD_CUTOFF=N` | Winograd/Strassen for the fixed precisions when `min(m,n,k) > N` (default 0: off) |
 | `MPLAPACK_MPFR_CUDA_RT_BLOCKS`, `MPLAPACK_MPFR_CUDA_RT_THREADS` | thread pool of the `cu_mpfr` kernels (default 256 x 32) |
 | `MPLAPACK_MPFR_CUDA_VERBOSE=1` | print CUDA errors that cause a CPU fallback |
 
@@ -89,7 +94,8 @@ limit to 64 KB while they run.
 ## Tests (CMake)
 
 `mpfr_cuda_Rgemm_{host,device}[_runtime]` compare the GPU `Rgemm` bit for bit
-with the CPU `Rgemm` at 64, 200, 256, 333, 512, 1024 and 2048 bits, for all
+with the CPU `Rgemm` at 256, 512, 768, 1024, 2048 (fixed) and 64, 200, 333,
+4096 (runtime) bits, for all
 transpose combinations and several `alpha`/`beta`, with zeros and mixed
 magnitudes, and check that ineligible calls fall back. `_runtime` runs every
 precision through the `cu_mpfr` kernels.
@@ -99,7 +105,7 @@ precision through the `cu_mpfr` kernels.
 - `device`: the kernels run on the GPU; skipped when no device is present.
 
 `mpfr_cuda_Rgemm_winograd_{host,device}` check the Winograd path at
-512/1024 bits with cutoffs 1, 2, 3 and 8: integer matrices (no rounding) must
+256/512/768/1024/2048 bits with cutoffs 1, 2, 3 and 8: integer matrices (no rounding) must
 equal the CPU `Rgemm` exactly for odd/even sizes, all transpose combinations
 and general `alpha`/`beta`; random real matrices must agree within
 `2^(20-p) * (k |alpha| max|A| max|B| + |beta| max|C|)`; and the GPU backend
@@ -113,6 +119,6 @@ default precision, which is not the caller's precision.
 
 - Only `Rgemm` is accelerated.
 - One thread per element of `C`, no shared-memory tiling yet.
-- The Winograd variant exists for 512/1024 bits only (not for the `cu_mpfr`
-  kernels) and allocates its temporaries with `cudaMalloc` at every level.
+- The Winograd variant exists for the fixed precisions only (not for the
+  `cu_mpfr` kernels) and allocates its temporaries with `cudaMalloc` at every level.
 - Not yet measured on a GPU.
