@@ -1,7 +1,7 @@
 SUBDIRS = .
 lib_LTLIBRARIES =
-# Install each override before its dependent support library: libtool relinks
-# installed libraries against the destination libdir during make install.
+# Test overrides are owned by drivers, not by the support-library graph.
+# Keep backend runtime dependencies explicit below.
 # Backend check targets are scheduled in parallel by GNU make.  Keep
 # Automake's standard check-recursive recipe, but limit its recursion to this
 # directory; check-am below starts each backend check as an independent target.
@@ -76,9 +76,9 @@ liblin_override_mpfr_opt_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_
 liblin_mpfr_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR) -I$(top_srcdir)/mpfrc++ -D___MPLAPACK_BUILD_WITH_MPFR___ -D___MPLAPACK_INTERNAL___
 liblin_mpfr_opt_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR) -I$(top_srcdir)/mpfrc++ -D___MPLAPACK_BUILD_WITH_MPFR___ -D___MPLAPACK_INTERNAL___
 liblin_mpfr_la_SOURCES = $(LIN_SOURCES)
-liblin_mpfr_la_LIBADD = liblin_override_mpfr.la $(top_builddir)/mplapack/test/matgen/libmatgen_mpfr.la $(top_builddir)/mplapack/reference/libmplapack_mpfr.la $(MPLAPACK_MPFR_LIBS)
+liblin_mpfr_la_LIBADD = $(top_builddir)/mplapack/test/matgen/libmatgen_mpfr.la $(top_builddir)/mplapack/reference/libmplapack_mpfr.la $(MPLAPACK_MPFR_LIBS)
 liblin_mpfr_opt_la_SOURCES = $(LIN_SOURCES)
-liblin_mpfr_opt_la_LIBADD = liblin_override_mpfr_opt.la $(top_builddir)/mplapack/test/matgen/libmatgen_mpfr_opt.la $(top_builddir)/mpblas/optimized/mpfr/libmplapack_mpfr_opt.la $(MPLAPACK_MPFR_LIBS)
+liblin_mpfr_opt_la_LIBADD = $(top_builddir)/mplapack/test/matgen/libmatgen_mpfr_opt.la $(top_builddir)/mpblas/optimized/mpfr/libmplapack_mpfr_opt.la $(MPLAPACK_MPFR_LIBS)
 liblin_mpfr_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
 liblin_mpfr_opt_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
 if IS_MACOS
@@ -93,9 +93,9 @@ if ENABLE_GMP
 liblin_gmp_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(GMP_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_GMP___ -D___MPLAPACK_INTERNAL___
 liblin_gmp_opt_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(GMP_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_GMP___ -D___MPLAPACK_INTERNAL___
 liblin_gmp_la_SOURCES = $(LIN_SOURCES)
-liblin_gmp_la_LIBADD = liblin_override_gmp.la $(top_builddir)/mplapack/test/matgen/libmatgen_gmp.la $(top_builddir)/mplapack/reference/libmplapack_gmp.la $(GMP_LIBS)
+liblin_gmp_la_LIBADD = $(top_builddir)/mplapack/test/matgen/libmatgen_gmp.la $(top_builddir)/mplapack/reference/libmplapack_gmp.la $(GMP_LIBS)
 liblin_gmp_opt_la_SOURCES = $(LIN_SOURCES)
-liblin_gmp_opt_la_LIBADD = liblin_override_gmp_opt.la $(top_builddir)/mplapack/test/matgen/libmatgen_gmp_opt.la $(top_builddir)/mpblas/optimized/gmp/libmplapack_gmp_opt.la $(GMP_LIBS)
+liblin_gmp_opt_la_LIBADD = $(top_builddir)/mplapack/test/matgen/libmatgen_gmp_opt.la $(top_builddir)/mpblas/optimized/gmp/libmplapack_gmp_opt.la $(GMP_LIBS)
 liblin_gmp_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
 liblin_gmp_opt_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
 liblin_override_gmp_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(GMP_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_GMP___
@@ -116,9 +116,9 @@ if ENABLE_QD
 liblin_qd_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(QD_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_QD___ @qd_extra_cxxflags@ -D___MPLAPACK_INTERNAL___
 liblin_qd_opt_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(QD_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_QD___ @qd_extra_cxxflags@ -D___MPLAPACK_INTERNAL___
 liblin_qd_la_SOURCES = $(LIN_SOURCES)
-liblin_qd_la_LIBADD = liblin_override_qd.la $(top_builddir)/mplapack/test/matgen/libmatgen_qd.la $(top_builddir)/mplapack/reference/libmplapack_qd.la $(QD_LIBADD)
+liblin_qd_la_LIBADD = $(top_builddir)/mplapack/test/matgen/libmatgen_qd.la $(top_builddir)/mplapack/reference/libmplapack_qd.la $(QD_LIBADD)
 liblin_qd_opt_la_SOURCES = $(LIN_SOURCES)
-liblin_qd_opt_la_LIBADD = liblin_override_qd_opt.la $(top_builddir)/mplapack/test/matgen/libmatgen_qd_opt.la $(top_builddir)/mpblas/optimized/qd/libmplapack_qd_opt.la $(QD_LIBADD)
+liblin_qd_opt_la_LIBADD = $(top_builddir)/mplapack/test/matgen/libmatgen_qd_opt.la $(top_builddir)/mpblas/optimized/qd/libmplapack_qd_opt.la $(QD_LIBADD)
 liblin_qd_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
 liblin_qd_opt_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
 liblin_override_qd_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(QD_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_QD___ @qd_extra_cxxflags@
@@ -139,9 +139,9 @@ if ENABLE_DD
 liblin_dd_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(QD_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_DD___ @qd_extra_cxxflags@ -D___MPLAPACK_INTERNAL___
 liblin_dd_opt_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(QD_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_DD___ @qd_extra_cxxflags@ -D___MPLAPACK_INTERNAL___
 liblin_dd_la_SOURCES = $(LIN_SOURCES)
-liblin_dd_la_LIBADD = liblin_override_dd.la $(top_builddir)/mplapack/test/matgen/libmatgen_dd.la $(top_builddir)/mplapack/reference/libmplapack_dd.la $(QD_LIBADD)
+liblin_dd_la_LIBADD = $(top_builddir)/mplapack/test/matgen/libmatgen_dd.la $(top_builddir)/mplapack/reference/libmplapack_dd.la $(QD_LIBADD)
 liblin_dd_opt_la_SOURCES = $(LIN_SOURCES)
-liblin_dd_opt_la_LIBADD = liblin_override_dd_opt.la $(top_builddir)/mplapack/test/matgen/libmatgen_dd_opt.la $(top_builddir)/mpblas/optimized/dd/libmplapack_dd_opt.la $(QD_LIBADD)
+liblin_dd_opt_la_LIBADD = $(top_builddir)/mplapack/test/matgen/libmatgen_dd_opt.la $(top_builddir)/mpblas/optimized/dd/libmplapack_dd_opt.la $(QD_LIBADD)
 liblin_dd_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
 liblin_dd_opt_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
 liblin_override_dd_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(QD_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_DD___ @qd_extra_cxxflags@

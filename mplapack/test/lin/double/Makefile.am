@@ -1,5 +1,9 @@
 check_PROGRAMS = $(mplapack_double_test_PROGRAMS) $(mplapack_double_opt_test_PROGRAMS)
 
+# Executable-owned overrides must precede shared backend definitions even
+# when --as-needed drops an otherwise unused override library.
+TEST_OVERRIDE_SOURCES = ../common/Mxerbla.cpp ../common/iMlaenv.cpp ../common/Mxlaenv.cpp
+
 mplapack_double_test_PROGRAMS = xlintstR_double xlintstC_double xlintstrfR_double xlintstrfC_double
 mplapack_double_opt_test_PROGRAMS = xlintstR_double_opt xlintstC_double_opt xlintstrfR_double_opt xlintstrfC_double_opt
 mplapack_double_testdir = $(prefix)/lib/$(target)/mplapack/test/lin
@@ -19,8 +23,8 @@ endif
 mplibs = -lm
 cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH_DOUBLE___ -I$(top_srcdir)/fable -D___MPLAPACK_INTERNAL___
 
-xlintstR_double_SOURCES  = ../common/Rchkaa.cpp
-xlintstR_double_opt_SOURCES  = ../common/Rchkaa.cpp
+xlintstR_double_SOURCES  = ../common/Rchkaa.cpp $(TEST_OVERRIDE_SOURCES)
+xlintstR_double_opt_SOURCES  = ../common/Rchkaa.cpp $(TEST_OVERRIDE_SOURCES)
 xlintstR_double_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xlintstR_double_opt_LDFLAGS  = $(opt_libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xlintstR_double_LDFLAGS += -Wl,-rpath,$(libdir)
@@ -28,8 +32,8 @@ xlintstR_double_opt_LDFLAGS += -Wl,-rpath,$(libdir)
 xlintstR_double_CXXFLAGS = $(cxxflags)
 xlintstR_double_opt_CXXFLAGS = $(cxxflags)
 
-xlintstC_double_SOURCES  = ../common/Cchkaa.cpp
-xlintstC_double_opt_SOURCES  = ../common/Cchkaa.cpp
+xlintstC_double_SOURCES  = ../common/Cchkaa.cpp $(TEST_OVERRIDE_SOURCES)
+xlintstC_double_opt_SOURCES  = ../common/Cchkaa.cpp $(TEST_OVERRIDE_SOURCES)
 xlintstC_double_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xlintstC_double_opt_LDFLAGS  = $(opt_libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xlintstC_double_LDFLAGS += -Wl,-rpath,$(libdir)
@@ -37,8 +41,8 @@ xlintstC_double_opt_LDFLAGS += -Wl,-rpath,$(libdir)
 xlintstC_double_CXXFLAGS = $(cxxflags)
 xlintstC_double_opt_CXXFLAGS = $(cxxflags)
 
-xlintstrfR_double_SOURCES  = ../common/Rchkrfp.cpp
-xlintstrfR_double_opt_SOURCES  = ../common/Rchkrfp.cpp
+xlintstrfR_double_SOURCES  = ../common/Rchkrfp.cpp $(TEST_OVERRIDE_SOURCES)
+xlintstrfR_double_opt_SOURCES  = ../common/Rchkrfp.cpp $(TEST_OVERRIDE_SOURCES)
 xlintstrfR_double_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xlintstrfR_double_opt_LDFLAGS  = $(opt_libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xlintstrfR_double_LDFLAGS += -Wl,-rpath,$(libdir)
@@ -46,8 +50,8 @@ xlintstrfR_double_opt_LDFLAGS += -Wl,-rpath,$(libdir)
 xlintstrfR_double_CXXFLAGS = $(cxxflags)
 xlintstrfR_double_opt_CXXFLAGS = $(cxxflags)
 
-xlintstrfC_double_SOURCES  = ../common/Cchkrfp.cpp
-xlintstrfC_double_opt_SOURCES  = ../common/Cchkrfp.cpp
+xlintstrfC_double_SOURCES  = ../common/Cchkrfp.cpp $(TEST_OVERRIDE_SOURCES)
+xlintstrfC_double_opt_SOURCES  = ../common/Cchkrfp.cpp $(TEST_OVERRIDE_SOURCES)
 xlintstrfC_double_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xlintstrfC_double_opt_LDFLAGS  = $(opt_libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xlintstrfC_double_LDFLAGS += -Wl,-rpath,$(libdir)

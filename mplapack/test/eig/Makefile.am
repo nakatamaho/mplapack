@@ -1,7 +1,7 @@
 SUBDIRS = .
 lib_LTLIBRARIES =
-# Install each override before its dependent support library: libtool relinks
-# installed libraries against the destination libdir during make install.
+# Test overrides are owned by drivers, not by the support-library graph.
+# Keep backend runtime dependencies explicit below.
 # Backend check targets are scheduled in parallel by GNU make.  Keep
 # Automake's standard check-recursive recipe, but limit its recursion to this
 # directory; check-am below starts each backend check as an independent target.
@@ -72,9 +72,9 @@ if ENABLE_MPFR
 libeig_mpfr_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(LAPACK_INCLUDEDIR) -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR)  -I$(MPC_INCLUDEDIR) -I$(top_srcdir)/mpfrc++ -D___MPLAPACK_BUILD_WITH_MPFR___ -D___MPLAPACK_INTERNAL___
 libeig_mpfr_opt_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(LAPACK_INCLUDEDIR) -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR)  -I$(MPC_INCLUDEDIR) -I$(top_srcdir)/mpfrc++ -D___MPLAPACK_BUILD_WITH_MPFR___ -D___MPLAPACK_INTERNAL___
 libeig_mpfr_la_SOURCES = $(EIG_SOURCES)
-libeig_mpfr_la_LIBADD = libeig_override_mpfr.la $(top_builddir)/mplapack/test/matgen/libmatgen_mpfr.la $(top_builddir)/mplapack/reference/libmplapack_mpfr.la $(MPLAPACK_MPFR_LIBS)
+libeig_mpfr_la_LIBADD = $(top_builddir)/mplapack/test/matgen/libmatgen_mpfr.la $(top_builddir)/mplapack/reference/libmplapack_mpfr.la $(MPLAPACK_MPFR_LIBS)
 libeig_mpfr_opt_la_SOURCES = $(EIG_SOURCES)
-libeig_mpfr_opt_la_LIBADD = libeig_override_mpfr_opt.la $(top_builddir)/mplapack/test/matgen/libmatgen_mpfr_opt.la $(top_builddir)/mpblas/optimized/mpfr/libmplapack_mpfr_opt.la $(MPLAPACK_MPFR_LIBS)
+libeig_mpfr_opt_la_LIBADD = $(top_builddir)/mplapack/test/matgen/libmatgen_mpfr_opt.la $(top_builddir)/mpblas/optimized/mpfr/libmplapack_mpfr_opt.la $(MPLAPACK_MPFR_LIBS)
 libeig_mpfr_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
 libeig_mpfr_opt_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
 libeig_override_mpfr_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR) -I$(top_srcdir)/mpfrc++ -D___MPLAPACK_BUILD_WITH_MPFR___ -I$(top_srcdir)/fable
@@ -95,9 +95,9 @@ if ENABLE_GMP
 libeig_gmp_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(LAPACK_INCLUDEDIR) -I$(GMP_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_GMP___ -D___MPLAPACK_INTERNAL___
 libeig_gmp_opt_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(LAPACK_INCLUDEDIR) -I$(GMP_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_GMP___ -D___MPLAPACK_INTERNAL___
 libeig_gmp_la_SOURCES = $(EIG_SOURCES)
-libeig_gmp_la_LIBADD = libeig_override_gmp.la $(top_builddir)/mplapack/test/matgen/libmatgen_gmp.la $(top_builddir)/mplapack/reference/libmplapack_gmp.la $(GMP_LIBS)
+libeig_gmp_la_LIBADD = $(top_builddir)/mplapack/test/matgen/libmatgen_gmp.la $(top_builddir)/mplapack/reference/libmplapack_gmp.la $(GMP_LIBS)
 libeig_gmp_opt_la_SOURCES = $(EIG_SOURCES)
-libeig_gmp_opt_la_LIBADD = libeig_override_gmp_opt.la $(top_builddir)/mplapack/test/matgen/libmatgen_gmp_opt.la $(top_builddir)/mpblas/optimized/gmp/libmplapack_gmp_opt.la $(GMP_LIBS)
+libeig_gmp_opt_la_LIBADD = $(top_builddir)/mplapack/test/matgen/libmatgen_gmp_opt.la $(top_builddir)/mpblas/optimized/gmp/libmplapack_gmp_opt.la $(GMP_LIBS)
 libeig_gmp_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
 libeig_gmp_opt_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
 libeig_override_gmp_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -I$(top_srcdir)/fable -D___MPLAPACK_BUILD_WITH_GMP___
@@ -118,9 +118,9 @@ if ENABLE_QD
 libeig_qd_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(LAPACK_INCLUDEDIR) -I$(QD_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_QD___ @qd_extra_cxxflags@ -D___MPLAPACK_INTERNAL___
 libeig_qd_opt_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(LAPACK_INCLUDEDIR) -I$(QD_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_QD___ @qd_extra_cxxflags@ -D___MPLAPACK_INTERNAL___
 libeig_qd_la_SOURCES = $(EIG_SOURCES)
-libeig_qd_la_LIBADD = libeig_override_qd.la $(top_builddir)/mplapack/test/matgen/libmatgen_qd.la $(top_builddir)/mplapack/reference/libmplapack_qd.la $(QD_LIBADD)
+libeig_qd_la_LIBADD = $(top_builddir)/mplapack/test/matgen/libmatgen_qd.la $(top_builddir)/mplapack/reference/libmplapack_qd.la $(QD_LIBADD)
 libeig_qd_opt_la_SOURCES = $(EIG_SOURCES)
-libeig_qd_opt_la_LIBADD = libeig_override_qd_opt.la $(top_builddir)/mplapack/test/matgen/libmatgen_qd_opt.la $(top_builddir)/mpblas/optimized/qd/libmplapack_qd_opt.la $(QD_LIBADD)
+libeig_qd_opt_la_LIBADD = $(top_builddir)/mplapack/test/matgen/libmatgen_qd_opt.la $(top_builddir)/mpblas/optimized/qd/libmplapack_qd_opt.la $(QD_LIBADD)
 libeig_qd_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
 libeig_qd_opt_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
 libeig_override_qd_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(QD_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_QD___ @qd_extra_cxxflags@
@@ -141,9 +141,9 @@ if ENABLE_DD
 libeig_dd_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(LAPACK_INCLUDEDIR) -I$(QD_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_DD___ @qd_extra_cxxflags@ -D___MPLAPACK_INTERNAL___
 libeig_dd_opt_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(LAPACK_INCLUDEDIR) -I$(QD_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_DD___ @qd_extra_cxxflags@ -D___MPLAPACK_INTERNAL___
 libeig_dd_la_SOURCES = $(EIG_SOURCES)
-libeig_dd_la_LIBADD = libeig_override_dd.la $(top_builddir)/mplapack/test/matgen/libmatgen_dd.la $(top_builddir)/mplapack/reference/libmplapack_dd.la $(QD_LIBADD)
+libeig_dd_la_LIBADD = $(top_builddir)/mplapack/test/matgen/libmatgen_dd.la $(top_builddir)/mplapack/reference/libmplapack_dd.la $(QD_LIBADD)
 libeig_dd_opt_la_SOURCES = $(EIG_SOURCES)
-libeig_dd_opt_la_LIBADD = libeig_override_dd_opt.la $(top_builddir)/mplapack/test/matgen/libmatgen_dd_opt.la $(top_builddir)/mpblas/optimized/dd/libmplapack_dd_opt.la $(QD_LIBADD)
+libeig_dd_opt_la_LIBADD = $(top_builddir)/mplapack/test/matgen/libmatgen_dd_opt.la $(top_builddir)/mpblas/optimized/dd/libmplapack_dd_opt.la $(QD_LIBADD)
 libeig_dd_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
 libeig_dd_opt_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
 libeig_override_dd_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(QD_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_DD___ @qd_extra_cxxflags@
@@ -404,8 +404,7 @@ common/Rsvdct.cpp \
 common/Rsxt1.cpp \
 common/Rsyl01.cpp \
 common/Rsyt21.cpp \
-common/Rsyt22.cpp \
-common/iMlaenv.cpp
+common/Rsyt22.cpp
 
 install-data-hook:
 if IS_MACOS

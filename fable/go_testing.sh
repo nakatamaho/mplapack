@@ -448,6 +448,10 @@ variable_name = sys.argv[3]
 path_prefix = sys.argv[4]
 
 cpp_files = sorted(path.name for path in source_dir.glob("*.cpp"))
+# The test iMlaenv belongs only to ordinary EIG drivers/override libraries.
+# DMD must resolve the production implementation through libeig instead.
+if variable_name == "EIG_SOURCES":
+    cpp_files = [name for name in cpp_files if name != "iMlaenv.cpp"]
 if not cpp_files:
     raise SystemExit(f"No .cpp files found in {source_dir}")
 

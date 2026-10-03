@@ -1,5 +1,9 @@
 check_PROGRAMS = $(mplapack_binary128_test_PROGRAMS) $(mplapack_binary128_opt_test_PROGRAMS)
 
+# Executable-owned overrides must precede shared backend definitions even
+# when --as-needed drops an otherwise unused override library.
+TEST_OVERRIDE_SOURCES = ../common/Mxerbla.cpp ../common/iMlaenv.cpp ../common/Mxlaenv.cpp
+
 mplapack_binary128_test_PROGRAMS = xlintstR_binary128 xlintstC_binary128 xlintstrfR_binary128 xlintstrfC_binary128
 mplapack_binary128_opt_test_PROGRAMS = xlintstR_binary128_opt xlintstC_binary128_opt xlintstrfR_binary128_opt xlintstrfC_binary128_opt
 mplapack_binary128_testdir = $(prefix)/lib/$(target)/mplapack/test/lin
@@ -24,8 +28,8 @@ endif
 
 cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH_BINARY128___ -D___MPLAPACK_INTERNAL___ -I$(top_srcdir)/fable
 
-xlintstR_binary128_SOURCES  = ../common/Rchkaa.cpp
-xlintstR_binary128_opt_SOURCES  = ../common/Rchkaa.cpp
+xlintstR_binary128_SOURCES  = ../common/Rchkaa.cpp $(TEST_OVERRIDE_SOURCES)
+xlintstR_binary128_opt_SOURCES  = ../common/Rchkaa.cpp $(TEST_OVERRIDE_SOURCES)
 xlintstR_binary128_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xlintstR_binary128_opt_LDFLAGS  = $(opt_libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xlintstR_binary128_LDFLAGS += -Wl,-rpath,$(libdir)
@@ -33,8 +37,8 @@ xlintstR_binary128_opt_LDFLAGS += -Wl,-rpath,$(libdir)
 xlintstR_binary128_CXXFLAGS = $(cxxflags)
 xlintstR_binary128_opt_CXXFLAGS = $(cxxflags)
 
-xlintstC_binary128_SOURCES  = ../common/Cchkaa.cpp
-xlintstC_binary128_opt_SOURCES  = ../common/Cchkaa.cpp
+xlintstC_binary128_SOURCES  = ../common/Cchkaa.cpp $(TEST_OVERRIDE_SOURCES)
+xlintstC_binary128_opt_SOURCES  = ../common/Cchkaa.cpp $(TEST_OVERRIDE_SOURCES)
 xlintstC_binary128_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xlintstC_binary128_opt_LDFLAGS  = $(opt_libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xlintstC_binary128_LDFLAGS += -Wl,-rpath,$(libdir)
@@ -42,8 +46,8 @@ xlintstC_binary128_opt_LDFLAGS += -Wl,-rpath,$(libdir)
 xlintstC_binary128_CXXFLAGS = $(cxxflags)
 xlintstC_binary128_opt_CXXFLAGS = $(cxxflags)
 
-xlintstrfR_binary128_SOURCES  = ../common/Rchkrfp.cpp
-xlintstrfR_binary128_opt_SOURCES  = ../common/Rchkrfp.cpp
+xlintstrfR_binary128_SOURCES  = ../common/Rchkrfp.cpp $(TEST_OVERRIDE_SOURCES)
+xlintstrfR_binary128_opt_SOURCES  = ../common/Rchkrfp.cpp $(TEST_OVERRIDE_SOURCES)
 xlintstrfR_binary128_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xlintstrfR_binary128_opt_LDFLAGS  = $(opt_libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xlintstrfR_binary128_LDFLAGS += -Wl,-rpath,$(libdir)
@@ -51,8 +55,8 @@ xlintstrfR_binary128_opt_LDFLAGS += -Wl,-rpath,$(libdir)
 xlintstrfR_binary128_CXXFLAGS = $(cxxflags)
 xlintstrfR_binary128_opt_CXXFLAGS = $(cxxflags)
 
-xlintstrfC_binary128_SOURCES  = ../common/Cchkrfp.cpp
-xlintstrfC_binary128_opt_SOURCES  = ../common/Cchkrfp.cpp
+xlintstrfC_binary128_SOURCES  = ../common/Cchkrfp.cpp $(TEST_OVERRIDE_SOURCES)
+xlintstrfC_binary128_opt_SOURCES  = ../common/Cchkrfp.cpp $(TEST_OVERRIDE_SOURCES)
 xlintstrfC_binary128_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xlintstrfC_binary128_opt_LDFLAGS  = $(opt_libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xlintstrfC_binary128_LDFLAGS += -Wl,-rpath,$(libdir)

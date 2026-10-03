@@ -1,5 +1,9 @@
 check_PROGRAMS = $(mplapack_gmp_test_PROGRAMS) $(mplapack_gmp_opt_test_PROGRAMS)
 
+# Executable-owned overrides must precede shared backend definitions even
+# when --as-needed drops an otherwise unused override library.
+TEST_OVERRIDE_SOURCES = ../common/Mxerbla.cpp ../common/iMlaenv.cpp ../common/Mxlaenv.cpp
+
 mplapack_gmp_test_PROGRAMS = xlintstR_gmp xlintstC_gmp xlintstrfR_gmp xlintstrfC_gmp
 mplapack_gmp_opt_test_PROGRAMS = xlintstR_gmp_opt xlintstC_gmp_opt xlintstrfR_gmp_opt xlintstrfC_gmp_opt
 mplapack_gmp_testdir = $(prefix)/lib/$(target)/mplapack/test/lin
@@ -19,8 +23,8 @@ endif
 mplibs = -L$(GMP_LIBDIR) -lgmpxx -lgmp -lm
 cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_GMP___ -D___MPLAPACK_INTERNAL___ -I$(top_srcdir)/fable
 
-xlintstR_gmp_SOURCES  = ../common/Rchkaa.cpp
-xlintstR_gmp_opt_SOURCES  = ../common/Rchkaa.cpp
+xlintstR_gmp_SOURCES  = ../common/Rchkaa.cpp $(TEST_OVERRIDE_SOURCES)
+xlintstR_gmp_opt_SOURCES  = ../common/Rchkaa.cpp $(TEST_OVERRIDE_SOURCES)
 xlintstR_gmp_LDFLAGS  = $(libdepends) $(mplibs) # -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xlintstR_gmp_opt_LDFLAGS  = $(opt_libdepends) $(mplibs) # -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xlintstR_gmp_LDFLAGS += -Wl,-rpath,$(libdir)
@@ -28,8 +32,8 @@ xlintstR_gmp_opt_LDFLAGS += -Wl,-rpath,$(libdir)
 xlintstR_gmp_CXXFLAGS = $(cxxflags)
 xlintstR_gmp_opt_CXXFLAGS = $(cxxflags)
 
-xlintstC_gmp_SOURCES  = ../common/Cchkaa.cpp
-xlintstC_gmp_opt_SOURCES  = ../common/Cchkaa.cpp
+xlintstC_gmp_SOURCES  = ../common/Cchkaa.cpp $(TEST_OVERRIDE_SOURCES)
+xlintstC_gmp_opt_SOURCES  = ../common/Cchkaa.cpp $(TEST_OVERRIDE_SOURCES)
 xlintstC_gmp_LDFLAGS  = $(libdepends) $(mplibs) # -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xlintstC_gmp_opt_LDFLAGS  = $(opt_libdepends) $(mplibs) # -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xlintstC_gmp_LDFLAGS += -Wl,-rpath,$(libdir)
@@ -37,8 +41,8 @@ xlintstC_gmp_opt_LDFLAGS += -Wl,-rpath,$(libdir)
 xlintstC_gmp_CXXFLAGS = $(cxxflags)
 xlintstC_gmp_opt_CXXFLAGS = $(cxxflags)
 
-xlintstrfR_gmp_SOURCES  = ../common/Rchkrfp.cpp
-xlintstrfR_gmp_opt_SOURCES  = ../common/Rchkrfp.cpp
+xlintstrfR_gmp_SOURCES  = ../common/Rchkrfp.cpp $(TEST_OVERRIDE_SOURCES)
+xlintstrfR_gmp_opt_SOURCES  = ../common/Rchkrfp.cpp $(TEST_OVERRIDE_SOURCES)
 xlintstrfR_gmp_LDFLAGS  = $(libdepends) $(mplibs) # -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xlintstrfR_gmp_opt_LDFLAGS  = $(opt_libdepends) $(mplibs) # -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xlintstrfR_gmp_LDFLAGS += -Wl,-rpath,$(libdir)
@@ -46,8 +50,8 @@ xlintstrfR_gmp_opt_LDFLAGS += -Wl,-rpath,$(libdir)
 xlintstrfR_gmp_CXXFLAGS = $(cxxflags)
 xlintstrfR_gmp_opt_CXXFLAGS = $(cxxflags)
 
-xlintstrfC_gmp_SOURCES  = ../common/Cchkrfp.cpp
-xlintstrfC_gmp_opt_SOURCES  = ../common/Cchkrfp.cpp
+xlintstrfC_gmp_SOURCES  = ../common/Cchkrfp.cpp $(TEST_OVERRIDE_SOURCES)
+xlintstrfC_gmp_opt_SOURCES  = ../common/Cchkrfp.cpp $(TEST_OVERRIDE_SOURCES)
 xlintstrfC_gmp_LDFLAGS  = $(libdepends) $(mplibs) # -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xlintstrfC_gmp_opt_LDFLAGS  = $(opt_libdepends) $(mplibs) # -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xlintstrfC_gmp_LDFLAGS += -Wl,-rpath,$(libdir)

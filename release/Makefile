@@ -33,6 +33,8 @@ LEGACY_QA_IMAGE_TAGS := \
     mplapack-tier1-ubuntu-inteloneapi-amd64:latest
 RUN_REMOTE_TARGETS = CONF_FILE=$(CONF_FILE) LOGDIR=$(LOGDIR) PROJECT_ROOT=$(PROJECT_ROOT) SUCCESS_DIR=$(SUCCESS_DIR) FAILED_DIR=$(FAILED_DIR) MACOS_REMOTE_SSH=$(MACOS_REMOTE_SSH) REMOTE_LINUX_SSH=$(REMOTE_LINUX_SSH) ./run-remote-targets-by-host.sh
 WITH_SOURCE_TARBALL = set -a; . "$(SOURCE_INFO_FILE)"; set +a;
+# Forward the prepared snapshot so runners do not force another make dist.
+WITH_PREPARED_SOURCE = if [ "$${MPLAPACK_SOURCE_MODE:-dist}" = dist ] && [ -z "$${MPLAPACK_SOURCE_TARBALL:-}" ]; then $(WITH_SOURCE_TARBALL) fi;
 
 .PHONY: all ref tarball dist prepare-dist-source release-gate clean clean-remote clean-remote-realclean clean-all realclean clean-success clean-failed clean-test-results list help
 .PHONY: intel mingw cuda ubuntu debian fedora rocky suse alpine
@@ -59,6 +61,10 @@ $(SOURCE_INFO_FILE):
 	@PROJECT_ROOT=$(PROJECT_ROOT) LOGDIR=$(LOGDIR) MPLAPACK_SOURCE_INFO_FILE=$(SOURCE_INFO_FILE) ./make-source-snapshot.sh
 
 tier1 tier1-macos tier1-linux $(TIER1_TARGETS) $(TIER2_CXXSTD_TARGETS) tarball tarball-ubuntu tarball-amd64 tarball-arm64: prepare-dist-source
+
+ifeq ($(strip $(TARBALL)),)
+tier2: prepare-dist-source
+endif
 
 tarball:
 	@$(WITH_SOURCE_TARBALL) TARBALL="$$MPLAPACK_SOURCE_TARBALL" ./build-all.sh tarball
@@ -105,15 +111,15 @@ arm64:
 	@FILTER_ARCH=arm64 ./build-all.sh ref
 
 tier1:
-	@$(RUN_REMOTE_TARGETS) $(TIER1_TARGETS)
+	@$(WITH_PREPARED_SOURCE) $(RUN_REMOTE_TARGETS) $(TIER1_TARGETS)
 
 tier2:
 	@if [ -n "$(TARBALL)" ]; then \
-		$(MAKE) --no-print-directory tarball-with TARBALL="$(TARBALL)"; \
+		$(MAKE) --no-print-directory tarball-with TARBALL="$(TARBALL)" && \
 		MPLAPACK_SOURCE_MODE=dist MPLAPACK_SOURCE_TARBALL="$(TARBALL)" $(RUN_REMOTE_TARGETS) $(TIER2_CXXSTD_TARGETS); \
 	else \
-		$(MAKE) --no-print-directory tarball; \
-		$(WITH_SOURCE_TARBALL) MPLAPACK_SOURCE_MODE=dist $(RUN_REMOTE_TARGETS) $(TIER2_CXXSTD_TARGETS); \
+		$(WITH_SOURCE_TARBALL) TARBALL="$$MPLAPACK_SOURCE_TARBALL" ./build-all.sh tarball && \
+		MPLAPACK_SOURCE_MODE=dist $(RUN_REMOTE_TARGETS) $(TIER2_CXXSTD_TARGETS); \
 	fi
 
 tier3:
@@ -127,52 +133,52 @@ release-gate:
 	@$(MAKE) --no-print-directory tier2
 
 tier1-macos:
-	@$(RUN_REMOTE_TARGETS) $(TIER1_MACOS_TARGETS)
+	@$(WITH_PREPARED_SOURCE) $(RUN_REMOTE_TARGETS) $(TIER1_MACOS_TARGETS)
 
 tier1-linux:
-	@$(RUN_REMOTE_TARGETS) $(TIER1_LINUX_TARGETS)
+	@$(WITH_PREPARED_SOURCE) $(RUN_REMOTE_TARGETS) $(TIER1_LINUX_TARGETS)
 
 tier1-macos-arm64:
-	@MACOS_REMOTE_SSH=$(MACOS_REMOTE_SSH) ./run-remote-macos.sh tier1-macos-arm64
+	@$(WITH_PREPARED_SOURCE) MACOS_REMOTE_SSH=$(MACOS_REMOTE_SSH) ./run-remote-macos.sh tier1-macos-arm64
 
 tier1-macos-amd64:
-	@MACOS_REMOTE_SSH=$(MACOS_REMOTE_SSH) ./run-remote-macos.sh tier1-macos-amd64
+	@$(WITH_PREPARED_SOURCE) MACOS_REMOTE_SSH=$(MACOS_REMOTE_SSH) ./run-remote-macos.sh tier1-macos-amd64
 
 tier1-ubuntu2404-arm64:
-	@REMOTE_LINUX_SSH=$(REMOTE_LINUX_SSH) ./run-remote-linux-docker.sh tier1-ubuntu2404-arm64
+	@$(WITH_PREPARED_SOURCE) REMOTE_LINUX_SSH=$(REMOTE_LINUX_SSH) ./run-remote-linux-docker.sh tier1-ubuntu2404-arm64
 
 tier1-ubuntu2604-arm64:
-	@REMOTE_LINUX_SSH=$(REMOTE_LINUX_SSH) ./run-remote-linux-docker.sh tier1-ubuntu2604-arm64
+	@$(WITH_PREPARED_SOURCE) REMOTE_LINUX_SSH=$(REMOTE_LINUX_SSH) ./run-remote-linux-docker.sh tier1-ubuntu2604-arm64
 
 tier1-ubuntu2404-amd64:
-	@REMOTE_LINUX_SSH=$(REMOTE_LINUX_SSH) ./run-remote-linux-docker.sh tier1-ubuntu2404-amd64
+	@$(WITH_PREPARED_SOURCE) REMOTE_LINUX_SSH=$(REMOTE_LINUX_SSH) ./run-remote-linux-docker.sh tier1-ubuntu2404-amd64
 
 tier1-ubuntu2604-amd64:
-	@REMOTE_LINUX_SSH=$(REMOTE_LINUX_SSH) ./run-remote-linux-docker.sh tier1-ubuntu2604-amd64
+	@$(WITH_PREPARED_SOURCE) REMOTE_LINUX_SSH=$(REMOTE_LINUX_SSH) ./run-remote-linux-docker.sh tier1-ubuntu2604-amd64
 
 tier1-ubuntu2404-mingw64-amd64:
-	@REMOTE_LINUX_SSH=$(REMOTE_LINUX_SSH) ./run-remote-linux-docker.sh tier1-ubuntu2404-mingw64-amd64
+	@$(WITH_PREPARED_SOURCE) REMOTE_LINUX_SSH=$(REMOTE_LINUX_SSH) ./run-remote-linux-docker.sh tier1-ubuntu2404-mingw64-amd64
 
 tier1-ubuntu2604-mingw64-amd64:
-	@REMOTE_LINUX_SSH=$(REMOTE_LINUX_SSH) ./run-remote-linux-docker.sh tier1-ubuntu2604-mingw64-amd64
+	@$(WITH_PREPARED_SOURCE) REMOTE_LINUX_SSH=$(REMOTE_LINUX_SSH) ./run-remote-linux-docker.sh tier1-ubuntu2604-mingw64-amd64
 
 tier1-ubuntu2404-inteloneapi-amd64:
-	@REMOTE_LINUX_SSH=$(REMOTE_LINUX_SSH) ./run-remote-linux-docker.sh tier1-ubuntu2404-inteloneapi-amd64
+	@$(WITH_PREPARED_SOURCE) REMOTE_LINUX_SSH=$(REMOTE_LINUX_SSH) ./run-remote-linux-docker.sh tier1-ubuntu2404-inteloneapi-amd64
 
 tier1-ubuntu2604-inteloneapi-amd64:
-	@REMOTE_LINUX_SSH=$(REMOTE_LINUX_SSH) ./run-remote-linux-docker.sh tier1-ubuntu2604-inteloneapi-amd64
+	@$(WITH_PREPARED_SOURCE) REMOTE_LINUX_SSH=$(REMOTE_LINUX_SSH) ./run-remote-linux-docker.sh tier1-ubuntu2604-inteloneapi-amd64
 
 tier1-debian12-i386:
-	@REMOTE_LINUX_SSH=$(REMOTE_LINUX_SSH) ./run-remote-linux-docker.sh tier1-debian12-i386
+	@$(WITH_PREPARED_SOURCE) REMOTE_LINUX_SSH=$(REMOTE_LINUX_SSH) ./run-remote-linux-docker.sh tier1-debian12-i386
 
 tier1-debian13-i386:
-	@REMOTE_LINUX_SSH=$(REMOTE_LINUX_SSH) ./run-remote-linux-docker.sh tier1-debian13-i386
+	@$(WITH_PREPARED_SOURCE) REMOTE_LINUX_SSH=$(REMOTE_LINUX_SSH) ./run-remote-linux-docker.sh tier1-debian13-i386
 
 tier2-ubuntu2604-cxxstd-arm64:
-	@MPLAPACK_SOURCE_MODE=$${MPLAPACK_SOURCE_MODE:-dist} REMOTE_LINUX_SSH=$(REMOTE_LINUX_SSH) ./run-remote-linux-docker.sh tier2-ubuntu2604-cxxstd-arm64
+	@$(WITH_PREPARED_SOURCE) MPLAPACK_SOURCE_MODE=$${MPLAPACK_SOURCE_MODE:-dist} REMOTE_LINUX_SSH=$(REMOTE_LINUX_SSH) ./run-remote-linux-docker.sh tier2-ubuntu2604-cxxstd-arm64
 
 tier2-ubuntu2604-cxxstd-amd64:
-	@MPLAPACK_SOURCE_MODE=$${MPLAPACK_SOURCE_MODE:-dist} REMOTE_LINUX_SSH=$(REMOTE_LINUX_SSH) ./run-remote-linux-docker.sh tier2-ubuntu2604-cxxstd-amd64
+	@$(WITH_PREPARED_SOURCE) MPLAPACK_SOURCE_MODE=$${MPLAPACK_SOURCE_MODE:-dist} REMOTE_LINUX_SSH=$(REMOTE_LINUX_SSH) ./run-remote-linux-docker.sh tier2-ubuntu2604-cxxstd-amd64
 
 i386:
 	@FILTER_ARCH=386 ./build-all.sh ref

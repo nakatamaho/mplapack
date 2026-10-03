@@ -1,6 +1,6 @@
 #!/bin/sh
 # Check backend/component relocations without executing numerical tests.
-# FABLE common-block globals are supplied by the final test driver.
+# FABLE common-block globals and test Mxlaenv are supplied by the final driver.
 set -eu
 if test "$#" -lt 1; then
     echo "usage: $0 <top-builddir> [dependency-library-dir ...]" >&2
@@ -38,6 +38,13 @@ for family in matgen eig lin; do
             fi
             unresolved=$(printf '%s\n' "$relocations" | \
                 sed -n 's/.*undefined symbol: //p' | sed 's/[[:space:]].*//')
+            # LIN/EIG leave Mxlaenv to the executable (including EIG DMD).
+            # Demangle rather than assuming a platform-specific INTEGER width.
+            if test "$family" = eig || test "$family" = lin; then
+                command -v c++filt >/dev/null 2>&1 || exit 77
+                unresolved=$(printf '%s\n' "$unresolved" | c++filt | \
+                    grep -Ev '^Mxlaenv\((int|long|long long), (int|long|long long)\)$' || true)
+            fi
             unexpected=$(printf '%s\n' "$unresolved" | \
                 grep -Ev '^(|selval|m|lerr|mplusn|n|fs|nout|nunit|infot|selwr|selopt|seldim|srnamt|ok|selwi|i|iparms|k)$' || true)
             if test -n "$unexpected"; then
@@ -45,7 +52,7 @@ for family in matgen eig lin; do
                 printf '%s\n' "$unexpected" >&2
                 exit 1
             fi
-            echo "PASS: $library (test-driver globals excluded)"
+            echo "PASS: $library (test-driver globals/Mxlaenv excluded)"
         done
     done
 done

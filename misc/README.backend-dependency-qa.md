@@ -42,13 +42,15 @@ For CMake additionally test an installed package consumer using exported
 mplapack targets. Inspect support-library relocations and libtool dependency
 metadata as well. These smoke tests do not replace release numerical QA.
 
-EIG and LIN support libraries additionally link their matching MATGEN,
-override, and primary backend libraries. FABLE common-block globals such as
+EIG and LIN support libraries additionally link their matching MATGEN
+and primary backend libraries, not test override libraries. FABLE common-block globals such as
 fs and iparms are intentionally defined by the test driver. Their unresolved
 references in an isolated support-library check must not be mistaken for
 missing GMP, MPC, MPFR, or QD dependencies. Check these libraries with the
 driver's common-block definitions present, or classify those references
 separately. Public backend libraries must have no unresolved relocations.
+Mxlaenv is also executable-owned for LIN/EIG; the relocation check classifies
+that exact function separately, while the executable probes verify it resolves.
 Use `sh misc/check_backend_support_libraries.sh <top-builddir>` for this
 classification; unexpected unresolved component/backend symbols still fail.
 
@@ -56,8 +58,22 @@ After building the primary, MATGEN, LIN, and EIG libraries, run
 `sh misc/check_backend_support_install.sh <top-builddir>` to exercise their
 first installation into a fresh temporary DESTDIR. Use a configured prefix
 without previously installed support libraries, since libtool may otherwise
-find an old override there and mask an installation-order failure. The test
+find old support libraries there and mask an installation failure. The test
 installs the prerequisites and then the support libraries using the generated
-Automake rules, without running numerical tests. Each override must appear
-before its dependent library in `lib_LTLIBRARIES` so install-time relinking
-can find it. The temporary installation is removed when the test exits.
+Automake rules, without running numerical tests. Test overrides are installed
+separately and are not dependencies of the support libraries. The temporary
+installation is removed when the test exits.
+
+Ordinary LIN and EIG test executables compile Mxerbla, iMlaenv, and Mxlaenv
+directly into each driver. DMD drivers compile only Mxerbla and Mxlaenv;
+their iMlaenv must come from the production backend, as on master.
+This gives ordinary test overrides precedence over shared backend
+definitions even when the linker drops an unused override DSO with
+`--as-needed`. Run `sh misc/check_test_override_link.sh <top-builddir>
+<top-srcdir>` on Linux after building the GMP, MPFR, QD, and DD reference and
+optimized support libraries. The probe tests an invalid Rgetrf argument and
+the Mxlaenv/iMlaenv parameter exchange without running numerical suites.
+It also verifies that the DMD graph has no override dependency and retains
+the production ISPEC=9 default of 25 even after writing test common state.
+When the MPFR LIN drivers are built, it also runs their DGE error-exit checks
+with zero-size matrices using misc/test_override_error.in.
