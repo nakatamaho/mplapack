@@ -1,5 +1,8 @@
 check_PROGRAMS = $(mplapack_binary80_test_PROGRAMS) $(mplapack_binary80_opt_test_PROGRAMS)
 
+# Keep ordinary test overrides in executable objects under --as-needed.
+TEST_OVERRIDE_SOURCES = ../common/Mxerbla.cpp ../common/iMlaenv.cpp ../common/Mxlaenv.cpp
+
 mplapack_binary80_test_PROGRAMS = xlintstR_binary80 xlintstC_binary80 xlintstrfR_binary80 xlintstrfC_binary80
 mplapack_binary80_opt_test_PROGRAMS = xlintstR_binary80_opt xlintstC_binary80_opt xlintstrfR_binary80_opt xlintstrfC_binary80_opt
 mplapack_binary80_testdir = $(prefix)/lib/$(target)/mplapack/test/lin
@@ -19,8 +22,8 @@ endif
 mplibs = -lm
 cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -DMPLAPACK_BUILD_WITH_BINARY80 -DMPLAPACK_INTERNAL -I$(top_srcdir)/fable
 
-xlintstR_binary80_SOURCES  = ../common/Rchkaa.cpp
-xlintstR_binary80_opt_SOURCES  = ../common/Rchkaa.cpp
+xlintstR_binary80_SOURCES  = ../common/Rchkaa.cpp $(TEST_OVERRIDE_SOURCES)
+xlintstR_binary80_opt_SOURCES  = ../common/Rchkaa.cpp $(TEST_OVERRIDE_SOURCES)
 xlintstR_binary80_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xlintstR_binary80_opt_LDFLAGS  = $(opt_libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xlintstR_binary80_LDFLAGS += -Wl,-rpath,$(libdir)
@@ -28,8 +31,8 @@ xlintstR_binary80_opt_LDFLAGS += -Wl,-rpath,$(libdir)
 xlintstR_binary80_CXXFLAGS = $(cxxflags)
 xlintstR_binary80_opt_CXXFLAGS = $(cxxflags)
 
-xlintstC_binary80_SOURCES  = ../common/Cchkaa.cpp
-xlintstC_binary80_opt_SOURCES  = ../common/Cchkaa.cpp
+xlintstC_binary80_SOURCES  = ../common/Cchkaa.cpp $(TEST_OVERRIDE_SOURCES)
+xlintstC_binary80_opt_SOURCES  = ../common/Cchkaa.cpp $(TEST_OVERRIDE_SOURCES)
 xlintstC_binary80_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xlintstC_binary80_opt_LDFLAGS  = $(opt_libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xlintstC_binary80_LDFLAGS += -Wl,-rpath,$(libdir)
@@ -37,8 +40,8 @@ xlintstC_binary80_opt_LDFLAGS += -Wl,-rpath,$(libdir)
 xlintstC_binary80_CXXFLAGS = $(cxxflags)
 xlintstC_binary80_opt_CXXFLAGS = $(cxxflags)
 
-xlintstrfR_binary80_SOURCES  = ../common/Rchkrfp.cpp
-xlintstrfR_binary80_opt_SOURCES  = ../common/Rchkrfp.cpp
+xlintstrfR_binary80_SOURCES  = ../common/Rchkrfp.cpp $(TEST_OVERRIDE_SOURCES)
+xlintstrfR_binary80_opt_SOURCES  = ../common/Rchkrfp.cpp $(TEST_OVERRIDE_SOURCES)
 xlintstrfR_binary80_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xlintstrfR_binary80_opt_LDFLAGS  = $(opt_libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xlintstrfR_binary80_LDFLAGS += -Wl,-rpath,$(libdir)
@@ -46,8 +49,8 @@ xlintstrfR_binary80_opt_LDFLAGS += -Wl,-rpath,$(libdir)
 xlintstrfR_binary80_CXXFLAGS = $(cxxflags)
 xlintstrfR_binary80_opt_CXXFLAGS = $(cxxflags)
 
-xlintstrfC_binary80_SOURCES  = ../common/Cchkrfp.cpp
-xlintstrfC_binary80_opt_SOURCES  = ../common/Cchkrfp.cpp
+xlintstrfC_binary80_SOURCES  = ../common/Cchkrfp.cpp $(TEST_OVERRIDE_SOURCES)
+xlintstrfC_binary80_opt_SOURCES  = ../common/Cchkrfp.cpp $(TEST_OVERRIDE_SOURCES)
 xlintstrfC_binary80_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xlintstrfC_binary80_opt_LDFLAGS  = $(opt_libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xlintstrfC_binary80_LDFLAGS += -Wl,-rpath,$(libdir)

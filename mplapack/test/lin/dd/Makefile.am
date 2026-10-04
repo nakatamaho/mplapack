@@ -1,5 +1,8 @@
 check_PROGRAMS = $(mplapack_dd_test_PROGRAMS) $(mplapack_dd_opt_test_PROGRAMS)
 
+# Keep ordinary test overrides in executable objects under --as-needed.
+TEST_OVERRIDE_SOURCES = ../common/Mxerbla.cpp ../common/iMlaenv.cpp ../common/Mxlaenv.cpp
+
 mplapack_dd_test_PROGRAMS = xlintstR_dd xlintstC_dd xlintstrfR_dd xlintstrfC_dd
 mplapack_dd_opt_test_PROGRAMS = xlintstR_dd_opt xlintstC_dd_opt xlintstrfR_dd_opt xlintstrfC_dd_opt
 mplapack_dd_testdir = $(prefix)/lib/$(target)/mplapack/test/lin
@@ -19,8 +22,8 @@ endif
 mplibs = -L$(QD_LIBDIR) -lqd $(QD_RPATH_LDFLAGS) -lm
 cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) -DMPLAPACK_BUILD_WITH_DD @qd_extra_cxxflags@ -DMPLAPACK_INTERNAL -I$(top_srcdir)/fable
 
-xlintstR_dd_SOURCES  = ../common/Rchkaa.cpp
-xlintstR_dd_opt_SOURCES  = ../common/Rchkaa.cpp
+xlintstR_dd_SOURCES  = ../common/Rchkaa.cpp $(TEST_OVERRIDE_SOURCES)
+xlintstR_dd_opt_SOURCES  = ../common/Rchkaa.cpp $(TEST_OVERRIDE_SOURCES)
 xlintstR_dd_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xlintstR_dd_opt_LDFLAGS  = $(opt_libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xlintstR_dd_LDFLAGS += -Wl,-rpath,$(libdir)
@@ -28,8 +31,8 @@ xlintstR_dd_opt_LDFLAGS += -Wl,-rpath,$(libdir)
 xlintstR_dd_CXXFLAGS = $(cxxflags) $(DD_CXXFLAGS)
 xlintstR_dd_opt_CXXFLAGS = $(cxxflags) $(DD_CXXFLAGS)
 
-xlintstC_dd_SOURCES  = ../common/Cchkaa.cpp
-xlintstC_dd_opt_SOURCES  = ../common/Cchkaa.cpp
+xlintstC_dd_SOURCES  = ../common/Cchkaa.cpp $(TEST_OVERRIDE_SOURCES)
+xlintstC_dd_opt_SOURCES  = ../common/Cchkaa.cpp $(TEST_OVERRIDE_SOURCES)
 xlintstC_dd_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xlintstC_dd_opt_LDFLAGS  = $(opt_libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xlintstC_dd_LDFLAGS += -Wl,-rpath,$(libdir)
@@ -37,8 +40,8 @@ xlintstC_dd_opt_LDFLAGS += -Wl,-rpath,$(libdir)
 xlintstC_dd_CXXFLAGS = $(cxxflags) $(DD_CXXFLAGS)
 xlintstC_dd_opt_CXXFLAGS = $(cxxflags) $(DD_CXXFLAGS)
 
-xlintstrfR_dd_SOURCES  = ../common/Rchkrfp.cpp
-xlintstrfR_dd_opt_SOURCES  = ../common/Rchkrfp.cpp
+xlintstrfR_dd_SOURCES  = ../common/Rchkrfp.cpp $(TEST_OVERRIDE_SOURCES)
+xlintstrfR_dd_opt_SOURCES  = ../common/Rchkrfp.cpp $(TEST_OVERRIDE_SOURCES)
 xlintstrfR_dd_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xlintstrfR_dd_opt_LDFLAGS  = $(opt_libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xlintstrfR_dd_LDFLAGS += -Wl,-rpath,$(libdir)
@@ -46,8 +49,8 @@ xlintstrfR_dd_opt_LDFLAGS += -Wl,-rpath,$(libdir)
 xlintstrfR_dd_CXXFLAGS = $(cxxflags) $(DD_CXXFLAGS)
 xlintstrfR_dd_opt_CXXFLAGS = $(cxxflags) $(DD_CXXFLAGS)
 
-xlintstrfC_dd_SOURCES  = ../common/Cchkrfp.cpp
-xlintstrfC_dd_opt_SOURCES  = ../common/Cchkrfp.cpp
+xlintstrfC_dd_SOURCES  = ../common/Cchkrfp.cpp $(TEST_OVERRIDE_SOURCES)
+xlintstrfC_dd_opt_SOURCES  = ../common/Cchkrfp.cpp $(TEST_OVERRIDE_SOURCES)
 xlintstrfC_dd_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xlintstrfC_dd_opt_LDFLAGS  = $(opt_libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xlintstrfC_dd_LDFLAGS += -Wl,-rpath,$(libdir)

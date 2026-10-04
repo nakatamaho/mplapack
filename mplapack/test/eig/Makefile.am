@@ -70,7 +70,9 @@ if ENABLE_MPFR
 libeig_mpfr_la_CPPFLAGS = $(GMPFRXX_MKII_CPPFLAGS) $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(LAPACK_INCLUDEDIR) -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR)  -I$(MPC_INCLUDEDIR) -DMPLAPACK_BUILD_WITH_MPFR -DMPLAPACK_INTERNAL
 libeig_mpfr_opt_la_CPPFLAGS = $(GMPFRXX_MKII_CPPFLAGS) $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(LAPACK_INCLUDEDIR) -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR)  -I$(MPC_INCLUDEDIR) -DMPLAPACK_BUILD_WITH_MPFR -DMPLAPACK_INTERNAL
 libeig_mpfr_la_SOURCES = $(EIG_SOURCES)
+libeig_mpfr_la_LIBADD = $(top_builddir)/mplapack/test/matgen/libmatgen_mpfr.la $(top_builddir)/mplapack/reference/libmplapack_mpfr.la $(MPLAPACK_MPFR_LIBS)
 libeig_mpfr_opt_la_SOURCES = $(EIG_SOURCES)
+libeig_mpfr_opt_la_LIBADD = $(top_builddir)/mplapack/test/matgen/libmatgen_mpfr_opt.la $(top_builddir)/mpblas/optimized/mpfr/libmplapack_mpfr_opt.la $(MPLAPACK_MPFR_LIBS)
 libeig_mpfr_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
 libeig_mpfr_opt_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
 libeig_override_mpfr_la_CPPFLAGS = $(GMPFRXX_MKII_CPPFLAGS) $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR) -DMPLAPACK_BUILD_WITH_MPFR -I$(top_srcdir)/fable

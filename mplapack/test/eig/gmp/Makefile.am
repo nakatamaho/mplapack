@@ -1,5 +1,8 @@
 check_PROGRAMS = $(mplapack_gmp_test_PROGRAMS) $(mplapack_gmp_opt_test_PROGRAMS)
 
+# Keep ordinary test overrides in executable objects under --as-needed.
+TEST_OVERRIDE_SOURCES = ../common/Mxerbla.cpp ../common/iMlaenv.cpp ../common/Mxlaenv.cpp
+
 mplapack_gmp_test_PROGRAMS = xeigtstR_gmp xeigtstC_gmp xdmdeigtstR_gmp xdmdeigtstC_gmp
 mplapack_gmp_opt_test_PROGRAMS = xeigtstR_gmp_opt xeigtstC_gmp_opt xdmdeigtstR_gmp_opt xdmdeigtstC_gmp_opt
 mplapack_gmp_testdir = $(prefix)/lib/$(target)/mplapack/test/eig
@@ -25,8 +28,8 @@ endif
 mplibs = -L$(GMP_LIBDIR) -lgmp -lm
 cxxflags = $(GMPFRXX_MKII_CPPFLAGS) $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(LAPACK_INCLUDEDIR) -I$(GMP_INCLUDEDIR) -DMPLAPACK_BUILD_WITH_GMP -DMPLAPACK_INTERNAL -I$(top_srcdir)/fable
 
-xeigtstR_gmp_SOURCES  = ../common/Rchkee.cpp
-xeigtstR_gmp_opt_SOURCES  = ../common/Rchkee.cpp
+xeigtstR_gmp_SOURCES  = ../common/Rchkee.cpp $(TEST_OVERRIDE_SOURCES)
+xeigtstR_gmp_opt_SOURCES  = ../common/Rchkee.cpp $(TEST_OVERRIDE_SOURCES)
 xeigtstR_gmp_LDFLAGS  = $(libdepends) $(mplibs) #-L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xeigtstR_gmp_opt_LDFLAGS  = $(opt_libdepends) $(mplibs) #-L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xeigtstR_gmp_LDFLAGS += -Wl,-rpath,$(libdir)
@@ -34,8 +37,8 @@ xeigtstR_gmp_opt_LDFLAGS += -Wl,-rpath,$(libdir)
 xeigtstR_gmp_CXXFLAGS = $(cxxflags)
 xeigtstR_gmp_opt_CXXFLAGS = $(cxxflags)
 
-xeigtstC_gmp_SOURCES  = ../common/Cchkee.cpp
-xeigtstC_gmp_opt_SOURCES  = ../common/Cchkee.cpp
+xeigtstC_gmp_SOURCES  = ../common/Cchkee.cpp $(TEST_OVERRIDE_SOURCES)
+xeigtstC_gmp_opt_SOURCES  = ../common/Cchkee.cpp $(TEST_OVERRIDE_SOURCES)
 xeigtstC_gmp_LDFLAGS  = $(libdepends) $(mplibs) #-L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xeigtstC_gmp_opt_LDFLAGS  = $(opt_libdepends) $(mplibs) #-L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xeigtstC_gmp_LDFLAGS += -Wl,-rpath,$(libdir)

@@ -1,5 +1,8 @@
 check_PROGRAMS = $(mplapack_binary80_test_PROGRAMS) $(mplapack_binary80_opt_test_PROGRAMS)
 
+# Keep ordinary test overrides in executable objects under --as-needed.
+TEST_OVERRIDE_SOURCES = ../common/Mxerbla.cpp ../common/iMlaenv.cpp ../common/Mxlaenv.cpp
+
 mplapack_binary80_test_PROGRAMS = xeigtstR_binary80 xeigtstC_binary80 xdmdeigtstR_binary80 xdmdeigtstC_binary80
 mplapack_binary80_opt_test_PROGRAMS = xeigtstR_binary80_opt xeigtstC_binary80_opt xdmdeigtstR_binary80_opt xdmdeigtstC_binary80_opt
 mplapack_binary80_testdir = $(prefix)/lib/$(target)/mplapack/test/eig
@@ -25,8 +28,8 @@ endif
 mplibs = -lm
 cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(LAPACK_INCLUDEDIR) -DMPLAPACK_BUILD_WITH_BINARY80 -DMPLAPACK_INTERNAL -I$(top_srcdir)/fable
 
-xeigtstR_binary80_SOURCES  = ../common/Rchkee.cpp
-xeigtstR_binary80_opt_SOURCES  = ../common/Rchkee.cpp
+xeigtstR_binary80_SOURCES  = ../common/Rchkee.cpp $(TEST_OVERRIDE_SOURCES)
+xeigtstR_binary80_opt_SOURCES  = ../common/Rchkee.cpp $(TEST_OVERRIDE_SOURCES)
 xeigtstR_binary80_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xeigtstR_binary80_opt_LDFLAGS  = $(opt_libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xeigtstR_binary80_LDFLAGS += -Wl,-rpath,$(libdir)
@@ -34,8 +37,8 @@ xeigtstR_binary80_opt_LDFLAGS += -Wl,-rpath,$(libdir)
 xeigtstR_binary80_CXXFLAGS = $(cxxflags)
 xeigtstR_binary80_opt_CXXFLAGS = $(cxxflags)
 
-xeigtstC_binary80_SOURCES  = ../common/Cchkee.cpp
-xeigtstC_binary80_opt_SOURCES  = ../common/Cchkee.cpp
+xeigtstC_binary80_SOURCES  = ../common/Cchkee.cpp $(TEST_OVERRIDE_SOURCES)
+xeigtstC_binary80_opt_SOURCES  = ../common/Cchkee.cpp $(TEST_OVERRIDE_SOURCES)
 xeigtstC_binary80_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xeigtstC_binary80_opt_LDFLAGS  = $(opt_libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xeigtstC_binary80_LDFLAGS += -Wl,-rpath,$(libdir)
