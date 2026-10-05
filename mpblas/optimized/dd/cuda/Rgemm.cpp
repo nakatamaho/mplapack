@@ -1,9 +1,7 @@
 /*
- * Copyright (c) 2008-2012
- *	Nakata, Maho
- * 	All rights reserved.
- *
- * $Id: Rgemm.cpp,v 1.1 2010/12/28 06:13:53 nakatamaho Exp $
+ * Copyright (c) 2026
+ *      Nakata, Maho
+ *      All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -28,12 +26,23 @@
  *
  */
 
+/*
+ * Rgemm of libmplapack_dd_opt_cuda: the Rgemm of ../Rgemm.cpp, with eligible
+ * calls sent to the GPU first (Rgemm_bridge_cuda.cpp, Rgemm_gpu_cuda.cu).
+ * Calls that do not run on the GPU use the CPU code of libmplapack_dd_opt.
+ * MPLAPACK_DD_CUDA_LEGACY=1 selects the former kernels (Rgemm_fermi.cu)
+ * for every call.
+ */
+
+#include <cstdlib>
 #include <mpblas_dd.h>
 
 void Rgemm_NN_omp(mplapackint m, mplapackint n, mplapackint k, dd_real alpha, dd_real * A, mplapackint lda, dd_real * B, mplapackint ldb, dd_real beta, dd_real * C, mplapackint ldc);
 void Rgemm_TN_omp(mplapackint m, mplapackint n, mplapackint k, dd_real alpha, dd_real * A, mplapackint lda, dd_real * B, mplapackint ldb, dd_real beta, dd_real * C, mplapackint ldc);
 void Rgemm_NT_omp(mplapackint m, mplapackint n, mplapackint k, dd_real alpha, dd_real * A, mplapackint lda, dd_real * B, mplapackint ldb, dd_real beta, dd_real * C, mplapackint ldc);
 void Rgemm_TT_omp(mplapackint m, mplapackint n, mplapackint k, dd_real alpha, dd_real * A, mplapackint lda, dd_real * B, mplapackint ldb, dd_real beta, dd_real * C, mplapackint ldc);
+bool Rgemm_gpu(bool nota, bool notb, mplapackint m, mplapackint n, mplapackint k, dd_real alpha, dd_real *A, mplapackint lda, dd_real *B, mplapackint ldb, dd_real beta, dd_real *C, mplapackint ldc);
+void Rgemm_fermi(const char *transa, const char *transb, mplapackint m, mplapackint n, mplapackint k, dd_real alpha, dd_real *A, mplapackint lda, dd_real *B, mplapackint ldb, dd_real beta, dd_real *C, mplapackint ldc);
 bool Rgemm_blocked_omp(bool nota, bool notb, mplapackint m, mplapackint n, mplapackint k, dd_real alpha, dd_real *A, mplapackint lda, dd_real *B, mplapackint ldb, dd_real beta, dd_real *C, mplapackint ldc);
 void Rgemm_ref(const char *transa, const char *transb, mplapackint m, mplapackint n, mplapackint k, dd_real alpha, dd_real * A, mplapackint lda, dd_real * B, mplapackint ldb, dd_real beta, dd_real * C, mplapackint ldc);
 
@@ -41,6 +50,12 @@ void Rgemm_ref(const char *transa, const char *transb, mplapackint m, mplapackin
 
 void Rgemm(const char *transa, const char *transb, mplapackint const m, mplapackint const n, mplapackint const k, dd_real const alpha, dd_real *A, mplapackint const lda, dd_real *B, mplapackint const ldb, dd_real const beta, dd_real *C, mplapackint const ldc)
 {
+    const char *legacy = getenv("MPLAPACK_DD_CUDA_LEGACY");
+    if (legacy && legacy[0] == '1') {
+        // the 2010-2011 kernels (Rgemm_fermi.cu): sloppy dd arithmetic
+        Rgemm_fermi(transa, transb, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc);
+        return;
+    }
     mplapackint i, j, l, nota, notb, nrowa, ncola, nrowb, info;
     dd_real temp;
     dd_real Zero = 0.0, One = 1.0;
@@ -108,6 +123,8 @@ void Rgemm(const char *transa, const char *transb, mplapackint const m, mplapack
 	return;
     }
 //Start the operations.
+    if (Rgemm_gpu(nota != 0, notb != 0, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc))
+	return;
     if (Rgemm_blocked_omp(nota != 0, notb != 0, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc))
 	return;
     if (notb) {

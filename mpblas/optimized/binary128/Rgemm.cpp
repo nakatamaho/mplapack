@@ -34,6 +34,7 @@ void Rgemm_NN_omp(mplapackint m, mplapackint n, mplapackint k, mplapack_binary12
 void Rgemm_TN_omp(mplapackint m, mplapackint n, mplapackint k, mplapack_binary128_t alpha, mplapack_binary128_t * A, mplapackint lda, mplapack_binary128_t * B, mplapackint ldb, mplapack_binary128_t beta, mplapack_binary128_t * C, mplapackint ldc);
 void Rgemm_NT_omp(mplapackint m, mplapackint n, mplapackint k, mplapack_binary128_t alpha, mplapack_binary128_t * A, mplapackint lda, mplapack_binary128_t * B, mplapackint ldb, mplapack_binary128_t beta, mplapack_binary128_t * C, mplapackint ldc);
 void Rgemm_TT_omp(mplapackint m, mplapackint n, mplapackint k, mplapack_binary128_t alpha, mplapack_binary128_t * A, mplapackint lda, mplapack_binary128_t * B, mplapackint ldb, mplapack_binary128_t beta, mplapack_binary128_t * C, mplapackint ldc);
+bool Rgemm_blocked_omp(bool nota, bool notb, mplapackint m, mplapackint n, mplapackint k, mplapack_binary128_t alpha, mplapack_binary128_t *A, mplapackint lda, mplapack_binary128_t *B, mplapackint ldb, mplapack_binary128_t beta, mplapack_binary128_t *C, mplapackint ldc);
 void Rgemm_ref(const char *transa, const char *transb, mplapackint m, mplapackint n, mplapackint k, mplapack_binary128_t alpha, mplapack_binary128_t * A, mplapackint lda, mplapack_binary128_t * B, mplapackint ldb, mplapack_binary128_t beta, mplapack_binary128_t * C, mplapackint ldc);
 
 #define SINGLEOROMP 1000000
@@ -107,6 +108,8 @@ void Rgemm(const char *transa, const char *transb, mplapackint const m, mplapack
 	return;
     }
 //Start the operations.
+    if (Rgemm_blocked_omp(nota != 0, notb != 0, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc))
+	return;
     if (notb) {
 	if (nota) {
 //Form C := alpha*A*B + beta*C.

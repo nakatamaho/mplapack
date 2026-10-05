@@ -17,7 +17,7 @@ libmplapack_dd_opt_la_CXXFLAGS = $(DD_CXXFLAGS)
 libmplapack_dd_opt_la_SOURCES = \
 Rcopy.cpp Rcopy_ref.cpp openmp/Rcopy_omp.cpp \
 Rdot.cpp  Rdot_ref.cpp  openmp/Rdot_omp.cpp \
-Rgemm.cpp Rgemm_ref.cpp openmp/Rgemm_NN_omp.cpp openmp/Rgemm_NT_omp.cpp openmp/Rgemm_TN_omp.cpp openmp/Rgemm_TT_omp.cpp \
+Rgemm.cpp Rgemm_ref.cpp openmp/Rgemm_blocked_omp.cpp openmp/Rgemm_NN_omp.cpp openmp/Rgemm_NT_omp.cpp openmp/Rgemm_TN_omp.cpp openmp/Rgemm_TT_omp.cpp \
 Raxpy.cpp Raxpy_ref.cpp openmp/Raxpy_omp.cpp \
 ../../reference/CRrot.cpp \
 ../../reference/CRscal.cpp \
@@ -104,3 +104,19 @@ endif
 if IS_MINGW
 libmplapack_dd_opt_la_LDFLAGS += -no-undefined
 endif
+
+# Optimized Rgemm (../common/Rgemm_*_common.h): the blocked engine is
+# bit-identical to openmp/Rgemm_*_omp.cpp; Winograd and Ozaki are bounded.
+check_PROGRAMS = Rgemm_opt_test Rgemm_gpu_host_test
+Rgemm_opt_test_SOURCES = test/Rgemm_opt_test.cpp
+Rgemm_opt_test_CPPFLAGS = $(libmplapack_dd_opt_la_CPPFLAGS) -DRGEMM_TEST_DD
+Rgemm_opt_test_CXXFLAGS = $(DD_CXXFLAGS)
+Rgemm_opt_test_LDFLAGS = -static $(QD_RPATH_LDFLAGS)
+Rgemm_opt_test_LDADD = libmplapack_dd_opt.la $(libmplapack_dd_opt_la_LIBADD)
+# The CUDA Rgemm code run on the host (no CUDA needed).
+Rgemm_gpu_host_test_SOURCES = test/Rgemm_gpu_host_test.cpp cuda/Rgemm_bridge_cuda.cpp
+Rgemm_gpu_host_test_CPPFLAGS = $(libmplapack_dd_opt_la_CPPFLAGS) -DRGEMM_TEST_DD -DMPLAPACK_GEMM_CUDA_HOST_EMULATION
+Rgemm_gpu_host_test_CXXFLAGS = $(DD_CXXFLAGS)
+Rgemm_gpu_host_test_LDFLAGS = -static $(QD_RPATH_LDFLAGS)
+Rgemm_gpu_host_test_LDADD = libmplapack_dd_opt.la $(libmplapack_dd_opt_la_LIBADD)
+TESTS = Rgemm_opt_test Rgemm_gpu_host_test

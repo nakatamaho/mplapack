@@ -11,7 +11,7 @@ libmplapack_binary128_opt_la_CPPFLAGS = -I. -I$(top_srcdir)/include -I$(QD_INCLU
 libmplapack_binary128_opt_la_SOURCES = \
 Rcopy.cpp Rcopy_ref.cpp openmp/Rcopy_omp.cpp \
 Rdot.cpp  Rdot_ref.cpp  openmp/Rdot_omp.cpp \
-Rgemm.cpp Rgemm_ref.cpp openmp/Rgemm_NN_omp.cpp openmp/Rgemm_NT_omp.cpp openmp/Rgemm_TN_omp.cpp openmp/Rgemm_TT_omp.cpp \
+Rgemm.cpp Rgemm_ref.cpp openmp/Rgemm_blocked_omp.cpp openmp/Rgemm_NN_omp.cpp openmp/Rgemm_NT_omp.cpp openmp/Rgemm_TN_omp.cpp openmp/Rgemm_TT_omp.cpp \
 Raxpy.cpp Raxpy_ref.cpp openmp/Raxpy_omp.cpp \
 ../../reference/CRrot.cpp \
 ../../reference/CRscal.cpp \
@@ -103,3 +103,13 @@ SUBDIRS =
 if ENABLE_OPENCL_BINARY128
 SUBDIRS += opencl
 endif
+
+# Optimized Rgemm (../common/Rgemm_*_common.h): the blocked engine is
+# bit-identical to openmp/Rgemm_*_omp.cpp; Winograd and Ozaki are bounded.
+check_PROGRAMS = Rgemm_opt_test
+Rgemm_opt_test_SOURCES = test/Rgemm_opt_test.cpp
+Rgemm_opt_test_CPPFLAGS = $(libmplapack_binary128_opt_la_CPPFLAGS) -DRGEMM_TEST_BINARY128
+Rgemm_opt_test_CXXFLAGS = $(DD_CXXFLAGS)
+Rgemm_opt_test_LDFLAGS = -static $(QD_RPATH_LDFLAGS)
+Rgemm_opt_test_LDADD = libmplapack_binary128_opt.la $(libmplapack_binary128_opt_la_LIBADD)
+TESTS = Rgemm_opt_test
