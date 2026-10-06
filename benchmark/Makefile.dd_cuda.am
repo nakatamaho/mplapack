@@ -1,3 +1,7 @@
+# Rgemm.dd_cuda_total runs Rgemm of libmplapack_dd_opt_cuda (the GPU kernels
+# of mpblas/optimized/common, or the former ones with
+# MPLAPACK_DD_CUDA_LEGACY=1); Rgemm.dd_cuda_kernel times the former kernels
+# alone on device-resident matrices.
 bench_PROGRAMS += \
 Rgemm.dd_cuda_total  \
 Rgemm.dd_cuda_kernel \
@@ -6,9 +10,9 @@ Rsyrk.dd_cuda_kernel \
 Rpotrf.dd_cuda_total \
 Rgetrf.dd_cuda_total
 
-dd_cuda_cxxflags   = -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) $(CUDA_CFLAGS) -DMPLAPACK_BUILD_WITH_DD
+dd_cuda_cxxflags   = -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) $(CUDA_CFLAGS) -DMPLAPACK_BUILD_WITH_DD $(DD_CXXFLAGS)
 dd_cuda_libdepends = -L$(top_builddir)/mpblas/optimized/dd/cuda -lmplapack_dd_opt_cuda \
-                     $(CUDA_LDFLAGS) -lcudart \
+                     $(CUDA_LDFLAGS) -lcublas -lcudart \
                      -L$(QD_LIBDIR) -lqd $(DYLD)
 dd_cuda_link       = $(LIBTOOL) --mode=link $(CXX) -o $@ $(CUDA_LDFLAGS) $(CUDA_LIBS) $(dd_cuda_libdepends) $(OPENMP_CXXFLAGS)
 

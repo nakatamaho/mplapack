@@ -1,0 +1,24 @@
+bench_PROGRAMS += \
+Rgemm.qd_cuda_total  \
+Rpotrf.qd_cuda_total \
+Rgetrf.qd_cuda_total
+
+# libmplapack_qd_opt_cuda: Rgemm on the GPU (naive / tiled / Winograd /
+# Ozaki, see mpblas/optimized/common/README.md), everything else on the CPU.
+qd_cuda_cxxflags   = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) $(CUDA_CFLAGS) -DMPLAPACK_BUILD_WITH_QD $(DD_CXXFLAGS)
+qd_cuda_libdepends = -L$(top_builddir)/mpblas/optimized/qd/cuda -lmplapack_qd_opt_cuda \
+                     $(CUDA_LDFLAGS) -lcublas -lcudart \
+                     -L$(QD_LIBDIR) -lqd $(DYLD)
+qd_cuda_link       = $(LIBTOOL) --mode=link $(CXX) -o $@ $(CUDA_LDFLAGS) $(CUDA_LIBS) $(qd_cuda_libdepends) $(OPENMP_CXXFLAGS)
+
+Rgemm_qd_cuda_total_SOURCES=   Rgemm.cpp
+Rgemm_qd_cuda_total_LINK=      $(qd_cuda_link)
+Rgemm_qd_cuda_total_CXXFLAGS=  $(qd_cuda_cxxflags)
+
+Rpotrf_qd_cuda_total_SOURCES=  Rpotrf.cpp
+Rpotrf_qd_cuda_total_LINK=     $(qd_cuda_link)
+Rpotrf_qd_cuda_total_CXXFLAGS= $(qd_cuda_cxxflags)
+
+Rgetrf_qd_cuda_total_SOURCES=  Rgetrf.cpp
+Rgetrf_qd_cuda_total_LINK=     $(qd_cuda_link)
+Rgetrf_qd_cuda_total_CXXFLAGS= $(qd_cuda_cxxflags)

@@ -1,0 +1,30 @@
+set xlabel font "Helvetica,20"
+set ylabel font "Helvetica,20"
+set key font "Helvetica,16"
+set title font "Helvetica,20"
+set xlabel "Dimension (m = n = k)"
+set ylabel "MFLOPS"
+set key above
+set terminal pdf
+
+set title "Rgemm double-double on %%MODELNAME%%"
+plot \
+"log.Rgemm.dd_opt.former"   using 1:4 title 'former (OpenMP loops)'  with lines linewidth 1, \
+"log.Rgemm.dd_opt.blocked"  using 1:4 title 'blocked + AVX2'         with lines linewidth 1, \
+"log.Rgemm.dd_opt.winograd" using 1:4 title 'Winograd (cutoff 256)'  with lines linewidth 1, \
+"log.Rgemm.dd_opt.ozaki"    using 1:4 title 'Ozaki'                  with lines linewidth 1
+
+set title "Rgemm quad-double on %%MODELNAME%%"
+plot \
+"log.Rgemm.qd_opt.former"   using 1:4 title 'former (OpenMP loops)'  with lines linewidth 1, \
+"log.Rgemm.qd_opt.blocked"  using 1:4 title 'blocked'                with lines linewidth 1, \
+"log.Rgemm.qd_opt.bf"       using 1:4 title 'branch-free + AVX2'     with lines linewidth 1, \
+"log.Rgemm.qd_opt.winograd" using 1:4 title 'Winograd (cutoff 64)'   with lines linewidth 1, \
+"log.Rgemm.qd_opt.ozaki"    using 1:4 title 'Ozaki'                  with lines linewidth 1
+
+set title "Rgemm binary128 on %%MODELNAME%%"
+plot \
+"log.Rgemm.binary128_opt.former"   using 1:4 title 'former (OpenMP loops)' with lines linewidth 1, \
+"log.Rgemm.binary128_opt.blocked"  using 1:4 title 'blocked'               with lines linewidth 1, \
+"log.Rgemm.binary128_opt.winograd" using 1:4 title 'Winograd (cutoff 64)'  with lines linewidth 1, \
+"log.Rgemm.binary128_opt.ozaki"    using 1:4 title 'Ozaki'                 with lines linewidth 1

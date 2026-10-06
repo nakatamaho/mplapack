@@ -2,11 +2,29 @@ set xlabel font "Helvetica,20"
 set ylabel font "Helvetica,20"
 set key font "Helvetica,16"
 set title font "Helvetica,20"
-set title "Rgemm on %%GPU%%"
-set xlabel "Dimension"
-set ylabel "MFLOPS"
+set xlabel "Dimension (m = n = k)"
+set ylabel "MFLOPS (including transfers)"
 set key above
 set terminal pdf
 
-plot "log.Rgemm.dd_cuda_kernel" using 1:4 title 'Kernel only' with lines linewidth 1,\
-     "log.Rgemm.dd_cuda_total"  using 1:4 title 'Total ' with lines linewidth 1
+set title "Rgemm double-double on %%GPU%%"
+plot \
+"log.Rgemm.dd_cuda_total.tiled"    using 1:4 title 'tiled'                 with lines linewidth 1, \
+"log.Rgemm.dd_cuda_total.naive"    using 1:4 title 'naive'                 with lines linewidth 1, \
+"log.Rgemm.dd_cuda_total.winograd" using 1:4 title 'Winograd (cutoff 256)' with lines linewidth 1, \
+"log.Rgemm.dd_cuda_total.ozaki"    using 1:4 title 'Ozaki (cuBLAS)'        with lines linewidth 1, \
+"log.Rgemm.dd_cuda_total.legacy"   using 1:4 title 'former kernels'        with lines linewidth 1, \
+"log.Rgemm.dd_cuda_kernel"         using 1:4 title 'former kernels, kernel only' with lines linewidth 1
+
+set title "Rgemm quad-double on %%GPU%%"
+plot \
+"log.Rgemm.qd_cuda_total.tiled"    using 1:4 title 'tiled'                 with lines linewidth 1, \
+"log.Rgemm.qd_cuda_total.naive"    using 1:4 title 'naive'                 with lines linewidth 1, \
+"log.Rgemm.qd_cuda_total.winograd" using 1:4 title 'Winograd (cutoff 128)' with lines linewidth 1, \
+"log.Rgemm.qd_cuda_total.ozaki"    using 1:4 title 'Ozaki (cuBLAS)'        with lines linewidth 1
+
+set title "Rgemm MPFR on %%GPU%%"
+plot \
+"log.Rgemm.mpfr_cuda_total.prec512"          using 1:4 title '512 bits'               with lines linewidth 1, \
+"log.Rgemm.mpfr_cuda_total.prec1024"         using 1:4 title '1024 bits'              with lines linewidth 1, \
+"log.Rgemm.mpfr_cuda_total.prec1024_runtime" using 1:4 title '1024 bits (cu\\_mpfr)'   with lines linewidth 1

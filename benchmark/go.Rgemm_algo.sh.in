@@ -1,9 +1,9 @@
 #!/bin/sh
-# go.Rgemm_cuda.sh — CUDA benchmark runner for Rgemm (dd, qd, MPFR)
+# go.Rgemm_algo.sh — CPU Rgemm algorithms of the dd, qd and binary128 optimized libraries
 # %%CPU_OS_DETECTION_SH%% and %%CC_TAG%% are replaced:
 #   - at "make" time   : builddir paths
 #   - at "make install": installed paths
-# Never edit the installed copy; edit go.Rgemm_cuda.sh.in instead.
+# Never edit the installed copy; edit go.Rgemm_algo.sh.in instead.
 
 TIMEOUT=7200
 
@@ -70,43 +70,41 @@ run_variant() {
     env ${LDPATHPREFIX} ${_vars} timeout ${TIMEOUT} "${_bin}" "$@" > "${_log}" 2>&1
 }
 
-GPUNAME=$(nvidia-smi --query-gpu=name --format=csv,noheader 2>/dev/null | head -n 1 | tr -d '/')
-
 # ---------------------------------------------------------------------------
-# Rgemm of the CUDA libraries.  "total" includes the transfers between host
-# and device.  Algorithms (mpblas/optimized/common/README.md):
-#   tiled    : default, shared-memory tiles, bit-identical to the CPU
-#   naive    : <P>_CUDA_KERNEL=naive
-#   winograd : <P>_CUDA_WINOGRAD_CUTOFF=N
-#   ozaki    : <P>_CUDA_OZAKI=1 (cuBLAS DGEMM)
-#   legacy   : MPLAPACK_DD_CUDA_LEGACY=1 (dd, the 2010-2011 kernels)
+# Rgemm algorithms of libmplapack_{dd,qd,binary128}_opt
+# (mpblas/optimized/common/README.md), selected by environment variables:
+#   blocked  : default; cache-blocked OpenMP (+ AVX2 for dd), bit-identical
+#   former   : <P>_GEMM_BLOCKED=0, the plain OpenMP loops
+#   winograd : <P>_GEMM_WINOGRAD_CUTOFF=N
+#   ozaki    : <P>_GEMM_OZAKI=1
+#   bf       : MPLAPACK_QD_GEMM_BF=1 (qd, branch-free SIMD kernel)
+# Sizes: m = n = k = 16, 32, ..., 1024 (dd) and 8, 16, ..., 512 (qd,
+# binary128).
 # ---------------------------------------------------------------------------
-SIZES="-M 16 -N 16 -K 16 -STEPM 16 -STEPN 16 -STEPK 16 -TOTALSTEPS 128 -NOCHECK -LOOPS 3"
-QDSIZES="-M 16 -N 16 -K 16 -STEPM 16 -STEPN 16 -STEPK 16 -TOTALSTEPS 64 -NOCHECK -LOOPS 3"
+DDSIZES="-M 16 -N 16 -K 16 -STEPM 16 -STEPN 16 -STEPK 16 -TOTALSTEPS 64 -NOCHECK"
+SIZES="-M 8 -N 8 -K 8 -STEPM 8 -STEPN 8 -STEPK 8 -TOTALSTEPS 64 -NOCHECK"
 
-run_variant tiled    ""                                     Rgemm.dd_cuda_total ${SIZES}
-run_variant naive    "MPLAPACK_DD_CUDA_KERNEL=naive"         Rgemm.dd_cuda_total ${SIZES}
-run_variant winograd "MPLAPACK_DD_CUDA_WINOGRAD_CUTOFF=256"  Rgemm.dd_cuda_total ${SIZES}
-run_variant ozaki    "MPLAPACK_DD_CUDA_OZAKI=1"              Rgemm.dd_cuda_total ${SIZES}
-run_variant legacy   "MPLAPACK_DD_CUDA_LEGACY=1"             Rgemm.dd_cuda_total ${SIZES}
-run_bench Rgemm.dd_cuda_kernel -NOCHECK -LOOPS 3
+run_variant blocked  ""                                  Rgemm.dd_opt ${DDSIZES}
+run_variant former   "MPLAPACK_DD_GEMM_BLOCKED=0"         Rgemm.dd_opt ${DDSIZES}
+run_variant winograd "MPLAPACK_DD_GEMM_WINOGRAD_CUTOFF=256" Rgemm.dd_opt ${DDSIZES}
+run_variant ozaki    "MPLAPACK_DD_GEMM_OZAKI=1"           Rgemm.dd_opt ${DDSIZES}
 
-run_variant tiled    ""                                     Rgemm.qd_cuda_total ${QDSIZES}
-run_variant naive    "MPLAPACK_QD_CUDA_KERNEL=naive"         Rgemm.qd_cuda_total ${QDSIZES}
-run_variant winograd "MPLAPACK_QD_CUDA_WINOGRAD_CUTOFF=128"  Rgemm.qd_cuda_total ${QDSIZES}
-run_variant ozaki    "MPLAPACK_QD_CUDA_OZAKI=1"              Rgemm.qd_cuda_total ${QDSIZES}
+run_variant blocked  ""                                  Rgemm.qd_opt ${SIZES}
+run_variant former   "MPLAPACK_QD_GEMM_BLOCKED=0"         Rgemm.qd_opt ${SIZES}
+run_variant winograd "MPLAPACK_QD_GEMM_WINOGRAD_CUTOFF=64" Rgemm.qd_opt ${SIZES}
+run_variant ozaki    "MPLAPACK_QD_GEMM_OZAKI=1"           Rgemm.qd_opt ${SIZES}
+run_variant bf       "MPLAPACK_QD_GEMM_BF=1"              Rgemm.qd_opt ${SIZES}
 
-# MPFR: fixed-precision kernels at 512 and 1024 bits, cu_mpfr kernels at 1024
-for _prec in 512 1024; do
-    run_variant prec${_prec} "" Rgemm.mpfr_cuda_total ${QDSIZES} -PREC ${_prec}
-done
-run_variant prec1024_runtime "MPLAPACK_MPFR_CUDA_FORCE_RUNTIME=1" Rgemm.mpfr_cuda_total ${QDSIZES} -PREC 1024
+run_variant blocked  ""                                         Rgemm.binary128_opt ${SIZES}
+run_variant former   "MPLAPACK_BINARY128_GEMM_BLOCKED=0"         Rgemm.binary128_opt ${SIZES}
+run_variant winograd "MPLAPACK_BINARY128_GEMM_WINOGRAD_CUTOFF=64" Rgemm.binary128_opt ${SIZES}
+run_variant ozaki    "MPLAPACK_BINARY128_GEMM_OZAKI=1"           Rgemm.binary128_opt ${SIZES}
 
 # ---------------------------------------------------------------------------
 # Generate gnuplot script, render PDF (one page per type)
 # ---------------------------------------------------------------------------
 $SED -e "s/%%MODELNAME%%/${MODELNAME}/g" -e "s/%%GPU%%/${GPUNAME:-GPU}/g" \
-    "${SCRIPT_DIR}/Rgemm_cuda.plt.in" > "${OUTPATH}/Rgemm_cuda.plt"
-(cd "${OUTPATH}" && gnuplot "Rgemm_cuda.plt" > "Rgemm_cuda.pdf")
+    "${SCRIPT_DIR}/Rgemm_algo.plt.in" > "${OUTPATH}/Rgemm_algo.plt"
+(cd "${OUTPATH}" && gnuplot "Rgemm_algo.plt" > "Rgemm_algo.pdf")
 
 echo "Done. Results: ${OUTPATH}"

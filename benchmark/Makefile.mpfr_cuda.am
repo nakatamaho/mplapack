@@ -1,0 +1,25 @@
+bench_PROGRAMS += \
+Rgemm.mpfr_cuda_total  \
+Rpotrf.mpfr_cuda_total \
+Rgetrf.mpfr_cuda_total
+
+# libmplapack_mpfr_opt_cuda: MPFR Rgemm on the GPU (mpc_cuda), see
+# mpblas/optimized/mpfr/cuda/README.md.  The library is device-linked, so the
+# programs link with the C++ compiler.
+mpfr_cuda_cxxflags   = $(GMPFRXX_MKII_CPPFLAGS) $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR) $(CUDA_CFLAGS) -DMPLAPACK_BUILD_WITH_MPFR
+mpfr_cuda_libdepends = -L$(top_builddir)/mpblas/optimized/mpfr/cuda -lmplapack_mpfr_opt_cuda \
+                       $(CUDA_LDFLAGS) -lcudart \
+                       -L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(GMP_LIBDIR) -lmpfr -lmpc -lgmp $(DYLD)
+mpfr_cuda_link       = $(LIBTOOL) --mode=link $(CXX) -o $@ $(CUDA_LDFLAGS) $(CUDA_LIBS) $(mpfr_cuda_libdepends) $(OPENMP_CXXFLAGS)
+
+Rgemm_mpfr_cuda_total_SOURCES=   Rgemm.cpp
+Rgemm_mpfr_cuda_total_LINK=      $(mpfr_cuda_link)
+Rgemm_mpfr_cuda_total_CXXFLAGS=  $(mpfr_cuda_cxxflags)
+
+Rpotrf_mpfr_cuda_total_SOURCES=  Rpotrf.cpp
+Rpotrf_mpfr_cuda_total_LINK=     $(mpfr_cuda_link)
+Rpotrf_mpfr_cuda_total_CXXFLAGS= $(mpfr_cuda_cxxflags)
+
+Rgetrf_mpfr_cuda_total_SOURCES=  Rgetrf.cpp
+Rgetrf_mpfr_cuda_total_LINK=     $(mpfr_cuda_link)
+Rgetrf_mpfr_cuda_total_CXXFLAGS= $(mpfr_cuda_cxxflags)

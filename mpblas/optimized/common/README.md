@@ -123,6 +123,23 @@ Limitations:
 - Ozaki keeps all slices on the GPU (`S (mk + kn)` doubles);
 - not yet measured on a GPU.
 
+## Benchmarks
+
+`benchmark/go.Rgemm_algo.sh` runs `Rgemm.{dd,qd,binary128}_opt` once per
+algorithm: blocked, former, Winograd, Ozaki, and qd BF. It plots MFLOPS against
+the dimension, one PDF page per type (`Rgemm_algo.plt.in`).
+
+`benchmark/go.Rgemm_cuda.sh` does the same for `Rgemm.{dd,qd}_cuda_total`:
+tiled, naive, Winograd, Ozaki, and the former dd kernels. It also runs
+`Rgemm.mpfr_cuda_total` at 512 and 1024 bits, using the `-PREC` option of the
+MPFR `Rgemm` benchmark.
+
+Both build systems build the programs and generate the scripts:
+
+- autotools: `Makefile.{qd,mpfr}_cuda.am`;
+- CMake: `-DMPLAPACK_BUILD_BENCHMARKS=ON`, which also builds the `*_opt` and
+  `*_cuda_total` programs.
+
 ## Tests
 
 | CMake test | autotools `make check` in | Checks |
