@@ -1,7 +1,7 @@
 check_PROGRAMS = $(mplapack_binary128_test_PROGRAMS) $(mplapack_binary128_opt_test_PROGRAMS)
 
-# Executable-owned overrides must precede shared backend definitions even
-# when --as-needed drops an otherwise unused override library.
+# Own the test routines and common arrays in the executable only.
+# Do not also link an override library: its finalizers would run twice.
 TEST_OVERRIDE_SOURCES = ../common/Mxerbla.cpp ../common/iMlaenv.cpp ../common/Mxlaenv.cpp
 
 mplapack_binary128_test_PROGRAMS = xlintstR_binary128 xlintstC_binary128 xlintstrfR_binary128 xlintstrfC_binary128
@@ -9,15 +9,15 @@ mplapack_binary128_opt_test_PROGRAMS = xlintstR_binary128_opt xlintstC_binary128
 mplapack_binary128_testdir = $(prefix)/lib/$(target)/mplapack/test/lin
 mplapack_binary128_opt_testdir = $(prefix)/lib/$(target)/mplapack/test/lin
 
-$(mplapack_binary128_test_PROGRAMS): ../liblin_binary128.la ../liblin_override_binary128.la
-$(mplapack_binary128_opt_test_PROGRAMS): ../liblin_binary128_opt.la ../liblin_override_binary128_opt.la
+$(mplapack_binary128_test_PROGRAMS): ../liblin_binary128.la
+$(mplapack_binary128_opt_test_PROGRAMS): ../liblin_binary128_opt.la
 
 if IS_MINGW
-libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,$(top_builddir)/mplapack/test/lin/.libs/liblin_binary128.a,$(top_builddir)/mplapack/test/lin/.libs/liblin_override_binary128.a,$(top_builddir)/mplapack/test/matgen/.libs/libmatgen_binary128.a,$(top_builddir)/mplapack/reference/.libs/libmplapack_binary128.a,--no-whole-archive
-opt_libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,$(top_builddir)/mplapack/test/lin/.libs/liblin_binary128_opt.a,$(top_builddir)/mplapack/test/lin/.libs/liblin_override_binary128_opt.a,$(top_builddir)/mplapack/test/matgen/.libs/libmatgen_binary128_opt.a,$(top_builddir)/mpblas/optimized/binary128/.libs/libmplapack_binary128_opt.a,--no-whole-archive
+libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,$(top_builddir)/mplapack/test/lin/.libs/liblin_binary128.a,$(top_builddir)/mplapack/test/matgen/.libs/libmatgen_binary128.a,$(top_builddir)/mplapack/reference/.libs/libmplapack_binary128.a,--no-whole-archive
+opt_libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,$(top_builddir)/mplapack/test/lin/.libs/liblin_binary128_opt.a,$(top_builddir)/mplapack/test/matgen/.libs/libmatgen_binary128_opt.a,$(top_builddir)/mpblas/optimized/binary128/.libs/libmplapack_binary128_opt.a,--no-whole-archive
 else
-libdepends = -L$(top_builddir)/mplapack/test/lin -llin_binary128 -llin_override_binary128 -L$(top_builddir)/mplapack/test/matgen -lmatgen_binary128 -L$(top_builddir)/mplapack/reference -lmplapack_binary128
-opt_libdepends = -L$(top_builddir)/mplapack/test/lin -llin_binary128_opt -llin_override_binary128_opt -L$(top_builddir)/mplapack/test/matgen -lmatgen_binary128_opt -L$(top_builddir)/mpblas/optimized/binary128 -lmplapack_binary128_opt
+libdepends = -L$(top_builddir)/mplapack/test/lin -llin_binary128 -L$(top_builddir)/mplapack/test/matgen -lmatgen_binary128 -L$(top_builddir)/mplapack/reference -lmplapack_binary128
+opt_libdepends = -L$(top_builddir)/mplapack/test/lin -llin_binary128_opt -L$(top_builddir)/mplapack/test/matgen -lmatgen_binary128_opt -L$(top_builddir)/mpblas/optimized/binary128 -lmplapack_binary128_opt
 endif
 
 if BINARY128_USE_QUADMATH

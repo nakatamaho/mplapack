@@ -1,7 +1,7 @@
 check_PROGRAMS = $(mplapack_dd_test_PROGRAMS) $(mplapack_dd_opt_test_PROGRAMS)
 
-# Executable-owned overrides must precede shared backend definitions even
-# when --as-needed drops an otherwise unused override library.
+# Own the test routines and common arrays in the executable only.
+# Do not also link an override library: its finalizers would run twice.
 TEST_OVERRIDE_SOURCES = ../common/Mxerbla.cpp ../common/iMlaenv.cpp ../common/Mxlaenv.cpp
 # DMD must retain the production iMlaenv implementation.
 DMD_SUPPORT_SOURCES = ../common/Mxerbla.cpp ../common/Mxlaenv.cpp
@@ -13,18 +13,16 @@ mplapack_dd_opt_testdir = $(prefix)/lib/$(target)/mplapack/test/eig
 
 $(mplapack_dd_test_PROGRAMS): ../libeig_dd.la
 $(mplapack_dd_opt_test_PROGRAMS): ../libeig_dd_opt.la
-xeigtstR_dd xeigtstC_dd: ../libeig_override_dd.la
-xeigtstR_dd_opt xeigtstC_dd_opt: ../libeig_override_dd_opt.la
 
 if IS_MINGW
-libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,$(top_builddir)/mplapack/test/eig/.libs/libeig_dd.a,$(top_builddir)/mplapack/test/eig/.libs/libeig_override_dd.a,$(top_builddir)/mplapack/test/matgen/.libs/libmatgen_dd.a,$(top_builddir)/mplapack/reference/.libs/libmplapack_dd.a,--no-whole-archive
+libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,$(top_builddir)/mplapack/test/eig/.libs/libeig_dd.a,$(top_builddir)/mplapack/test/matgen/.libs/libmatgen_dd.a,$(top_builddir)/mplapack/reference/.libs/libmplapack_dd.a,--no-whole-archive
 dmd_libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,$(top_builddir)/mplapack/test/eig/.libs/libeig_dd.a,$(top_builddir)/mplapack/test/matgen/.libs/libmatgen_dd.a,$(top_builddir)/mplapack/reference/.libs/libmplapack_dd.a,--no-whole-archive
-opt_libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,$(top_builddir)/mplapack/test/eig/.libs/libeig_dd_opt.a,$(top_builddir)/mplapack/test/eig/.libs/libeig_override_dd_opt.a,$(top_builddir)/mplapack/test/matgen/.libs/libmatgen_dd_opt.a,$(top_builddir)/mpblas/optimized/dd/.libs/libmplapack_dd_opt.a,--no-whole-archive
+opt_libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,$(top_builddir)/mplapack/test/eig/.libs/libeig_dd_opt.a,$(top_builddir)/mplapack/test/matgen/.libs/libmatgen_dd_opt.a,$(top_builddir)/mpblas/optimized/dd/.libs/libmplapack_dd_opt.a,--no-whole-archive
 dmd_opt_libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,$(top_builddir)/mplapack/test/eig/.libs/libeig_dd_opt.a,$(top_builddir)/mplapack/test/matgen/.libs/libmatgen_dd_opt.a,$(top_builddir)/mpblas/optimized/dd/.libs/libmplapack_dd_opt.a,--no-whole-archive
 else
-libdepends = -L$(top_builddir)/mplapack/test/eig -leig_dd -leig_override_dd -L$(top_builddir)/mplapack/test/matgen -lmatgen_dd -L$(top_builddir)/mplapack/reference -lmplapack_dd
+libdepends = -L$(top_builddir)/mplapack/test/eig -leig_dd -L$(top_builddir)/mplapack/test/matgen -lmatgen_dd -L$(top_builddir)/mplapack/reference -lmplapack_dd
 dmd_libdepends = -L$(top_builddir)/mplapack/test/eig -leig_dd -L$(top_builddir)/mplapack/test/matgen -lmatgen_dd -L$(top_builddir)/mplapack/reference -lmplapack_dd
-opt_libdepends = -L$(top_builddir)/mplapack/test/eig -leig_dd_opt -leig_override_dd_opt -L$(top_builddir)/mplapack/test/matgen -lmatgen_dd_opt -L$(top_builddir)/mpblas/optimized/dd -lmplapack_dd_opt
+opt_libdepends = -L$(top_builddir)/mplapack/test/eig -leig_dd_opt -L$(top_builddir)/mplapack/test/matgen -lmatgen_dd_opt -L$(top_builddir)/mpblas/optimized/dd -lmplapack_dd_opt
 dmd_opt_libdepends = -L$(top_builddir)/mplapack/test/eig -leig_dd_opt -L$(top_builddir)/mplapack/test/matgen -lmatgen_dd_opt -L$(top_builddir)/mpblas/optimized/dd -lmplapack_dd_opt
 endif
 

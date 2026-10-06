@@ -1,7 +1,7 @@
 check_PROGRAMS = $(mplapack_binary80_test_PROGRAMS) $(mplapack_binary80_opt_test_PROGRAMS)
 
-# Executable-owned overrides must precede shared backend definitions even
-# when --as-needed drops an otherwise unused override library.
+# Own the test routines and common arrays in the executable only.
+# Do not also link an override library: its finalizers would run twice.
 TEST_OVERRIDE_SOURCES = ../common/Mxerbla.cpp ../common/iMlaenv.cpp ../common/Mxlaenv.cpp
 # DMD must retain the production iMlaenv implementation.
 DMD_SUPPORT_SOURCES = ../common/Mxerbla.cpp ../common/Mxlaenv.cpp
@@ -13,18 +13,16 @@ mplapack_binary80_opt_testdir = $(prefix)/lib/$(target)/mplapack/test/eig
 
 $(mplapack_binary80_test_PROGRAMS): ../libeig_binary80.la
 $(mplapack_binary80_opt_test_PROGRAMS): ../libeig_binary80_opt.la
-xeigtstR_binary80 xeigtstC_binary80: ../libeig_override_binary80.la
-xeigtstR_binary80_opt xeigtstC_binary80_opt: ../libeig_override_binary80_opt.la
 
 if IS_MINGW
-libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,$(top_builddir)/mplapack/test/eig/.libs/libeig_binary80.a,$(top_builddir)/mplapack/test/eig/.libs/libeig_override_binary80.a,$(top_builddir)/mplapack/test/matgen/.libs/libmatgen_binary80.a,$(top_builddir)/mplapack/reference/.libs/libmplapack_binary80.a,--no-whole-archive
+libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,$(top_builddir)/mplapack/test/eig/.libs/libeig_binary80.a,$(top_builddir)/mplapack/test/matgen/.libs/libmatgen_binary80.a,$(top_builddir)/mplapack/reference/.libs/libmplapack_binary80.a,--no-whole-archive
 dmd_libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,$(top_builddir)/mplapack/test/eig/.libs/libeig_binary80.a,$(top_builddir)/mplapack/test/matgen/.libs/libmatgen_binary80.a,$(top_builddir)/mplapack/reference/.libs/libmplapack_binary80.a,--no-whole-archive
-opt_libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,$(top_builddir)/mplapack/test/eig/.libs/libeig_binary80_opt.a,$(top_builddir)/mplapack/test/eig/.libs/libeig_override_binary80_opt.a,$(top_builddir)/mplapack/test/matgen/.libs/libmatgen_binary80_opt.a,$(top_builddir)/mpblas/optimized/binary80/.libs/libmplapack_binary80_opt.a,--no-whole-archive
+opt_libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,$(top_builddir)/mplapack/test/eig/.libs/libeig_binary80_opt.a,$(top_builddir)/mplapack/test/matgen/.libs/libmatgen_binary80_opt.a,$(top_builddir)/mpblas/optimized/binary80/.libs/libmplapack_binary80_opt.a,--no-whole-archive
 dmd_opt_libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,$(top_builddir)/mplapack/test/eig/.libs/libeig_binary80_opt.a,$(top_builddir)/mplapack/test/matgen/.libs/libmatgen_binary80_opt.a,$(top_builddir)/mpblas/optimized/binary80/.libs/libmplapack_binary80_opt.a,--no-whole-archive
 else
-libdepends = -L$(top_builddir)/mplapack/test/eig -leig_binary80 -leig_override_binary80 -L$(top_builddir)/mplapack/test/matgen -lmatgen_binary80 -L$(top_builddir)/mplapack/reference -lmplapack_binary80
+libdepends = -L$(top_builddir)/mplapack/test/eig -leig_binary80 -L$(top_builddir)/mplapack/test/matgen -lmatgen_binary80 -L$(top_builddir)/mplapack/reference -lmplapack_binary80
 dmd_libdepends = -L$(top_builddir)/mplapack/test/eig -leig_binary80 -L$(top_builddir)/mplapack/test/matgen -lmatgen_binary80 -L$(top_builddir)/mplapack/reference -lmplapack_binary80
-opt_libdepends = -L$(top_builddir)/mplapack/test/eig -leig_binary80_opt -leig_override_binary80_opt -L$(top_builddir)/mplapack/test/matgen -lmatgen_binary80_opt -L$(top_builddir)/mpblas/optimized/binary80 -lmplapack_binary80_opt
+opt_libdepends = -L$(top_builddir)/mplapack/test/eig -leig_binary80_opt -L$(top_builddir)/mplapack/test/matgen -lmatgen_binary80_opt -L$(top_builddir)/mpblas/optimized/binary80 -lmplapack_binary80_opt
 dmd_opt_libdepends = -L$(top_builddir)/mplapack/test/eig -leig_binary80_opt -L$(top_builddir)/mplapack/test/matgen -lmatgen_binary80_opt -L$(top_builddir)/mpblas/optimized/binary80 -lmplapack_binary80_opt
 endif
 

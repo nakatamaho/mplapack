@@ -3,15 +3,13 @@
 #
 #   libmatgen_<b>        — test matrix generators (mplapack/test/matgen)
 #   liblin_<b>           — linear-equation test routines (lin/common)
-#   liblin_override_<b>  — test versions of Mxerbla/iMlaenv/Mxlaenv
 #   xlintst{R,C,rfR,rfC}_<b>  — the lin test drivers
-#   libeig_<b> / libeig_override_<b> / xeigtst{R,C}_<b> / xdmdeigtst{R,C}_<b>
+#   libeig_<b> / xeigtst{R,C}_<b> / xdmdeigtst{R,C}_<b>
 #
 # and registers ctest cases that feed each driver its .in dataset on stdin.
 #
-# The override library provides alternative definitions of a few symbols that
-# also live in libmplapack; it is linked first and -Wl,--allow-multiple-definition
-# makes those definitions win (mirroring the autotools whole-archive trick).
+# Test overrides and their common arrays belong to each executable, as in
+# Autotools. DMD owns only Mxerbla/Mxlaenv and retains production iMlaenv.
 
 set(_test_dir       "${CMAKE_CURRENT_SOURCE_DIR}")
 set(_matgen_dir     "${_test_dir}/matgen")
@@ -102,19 +100,39 @@ foreach(_b ${_backends})
     # --- libraries --------------------------------------------------------
     add_library(matgen_${_variant}        STATIC ${_matgen_srcs})
     add_library(lin_${_variant}           STATIC ${_lin_lib_srcs})
-    add_library(lin_override_${_variant}  STATIC)
     add_library(eig_${_variant}           STATIC ${_eig_lib_srcs})
-    add_library(eig_override_${_variant}  STATIC)
-    foreach(_o ${_override_files})
-      target_sources(lin_override_${_variant} PRIVATE "${_lin_common}/${_o}.cpp")
-      target_sources(eig_override_${_variant} PRIVATE "${_eig_common}/${_o}.cpp")
-    endforeach()
 
     _mplapack_test_setup(matgen_${_variant}       ${_backend_library} TRUE)
     _mplapack_test_setup(lin_${_variant}          ${_backend_library} TRUE)
-    _mplapack_test_setup(lin_override_${_variant} ${_backend_library} FALSE)
     _mplapack_test_setup(eig_${_variant}          ${_backend_library} TRUE)
-    _mplapack_test_setup(eig_override_${_variant} ${_backend_library} FALSE)
+
+    # Lightweight ownership/lifetime probes, without numerical suites.
+    foreach(_probe_kind lin eig dmd)
+      set(_probe "test_override_${_probe_kind}_${_variant}")
+      set(_probe_family ${_probe_kind})
+      set(_probe_overrides ${_override_files})
+      if(_probe_kind STREQUAL "dmd")
+        set(_probe_family eig)
+        set(_probe_overrides Mxerbla Mxlaenv)
+      endif()
+      add_executable(${_probe} "${CMAKE_SOURCE_DIR}/misc/test_override_link.cpp")
+      foreach(_o ${_probe_overrides})
+        target_sources(${_probe} PRIVATE "${_test_dir}/${_probe_family}/common/${_o}.cpp")
+      endforeach()
+      _mplapack_test_setup(${_probe} ${_backend_library} TRUE)
+      if(_probe_kind STREQUAL "dmd")
+        target_compile_definitions(${_probe} PRIVATE TEST_DMD)
+      endif()
+      if(_b STREQUAL "dd" AND MPLAPACK_HAS_FP_CONTRACT_OFF)
+        target_compile_options(${_probe} PRIVATE -ffp-contract=off)
+      endif()
+      target_link_libraries(${_probe} PRIVATE
+        "$<LINK_GROUP:RESCAN,${_probe_family}_${_variant},matgen_${_variant},${_backend_library}>")
+      if(MPLAPACK_LD_ALLOW_MULTIDEF)
+        target_link_options(${_probe} PRIVATE "-Wl,--allow-multiple-definition")
+      endif()
+      add_test(NAME ${_probe} COMMAND ${_probe})
+    endforeach()
 
     # --- drivers ----------------------------------------------------------
     # name : driver-suffix : main-source : dataset-list-variable
@@ -146,17 +164,17 @@ foreach(_b ${_backends})
       else()
         set(_kind lin)
       endif()
-      # The override lib provides the test versions of Mxerbla, iMlaenv and
-      # Mxlaenv (and defines srnamt/infot) that must REPLACE the real ones in
-      # the backend libraries -- e.g. the error-exit tests rely on the
-      # override Mxerbla recording the error instead of printing and aborting.
-      # Linking the override archive with --whole-archive forces all its
-      # objects in first, so its definitions win over the duplicates in the
-      # merged backend library (kept first by --allow-multiple-definition).
+      # Compile overrides directly into the driver; do not link another copy.
+      set(_driver_override_files ${_override_files})
+      if(_exe MATCHES "^xdmdeigtst")
+        set(_driver_override_files Mxerbla Mxlaenv)
+      endif()
+      foreach(_o ${_driver_override_files})
+        target_sources(${_exe} PRIVATE "${_test_dir}/${_kind}/common/${_o}.cpp")
+      endforeach()
       # The remaining static archives have circular dependencies, so wrap
       # them in a RESCAN group (--start-group/--end-group).
       target_link_libraries(${_exe} PRIVATE
-        "$<LINK_LIBRARY:WHOLE_ARCHIVE,${_kind}_override_${_variant}>"
         "$<LINK_GROUP:RESCAN,${_kind}_${_variant},matgen_${_variant},${_backend_library}>")
       if(MPLAPACK_LD_ALLOW_MULTIDEF)
         target_link_options(${_exe} PRIVATE "-Wl,--allow-multiple-definition")

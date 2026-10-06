@@ -351,7 +351,7 @@ if(MPLAPACK_BUILD_TESTS)
                 "$<TARGET_FILE:mplapack_${accelerator}>")
     endif()
   endforeach()
-  # Shared by both test directories: the override libraries/objects rely on the
+  # Shared by both test directories: executable-owned test overrides rely on the
   # linker keeping the first (overriding) definition of duplicated symbols.
   include(CheckLinkerFlag)
   check_linker_flag(CXX "-Wl,--allow-multiple-definition" MPLAPACK_LD_ALLOW_MULTIDEF)

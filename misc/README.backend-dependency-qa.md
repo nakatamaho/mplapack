@@ -60,16 +60,16 @@ first installation into a fresh temporary DESTDIR. Use a configured prefix
 without previously installed support libraries, since libtool may otherwise
 find old support libraries there and mask an installation failure. The test
 installs the prerequisites and then the support libraries using the generated
-Automake rules, without running numerical tests. Test overrides are installed
-separately and are not dependencies of the support libraries. The temporary
+Automake rules, without running numerical tests. Test overrides are compiled
+into the drivers; no separate override libraries are built or installed. The temporary
 installation is removed when the test exits.
 
 Ordinary LIN and EIG test executables compile Mxerbla, iMlaenv, and Mxlaenv
 directly into each driver. DMD drivers compile only Mxerbla and Mxlaenv;
 their iMlaenv must come from the production backend, as on master.
 This gives ordinary test overrides precedence over shared backend
-definitions even when the linker drops an unused override DSO with
-`--as-needed`. Run `sh misc/check_test_override_link.sh <top-builddir>
+definitions without duplicate initialization or finalization of common arrays.
+Run `sh misc/check_test_override_link.sh <top-builddir>
 <top-srcdir>` on Linux after building the GMP, MPFR, QD, and DD reference and
 optimized support libraries. The probe tests an invalid Rgetrf argument and
 the Mxlaenv/iMlaenv parameter exchange without running numerical suites.
@@ -77,3 +77,8 @@ It also verifies that the DMD graph has no override dependency and retains
 the production ISPEC=9 default of 25 even after writing test common state.
 When the MPFR LIN drivers are built, it also runs their DGE error-exit checks
 with zero-size matrices using misc/test_override_error.in.
+
+CMake uses the same executable-owned overrides and builds no override
+archives. Run ctest --test-dir <builddir> -R '^test_override_' after building
+to check LIN/EIG ownership, production DMD tuning and process finalization
+for reference and optimized variants without running numerical suites.

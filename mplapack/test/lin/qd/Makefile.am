@@ -1,7 +1,7 @@
 check_PROGRAMS = $(mplapack_qd_test_PROGRAMS) $(mplapack_qd_opt_test_PROGRAMS)
 
-# Executable-owned overrides must precede shared backend definitions even
-# when --as-needed drops an otherwise unused override library.
+# Own the test routines and common arrays in the executable only.
+# Do not also link an override library: its finalizers would run twice.
 TEST_OVERRIDE_SOURCES = ../common/Mxerbla.cpp ../common/iMlaenv.cpp ../common/Mxlaenv.cpp
 
 mplapack_qd_test_PROGRAMS = xlintstR_qd xlintstC_qd xlintstrfR_qd xlintstrfC_qd
@@ -9,15 +9,15 @@ mplapack_qd_opt_test_PROGRAMS = xlintstR_qd_opt xlintstC_qd_opt xlintstrfR_qd_op
 mplapack_qd_testdir = $(prefix)/lib/$(target)/mplapack/test/lin
 mplapack_qd_opt_testdir = $(prefix)/lib/$(target)/mplapack/test/lin
 
-$(mplapack_qd_test_PROGRAMS): ../liblin_qd.la ../liblin_override_qd.la
-$(mplapack_qd_opt_test_PROGRAMS): ../liblin_qd_opt.la ../liblin_override_qd_opt.la
+$(mplapack_qd_test_PROGRAMS): ../liblin_qd.la
+$(mplapack_qd_opt_test_PROGRAMS): ../liblin_qd_opt.la
 
 if IS_MINGW
-libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,$(top_builddir)/mplapack/test/lin/.libs/liblin_qd.a,$(top_builddir)/mplapack/test/lin/.libs/liblin_override_qd.a,$(top_builddir)/mplapack/test/matgen/.libs/libmatgen_qd.a,$(top_builddir)/mplapack/reference/.libs/libmplapack_qd.a,--no-whole-archive
-opt_libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,$(top_builddir)/mplapack/test/lin/.libs/liblin_qd_opt.a,$(top_builddir)/mplapack/test/lin/.libs/liblin_override_qd_opt.a,$(top_builddir)/mplapack/test/matgen/.libs/libmatgen_qd_opt.a,$(top_builddir)/mpblas/optimized/qd/.libs/libmplapack_qd_opt.a,--no-whole-archive
+libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,$(top_builddir)/mplapack/test/lin/.libs/liblin_qd.a,$(top_builddir)/mplapack/test/matgen/.libs/libmatgen_qd.a,$(top_builddir)/mplapack/reference/.libs/libmplapack_qd.a,--no-whole-archive
+opt_libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,$(top_builddir)/mplapack/test/lin/.libs/liblin_qd_opt.a,$(top_builddir)/mplapack/test/matgen/.libs/libmatgen_qd_opt.a,$(top_builddir)/mpblas/optimized/qd/.libs/libmplapack_qd_opt.a,--no-whole-archive
 else
-libdepends = -L$(top_builddir)/mplapack/test/lin -llin_qd -llin_override_qd -L$(top_builddir)/mplapack/test/matgen -lmatgen_qd -L$(top_builddir)/mplapack/reference -lmplapack_qd
-opt_libdepends = -L$(top_builddir)/mplapack/test/lin -llin_qd_opt -llin_override_qd_opt -L$(top_builddir)/mplapack/test/matgen -lmatgen_qd_opt -L$(top_builddir)/mpblas/optimized/qd -lmplapack_qd_opt
+libdepends = -L$(top_builddir)/mplapack/test/lin -llin_qd -L$(top_builddir)/mplapack/test/matgen -lmatgen_qd -L$(top_builddir)/mplapack/reference -lmplapack_qd
+opt_libdepends = -L$(top_builddir)/mplapack/test/lin -llin_qd_opt -L$(top_builddir)/mplapack/test/matgen -lmatgen_qd_opt -L$(top_builddir)/mpblas/optimized/qd -lmplapack_qd_opt
 endif
 
 mplibs = -L$(QD_LIBDIR) -lqd -lm
