@@ -1,6 +1,7 @@
 check_PROGRAMS = $(mplapack_double_test_PROGRAMS) $(mplapack_double_opt_test_PROGRAMS)
 
-# Keep ordinary test overrides in executable objects under --as-needed.
+# Own the test routines and common arrays in the executable only.
+# Do not also link an override library: its finalizers would run twice.
 TEST_OVERRIDE_SOURCES = ../common/Mxerbla.cpp ../common/iMlaenv.cpp ../common/Mxlaenv.cpp
 
 mplapack_double_test_PROGRAMS = xlintstR_double xlintstC_double xlintstrfR_double xlintstrfC_double
@@ -8,15 +9,15 @@ mplapack_double_opt_test_PROGRAMS = xlintstR_double_opt xlintstC_double_opt xlin
 mplapack_double_testdir = $(prefix)/lib/$(target)/mplapack/test/lin
 mplapack_double_opt_testdir = $(prefix)/lib/$(target)/mplapack/test/lin
 
-$(mplapack_double_test_PROGRAMS): ../liblin_double.la ../liblin_override_double.la
-$(mplapack_double_opt_test_PROGRAMS): ../liblin_double_opt.la ../liblin_override_double_opt.la
+$(mplapack_double_test_PROGRAMS): ../liblin_double.la
+$(mplapack_double_opt_test_PROGRAMS): ../liblin_double_opt.la
 
 if IS_MINGW
-libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,$(top_builddir)/mplapack/test/lin/.libs/liblin_double.a,$(top_builddir)/mplapack/test/lin/.libs/liblin_override_double.a,$(top_builddir)/mplapack/test/matgen/.libs/libmatgen_double.a,$(top_builddir)/mplapack/reference/.libs/libmplapack_double.a,--no-whole-archive
-opt_libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,$(top_builddir)/mplapack/test/lin/.libs/liblin_double_opt.a,$(top_builddir)/mplapack/test/lin/.libs/liblin_override_double_opt.a,$(top_builddir)/mplapack/test/matgen/.libs/libmatgen_double_opt.a,$(top_builddir)/mpblas/optimized/double/.libs/libmplapack_double_opt.a,--no-whole-archive
+libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,$(top_builddir)/mplapack/test/lin/.libs/liblin_double.a,$(top_builddir)/mplapack/test/matgen/.libs/libmatgen_double.a,$(top_builddir)/mplapack/reference/.libs/libmplapack_double.a,--no-whole-archive
+opt_libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,$(top_builddir)/mplapack/test/lin/.libs/liblin_double_opt.a,$(top_builddir)/mplapack/test/matgen/.libs/libmatgen_double_opt.a,$(top_builddir)/mpblas/optimized/double/.libs/libmplapack_double_opt.a,--no-whole-archive
 else
-libdepends = -L$(top_builddir)/mplapack/test/lin -llin_double -llin_override_double -L$(top_builddir)/mplapack/test/matgen -lmatgen_double -L$(top_builddir)/mplapack/reference -lmplapack_double
-opt_libdepends = -L$(top_builddir)/mplapack/test/lin -llin_double_opt -llin_override_double_opt -L$(top_builddir)/mplapack/test/matgen -lmatgen_double_opt -L$(top_builddir)/mpblas/optimized/double -lmplapack_double_opt
+libdepends = -L$(top_builddir)/mplapack/test/lin -llin_double -L$(top_builddir)/mplapack/test/matgen -lmatgen_double -L$(top_builddir)/mplapack/reference -lmplapack_double
+opt_libdepends = -L$(top_builddir)/mplapack/test/lin -llin_double_opt -L$(top_builddir)/mplapack/test/matgen -lmatgen_double_opt -L$(top_builddir)/mpblas/optimized/double -lmplapack_double_opt
 endif
 
 mplibs = -lm

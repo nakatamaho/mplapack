@@ -15,6 +15,33 @@ pkg_config=${PKG_CONFIG:-pkg-config}
 tmpdir=$(mktemp -d "${TMPDIR:-/tmp}/mplapack-test-overrides.XXXXXX")
 trap 'rm -rf "$tmpdir"' EXIT HUP INT TERM
 export PKG_CONFIG_PATH="$builddir${PKG_CONFIG_PATH:+:$PKG_CONFIG_PATH}"
+
+# Executable-owned overrides must never also be linked from a library.
+# The duplicated MPFR common arrays can otherwise be finalized twice.
+for family in lin eig; do
+    if grep -Eq 'lib(lin|eig)_override_' "$srcdir/mplapack/test/$family/Makefile.am"; then
+        echo "FAIL: unused override library is still generated for $family" >&2
+        exit 1
+    fi
+    for backend in gmp mpfr qd dd double binary80 binary128; do
+        makefile="$srcdir/mplapack/test/$family/$backend/Makefile.am"
+        if grep -Eq 'override_.*[.](la|a)|-l(lin|eig)_override_' "$makefile"; then
+            echo "FAIL: duplicate override dependency in $makefile" >&2
+            exit 1
+        fi
+        for driver in "$builddir/mplapack/test/$family/$backend/.libs/"*; do
+            test -f "$driver" && test -x "$driver" || continue
+            case ${driver##*/} in
+                xlintst*|xeigtst*|xdmdeigtst*) ;;
+                *) continue ;;
+            esac
+            if readelf -d "$driver" | grep -q 'NEEDED.*override'; then
+                echo "FAIL: actual driver loads an override library: $driver" >&2
+                exit 1
+            fi
+        done
+    done
+done
 checked=0
 for backend in gmp mpfr qd dd; do
     test -f "$builddir/mplapack_$backend.pc" || continue
@@ -51,8 +78,12 @@ for backend in gmp mpfr qd dd; do
             libs=$($pkg_config --libs "mplapack_${backend}${suffix}")
             executable="$tmpdir/consumer"
             $cxx $objects -Wl,--as-needed -L"$support" \
-                -l${family}_${backend}${suffix} -l${family}_override_${backend}${suffix} \
+                -l${family}_${backend}${suffix} \
                 -L"$matgen" -lmatgen_${backend}${suffix} -L"$primary" $libs -o "$executable"
+            if readelf -d "$executable" | grep -q 'NEEDED.*override'; then
+                echo "FAIL: consumer loads a duplicate override library" >&2
+                exit 1
+            fi
             LD_LIBRARY_PATH="$support:$matgen:$primary${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}" \
                 "$executable"
             echo "PASS: $family $backend$suffix executable-owned overrides"

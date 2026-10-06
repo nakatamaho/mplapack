@@ -1,6 +1,7 @@
 check_PROGRAMS = $(mplapack_qd_test_PROGRAMS) $(mplapack_qd_opt_test_PROGRAMS)
 
-# Keep ordinary test overrides in executable objects under --as-needed.
+# Own the test routines and common arrays in the executable only.
+# Do not also link an override library: its finalizers would run twice.
 TEST_OVERRIDE_SOURCES = ../common/Mxerbla.cpp ../common/iMlaenv.cpp ../common/Mxlaenv.cpp
 
 mplapack_qd_test_PROGRAMS = xeigtstR_qd xeigtstC_qd xdmdeigtstR_qd xdmdeigtstC_qd
@@ -10,17 +11,15 @@ mplapack_qd_opt_testdir = $(prefix)/lib/$(target)/mplapack/test/eig
 
 $(mplapack_qd_test_PROGRAMS): ../libeig_qd.la
 $(mplapack_qd_opt_test_PROGRAMS): ../libeig_qd_opt.la
-xeigtstR_qd xeigtstC_qd: ../libeig_override_qd.la
-xeigtstR_qd_opt xeigtstC_qd_opt: ../libeig_override_qd_opt.la
 
 if IS_MINGW
-libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,$(top_builddir)/mplapack/test/eig/.libs/libeig_qd.a,$(top_builddir)/mplapack/test/eig/.libs/libeig_override_qd.a,$(top_builddir)/mplapack/test/matgen/.libs/libmatgen_qd.a,$(top_builddir)/mplapack/reference/.libs/libmplapack_qd.a,--no-whole-archive
-opt_libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,$(top_builddir)/mplapack/test/eig/.libs/libeig_qd_opt.a,$(top_builddir)/mplapack/test/eig/.libs/libeig_override_qd_opt.a,$(top_builddir)/mplapack/test/matgen/.libs/libmatgen_qd_opt.a,$(top_builddir)/mpblas/optimized/qd/.libs/libmplapack_qd_opt.a,--no-whole-archive
+libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,$(top_builddir)/mplapack/test/eig/.libs/libeig_qd.a,$(top_builddir)/mplapack/test/matgen/.libs/libmatgen_qd.a,$(top_builddir)/mplapack/reference/.libs/libmplapack_qd.a,--no-whole-archive
+opt_libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,$(top_builddir)/mplapack/test/eig/.libs/libeig_qd_opt.a,$(top_builddir)/mplapack/test/matgen/.libs/libmatgen_qd_opt.a,$(top_builddir)/mpblas/optimized/qd/.libs/libmplapack_qd_opt.a,--no-whole-archive
 dmd_libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,$(top_builddir)/mplapack/test/eig/.libs/libeig_qd.a,$(top_builddir)/mplapack/test/matgen/.libs/libmatgen_qd.a,$(top_builddir)/mplapack/reference/.libs/libmplapack_qd.a,--no-whole-archive
 dmd_opt_libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,$(top_builddir)/mplapack/test/eig/.libs/libeig_qd_opt.a,$(top_builddir)/mplapack/test/matgen/.libs/libmatgen_qd_opt.a,$(top_builddir)/mpblas/optimized/qd/.libs/libmplapack_qd_opt.a,--no-whole-archive
 else
-libdepends = -L$(top_builddir)/mplapack/test/eig -leig_qd -leig_override_qd -L$(top_builddir)/mplapack/test/matgen -lmatgen_qd -L$(top_builddir)/mplapack/reference -lmplapack_qd
-opt_libdepends = -L$(top_builddir)/mplapack/test/eig -leig_qd_opt -leig_override_qd_opt -L$(top_builddir)/mplapack/test/matgen -lmatgen_qd_opt -L$(top_builddir)/mpblas/optimized/qd -lmplapack_qd_opt
+libdepends = -L$(top_builddir)/mplapack/test/eig -leig_qd -L$(top_builddir)/mplapack/test/matgen -lmatgen_qd -L$(top_builddir)/mplapack/reference -lmplapack_qd
+opt_libdepends = -L$(top_builddir)/mplapack/test/eig -leig_qd_opt -L$(top_builddir)/mplapack/test/matgen -lmatgen_qd_opt -L$(top_builddir)/mpblas/optimized/qd -lmplapack_qd_opt
 dmd_libdepends = -L$(top_builddir)/mplapack/test/eig -leig_qd -L$(top_builddir)/mplapack/test/matgen -lmatgen_qd -L$(top_builddir)/mplapack/reference -lmplapack_qd
 dmd_opt_libdepends = -L$(top_builddir)/mplapack/test/eig -leig_qd_opt -L$(top_builddir)/mplapack/test/matgen -lmatgen_qd_opt -L$(top_builddir)/mpblas/optimized/qd -lmplapack_qd_opt
 endif

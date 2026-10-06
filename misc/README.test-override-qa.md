@@ -4,7 +4,13 @@ Ordinary LIN and EIG drivers compile Mxerbla, iMlaenv and Mxlaenv into the
 executable so production definitions cannot replace the test overrides under
 shared-library lookup or --as-needed. DMD drivers remain separate: they own
 Mxerbla and Mxlaenv, but use the production iMlaenv (ISPEC=9 defaults to 25).
-Neither LIN nor EIG support libraries depend on the override libraries.
+Both build systems build no separate LIN/EIG override libraries: the drivers are the
+sole owners of those routines and common arrays. Linking another copy could
+initialize and finalize the MPFR arrays twice.
+
+CMake also registers test_override_lin/eig/dmd_<backend>[_opt] smoke tests.
+Run them with ctest --test-dir <builddir> -R '^test_override_' after building.
+They check error handling, tuning ownership and normal process finalization.
 
 After building the configured GMP, MPFR, QD or DD reference and optimized
 support libraries, run:

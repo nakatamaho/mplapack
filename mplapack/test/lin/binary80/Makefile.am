@@ -1,6 +1,7 @@
 check_PROGRAMS = $(mplapack_binary80_test_PROGRAMS) $(mplapack_binary80_opt_test_PROGRAMS)
 
-# Keep ordinary test overrides in executable objects under --as-needed.
+# Own the test routines and common arrays in the executable only.
+# Do not also link an override library: its finalizers would run twice.
 TEST_OVERRIDE_SOURCES = ../common/Mxerbla.cpp ../common/iMlaenv.cpp ../common/Mxlaenv.cpp
 
 mplapack_binary80_test_PROGRAMS = xlintstR_binary80 xlintstC_binary80 xlintstrfR_binary80 xlintstrfC_binary80
@@ -8,15 +9,15 @@ mplapack_binary80_opt_test_PROGRAMS = xlintstR_binary80_opt xlintstC_binary80_op
 mplapack_binary80_testdir = $(prefix)/lib/$(target)/mplapack/test/lin
 mplapack_binary80_opt_testdir = $(prefix)/lib/$(target)/mplapack/test/lin
 
-$(mplapack_binary80_test_PROGRAMS): ../liblin_binary80.la ../liblin_override_binary80.la
-$(mplapack_binary80_opt_test_PROGRAMS): ../liblin_binary80_opt.la ../liblin_override_binary80_opt.la
+$(mplapack_binary80_test_PROGRAMS): ../liblin_binary80.la
+$(mplapack_binary80_opt_test_PROGRAMS): ../liblin_binary80_opt.la
 
 if IS_MINGW
-libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,$(top_builddir)/mplapack/test/lin/.libs/liblin_binary80.a,$(top_builddir)/mplapack/test/lin/.libs/liblin_override_binary80.a,$(top_builddir)/mplapack/test/matgen/.libs/libmatgen_binary80.a,$(top_builddir)/mplapack/reference/.libs/libmplapack_binary80.a,--no-whole-archive
-opt_libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,$(top_builddir)/mplapack/test/lin/.libs/liblin_binary80_opt.a,$(top_builddir)/mplapack/test/lin/.libs/liblin_override_binary80_opt.a,$(top_builddir)/mplapack/test/matgen/.libs/libmatgen_binary80_opt.a,$(top_builddir)/mpblas/optimized/binary80/.libs/libmplapack_binary80_opt.a,--no-whole-archive
+libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,$(top_builddir)/mplapack/test/lin/.libs/liblin_binary80.a,$(top_builddir)/mplapack/test/matgen/.libs/libmatgen_binary80.a,$(top_builddir)/mplapack/reference/.libs/libmplapack_binary80.a,--no-whole-archive
+opt_libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,$(top_builddir)/mplapack/test/lin/.libs/liblin_binary80_opt.a,$(top_builddir)/mplapack/test/matgen/.libs/libmatgen_binary80_opt.a,$(top_builddir)/mpblas/optimized/binary80/.libs/libmplapack_binary80_opt.a,--no-whole-archive
 else
-libdepends = -L$(top_builddir)/mplapack/test/lin -llin_binary80 -llin_override_binary80 -L$(top_builddir)/mplapack/test/matgen -lmatgen_binary80 -L$(top_builddir)/mplapack/reference -lmplapack_binary80
-opt_libdepends = -L$(top_builddir)/mplapack/test/lin -llin_binary80_opt -llin_override_binary80_opt -L$(top_builddir)/mplapack/test/matgen -lmatgen_binary80_opt -L$(top_builddir)/mpblas/optimized/binary80 -lmplapack_binary80_opt
+libdepends = -L$(top_builddir)/mplapack/test/lin -llin_binary80 -L$(top_builddir)/mplapack/test/matgen -lmatgen_binary80 -L$(top_builddir)/mplapack/reference -lmplapack_binary80
+opt_libdepends = -L$(top_builddir)/mplapack/test/lin -llin_binary80_opt -L$(top_builddir)/mplapack/test/matgen -lmatgen_binary80_opt -L$(top_builddir)/mpblas/optimized/binary80 -lmplapack_binary80_opt
 endif
 
 mplibs = -lm

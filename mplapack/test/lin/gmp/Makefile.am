@@ -1,6 +1,7 @@
 check_PROGRAMS = $(mplapack_gmp_test_PROGRAMS) $(mplapack_gmp_opt_test_PROGRAMS)
 
-# Keep ordinary test overrides in executable objects under --as-needed.
+# Own the test routines and common arrays in the executable only.
+# Do not also link an override library: its finalizers would run twice.
 TEST_OVERRIDE_SOURCES = ../common/Mxerbla.cpp ../common/iMlaenv.cpp ../common/Mxlaenv.cpp
 
 mplapack_gmp_test_PROGRAMS = xlintstR_gmp xlintstC_gmp xlintstrfR_gmp xlintstrfC_gmp
@@ -8,15 +9,15 @@ mplapack_gmp_opt_test_PROGRAMS = xlintstR_gmp_opt xlintstC_gmp_opt xlintstrfR_gm
 mplapack_gmp_testdir = $(prefix)/lib/$(target)/mplapack/test/lin
 mplapack_gmp_opt_testdir = $(prefix)/lib/$(target)/mplapack/test/lin
 
-$(mplapack_gmp_test_PROGRAMS): ../liblin_gmp.la ../liblin_override_gmp.la
-$(mplapack_gmp_opt_test_PROGRAMS): ../liblin_gmp_opt.la ../liblin_override_gmp_opt.la
+$(mplapack_gmp_test_PROGRAMS): ../liblin_gmp.la
+$(mplapack_gmp_opt_test_PROGRAMS): ../liblin_gmp_opt.la
 
 if IS_MINGW
-libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,$(top_builddir)/mplapack/test/lin/.libs/liblin_gmp.a,$(top_builddir)/mplapack/test/lin/.libs/liblin_override_gmp.a,$(top_builddir)/mplapack/test/matgen/.libs/libmatgen_gmp.a,$(top_builddir)/mplapack/reference/.libs/libmplapack_gmp.a,--no-whole-archive
-opt_libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,$(top_builddir)/mplapack/test/lin/.libs/liblin_gmp_opt.a,$(top_builddir)/mplapack/test/lin/.libs/liblin_override_gmp_opt.a,$(top_builddir)/mplapack/test/matgen/.libs/libmatgen_gmp_opt.a,$(top_builddir)/mpblas/optimized/gmp/.libs/libmplapack_gmp_opt.a,--no-whole-archive
+libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,$(top_builddir)/mplapack/test/lin/.libs/liblin_gmp.a,$(top_builddir)/mplapack/test/matgen/.libs/libmatgen_gmp.a,$(top_builddir)/mplapack/reference/.libs/libmplapack_gmp.a,--no-whole-archive
+opt_libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,$(top_builddir)/mplapack/test/lin/.libs/liblin_gmp_opt.a,$(top_builddir)/mplapack/test/matgen/.libs/libmatgen_gmp_opt.a,$(top_builddir)/mpblas/optimized/gmp/.libs/libmplapack_gmp_opt.a,--no-whole-archive
 else
-libdepends = -L$(top_builddir)/mplapack/test/lin -llin_gmp -llin_override_gmp -L$(top_builddir)/mplapack/test/matgen -lmatgen_gmp -L$(top_builddir)/mplapack/reference -lmplapack_gmp
-opt_libdepends = -L$(top_builddir)/mplapack/test/lin -llin_gmp_opt -llin_override_gmp_opt -L$(top_builddir)/mplapack/test/matgen -lmatgen_gmp_opt -L$(top_builddir)/mpblas/optimized/gmp -lmplapack_gmp_opt
+libdepends = -L$(top_builddir)/mplapack/test/lin -llin_gmp -L$(top_builddir)/mplapack/test/matgen -lmatgen_gmp -L$(top_builddir)/mplapack/reference -lmplapack_gmp
+opt_libdepends = -L$(top_builddir)/mplapack/test/lin -llin_gmp_opt -L$(top_builddir)/mplapack/test/matgen -lmatgen_gmp_opt -L$(top_builddir)/mpblas/optimized/gmp -lmplapack_gmp_opt
 endif
 
 mplibs = -L$(GMP_LIBDIR) -lgmp -lm
