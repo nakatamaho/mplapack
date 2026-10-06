@@ -386,6 +386,11 @@ misc/check_backend_shared_load.py \
 misc/check_backend_elf_dependencies.sh \
 misc/check_backend_pkgconfig.sh \
 misc/check_backend_support_libraries.sh \
+misc/check_backend_support_install.sh \
+misc/check_test_override_link.sh \
+misc/test_override_link.cpp \
+misc/test_override_error.in \
+misc/README.test-override-qa.md \
 misc/backend_gmp_pkgconfig_consumer.cpp \
 misc/backend_qd_pkgconfig_consumer.cpp \
 misc/backend_dd_pkgconfig_consumer.cpp \
@@ -558,6 +563,7 @@ release/docker/common/entrypoint.sh \
 release/docker/common/tarball-smoke.sh \
 release/docker/common/check-fable-reproduction.sh \
 release/docker/common/compare-fable-outputs.py \
+release/test-fable-comparison.py \
 release/docker/distcheck/Dockerfile.debian-i386 \
 release/docker/distcheck/Dockerfile.intel \
 release/docker/distcheck/Dockerfile.mingw \
@@ -583,6 +589,7 @@ release/docker/tier2/Dockerfile.ubuntu-cxxstd \
 release/docker/tier2/run-ubuntu-cxxstd-build.sh \
 release/dist-cache.sh \
 release/make-source-snapshot.sh \
+release/test-source-preparation.py \
 release/run-remote-linux-docker.sh \
 release/run-remote-tarball-docker-worker.sh \
 release/run-remote-macos.sh \

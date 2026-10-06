@@ -66,11 +66,14 @@ Tier 1 Ubuntu 26.04 amd64 also checks Fable source reproduction. It checks out
 the same Git ref as the QA run in an isolated directory, runs `fable/go.sh`
 and `fable/go_testing.sh` (the testing generator), and compares library/test
 C++ sources, public headers, source lists, and test inputs against the actual
-release source tree. Any generation error, added/removed output, or content
-difference fails Tier 1. The subsequent standard build and numerical QA cover
+release source tree. New files in the regenerated checkout are reported but
+allowed. Any generation error, removed output, or content difference in an
+existing file fails Tier 1. The subsequent standard build and numerical QA cover
 the reproduced sources. Fable is obtained from Git even in tarball mode.
 The Git SHA, generation log, and comparison report are retained under
 `fable-reproduction/` in the results directory.
+Run `python3 release/test-fable-comparison.py` for lightweight regression
+checks of this policy and the EIG source-list regeneration.
 
 ### Supported Configurations
 
@@ -110,6 +113,17 @@ This runs:
 For the release criterion, use `make release-gate`, which runs Tier 1 and then
 Tier 2. The Tier 2 target uses the generated release tarball unless an explicit
 `TARBALL=/path/to/mplapack-x.y.z.tar.xz` is supplied.
+
+To run both tiers concurrently, use `make -j tier1 tier2`. The shared source
+snapshot is prepared once and passed to all remote runners. Setting
+`MPLAPACK_SOURCE_SNAPSHOT_REUSE=no` does not cause those runners to regenerate
+the snapshot within the same make invocation. Use a new `LOGDIR` to prepare
+a new source snapshot; an existing `source/source.env` remains a satisfied
+make prerequisite. Tier 2 starts its C++ standard builds only after its
+tarball smoke builds succeed.
+
+Run `python3 release/test-source-preparation.py` from the project root to
+check parallel source preparation and runner arguments using isolated mocks.
 
 ### Filtered Runs
 

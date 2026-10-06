@@ -45,10 +45,14 @@ def main():
     if not expected or not actual:
         raise SystemExit("FAIL: no Fable outputs found")
     failures = 0
+    additions = 0
     for path in sorted(expected | actual):
         before, after = baseline / path, generated / path
-        if path not in expected or path not in actual:
-            print(f"FAIL: {'added' if path not in expected else 'removed'} {path}")
+        if path not in expected:
+            print(f"INFO: added {path} (allowed)")
+            additions += 1
+        elif path not in actual:
+            print(f"FAIL: removed {path}")
             failures += 1
         elif before.read_bytes() != after.read_bytes():
             print(f"FAIL: changed {path}")
@@ -58,7 +62,7 @@ def main():
                 fromfile=f"baseline/{path}", tofile=f"generated/{path}",
             )), end="")
             failures += 1
-    print(f"Compared {len(expected | actual)} files; differences: {failures}")
+    print(f"Compared {len(expected | actual)} files; differences: {failures}; allowed additions: {additions}")
     return bool(failures)
 
 

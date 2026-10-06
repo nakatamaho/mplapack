@@ -1,5 +1,8 @@
 check_PROGRAMS = $(mplapack_mpfr_test_PROGRAMS) $(mplapack_mpfr_opt_test_PROGRAMS)
 
+# Keep ordinary test overrides in executable objects under --as-needed.
+TEST_OVERRIDE_SOURCES = ../common/Mxerbla.cpp ../common/iMlaenv.cpp ../common/Mxlaenv.cpp
+
 mplapack_mpfr_test_PROGRAMS = xeigtstR_mpfr xeigtstC_mpfr xdmdeigtstR_mpfr xdmdeigtstC_mpfr
 mplapack_mpfr_opt_test_PROGRAMS = xeigtstR_mpfr_opt xeigtstC_mpfr_opt xdmdeigtstR_mpfr_opt xdmdeigtstC_mpfr_opt
 mplapack_mpfr_testdir = $(prefix)/lib/$(target)/mplapack/test/eig
@@ -48,8 +51,8 @@ endif
 mplibs = -L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(GMP_LIBDIR) -lmpc -lmpfr -lgmp -lm
 cxxflags = $(GMPFRXX_MKII_CPPFLAGS) $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(LAPACK_INCLUDEDIR) -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR) -DMPLAPACK_BUILD_WITH_MPFR -DMPLAPACK_INTERNAL -I$(top_srcdir)/fable
 
-xeigtstR_mpfr_SOURCES  = ../common/Rchkee.cpp
-xeigtstR_mpfr_opt_SOURCES  = ../common/Rchkee.cpp
+xeigtstR_mpfr_SOURCES  = ../common/Rchkee.cpp $(TEST_OVERRIDE_SOURCES)
+xeigtstR_mpfr_opt_SOURCES  = ../common/Rchkee.cpp $(TEST_OVERRIDE_SOURCES)
 xeigtstR_mpfr_LDFLAGS  = $(libdepends) $(mplibs) # -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xeigtstR_mpfr_opt_LDFLAGS  = $(opt_libdepends) $(mplibs) # -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xeigtstR_mpfr_LDFLAGS += -Wl,-rpath,$(libdir)
@@ -57,8 +60,8 @@ xeigtstR_mpfr_opt_LDFLAGS += -Wl,-rpath,$(libdir)
 xeigtstR_mpfr_CXXFLAGS = $(cxxflags)
 xeigtstR_mpfr_opt_CXXFLAGS = $(cxxflags)
 
-xeigtstC_mpfr_SOURCES  = ../common/Cchkee.cpp
-xeigtstC_mpfr_opt_SOURCES  = ../common/Cchkee.cpp
+xeigtstC_mpfr_SOURCES  = ../common/Cchkee.cpp $(TEST_OVERRIDE_SOURCES)
+xeigtstC_mpfr_opt_SOURCES  = ../common/Cchkee.cpp $(TEST_OVERRIDE_SOURCES)
 xeigtstC_mpfr_LDFLAGS  = $(libdepends) $(mplibs) # -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xeigtstC_mpfr_opt_LDFLAGS  = $(opt_libdepends) $(mplibs) # -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xeigtstC_mpfr_LDFLAGS += -Wl,-rpath,$(libdir)

@@ -1,5 +1,8 @@
 check_PROGRAMS = $(mplapack_mpfr_test_PROGRAMS) $(mplapack_mpfr_opt_test_PROGRAMS)
 
+# Keep ordinary test overrides in executable objects under --as-needed.
+TEST_OVERRIDE_SOURCES = ../common/Mxerbla.cpp ../common/iMlaenv.cpp ../common/Mxlaenv.cpp
+
 mplapack_mpfr_test_PROGRAMS = xlintstR_mpfr xlintstC_mpfr xlintstrfR_mpfr xlintstrfC_mpfr
 mplapack_mpfr_opt_test_PROGRAMS = xlintstR_mpfr_opt xlintstC_mpfr_opt xlintstrfR_mpfr_opt xlintstrfC_mpfr_opt
 mplapack_mpfr_testdir = $(prefix)/lib/$(target)/mplapack/test/lin
@@ -48,8 +51,8 @@ OUTDIR_PATH = ../results/$(OUTDIR)/mpfr
 
 
 
-xlintstR_mpfr_SOURCES  = ../common/Rchkaa.cpp
-xlintstR_mpfr_opt_SOURCES  = ../common/Rchkaa.cpp
+xlintstR_mpfr_SOURCES  = ../common/Rchkaa.cpp $(TEST_OVERRIDE_SOURCES)
+xlintstR_mpfr_opt_SOURCES  = ../common/Rchkaa.cpp $(TEST_OVERRIDE_SOURCES)
 xlintstR_mpfr_LDFLAGS  = $(libdepends) $(mplibs) # -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xlintstR_mpfr_opt_LDFLAGS  = $(opt_libdepends) $(mplibs) # -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xlintstR_mpfr_LDFLAGS += -Wl,-rpath,$(libdir)
@@ -57,8 +60,8 @@ xlintstR_mpfr_opt_LDFLAGS += -Wl,-rpath,$(libdir)
 xlintstR_mpfr_CXXFLAGS = $(cxxflags)
 xlintstR_mpfr_opt_CXXFLAGS = $(cxxflags)
 
-xlintstC_mpfr_SOURCES  = ../common/Cchkaa.cpp
-xlintstC_mpfr_opt_SOURCES  = ../common/Cchkaa.cpp
+xlintstC_mpfr_SOURCES  = ../common/Cchkaa.cpp $(TEST_OVERRIDE_SOURCES)
+xlintstC_mpfr_opt_SOURCES  = ../common/Cchkaa.cpp $(TEST_OVERRIDE_SOURCES)
 xlintstC_mpfr_LDFLAGS  = $(libdepends) $(mplibs) # -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xlintstC_mpfr_opt_LDFLAGS  = $(opt_libdepends) $(mplibs) # -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xlintstC_mpfr_LDFLAGS += -Wl,-rpath,$(libdir)
@@ -66,8 +69,8 @@ xlintstC_mpfr_opt_LDFLAGS += -Wl,-rpath,$(libdir)
 xlintstC_mpfr_CXXFLAGS = $(cxxflags)
 xlintstC_mpfr_opt_CXXFLAGS = $(cxxflags)
 
-xlintstrfR_mpfr_SOURCES  = ../common/Rchkrfp.cpp
-xlintstrfR_mpfr_opt_SOURCES  = ../common/Rchkrfp.cpp
+xlintstrfR_mpfr_SOURCES  = ../common/Rchkrfp.cpp $(TEST_OVERRIDE_SOURCES)
+xlintstrfR_mpfr_opt_SOURCES  = ../common/Rchkrfp.cpp $(TEST_OVERRIDE_SOURCES)
 xlintstrfR_mpfr_LDFLAGS  = $(libdepends) $(mplibs) # -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xlintstrfR_mpfr_opt_LDFLAGS  = $(opt_libdepends) $(mplibs) # -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xlintstrfR_mpfr_LDFLAGS += -Wl,-rpath,$(libdir)
@@ -75,8 +78,8 @@ xlintstrfR_mpfr_opt_LDFLAGS += -Wl,-rpath,$(libdir)
 xlintstrfR_mpfr_CXXFLAGS = $(cxxflags)
 xlintstrfR_mpfr_opt_CXXFLAGS = $(cxxflags)
 
-xlintstrfC_mpfr_SOURCES  = ../common/Cchkrfp.cpp
-xlintstrfC_mpfr_opt_SOURCES  = ../common/Cchkrfp.cpp
+xlintstrfC_mpfr_SOURCES  = ../common/Cchkrfp.cpp $(TEST_OVERRIDE_SOURCES)
+xlintstrfC_mpfr_opt_SOURCES  = ../common/Cchkrfp.cpp $(TEST_OVERRIDE_SOURCES)
 xlintstrfC_mpfr_LDFLAGS  = $(libdepends) $(mplibs) # -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xlintstrfC_mpfr_opt_LDFLAGS  = $(opt_libdepends) $(mplibs) # -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xlintstrfC_mpfr_LDFLAGS += -Wl,-rpath,$(libdir)

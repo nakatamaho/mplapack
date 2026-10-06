@@ -1,5 +1,8 @@
 check_PROGRAMS = $(mplapack_binary128_test_PROGRAMS) $(mplapack_binary128_opt_test_PROGRAMS)
 
+# Keep ordinary test overrides in executable objects under --as-needed.
+TEST_OVERRIDE_SOURCES = ../common/Mxerbla.cpp ../common/iMlaenv.cpp ../common/Mxlaenv.cpp
+
 mplapack_binary128_test_PROGRAMS = xeigtstR_binary128 xeigtstC_binary128 xdmdeigtstR_binary128 xdmdeigtstC_binary128
 mplapack_binary128_opt_test_PROGRAMS = xeigtstR_binary128_opt xeigtstC_binary128_opt xdmdeigtstR_binary128_opt xdmdeigtstC_binary128_opt
 mplapack_binary128_testdir = $(prefix)/lib/$(target)/mplapack/test/eig
@@ -29,8 +32,8 @@ mplibs = -lm
 endif
 cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(LAPACK_INCLUDEDIR) -DMPLAPACK_BUILD_WITH_BINARY128 -DMPLAPACK_INTERNAL -I$(top_srcdir)/fable
 
-xeigtstR_binary128_SOURCES  = ../common/Rchkee.cpp
-xeigtstR_binary128_opt_SOURCES  = ../common/Rchkee.cpp
+xeigtstR_binary128_SOURCES  = ../common/Rchkee.cpp $(TEST_OVERRIDE_SOURCES)
+xeigtstR_binary128_opt_SOURCES  = ../common/Rchkee.cpp $(TEST_OVERRIDE_SOURCES)
 xeigtstR_binary128_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xeigtstR_binary128_opt_LDFLAGS  = $(opt_libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xeigtstR_binary128_LDFLAGS += -Wl,-rpath,$(libdir)
@@ -38,8 +41,8 @@ xeigtstR_binary128_opt_LDFLAGS += -Wl,-rpath,$(libdir)
 xeigtstR_binary128_CXXFLAGS = $(cxxflags)
 xeigtstR_binary128_opt_CXXFLAGS = $(cxxflags)
 
-xeigtstC_binary128_SOURCES  = ../common/Cchkee.cpp
-xeigtstC_binary128_opt_SOURCES  = ../common/Cchkee.cpp
+xeigtstC_binary128_SOURCES  = ../common/Cchkee.cpp $(TEST_OVERRIDE_SOURCES)
+xeigtstC_binary128_opt_SOURCES  = ../common/Cchkee.cpp $(TEST_OVERRIDE_SOURCES)
 xeigtstC_binary128_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xeigtstC_binary128_opt_LDFLAGS  = $(opt_libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xeigtstC_binary128_LDFLAGS += -Wl,-rpath,$(libdir)
