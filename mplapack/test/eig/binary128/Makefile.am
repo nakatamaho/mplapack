@@ -13,11 +13,13 @@ $(mplapack_binary128_test_PROGRAMS): ../libeig_binary128.la
 $(mplapack_binary128_opt_test_PROGRAMS): ../libeig_binary128_opt.la
 
 if IS_MINGW
-libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,$(top_builddir)/mplapack/test/eig/.libs/libeig_binary128.a,$(top_builddir)/mplapack/test/matgen/.libs/libmatgen_binary128.a,$(top_builddir)/mplapack/reference/.libs/libmplapack_binary128.a,--no-whole-archive
-opt_libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,$(top_builddir)/mplapack/test/eig/.libs/libeig_binary128_opt.a,$(top_builddir)/mplapack/test/matgen/.libs/libmatgen_binary128_opt.a,$(top_builddir)/mpblas/optimized/binary128/.libs/libmplapack_binary128_opt.a,--no-whole-archive
-dmd_libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,$(top_builddir)/mplapack/test/eig/.libs/libeig_binary128.a,$(top_builddir)/mplapack/test/matgen/.libs/libmatgen_binary128.a,$(top_builddir)/mplapack/reference/.libs/libmplapack_binary128.a,--no-whole-archive
-dmd_opt_libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,$(top_builddir)/mplapack/test/eig/.libs/libeig_binary128_opt.a,$(top_builddir)/mplapack/test/matgen/.libs/libmatgen_binary128_opt.a,$(top_builddir)/mpblas/optimized/binary128/.libs/libmplapack_binary128_opt.a,--no-whole-archive
+test_ldflags = -Wl,--allow-multiple-definition
+libdepends = $(top_builddir)/mplapack/test/eig/.libs/libeig_binary128.a $(top_builddir)/mplapack/test/matgen/.libs/libmatgen_binary128.a $(top_builddir)/mplapack/reference/.libs/libmplapack_binary128.a
+opt_libdepends = $(top_builddir)/mplapack/test/eig/.libs/libeig_binary128_opt.a $(top_builddir)/mplapack/test/matgen/.libs/libmatgen_binary128_opt.a $(top_builddir)/mpblas/optimized/binary128/.libs/libmplapack_binary128_opt.a
+dmd_libdepends = $(top_builddir)/mplapack/test/eig/.libs/libeig_binary128.a $(top_builddir)/mplapack/test/matgen/.libs/libmatgen_binary128.a $(top_builddir)/mplapack/reference/.libs/libmplapack_binary128.a
+dmd_opt_libdepends = $(top_builddir)/mplapack/test/eig/.libs/libeig_binary128_opt.a $(top_builddir)/mplapack/test/matgen/.libs/libmatgen_binary128_opt.a $(top_builddir)/mpblas/optimized/binary128/.libs/libmplapack_binary128_opt.a
 else
+test_ldflags =
 libdepends = -L$(top_builddir)/mplapack/test/eig -leig_binary128 -L$(top_builddir)/mplapack/test/matgen -lmatgen_binary128 -L$(top_builddir)/mplapack/reference -lmplapack_binary128
 opt_libdepends = -L$(top_builddir)/mplapack/test/eig -leig_binary128_opt -L$(top_builddir)/mplapack/test/matgen -lmatgen_binary128_opt -L$(top_builddir)/mpblas/optimized/binary128 -lmplapack_binary128_opt
 dmd_libdepends = -L$(top_builddir)/mplapack/test/eig -leig_binary128 -L$(top_builddir)/mplapack/test/matgen -lmatgen_binary128 -L$(top_builddir)/mplapack/reference -lmplapack_binary128
@@ -33,37 +35,37 @@ cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(LAPACK_INCLUDEDIR) -DM
 
 xeigtstR_binary128_SOURCES  = ../common/Rchkee.cpp $(TEST_OVERRIDE_SOURCES)
 xeigtstR_binary128_opt_SOURCES  = ../common/Rchkee.cpp $(TEST_OVERRIDE_SOURCES)
-xeigtstR_binary128_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
-xeigtstR_binary128_opt_LDFLAGS  = $(opt_libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
-xeigtstR_binary128_LDFLAGS += -Wl,-rpath,$(libdir)
-xeigtstR_binary128_opt_LDFLAGS += -Wl,-rpath,$(libdir)
+xeigtstR_binary128_LDADD  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xeigtstR_binary128_opt_LDADD  = $(opt_libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xeigtstR_binary128_LDFLAGS = $(test_ldflags) -Wl,-rpath,$(libdir)
+xeigtstR_binary128_opt_LDFLAGS = $(test_ldflags) -Wl,-rpath,$(libdir)
 xeigtstR_binary128_CXXFLAGS = $(cxxflags)
 xeigtstR_binary128_opt_CXXFLAGS = $(cxxflags)
 
 xeigtstC_binary128_SOURCES  = ../common/Cchkee.cpp $(TEST_OVERRIDE_SOURCES)
 xeigtstC_binary128_opt_SOURCES  = ../common/Cchkee.cpp $(TEST_OVERRIDE_SOURCES)
-xeigtstC_binary128_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
-xeigtstC_binary128_opt_LDFLAGS  = $(opt_libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
-xeigtstC_binary128_LDFLAGS += -Wl,-rpath,$(libdir)
-xeigtstC_binary128_opt_LDFLAGS += -Wl,-rpath,$(libdir)
+xeigtstC_binary128_LDADD  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xeigtstC_binary128_opt_LDADD  = $(opt_libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xeigtstC_binary128_LDFLAGS = $(test_ldflags) -Wl,-rpath,$(libdir)
+xeigtstC_binary128_opt_LDFLAGS = $(test_ldflags) -Wl,-rpath,$(libdir)
 xeigtstC_binary128_CXXFLAGS = $(cxxflags)
 xeigtstC_binary128_opt_CXXFLAGS = $(cxxflags)
 
 xdmdeigtstR_binary128_SOURCES  = ../common/Rchkdmd.cpp ../common/Mxerbla.cpp ../common/Mxlaenv.cpp
 xdmdeigtstR_binary128_opt_SOURCES  = ../common/Rchkdmd.cpp ../common/Mxerbla.cpp ../common/Mxlaenv.cpp
-xdmdeigtstR_binary128_LDFLAGS  = $(dmd_libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
-xdmdeigtstR_binary128_opt_LDFLAGS  = $(dmd_opt_libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
-xdmdeigtstR_binary128_LDFLAGS += -Wl,-rpath,$(libdir)
-xdmdeigtstR_binary128_opt_LDFLAGS += -Wl,-rpath,$(libdir)
+xdmdeigtstR_binary128_LDADD  = $(dmd_libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xdmdeigtstR_binary128_opt_LDADD  = $(dmd_opt_libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xdmdeigtstR_binary128_LDFLAGS = $(test_ldflags) -Wl,-rpath,$(libdir)
+xdmdeigtstR_binary128_opt_LDFLAGS = $(test_ldflags) -Wl,-rpath,$(libdir)
 xdmdeigtstR_binary128_CXXFLAGS = $(cxxflags)
 xdmdeigtstR_binary128_opt_CXXFLAGS = $(cxxflags)
 
 xdmdeigtstC_binary128_SOURCES  = ../common/Cchkdmd.cpp ../common/Mxerbla.cpp ../common/Mxlaenv.cpp
 xdmdeigtstC_binary128_opt_SOURCES  = ../common/Cchkdmd.cpp ../common/Mxerbla.cpp ../common/Mxlaenv.cpp
-xdmdeigtstC_binary128_LDFLAGS  = $(dmd_libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
-xdmdeigtstC_binary128_opt_LDFLAGS  = $(dmd_opt_libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
-xdmdeigtstC_binary128_LDFLAGS += -Wl,-rpath,$(libdir)
-xdmdeigtstC_binary128_opt_LDFLAGS += -Wl,-rpath,$(libdir)
+xdmdeigtstC_binary128_LDADD  = $(dmd_libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xdmdeigtstC_binary128_opt_LDADD  = $(dmd_opt_libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xdmdeigtstC_binary128_LDFLAGS = $(test_ldflags) -Wl,-rpath,$(libdir)
+xdmdeigtstC_binary128_opt_LDFLAGS = $(test_ldflags) -Wl,-rpath,$(libdir)
 xdmdeigtstC_binary128_CXXFLAGS = $(cxxflags)
 xdmdeigtstC_binary128_opt_CXXFLAGS = $(cxxflags)
 

@@ -13,9 +13,11 @@ $(mplapack_mpfr_test_PROGRAMS): ../liblin_mpfr.la
 $(mplapack_mpfr_opt_test_PROGRAMS): ../liblin_mpfr_opt.la
 
 if IS_MINGW
-libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,$(top_builddir)/mplapack/test/lin/.libs/liblin_mpfr.a,$(top_builddir)/mplapack/test/matgen/.libs/libmatgen_mpfr.a,$(top_builddir)/mplapack/reference/.libs/libmplapack_mpfr.a,--no-whole-archive
-opt_libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,$(top_builddir)/mplapack/test/lin/.libs/liblin_mpfr_opt.a,$(top_builddir)/mplapack/test/matgen/.libs/libmatgen_mpfr_opt.a,$(top_builddir)/mpblas/optimized/mpfr/.libs/libmplapack_mpfr_opt.a,--no-whole-archive
+test_ldflags = -Wl,--allow-multiple-definition
+libdepends = $(top_builddir)/mplapack/test/lin/.libs/liblin_mpfr.a $(top_builddir)/mplapack/test/matgen/.libs/libmatgen_mpfr.a $(top_builddir)/mplapack/reference/.libs/libmplapack_mpfr.a
+opt_libdepends = $(top_builddir)/mplapack/test/lin/.libs/liblin_mpfr_opt.a $(top_builddir)/mplapack/test/matgen/.libs/libmatgen_mpfr_opt.a $(top_builddir)/mpblas/optimized/mpfr/.libs/libmplapack_mpfr_opt.a
 else
+test_ldflags =
 libdepends = -L$(top_builddir)/mplapack/test/lin -llin_mpfr -L$(top_builddir)/mplapack/test/matgen -lmatgen_mpfr -L$(top_builddir)/mplapack/reference -lmplapack_mpfr
 opt_libdepends = -L$(top_builddir)/mplapack/test/lin -llin_mpfr_opt -L$(top_builddir)/mplapack/test/matgen -lmatgen_mpfr_opt -L$(top_builddir)/mpblas/optimized/mpfr -lmplapack_mpfr_opt
 endif
@@ -54,37 +56,37 @@ OUTDIR_PATH = ../results/$(OUTDIR)/mpfr
 
 xlintstR_mpfr_SOURCES  = ../common/Rchkaa.cpp $(TEST_OVERRIDE_SOURCES)
 xlintstR_mpfr_opt_SOURCES  = ../common/Rchkaa.cpp $(TEST_OVERRIDE_SOURCES)
-xlintstR_mpfr_LDFLAGS  = $(libdepends) $(mplibs) # -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
-xlintstR_mpfr_opt_LDFLAGS  = $(opt_libdepends) $(mplibs) # -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
-xlintstR_mpfr_LDFLAGS += -Wl,-rpath,$(libdir)
-xlintstR_mpfr_opt_LDFLAGS += -Wl,-rpath,$(libdir)
+xlintstR_mpfr_LDADD  = $(libdepends) $(mplibs) # -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xlintstR_mpfr_opt_LDADD  = $(opt_libdepends) $(mplibs) # -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xlintstR_mpfr_LDFLAGS = $(test_ldflags) -Wl,-rpath,$(libdir)
+xlintstR_mpfr_opt_LDFLAGS = $(test_ldflags) -Wl,-rpath,$(libdir)
 xlintstR_mpfr_CXXFLAGS = $(cxxflags)
 xlintstR_mpfr_opt_CXXFLAGS = $(cxxflags)
 
 xlintstC_mpfr_SOURCES  = ../common/Cchkaa.cpp $(TEST_OVERRIDE_SOURCES)
 xlintstC_mpfr_opt_SOURCES  = ../common/Cchkaa.cpp $(TEST_OVERRIDE_SOURCES)
-xlintstC_mpfr_LDFLAGS  = $(libdepends) $(mplibs) # -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
-xlintstC_mpfr_opt_LDFLAGS  = $(opt_libdepends) $(mplibs) # -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
-xlintstC_mpfr_LDFLAGS += -Wl,-rpath,$(libdir)
-xlintstC_mpfr_opt_LDFLAGS += -Wl,-rpath,$(libdir)
+xlintstC_mpfr_LDADD  = $(libdepends) $(mplibs) # -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xlintstC_mpfr_opt_LDADD  = $(opt_libdepends) $(mplibs) # -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xlintstC_mpfr_LDFLAGS = $(test_ldflags) -Wl,-rpath,$(libdir)
+xlintstC_mpfr_opt_LDFLAGS = $(test_ldflags) -Wl,-rpath,$(libdir)
 xlintstC_mpfr_CXXFLAGS = $(cxxflags)
 xlintstC_mpfr_opt_CXXFLAGS = $(cxxflags)
 
 xlintstrfR_mpfr_SOURCES  = ../common/Rchkrfp.cpp $(TEST_OVERRIDE_SOURCES)
 xlintstrfR_mpfr_opt_SOURCES  = ../common/Rchkrfp.cpp $(TEST_OVERRIDE_SOURCES)
-xlintstrfR_mpfr_LDFLAGS  = $(libdepends) $(mplibs) # -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
-xlintstrfR_mpfr_opt_LDFLAGS  = $(opt_libdepends) $(mplibs) # -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
-xlintstrfR_mpfr_LDFLAGS += -Wl,-rpath,$(libdir)
-xlintstrfR_mpfr_opt_LDFLAGS += -Wl,-rpath,$(libdir)
+xlintstrfR_mpfr_LDADD  = $(libdepends) $(mplibs) # -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xlintstrfR_mpfr_opt_LDADD  = $(opt_libdepends) $(mplibs) # -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xlintstrfR_mpfr_LDFLAGS = $(test_ldflags) -Wl,-rpath,$(libdir)
+xlintstrfR_mpfr_opt_LDFLAGS = $(test_ldflags) -Wl,-rpath,$(libdir)
 xlintstrfR_mpfr_CXXFLAGS = $(cxxflags)
 xlintstrfR_mpfr_opt_CXXFLAGS = $(cxxflags)
 
 xlintstrfC_mpfr_SOURCES  = ../common/Cchkrfp.cpp $(TEST_OVERRIDE_SOURCES)
 xlintstrfC_mpfr_opt_SOURCES  = ../common/Cchkrfp.cpp $(TEST_OVERRIDE_SOURCES)
-xlintstrfC_mpfr_LDFLAGS  = $(libdepends) $(mplibs) # -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
-xlintstrfC_mpfr_opt_LDFLAGS  = $(opt_libdepends) $(mplibs) # -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
-xlintstrfC_mpfr_LDFLAGS += -Wl,-rpath,$(libdir)
-xlintstrfC_mpfr_opt_LDFLAGS += -Wl,-rpath,$(libdir)
+xlintstrfC_mpfr_LDADD  = $(libdepends) $(mplibs) # -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xlintstrfC_mpfr_opt_LDADD  = $(opt_libdepends) $(mplibs) # -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xlintstrfC_mpfr_LDFLAGS = $(test_ldflags) -Wl,-rpath,$(libdir)
+xlintstrfC_mpfr_opt_LDFLAGS = $(test_ldflags) -Wl,-rpath,$(libdir)
 xlintstrfC_mpfr_CXXFLAGS = $(cxxflags)
 xlintstrfC_mpfr_opt_CXXFLAGS = $(cxxflags)
 
