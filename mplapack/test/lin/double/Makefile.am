@@ -13,9 +13,11 @@ $(mplapack_double_test_PROGRAMS): ../liblin_double.la
 $(mplapack_double_opt_test_PROGRAMS): ../liblin_double_opt.la
 
 if IS_MINGW
-libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,$(top_builddir)/mplapack/test/lin/.libs/liblin_double.a,$(top_builddir)/mplapack/test/matgen/.libs/libmatgen_double.a,$(top_builddir)/mplapack/reference/.libs/libmplapack_double.a,--no-whole-archive
-opt_libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,$(top_builddir)/mplapack/test/lin/.libs/liblin_double_opt.a,$(top_builddir)/mplapack/test/matgen/.libs/libmatgen_double_opt.a,$(top_builddir)/mpblas/optimized/double/.libs/libmplapack_double_opt.a,--no-whole-archive
+test_ldflags = -Wl,--allow-multiple-definition
+libdepends = $(top_builddir)/mplapack/test/lin/.libs/liblin_double.a $(top_builddir)/mplapack/test/matgen/.libs/libmatgen_double.a $(top_builddir)/mplapack/reference/.libs/libmplapack_double.a
+opt_libdepends = $(top_builddir)/mplapack/test/lin/.libs/liblin_double_opt.a $(top_builddir)/mplapack/test/matgen/.libs/libmatgen_double_opt.a $(top_builddir)/mpblas/optimized/double/.libs/libmplapack_double_opt.a
 else
+test_ldflags =
 libdepends = -L$(top_builddir)/mplapack/test/lin -llin_double -L$(top_builddir)/mplapack/test/matgen -lmatgen_double -L$(top_builddir)/mplapack/reference -lmplapack_double
 opt_libdepends = -L$(top_builddir)/mplapack/test/lin -llin_double_opt -L$(top_builddir)/mplapack/test/matgen -lmatgen_double_opt -L$(top_builddir)/mpblas/optimized/double -lmplapack_double_opt
 endif
@@ -25,37 +27,37 @@ cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH_D
 
 xlintstR_double_SOURCES  = ../common/Rchkaa.cpp $(TEST_OVERRIDE_SOURCES)
 xlintstR_double_opt_SOURCES  = ../common/Rchkaa.cpp $(TEST_OVERRIDE_SOURCES)
-xlintstR_double_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
-xlintstR_double_opt_LDFLAGS  = $(opt_libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
-xlintstR_double_LDFLAGS += -Wl,-rpath,$(libdir)
-xlintstR_double_opt_LDFLAGS += -Wl,-rpath,$(libdir)
+xlintstR_double_LDADD  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xlintstR_double_opt_LDADD  = $(opt_libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xlintstR_double_LDFLAGS = $(test_ldflags) -Wl,-rpath,$(libdir)
+xlintstR_double_opt_LDFLAGS = $(test_ldflags) -Wl,-rpath,$(libdir)
 xlintstR_double_CXXFLAGS = $(cxxflags)
 xlintstR_double_opt_CXXFLAGS = $(cxxflags)
 
 xlintstC_double_SOURCES  = ../common/Cchkaa.cpp $(TEST_OVERRIDE_SOURCES)
 xlintstC_double_opt_SOURCES  = ../common/Cchkaa.cpp $(TEST_OVERRIDE_SOURCES)
-xlintstC_double_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
-xlintstC_double_opt_LDFLAGS  = $(opt_libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
-xlintstC_double_LDFLAGS += -Wl,-rpath,$(libdir)
-xlintstC_double_opt_LDFLAGS += -Wl,-rpath,$(libdir)
+xlintstC_double_LDADD  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xlintstC_double_opt_LDADD  = $(opt_libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xlintstC_double_LDFLAGS = $(test_ldflags) -Wl,-rpath,$(libdir)
+xlintstC_double_opt_LDFLAGS = $(test_ldflags) -Wl,-rpath,$(libdir)
 xlintstC_double_CXXFLAGS = $(cxxflags)
 xlintstC_double_opt_CXXFLAGS = $(cxxflags)
 
 xlintstrfR_double_SOURCES  = ../common/Rchkrfp.cpp $(TEST_OVERRIDE_SOURCES)
 xlintstrfR_double_opt_SOURCES  = ../common/Rchkrfp.cpp $(TEST_OVERRIDE_SOURCES)
-xlintstrfR_double_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
-xlintstrfR_double_opt_LDFLAGS  = $(opt_libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
-xlintstrfR_double_LDFLAGS += -Wl,-rpath,$(libdir)
-xlintstrfR_double_opt_LDFLAGS += -Wl,-rpath,$(libdir)
+xlintstrfR_double_LDADD  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xlintstrfR_double_opt_LDADD  = $(opt_libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xlintstrfR_double_LDFLAGS = $(test_ldflags) -Wl,-rpath,$(libdir)
+xlintstrfR_double_opt_LDFLAGS = $(test_ldflags) -Wl,-rpath,$(libdir)
 xlintstrfR_double_CXXFLAGS = $(cxxflags)
 xlintstrfR_double_opt_CXXFLAGS = $(cxxflags)
 
 xlintstrfC_double_SOURCES  = ../common/Cchkrfp.cpp $(TEST_OVERRIDE_SOURCES)
 xlintstrfC_double_opt_SOURCES  = ../common/Cchkrfp.cpp $(TEST_OVERRIDE_SOURCES)
-xlintstrfC_double_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
-xlintstrfC_double_opt_LDFLAGS  = $(opt_libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
-xlintstrfC_double_LDFLAGS += -Wl,-rpath,$(libdir)
-xlintstrfC_double_opt_LDFLAGS += -Wl,-rpath,$(libdir)
+xlintstrfC_double_LDADD  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xlintstrfC_double_opt_LDADD  = $(opt_libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xlintstrfC_double_LDFLAGS = $(test_ldflags) -Wl,-rpath,$(libdir)
+xlintstrfC_double_opt_LDFLAGS = $(test_ldflags) -Wl,-rpath,$(libdir)
 xlintstrfC_double_CXXFLAGS = $(cxxflags)
 xlintstrfC_double_opt_CXXFLAGS = $(cxxflags)
 
