@@ -33,6 +33,30 @@ function(mplapack_configure_dd_arithmetic target)
   endif()
 endfunction()
 
+# Apply the build traits that backends.txt lists for a backend to one of its
+# library targets.
+function(mplapack_configure_backend_traits target backend)
+  foreach(_trait IN LISTS MPLAPACK_BACKEND_${backend}_TRAITS)
+    if(_trait STREQUAL "gmp")
+      target_include_directories(${target} PUBLIC
+          "$<BUILD_INTERFACE:${MPLAPACK_GMPFRXX_MKII_ROOT}/include>")
+      target_link_libraries(${target} PUBLIC GMP::GMP)
+    elseif(_trait STREQUAL "mpfr")
+      target_include_directories(${target} PUBLIC
+          "$<BUILD_INTERFACE:${MPLAPACK_GMPFRXX_MKII_ROOT}/include>")
+      target_link_libraries(${target} PUBLIC MPC::MPC MPFR::MPFR GMP::GMP)
+    elseif(_trait STREQUAL "qd")
+      target_link_libraries(${target} PUBLIC QD::QD)
+    elseif(_trait STREQUAL "nofma")
+      mplapack_configure_dd_arithmetic(${target})
+    elseif(_trait STREQUAL "binary128libs")
+      if(MPLAPACK_BINARY128_EXTRA_LIBS)
+        target_link_libraries(${target} PUBLIC ${MPLAPACK_BINARY128_EXTRA_LIBS})
+      endif()
+    endif()
+  endforeach()
+endfunction()
+
 function(mplapack_add_backend backend macro)
   set(_target mplapack_${backend})
   add_library(${_target} ${MPBLAS_SOURCES} ${MPLAPACK_SOURCES})

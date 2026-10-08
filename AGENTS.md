@@ -7,6 +7,11 @@ dd, double, binary80, binary128. Two build systems in parallel: autotools
 (configure.ac, Makefile.am tree, regenerated via ./gen_configure.sh) and
 modern CMake (CMakeLists.txt + cmake/). Both must stay green.
 
+`backends.txt` is the backend table (name, REAL/COMPLEX types, CMake default,
+build traits).  CMake (cmake/MplapackBackendTable.cmake) and the fable header
+generators (fable/gen_include_*.sh via misc/backends.sh) read it; do not add
+backend name lists to those.  autotools still lists backends by hand.
+
 ## Hard rules
 
 - Sources under `mpblas/reference/` and `mplapack/reference/` are

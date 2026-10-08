@@ -4,7 +4,7 @@
 # drivers dlopen() an optional optimized library at run time, hence ${CMAKE_DL_LIBS}.
 
 set(_bench_drivers Raxpy Rcopy Rdot Rgemm Rgemv Rsyrk Rpotrf Rpotf2 Rgetrf)
-set(_bench_backends gmp mpfr qd dd double binary80 binary128)
+set(_bench_backends ${MPLAPACK_BACKENDS})
 
 foreach(_b ${_bench_backends})
   string(TOUPPER ${_b} _B)

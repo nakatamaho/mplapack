@@ -1,0 +1,31 @@
+# MPLAPACK backend table: the single list of arithmetic backends.
+#
+# Read by CMake (cmake/MplapackBackendTable.cmake) and by the fable header
+# generators (fable/gen_include_*.sh, through misc/backends.sh).  Adding a
+# backend starts with a row here.
+#
+# Columns are separated by whitespace; a field never contains spaces and "-"
+# means empty.
+#
+#   name     backend name: [a-z][a-z0-9]*, no underscores.  Gives the library
+#            mplapack_<name>, the macro MPLAPACK_BUILD_WITH_<NAME>, the CMake
+#            option MPLAPACK_ENABLE_<NAME> and the headers *_<name>.h.
+#   real     C++ type that REAL maps to.
+#   complex  C++ type that COMPLEX maps to.
+#   default  default value of the CMake option MPLAPACK_ENABLE_<NAME>.
+#   traits   comma-separated build traits:
+#              gmp            link GMP; use the bundled gmpfrxx_mkII headers
+#              mpfr           link MPC, MPFR and GMP; use gmpfrxx_mkII headers
+#              qd             link libQD3
+#              nofma          compile with -ffp-contract=off (expansion
+#                             arithmetic breaks under FMA contraction)
+#              binary128libs  link MPLAPACK_BINARY128_EXTRA_LIBS
+#
+# name      real                  complex                             default  traits
+gmp         mpf_class             mpfc_class                          ON       gmp
+mpfr        mpfr_class            mpc_class                           ON       mpfr
+qd          qd_real               qd_complex                          ON       qd
+dd          dd_real               dd_complex                          ON       qd,nofma
+double      double                std::complex<double>                ON       -
+binary80    mplapack_binary80_t   std::complex<mplapack_binary80_t>   OFF      -
+binary128   mplapack_binary128_t  std::complex<mplapack_binary128_t>  ON       binary128libs
