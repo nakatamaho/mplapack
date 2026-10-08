@@ -2217,7 +2217,33 @@ if test x$enable_qd = x"yes" -o x$enable_dd = x"yes" -o x$enable_test = x"yes"; 
             AC_CHECK_LIB(qd, c_qd_sqrt, [QD_LIBS="-lqd"; HAVE_QD=yes])
             LDFLAGS=$save_LDFLAGS
         fi
-        if test x$HAVE_QD != xyes; then
+        dnl Keep in step with the libQD3 tarball bundled under external/qd.
+        dnl ds_complex.h and the c_ds C API first appear in libQD3 1.6.0.
+        if test x$HAVE_QD = xyes; then
+            AC_MSG_CHECKING([whether the system QD is libQD3 1.6.0 or later])
+            save_CXXFLAGS=$CXXFLAGS
+            save_LDFLAGS=$LDFLAGS
+            save_LIBS=$LIBS
+            CXXFLAGS="$CXXFLAGS -I$QD_INCLUDEDIR"
+            LDFLAGS="$LDFLAGS -L$QD_LIBDIR"
+            LIBS="-lqd -lm $LIBS"
+            AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <qd/ds_complex.h>
+#include <qd/c_ds.h>]], [[float a[2] = {2.0f, 0.0f}, b[2];
+ds_complex z(1.0f, 2.0f);
+c_ds_sqrt(a, b);
+return z.real() == ds_real(0.0f);]])],
+                [AC_MSG_RESULT([yes])],
+                [AC_MSG_RESULT([no])
+                 HAVE_QD=old])
+            CXXFLAGS=$save_CXXFLAGS
+            LDFLAGS=$save_LDFLAGS
+            LIBS=$save_LIBS
+        fi
+        if test x$HAVE_QD = xold; then
+              AC_MSG_WARN([QD in $QD_INCLUDEDIR and $QD_LIBDIR is older than libQD3 1.6.0; using internal one instead])
+			QD_INCLUDEDIR=$highest_abs_top_builddir/external/i/QD/include/
+			QD_LIBDIR=$highest_abs_top_builddir/external/i/QD/lib/
+        elif test x$HAVE_QD != xyes; then
               AC_MSG_RESULT([No QD library found; using internal one instead])
 			QD_INCLUDEDIR=$highest_abs_top_builddir/external/i/QD/include/
 			QD_LIBDIR=$highest_abs_top_builddir/external/i/QD/lib/
