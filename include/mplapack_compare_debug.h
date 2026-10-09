@@ -117,6 +117,17 @@ using namespace mpfrxx;
 #define EPSILON10 1e-22
 #define EPSILON11 1e-21
 #define EPSILON12 1e-20
+#elif defined MPLAPACK_BUILD_WITH_TD
+#define EPSILON 1e-45
+#define EPSILON2 1e-42
+#define EPSILON3 1e-42
+#define EPSILON4 1e-41
+#define EPSILON6 1e-40
+#define EPSILON7 1e-39
+#define EPSILON8 1e-39
+#define EPSILON10 1e-38
+#define EPSILON11 1e-37
+#define EPSILON12 1e-36
 #elif defined MPLAPACK_BUILD_WITH_DOUBLE
 #define EPSILON 1e-12
 #define EPSILON2 1e-10
@@ -162,7 +173,7 @@ extern int mplapack_errno; // Mxerbla.override.cpp
 #define MPLAPACK_DEBUG_EXTERN extern
 #endif
 
-#if defined(MPLAPACK_BUILD_WITH_GMP) || defined(MPLAPACK_BUILD_WITH_QD) || defined(MPLAPACK_BUILD_WITH_DD) || defined(MPLAPACK_BUILD_WITH_DOUBLE) || defined(MPLAPACK_BUILD_WITH_BINARY80) || defined(MPLAPACK_BUILD_WITH_BINARY128)
+#if defined(MPLAPACK_BUILD_WITH_GMP) || defined(MPLAPACK_BUILD_WITH_QD) || defined(MPLAPACK_BUILD_WITH_DD) || defined(MPLAPACK_BUILD_WITH_TD) || defined(MPLAPACK_BUILD_WITH_DOUBLE) || defined(MPLAPACK_BUILD_WITH_BINARY80) || defined(MPLAPACK_BUILD_WITH_BINARY128)
 #include <mpblas_mpfr.h>
 #include <mplapack_mpfr.h>
 #endif
@@ -219,6 +230,17 @@ inline REAL_REF cast2ref(const dd_real &value) {
     return result;
 }
 inline COMPLEX_REF cast2ref(const dd_complex &value) {
+    return COMPLEX_REF(cast2ref(value.real()), cast2ref(value.imag()));
+}
+#elif defined MPLAPACK_BUILD_WITH_TD
+inline REAL_REF cast2ref(const td_real &value) {
+    REAL_REF result = REAL_REF::with_precision(REAL_REF::default_precision());
+    mpfr_set_d(result.mpfr_data(), value.x[0], REAL_REF::default_rounding());
+    mpfr_add_d(result.mpfr_data(), result.mpfr_data(), value.x[1], REAL_REF::default_rounding());
+    mpfr_add_d(result.mpfr_data(), result.mpfr_data(), value.x[2], REAL_REF::default_rounding());
+    return result;
+}
+inline COMPLEX_REF cast2ref(const td_complex &value) {
     return COMPLEX_REF(cast2ref(value.real()), cast2ref(value.imag()));
 }
 #elif defined MPLAPACK_BUILD_WITH_DOUBLE
@@ -297,6 +319,10 @@ qd_complex mpc_randomnumber(qd_complex);
 #if defined MPLAPACK_BUILD_WITH_DD
 dd_real mpf_randomnumber(dd_real);
 dd_complex mpc_randomnumber(dd_complex);
+#endif
+#if defined MPLAPACK_BUILD_WITH_TD
+td_real mpf_randomnumber(td_real);
+td_complex mpc_randomnumber(td_complex);
 #endif
 #if defined MPLAPACK_BUILD_WITH_DOUBLE
 double mpf_randomnumber(double);

@@ -86,6 +86,19 @@ typedef dd_complex COMPLEX;
 #define iMieeeck iMieeeck_dd
 #define iMparmq iMparmq_dd
 #endif
+#if defined MPLAPACK_BUILD_WITH_TD
+#include <mplapack_matgen_td.h>
+typedef mplapackint INTEGER;
+typedef mplapacklogical LOGICAL;
+typedef td_real REAL;
+typedef td_complex COMPLEX;
+#define Mlsame Mlsame_td
+#define Mxerbla Mxerbla_td
+#define Rlamch Rlamch_td
+#define iMlaenv iMlaenv_td
+#define iMieeeck iMieeeck_td
+#define iMparmq iMparmq_td
+#endif
 
 #if defined MPLAPACK_BUILD_WITH_DOUBLE
 #include <mplapack_matgen_double.h>

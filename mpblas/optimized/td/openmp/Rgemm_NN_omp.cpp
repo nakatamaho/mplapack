@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2008-2010
+ * Copyright (c) 2010-2012
  *	Nakata, Maho
  * 	All rights reserved.
  *
- * $Id: mplapack_utils.h,v 1.6 2010/08/07 03:15:46 nakatamaho Exp $
+ * $Id: Rgemm_NN.cpp,v 1.1 2010/12/28 06:13:53 nakatamaho Exp $
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -28,41 +28,40 @@
  *
  */
 
-#ifndef _MUTILS_H_
-
-#if defined MPLAPACK_BUILD_WITH_MPFR
-#include <mplapack_utils_mpfr.h>
+#include <mpblas_td.h>
+#ifdef _OPENMP
+#include <omp.h>
 #endif
 
-#if defined MPLAPACK_BUILD_WITH_GMP
-#include <mplapack_utils_gmp.h>
-#endif
+void Rgemm_NN_omp(mplapackint m, mplapackint n, mplapackint k, td_real alpha, td_real *A, mplapackint lda, td_real *B, mplapackint ldb, td_real beta,
+	      td_real *C, mplapackint ldc)
+{
+    mplapackint i, j, l;
+    td_real temp;
 
-#if defined MPLAPACK_BUILD_WITH_QD
-#include <mplapack_utils_qd.h>
+//Form C := alpha*A*B + beta*C.
+    for (j = 0; j < n; j++) {
+	if (beta == 0.0) {
+	    for (i = 0; i < m; i++) {
+		C[i + j * ldc] = 0.0;
+	    }
+	} else if (beta != 1.0) {
+	    for (i = 0; i < m; i++) {
+		C[i + j * ldc] = beta * C[i + j * ldc];
+	    }
+	}
+    }
+//main loop
+#ifdef _OPENMP
+#pragma omp parallel for private(i, j, l, temp)
 #endif
-
-#if defined MPLAPACK_BUILD_WITH_DD
-#include <mplapack_utils_dd.h>
-#endif
-#if defined MPLAPACK_BUILD_WITH_TD
-#include <mplapack_utils_td.h>
-#endif
-
-#if defined MPLAPACK_BUILD_WITH_DOUBLE
-#include <mplapack_utils_double.h>
-#endif
-
-#if defined MPLAPACK_BUILD_WITH_BINARY80
-#include <mplapack_utils_binary80.h>
-#endif
-
-#if defined MPLAPACK_BUILD_WITH_BINARY128
-#include <mplapack_utils_binary128.h>
-#endif
-
-#if defined MPLAPACK_INTERNAL
-#include <mplapack_print.h>
-#endif
-
-#endif
+    for (j = 0; j < n; j++) {
+	for (l = 0; l < k; l++) {
+	    temp = alpha * B[l + j * ldb];
+	    for (i = 0; i < m; i++) {
+		C[i + j * ldc] += temp * A[i + l * lda];
+	    }
+	}
+    }
+    return;
+}

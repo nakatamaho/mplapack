@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2008-2010
+ * Copyright (c) 2008-2012
  *	Nakata, Maho
  * 	All rights reserved.
  *
- * $Id: mplapack_utils.h,v 1.6 2010/08/07 03:15:46 nakatamaho Exp $
+ * $Id: Rdot.cpp,v 1.5 2010/08/07 05:50:10 nakatamaho Exp $
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -28,41 +28,19 @@
  *
  */
 
-#ifndef _MUTILS_H_
+#include <mpblas_td.h>
 
-#if defined MPLAPACK_BUILD_WITH_MPFR
-#include <mplapack_utils_mpfr.h>
-#endif
+td_real Rdot_ref(mplapackint n, td_real * dx, mplapackint incx, td_real * dy, mplapackint incy);
+td_real Rdot_omp(mplapackint n, td_real * dx, mplapackint incx, td_real * dy, mplapackint incy);
 
-#if defined MPLAPACK_BUILD_WITH_GMP
-#include <mplapack_utils_gmp.h>
-#endif
+#define SINGLEOROMP 1000
 
-#if defined MPLAPACK_BUILD_WITH_QD
-#include <mplapack_utils_qd.h>
-#endif
+td_real Rdot(mplapackint const n, td_real *dx, mplapackint const incx, td_real *dy, mplapackint const incy)
+{
+    mplapackint ix = 0;
+    mplapackint iy = 0;
+    mplapackint i;
 
-#if defined MPLAPACK_BUILD_WITH_DD
-#include <mplapack_utils_dd.h>
-#endif
-#if defined MPLAPACK_BUILD_WITH_TD
-#include <mplapack_utils_td.h>
-#endif
-
-#if defined MPLAPACK_BUILD_WITH_DOUBLE
-#include <mplapack_utils_double.h>
-#endif
-
-#if defined MPLAPACK_BUILD_WITH_BINARY80
-#include <mplapack_utils_binary80.h>
-#endif
-
-#if defined MPLAPACK_BUILD_WITH_BINARY128
-#include <mplapack_utils_binary128.h>
-#endif
-
-#if defined MPLAPACK_INTERNAL
-#include <mplapack_print.h>
-#endif
-
-#endif
+    if (0) { return Rdot_ref(n, dx, incx, dy, incy); } 
+    else { return Rdot_omp(n, dx, incx, dy, incy); }
+}

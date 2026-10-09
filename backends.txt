@@ -26,6 +26,7 @@ gmp         mpf_class             mpfc_class                          ON       g
 mpfr        mpfr_class            mpc_class                           ON       mpfr
 qd          qd_real               qd_complex                          ON       qd
 dd          dd_real               dd_complex                          ON       qd,nofma
+td          td_real               td_complex                          OFF      qd,nofma
 double      double                std::complex<double>                ON       -
 binary80    mplapack_binary80_t   std::complex<mplapack_binary80_t>   OFF      -
 binary128   mplapack_binary128_t  std::complex<mplapack_binary128_t>  ON       binary128libs
