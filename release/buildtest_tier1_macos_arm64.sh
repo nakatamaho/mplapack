@@ -228,7 +228,7 @@ PREFIX_DIR="${HOME}/MPLAPACK"
 # DISTCHECK_CONFIGURE_FLAGS: feature flags only, no --prefix
 # Note: Apple Silicon (arm64) does not have x87, so binary80 is x86_64 only
 # ---------------------------------------------------------------------------
-COMMON_FLAGS="--enable-gmp=yes --enable-mpfr=yes --enable-binary128=yes --enable-qd=yes --enable-dd=yes --enable-double=yes --enable-test=yes --enable-benchmark=yes"
+COMMON_FLAGS="--enable-gmp=yes --enable-mpfr=yes --enable-binary128=yes --enable-qd=yes --enable-dd=yes --enable-td=yes --enable-double=yes --enable-test=yes --enable-benchmark=yes"
 ARCH=$(uname -m)
 case "${ARCH}" in
     x86_64|i686|i586|i486|i386)
