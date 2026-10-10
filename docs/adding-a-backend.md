@@ -235,9 +235,24 @@ Scripts that list backends: `misc/check_source_manifests.sh`,
    `--enable-<b>`, build.
 4. `misc/check_unique_symbols.sh` on `libmplapack_<b>.a` and
    `libmplapack_<b>_opt.a`.
-5. `make check` in `mpblas/test/<b>` and `mplapack/test/compare/<b>`.
-6. The lin and eig suites (`mplapack/test/lin`, `mplapack/test/eig`).  They
-   take hours; run them on a full machine and keep the logs.
+5. `make check-all` in `mpblas/test/<b>` (every BLAS test; plain
+   `make check` runs only the smoke tests).
+6. `make check` in `mplapack/test/compare/<b>` runs only the Rlamch and
+   Rlaruv reference comparisons.  `make check-all` there currently runs
+   none of the routine tests (no log rule matches `*.test_<b>`, for every
+   backend), so run the programs directly:
+
+   ```sh
+   cd mplapack/test/compare/<b> && make check-all   # builds the programs
+   for t in *.test_<b>; do ./$t > $t.out 2>&1 || echo "FAIL $t"; done
+   ```
+
+   Rpotri fails for dd and Classq fails for dd and qd as well; compare a new
+   backend's failures with those before treating them as its own.
+7. The lin and eig suites (`mplapack/test/lin`, `mplapack/test/eig`), and
+   compare the pass lines with the committed results of a similar backend
+   under `mplapack/test/*/results/`.  eig takes hours; run it on a full
+   machine and keep the logs.
 
 ## 9. Plan for the 3.1 backends
 
