@@ -118,8 +118,26 @@ Library sources that are MPLAPACK's own (not fable output):
 
 Test sources:
 
-- `mpblas/test/common/arithmetic.test.cpp`, `mplapack.test.cpp`
+- `mpblas/test/common/arithmetic.test.cpp`, `complex.test.cpp`,
+  `mplapack.test.cpp`
 - `mplapack/test/compare/common/Rlamch.test.cpp`
+
+Fortran I/O emulation used by the lin/eig/matgen test code:
+
+- `fable/fem/read.hpp`, `fable/fem/write.hpp`: backend utility header,
+  type headers, and `read_loop`/`write_loop` overloads for REAL and COMPLEX.
+  These end in `#error` for an unknown backend, so a library-only build does
+  not reveal a missing branch; only the test code includes them.
+
+To find what still lacks a branch, list the files that mention a similar
+backend but not the new one (here for td, modelled on dd):
+
+```sh
+git ls-files | grep -v '^external/\|/results/\|^examples/' \
+  | xargs grep -l MPLAPACK_BUILD_WITH_DD | xargs grep -L MPLAPACK_BUILD_WITH_TD
+```
+
+`fable/3.9.1/` holds patches for an older LAPACK and is not used.
 
 ## 5. Special cases to decide per backend
 

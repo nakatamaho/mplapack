@@ -18,6 +18,8 @@
 #include "mplapack_utils_binary80.h"
 #elif defined(MPLAPACK_BUILD_WITH_DD)
 #include "mplapack_utils_dd.h"
+#elif defined(MPLAPACK_BUILD_WITH_TD)
+#include "mplapack_utils_td.h"
 #elif defined(MPLAPACK_BUILD_WITH_QD)
 #include "mplapack_utils_qd.h"
 #elif defined(MPLAPACK_BUILD_WITH_DOUBLE)
@@ -50,7 +52,7 @@ using namespace gmpxx;
 using namespace mpfrxx;
 #endif
 #endif
-#if defined(MPLAPACK_BUILD_WITH_QD) || defined(MPLAPACK_BUILD_WITH_DD)
+#if defined(MPLAPACK_BUILD_WITH_QD) || defined(MPLAPACK_BUILD_WITH_DD) || defined(MPLAPACK_BUILD_WITH_TD)
 // QD headers define and use qd::nint (and other short identifiers) inside the headers.
 // MPLAPACK (or other code) may define macros like `nint`, which would macro-expand
 // `qd::nint` into `qd::__dd_nint` and break the QD headers.
@@ -85,6 +87,10 @@ using namespace mpfrxx;
 #endif
 #if __has_include(<qd/qd_real.h>)
 #include <qd/qd_real.h>
+#endif
+#if defined(MPLAPACK_BUILD_WITH_TD)
+#include <qd/td_real.h>
+#include <qd/td_complex.h>
 #endif
 #if __has_include(<dd_complex.h>)
 #include <dd_complex.h>
@@ -502,6 +508,14 @@ class read_loop // TODO copy-constructor potential performance problem
         return *this;
     }
 #endif
+#if defined(MPLAPACK_BUILD_WITH_TD)
+    // libQD3 td_real (triple-double)
+    read_loop &operator,(td_real &val) {
+        std::string s = read_numeric_as_string();
+        assign_from_token_string(val, s);
+        return *this;
+    }
+#endif
 #if defined(MPLAPACK_BUILD_WITH_QD)
     // QD library qd_real (quad-double)
     read_loop &operator,(qd_real &val) {
@@ -653,6 +667,20 @@ class read_loop // TODO copy-constructor potential performance problem
         dd_real re(real_str.c_str());
         dd_real im(imag_str.c_str());
         val = dd_complex(re, im);
+        return *this;
+    }
+#endif
+#if defined(MPLAPACK_BUILD_WITH_TD)
+    read_loop &operator,(td_complex &val) {
+        if (io_mode == io_unformatted) {
+            throw TBXX_NOT_IMPLEMENTED();
+        }
+        std::string token = read_complex_token_string();
+        std::string real_str, imag_str;
+        parse_complex_components(token, real_str, imag_str);
+        td_real re(real_str.c_str());
+        td_real im(imag_str.c_str());
+        val = td_complex(re, im);
         return *this;
     }
 #endif
