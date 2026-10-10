@@ -11,6 +11,7 @@ MPFRLIBS= -lmplapack_mpfr -lmpfr -lmpc -lgmp
 GMPLIBS=-lmplapack_gmp -lgmp
 QDLIBS=-lmplapack_qd -lqd
 DDLIBS=-lmplapack_dd -lqd
+TDLIBS=-lmplapack_td -lqd
 BINARY80LIBS=-lmplapack_binary80
 BINARY128LIBS=-lmplapack_binary128%%LIBQUADMATH%%
 DOUBLELIBS=-lmplapack_double
@@ -18,7 +19,7 @@ BLAS=
 LAPACK=
 FLIBS=
 
-programs=Rggsvd3_example_mpfr Rggsvd3_example_gmp Rggsvd3_example_qd Rggsvd3_example_dd Rggsvd3_example_binary80 Rggsvd3_example_binary128 Rggsvd3_example_double
+programs=Rggsvd3_example_mpfr Rggsvd3_example_gmp Rggsvd3_example_qd Rggsvd3_example_dd Rggsvd3_example_td Rggsvd3_example_binary80 Rggsvd3_example_binary128 Rggsvd3_example_double
 
 all: $(programs)
 
@@ -36,6 +37,9 @@ Rggsvd3_example_qd: Rggsvd3_example_qd.o
 
 Rggsvd3_example_dd: Rggsvd3_example_dd.o
 	$(CXX) -o Rggsvd3_example_dd Rggsvd3_example_dd.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(DDLIBS)
+
+Rggsvd3_example_td: Rggsvd3_example_td.o
+	$(CXX) -o Rggsvd3_example_td Rggsvd3_example_td.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(TDLIBS)
 
 Rggsvd3_example_binary80: Rggsvd3_example_binary80.o
 	$(CXX) -o Rggsvd3_example_binary80 Rggsvd3_example_binary80.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(BINARY80LIBS)

@@ -9,6 +9,7 @@ MPFRLIBS= -lmplapack_mpfr -lmpfr -lmpc -lgmp
 GMPLIBS=-lmplapack_gmp -lgmp
 QDLIBS=-lmplapack_qd -lqd
 DDLIBS=-lmplapack_dd -lqd
+TDLIBS=-lmplapack_td -lqd
 BINARY80LIBS=-lmplapack_binary80
 BINARY128LIBS=-lmplapack_binary128%%LIBQUADMATH%%
 DOUBLELIBS=-lmplapack_double
@@ -16,7 +17,7 @@ BLAS=
 LAPACK=
 FLIBS=
 
-programs=Cgels_example_mpfr.exe Cgels_example_gmp.exe Cgels_example_qd.exe Cgels_example_dd.exe Cgels_example_binary80.exe Cgels_example_binary128.exe Cgels_example_double.exe Cgelss_example_mpfr.exe Cgelss_example_gmp.exe Cgelss_example_qd.exe Cgelss_example_dd.exe Cgelss_example_binary80.exe Cgelss_example_binary128.exe Cgelss_example_double.exe Rgels_example_mpfr.exe Rgels_example_gmp.exe Rgels_example_qd.exe Rgels_example_dd.exe Rgels_example_binary80.exe Rgels_example_binary128.exe Rgels_example_double.exe Rgelss_example_mpfr.exe Rgelss_example_gmp.exe Rgelss_example_qd.exe Rgelss_example_dd.exe Rgelss_example_binary80.exe Rgelss_example_binary128.exe Rgelss_example_double.exe Rgelsy_example_mpfr.exe Rgelsy_example_gmp.exe Rgelsy_example_qd.exe Rgelsy_example_dd.exe Rgelsy_example_binary80.exe Rgelsy_example_binary128.exe Rgelsy_example_double.exe Rggglm_example_mpfr.exe Rggglm_example_gmp.exe Rggglm_example_qd.exe Rggglm_example_dd.exe Rggglm_example_binary80.exe Rggglm_example_binary128.exe Rggglm_example_double.exe Rgglse_example_mpfr.exe Rgglse_example_gmp.exe Rgglse_example_qd.exe Rgglse_example_dd.exe Rgglse_example_binary80.exe Rgglse_example_binary128.exe Rgglse_example_double.exe
+programs=Cgels_example_mpfr.exe Cgels_example_gmp.exe Cgels_example_qd.exe Cgels_example_dd.exe Cgels_example_td.exe Cgels_example_binary80.exe Cgels_example_binary128.exe Cgels_example_double.exe Cgelss_example_mpfr.exe Cgelss_example_gmp.exe Cgelss_example_qd.exe Cgelss_example_dd.exe Cgelss_example_td.exe Cgelss_example_binary80.exe Cgelss_example_binary128.exe Cgelss_example_double.exe Rgels_example_mpfr.exe Rgels_example_gmp.exe Rgels_example_qd.exe Rgels_example_dd.exe Rgels_example_td.exe Rgels_example_binary80.exe Rgels_example_binary128.exe Rgels_example_double.exe Rgelss_example_mpfr.exe Rgelss_example_gmp.exe Rgelss_example_qd.exe Rgelss_example_dd.exe Rgelss_example_td.exe Rgelss_example_binary80.exe Rgelss_example_binary128.exe Rgelss_example_double.exe Rgelsy_example_mpfr.exe Rgelsy_example_gmp.exe Rgelsy_example_qd.exe Rgelsy_example_dd.exe Rgelsy_example_td.exe Rgelsy_example_binary80.exe Rgelsy_example_binary128.exe Rgelsy_example_double.exe Rggglm_example_mpfr.exe Rggglm_example_gmp.exe Rggglm_example_qd.exe Rggglm_example_dd.exe Rggglm_example_td.exe Rggglm_example_binary80.exe Rggglm_example_binary128.exe Rggglm_example_double.exe Rgglse_example_mpfr.exe Rgglse_example_gmp.exe Rgglse_example_qd.exe Rgglse_example_dd.exe Rgglse_example_td.exe Rgglse_example_binary80.exe Rgglse_example_binary128.exe Rgglse_example_double.exe
 
 all: $(programs)
 
@@ -34,6 +35,9 @@ Rgels_example_qd.exe: Rgels_example_qd.o
 
 Rgels_example_dd.exe: Rgels_example_dd.o
 	$(CXX) -o Rgels_example_dd.exe Rgels_example_dd.o $(LIBFLAGS) $(DDLIBS)
+
+Rgels_example_td.exe: Rgels_example_td.o
+	$(CXX) -o Rgels_example_td.exe Rgels_example_td.o $(LIBFLAGS) $(TDLIBS)
 
 Rgels_example_binary80.exe: Rgels_example_binary80.o
 	$(CXX) -o Rgels_example_binary80 Rgels_example_binary80.o $(LIBFLAGS) $(BINARY80LIBS)
@@ -59,6 +63,9 @@ Cgels_example_qd.exe: Cgels_example_qd.o
 Cgels_example_dd.exe: Cgels_example_dd.o
 	$(CXX) -o Cgels_example_dd.exe Cgels_example_dd.o $(LIBFLAGS) $(DDLIBS)
 
+Cgels_example_td.exe: Cgels_example_td.o
+	$(CXX) -o Cgels_example_td.exe Cgels_example_td.o $(LIBFLAGS) $(TDLIBS)
+
 Cgels_example_binary80.exe: Cgels_example_binary80.o
 	$(CXX) -o Cgels_example_binary80.exe Cgels_example_binary80.o $(LIBFLAGS) $(BINARY80LIBS)
 
@@ -79,6 +86,9 @@ Cgelss_example_qd.exe: Cgelss_example_qd.o
 
 Cgelss_example_dd.exe: Cgelss_example_dd.o
 	$(CXX) -o Cgelss_example_dd.exe Cgelss_example_dd.o $(LIBFLAGS) $(DDLIBS)
+
+Cgelss_example_td.exe: Cgelss_example_td.o
+	$(CXX) -o Cgelss_example_td.exe Cgelss_example_td.o $(LIBFLAGS) $(TDLIBS)
 
 Cgelss_example_binary80.exe: Cgelss_example_binary80.o
 	$(CXX) -o Cgelss_example_binary80.exe Cgelss_example_binary80.o $(LIBFLAGS) $(BINARY80LIBS)
@@ -101,6 +111,9 @@ Rgelss_example_qd.exe: Rgelss_example_qd.o
 Rgelss_example_dd.exe: Rgelss_example_dd.o
 	$(CXX) -o Rgelss_example_dd.exe Rgelss_example_dd.o $(LIBFLAGS) $(DDLIBS)
 
+Rgelss_example_td.exe: Rgelss_example_td.o
+	$(CXX) -o Rgelss_example_td.exe Rgelss_example_td.o $(LIBFLAGS) $(TDLIBS)
+
 Rgelss_example_binary80.exe: Rgelss_example_binary80.o
 	$(CXX) -o Rgelss_example_binary80.exe Rgelss_example_binary80.o $(LIBFLAGS) $(BINARY80LIBS)
 
@@ -121,6 +134,9 @@ Rgelsy_example_qd.exe: Rgelsy_example_qd.o
 
 Rgelsy_example_dd.exe: Rgelsy_example_dd.o
 	$(CXX) -o Rgelsy_example_dd.exe Rgelsy_example_dd.o $(LIBFLAGS) $(DDLIBS)
+
+Rgelsy_example_td.exe: Rgelsy_example_td.o
+	$(CXX) -o Rgelsy_example_td.exe Rgelsy_example_td.o $(LIBFLAGS) $(TDLIBS)
 
 Rgelsy_example_binary80.exe: Rgelsy_example_binary80.o
 	$(CXX) -o Rgelsy_example_binary80.exe Rgelsy_example_binary80.o $(LIBFLAGS) $(BINARY80LIBS)
@@ -143,6 +159,9 @@ Rggglm_example_qd.exe: Rggglm_example_qd.o
 Rggglm_example_dd.exe: Rggglm_example_dd.o
 	$(CXX) -o Rggglm_example_dd.exe Rggglm_example_dd.o $(LIBFLAGS) $(DDLIBS)
 
+Rggglm_example_td.exe: Rggglm_example_td.o
+	$(CXX) -o Rggglm_example_td.exe Rggglm_example_td.o $(LIBFLAGS) $(TDLIBS)
+
 Rggglm_example_binary80.exe: Rggglm_example_binary80.o
 	$(CXX) -o Rggglm_example_binary80.exe Rggglm_example_binary80.o $(LIBFLAGS) $(BINARY80LIBS)
 
@@ -163,6 +182,9 @@ Rgglse_example_qd.exe: Rgglse_example_qd.o
 
 Rgglse_example_dd.exe: Rgglse_example_dd.o
 	$(CXX) -o Rgglse_example_dd.exe Rgglse_example_dd.o $(LIBFLAGS) $(DDLIBS)
+
+Rgglse_example_td.exe: Rgglse_example_td.o
+	$(CXX) -o Rgglse_example_td.exe Rgglse_example_td.o $(LIBFLAGS) $(TDLIBS)
 
 Rgglse_example_binary80.exe: Rgglse_example_binary80.o
 	$(CXX) -o Rgglse_example_binary80.exe Rgglse_example_binary80.o $(LIBFLAGS) $(BINARY80LIBS)

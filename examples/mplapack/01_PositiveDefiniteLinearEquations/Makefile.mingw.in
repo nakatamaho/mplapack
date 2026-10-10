@@ -9,6 +9,7 @@ MPFRLIBS= -lmplapack_mpfr -lmpfr -lmpc -lgmp
 GMPLIBS=-lmplapack_gmp -lgmp
 QDLIBS=-lmplapack_qd -lqd
 DDLIBS=-lmplapack_dd -lqd
+TDLIBS=-lmplapack_td -lqd
 BINARY80LIBS=-lmplapack_binary80
 BINARY128LIBS=-lmplapack_binary128%%LIBQUADMATH%%
 DOUBLELIBS=-lmplapack_double
@@ -16,7 +17,7 @@ BLAS=
 LAPACK=
 FLIBS=
 
-programs=Cposv_example_mpfr.exe Cposv_example_gmp.exe Cposv_example_qd.exe Cposv_example_dd.exe Cposv_example_binary80.exe Cposv_example_binary128.exe Cposv_example_double.exe Cpotrf_potrs_example_mpfr.exe Cpotrf_potrs_example_gmp.exe Cpotrf_potrs_example_qd.exe Cpotrf_potrs_example_dd.exe Cpotrf_potrs_example_binary80.exe Cpotrf_potrs_example_binary128.exe Cpotrf_potrs_example_double.exe Rpocon_example_mpfr.exe Rpocon_example_gmp.exe Rpocon_example_qd.exe Rpocon_example_dd.exe Rpocon_example_binary80.exe Rpocon_example_binary128.exe Rpocon_example_double.exe Rposv_example_mpfr.exe Rposv_example_gmp.exe Rposv_example_qd.exe Rposv_example_dd.exe Rposv_example_binary80.exe Rposv_example_binary128.exe Rposv_example_double.exe Rpotrf_potrs_example_mpfr.exe Rpotrf_potrs_example_gmp.exe Rpotrf_potrs_example_qd.exe Rpotrf_potrs_example_dd.exe Rpotrf_potrs_example_binary80.exe Rpotrf_potrs_example_binary128.exe Rpotrf_potrs_example_double.exe Rptsv_example_mpfr.exe Rptsv_example_gmp.exe Rptsv_example_qd.exe Rptsv_example_dd.exe Rptsv_example_binary80.exe Rptsv_example_binary128.exe Rptsv_example_double.exe
+programs=Cposv_example_mpfr.exe Cposv_example_gmp.exe Cposv_example_qd.exe Cposv_example_dd.exe Cposv_example_td.exe Cposv_example_binary80.exe Cposv_example_binary128.exe Cposv_example_double.exe Cpotrf_potrs_example_mpfr.exe Cpotrf_potrs_example_gmp.exe Cpotrf_potrs_example_qd.exe Cpotrf_potrs_example_dd.exe Cpotrf_potrs_example_td.exe Cpotrf_potrs_example_binary80.exe Cpotrf_potrs_example_binary128.exe Cpotrf_potrs_example_double.exe Rpocon_example_mpfr.exe Rpocon_example_gmp.exe Rpocon_example_qd.exe Rpocon_example_dd.exe Rpocon_example_td.exe Rpocon_example_binary80.exe Rpocon_example_binary128.exe Rpocon_example_double.exe Rposv_example_mpfr.exe Rposv_example_gmp.exe Rposv_example_qd.exe Rposv_example_dd.exe Rposv_example_td.exe Rposv_example_binary80.exe Rposv_example_binary128.exe Rposv_example_double.exe Rpotrf_potrs_example_mpfr.exe Rpotrf_potrs_example_gmp.exe Rpotrf_potrs_example_qd.exe Rpotrf_potrs_example_dd.exe Rpotrf_potrs_example_td.exe Rpotrf_potrs_example_binary80.exe Rpotrf_potrs_example_binary128.exe Rpotrf_potrs_example_double.exe Rptsv_example_mpfr.exe Rptsv_example_gmp.exe Rptsv_example_qd.exe Rptsv_example_dd.exe Rptsv_example_td.exe Rptsv_example_binary80.exe Rptsv_example_binary128.exe Rptsv_example_double.exe
 
 all: $(programs)
 
@@ -34,6 +35,9 @@ Rpocon_example_qd.exe: Rpocon_example_qd.o
 
 Rpocon_example_dd.exe: Rpocon_example_dd.o
 	$(CXX) -o Rpocon_example_dd.exe Rpocon_example_dd.o $(LIBFLAGS) $(DDLIBS)
+
+Rpocon_example_td.exe: Rpocon_example_td.o
+	$(CXX) -o Rpocon_example_td.exe Rpocon_example_td.o $(LIBFLAGS) $(TDLIBS)
 
 Rpocon_example_binary80.exe: Rpocon_example_binary80.o
 	$(CXX) -o Rpocon_example_binary80 Rpocon_example_binary80.o $(LIBFLAGS) $(BINARY80LIBS)
@@ -59,6 +63,9 @@ Cposv_example_qd.exe: Cposv_example_qd.o
 Cposv_example_dd.exe: Cposv_example_dd.o
 	$(CXX) -o Cposv_example_dd.exe Cposv_example_dd.o $(LIBFLAGS) $(DDLIBS)
 
+Cposv_example_td.exe: Cposv_example_td.o
+	$(CXX) -o Cposv_example_td.exe Cposv_example_td.o $(LIBFLAGS) $(TDLIBS)
+
 Cposv_example_binary80.exe: Cposv_example_binary80.o
 	$(CXX) -o Cposv_example_binary80.exe Cposv_example_binary80.o $(LIBFLAGS) $(BINARY80LIBS)
 
@@ -79,6 +86,9 @@ Cpotrf_potrs_example_qd.exe: Cpotrf_potrs_example_qd.o
 
 Cpotrf_potrs_example_dd.exe: Cpotrf_potrs_example_dd.o
 	$(CXX) -o Cpotrf_potrs_example_dd.exe Cpotrf_potrs_example_dd.o $(LIBFLAGS) $(DDLIBS)
+
+Cpotrf_potrs_example_td.exe: Cpotrf_potrs_example_td.o
+	$(CXX) -o Cpotrf_potrs_example_td.exe Cpotrf_potrs_example_td.o $(LIBFLAGS) $(TDLIBS)
 
 Cpotrf_potrs_example_binary80.exe: Cpotrf_potrs_example_binary80.o
 	$(CXX) -o Cpotrf_potrs_example_binary80.exe Cpotrf_potrs_example_binary80.o $(LIBFLAGS) $(BINARY80LIBS)
@@ -101,6 +111,9 @@ Rposv_example_qd.exe: Rposv_example_qd.o
 Rposv_example_dd.exe: Rposv_example_dd.o
 	$(CXX) -o Rposv_example_dd.exe Rposv_example_dd.o $(LIBFLAGS) $(DDLIBS)
 
+Rposv_example_td.exe: Rposv_example_td.o
+	$(CXX) -o Rposv_example_td.exe Rposv_example_td.o $(LIBFLAGS) $(TDLIBS)
+
 Rposv_example_binary80.exe: Rposv_example_binary80.o
 	$(CXX) -o Rposv_example_binary80.exe Rposv_example_binary80.o $(LIBFLAGS) $(BINARY80LIBS)
 
@@ -122,6 +135,9 @@ Rpotrf_potrs_example_qd.exe: Rpotrf_potrs_example_qd.o
 Rpotrf_potrs_example_dd.exe: Rpotrf_potrs_example_dd.o
 	$(CXX) -o Rpotrf_potrs_example_dd.exe Rpotrf_potrs_example_dd.o $(LIBFLAGS) $(DDLIBS)
 
+Rpotrf_potrs_example_td.exe: Rpotrf_potrs_example_td.o
+	$(CXX) -o Rpotrf_potrs_example_td.exe Rpotrf_potrs_example_td.o $(LIBFLAGS) $(TDLIBS)
+
 Rpotrf_potrs_example_binary80.exe: Rpotrf_potrs_example_binary80.o
 	$(CXX) -o Rpotrf_potrs_example_binary80.exe Rpotrf_potrs_example_binary80.o $(LIBFLAGS) $(BINARY80LIBS)
 
@@ -142,6 +158,9 @@ Rptsv_example_qd.exe: Rptsv_example_qd.o
 
 Rptsv_example_dd.exe: Rptsv_example_dd.o
 	$(CXX) -o Rptsv_example_dd.exe Rptsv_example_dd.o $(LIBFLAGS) $(DDLIBS)
+
+Rptsv_example_td.exe: Rptsv_example_td.o
+	$(CXX) -o Rptsv_example_td.exe Rptsv_example_td.o $(LIBFLAGS) $(TDLIBS)
 
 Rptsv_example_binary80.exe: Rptsv_example_binary80.o
 	$(CXX) -o Rptsv_example_binary80.exe Rptsv_example_binary80.o $(LIBFLAGS) $(BINARY80LIBS)

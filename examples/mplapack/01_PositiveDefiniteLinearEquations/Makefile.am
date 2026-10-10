@@ -196,6 +196,38 @@ Rptsv_example_dd_LDFLAGS = $(dd_libdepends)
 
 endif
 
+if ENABLE_TD
+mplapackexamples_PROGRAMS += Cposv_example_td Cpotrf_potrs_example_td Rpocon_example_td Rposv_example_td Rpotrf_potrs_example_td Rptsv_example_td
+
+td_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(QD_INCLUDEDIR)
+td_libdepends = -Wl,-rpath,$(libdir) -L$(top_builddir)/mplapack/reference -lmplapack_td -L$(QD_LIBDIR) -lqd
+
+Cposv_example_td_SOURCES = Cposv_example_td.cpp
+Cposv_example_td_CXXFLAGS = $(td_cxxflags)
+Cposv_example_td_LDFLAGS = $(td_libdepends)
+
+Cpotrf_potrs_example_td_SOURCES = Cpotrf_potrs_example_td.cpp
+Cpotrf_potrs_example_td_CXXFLAGS = $(td_cxxflags)
+Cpotrf_potrs_example_td_LDFLAGS = $(td_libdepends)
+
+Rpocon_example_td_SOURCES = Rpocon_example_td.cpp
+Rpocon_example_td_CXXFLAGS = $(td_cxxflags)
+Rpocon_example_td_LDFLAGS = $(td_libdepends)
+
+Rposv_example_td_SOURCES = Rposv_example_td.cpp
+Rposv_example_td_CXXFLAGS = $(td_cxxflags)
+Rposv_example_td_LDFLAGS = $(td_libdepends)
+
+Rpotrf_potrs_example_td_SOURCES = Rpotrf_potrs_example_td.cpp
+Rpotrf_potrs_example_td_CXXFLAGS = $(td_cxxflags)
+Rpotrf_potrs_example_td_LDFLAGS = $(td_libdepends)
+
+Rptsv_example_td_SOURCES = Rptsv_example_td.cpp
+Rptsv_example_td_CXXFLAGS = $(td_cxxflags)
+Rptsv_example_td_LDFLAGS = $(td_libdepends)
+
+endif
+
 if ENABLE_QD
 mplapackexamples_PROGRAMS += Cposv_example_qd Cpotrf_potrs_example_qd Rpocon_example_qd Rposv_example_qd Rpotrf_potrs_example_qd Rptsv_example_qd
 
@@ -230,7 +262,7 @@ endif
 
 mplapackexamplesdir=$(prefix)/share/examples/mplapack/01_PositiveDefiniteLinearEquations
 
-mplapackexamples_DATA = Cposv_example_mpfr.cpp Cposv_example_gmp.cpp Cposv_example_binary128.cpp Cposv_example_binary80.cpp Cposv_example_double.cpp Cposv_example_dd.cpp Cposv_example_qd.cpp Cpotrf_potrs_example_mpfr.cpp Cpotrf_potrs_example_gmp.cpp Cpotrf_potrs_example_binary128.cpp Cpotrf_potrs_example_binary80.cpp Cpotrf_potrs_example_double.cpp Cpotrf_potrs_example_dd.cpp Cpotrf_potrs_example_qd.cpp Rpocon_example_mpfr.cpp Rpocon_example_gmp.cpp Rpocon_example_binary128.cpp Rpocon_example_binary80.cpp Rpocon_example_double.cpp Rpocon_example_dd.cpp Rpocon_example_qd.cpp Rposv_example_mpfr.cpp Rposv_example_gmp.cpp Rposv_example_binary128.cpp Rposv_example_binary80.cpp Rposv_example_double.cpp Rposv_example_dd.cpp Rposv_example_qd.cpp Rpotrf_potrs_example_mpfr.cpp Rpotrf_potrs_example_gmp.cpp Rpotrf_potrs_example_binary128.cpp Rpotrf_potrs_example_binary80.cpp Rpotrf_potrs_example_double.cpp Rpotrf_potrs_example_dd.cpp Rpotrf_potrs_example_qd.cpp Rptsv_example_mpfr.cpp Rptsv_example_gmp.cpp Rptsv_example_binary128.cpp Rptsv_example_binary80.cpp Rptsv_example_double.cpp Rptsv_example_dd.cpp Rptsv_example_qd.cpp \
+mplapackexamples_DATA = Cposv_example_mpfr.cpp Cposv_example_gmp.cpp Cposv_example_binary128.cpp Cposv_example_binary80.cpp Cposv_example_double.cpp Cposv_example_dd.cpp Cposv_example_td.cpp Cposv_example_qd.cpp Cpotrf_potrs_example_mpfr.cpp Cpotrf_potrs_example_gmp.cpp Cpotrf_potrs_example_binary128.cpp Cpotrf_potrs_example_binary80.cpp Cpotrf_potrs_example_double.cpp Cpotrf_potrs_example_dd.cpp Cpotrf_potrs_example_td.cpp Cpotrf_potrs_example_qd.cpp Rpocon_example_mpfr.cpp Rpocon_example_gmp.cpp Rpocon_example_binary128.cpp Rpocon_example_binary80.cpp Rpocon_example_double.cpp Rpocon_example_dd.cpp Rpocon_example_td.cpp Rpocon_example_qd.cpp Rposv_example_mpfr.cpp Rposv_example_gmp.cpp Rposv_example_binary128.cpp Rposv_example_binary80.cpp Rposv_example_double.cpp Rposv_example_dd.cpp Rposv_example_td.cpp Rposv_example_qd.cpp Rpotrf_potrs_example_mpfr.cpp Rpotrf_potrs_example_gmp.cpp Rpotrf_potrs_example_binary128.cpp Rpotrf_potrs_example_binary80.cpp Rpotrf_potrs_example_double.cpp Rpotrf_potrs_example_dd.cpp Rpotrf_potrs_example_td.cpp Rpotrf_potrs_example_qd.cpp Rptsv_example_mpfr.cpp Rptsv_example_gmp.cpp Rptsv_example_binary128.cpp Rptsv_example_binary80.cpp Rptsv_example_double.cpp Rptsv_example_dd.cpp Rptsv_example_td.cpp Rptsv_example_qd.cpp \
  Makefile.freebsd Makefile.linux Makefile.linux.inteloneAPI Makefile.macos Makefile.mingw
 
 install-data-hook:
@@ -289,6 +321,10 @@ endif
 if ENABLE_DD
 else
 DISABLED_EXAMPLE_SUFFIXES += dd
+endif
+if ENABLE_TD
+else
+DISABLED_EXAMPLE_SUFFIXES += td
 endif
 if ENABLE_DOUBLE
 else

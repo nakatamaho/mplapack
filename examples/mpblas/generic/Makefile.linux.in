@@ -11,6 +11,7 @@ MPFRLIBS=-lmplapack_mpfr -lmpfr -lmpc -lgmp
 GMPLIBS=-lmplapack_gmp -lgmp
 QDLIBS=-lmplapack_qd -lqd
 DDLIBS=-lmplapack_dd -lqd
+TDLIBS=-lmplapack_td -lqd
 BINARY80LIBS=-lmplapack_binary80
 BINARY128LIBS=-lmplapack_binary128%%LIBQUADMATH%%
 DOUBLELIBS=-lmplapack_double
@@ -19,6 +20,7 @@ MPFROPTLIBS=$(OPENMP_EXAMPLE_OPENMP_LIBS) -lmplapack_mpfr_opt -lmpfr -lmpc -lgmp
 GMPOPTLIBS=$(OPENMP_EXAMPLE_OPENMP_LIBS) -lmplapack_gmp_opt -lgmp
 QDOPTLIBS=$(OPENMP_EXAMPLE_OPENMP_LIBS) -lmplapack_qd_opt -lqd
 DDOPTLIBS=$(OPENMP_EXAMPLE_OPENMP_LIBS) -lmplapack_dd_opt -lqd
+TDOPTLIBS=$(OPENMP_EXAMPLE_OPENMP_LIBS) -lmplapack_td_opt -lqd
 BINARY80OPTLIBS=$(OPENMP_EXAMPLE_OPENMP_LIBS) -lmplapack_binary80_opt
 BINARY128OPTLIBS=$(OPENMP_EXAMPLE_OPENMP_LIBS) -lmplapack_binary128_opt%%LIBQUADMATH%%
 DOUBLEOPTLIBS=$(OPENMP_EXAMPLE_OPENMP_LIBS) -lmplapack_double_opt
@@ -27,8 +29,8 @@ BLAS=
 LAPACK=
 FLIBS=
 
-programs=%%ROUTINE%%_mpfr %%ROUTINE%%_gmp %%ROUTINE%%_qd %%ROUTINE%%_dd %%ROUTINE%%_binary80 %%ROUTINE%%_binary128 %%ROUTINE%%_double \
-%%ROUTINE%%_mpfr_opt %%ROUTINE%%_gmp_opt %%ROUTINE%%_qd_opt %%ROUTINE%%_dd_opt %%ROUTINE%%_binary80_opt %%ROUTINE%%_binary128_opt %%ROUTINE%%_double_opt
+programs=%%ROUTINE%%_mpfr %%ROUTINE%%_gmp %%ROUTINE%%_qd %%ROUTINE%%_dd %%ROUTINE%%_td %%ROUTINE%%_binary80 %%ROUTINE%%_binary128 %%ROUTINE%%_double \
+%%ROUTINE%%_mpfr_opt %%ROUTINE%%_gmp_opt %%ROUTINE%%_qd_opt %%ROUTINE%%_dd_opt %%ROUTINE%%_td_opt %%ROUTINE%%_binary80_opt %%ROUTINE%%_binary128_opt %%ROUTINE%%_double_opt
 
 all: $(programs)
 
@@ -56,8 +58,14 @@ all: $(programs)
 %%ROUTINE%%_dd: %%ROUTINE%%_dd.o
 	$(CXX) -o %%ROUTINE%%_dd %%ROUTINE%%_dd.o $(LIBFLAGS) $(DDLIBS)
 
+%%ROUTINE%%_td: %%ROUTINE%%_td.o
+	$(CXX) -o %%ROUTINE%%_td %%ROUTINE%%_td.o $(LIBFLAGS) $(TDLIBS)
+
 %%ROUTINE%%_dd_opt: %%ROUTINE%%_dd.o
 	$(CXX) -o %%ROUTINE%%_dd_opt %%ROUTINE%%_dd.o $(LIBFLAGS) $(DDOPTLIBS)
+
+%%ROUTINE%%_td_opt: %%ROUTINE%%_td.o
+	$(CXX) -o %%ROUTINE%%_td_opt %%ROUTINE%%_td.o $(LIBFLAGS) $(TDOPTLIBS)
 
 %%ROUTINE%%_binary80: %%ROUTINE%%_binary80.o
 	$(CXX) -o %%ROUTINE%%_binary80 %%ROUTINE%%_binary80.o $(LIBFLAGS) $(BINARY80LIBS)

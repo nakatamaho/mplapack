@@ -8,11 +8,12 @@ MPFRLIBS=-lmplapack_mpfr -lmpfr -lmpc -lgmp
 GMPLIBS=-lmplapack_gmp -lgmp
 QDLIBS=-lmplapack_qd -lqd
 DDLIBS=-lmplapack_dd -lqd
+TDLIBS=-lmplapack_td -lqd
 BINARY80LIBS=-lmplapack_binary80
 BINARY128LIBS=-lmplapack_binary128%%LIBQUADMATH%%
 DOUBLELIBS=-lmplapack_double
 
-programs=Rlamch_dump_mpfr Rlamch_dump_gmp Rlamch_dump_qd Rlamch_dump_dd Rlamch_dump_binary80 Rlamch_dump_binary128 Rlamch_dump_double Frank_eigenvalues_mpfr Frank_eigenvalues_gmp Frank_eigenvalues_qd Frank_eigenvalues_dd Frank_eigenvalues_binary80 Frank_eigenvalues_binary128 Frank_eigenvalues_double Gejsv_vs_gesvd_mpfr Gejsv_vs_gesvd_gmp Gejsv_vs_gesvd_qd Gejsv_vs_gesvd_dd Gejsv_vs_gesvd_binary80 Gejsv_vs_gesvd_binary128 Gejsv_vs_gesvd_double Hilbert_inverse_mpfr Hilbert_inverse_gmp Hilbert_inverse_qd Hilbert_inverse_dd Hilbert_inverse_binary80 Hilbert_inverse_binary128 Hilbert_inverse_double Hilbert_linear_solve_mpfr Hilbert_linear_solve_gmp Hilbert_linear_solve_qd Hilbert_linear_solve_dd Hilbert_linear_solve_binary80 Hilbert_linear_solve_binary128 Hilbert_linear_solve_double Kahan_rank_reveal_mpfr Kahan_rank_reveal_gmp Kahan_rank_reveal_qd Kahan_rank_reveal_dd Kahan_rank_reveal_binary80 Kahan_rank_reveal_binary128 Kahan_rank_reveal_double Pascal_inverse_mpfr Pascal_inverse_gmp Pascal_inverse_qd Pascal_inverse_dd Pascal_inverse_binary80 Pascal_inverse_binary128 Pascal_inverse_double Vandermonde_solve_mpfr Vandermonde_solve_gmp Vandermonde_solve_qd Vandermonde_solve_dd Vandermonde_solve_binary80 Vandermonde_solve_binary128 Vandermonde_solve_double Wilkinson_roots_mpfr Wilkinson_roots_gmp Wilkinson_roots_qd Wilkinson_roots_dd Wilkinson_roots_binary80 Wilkinson_roots_binary128 Wilkinson_roots_double
+programs=Rlamch_dump_mpfr Rlamch_dump_gmp Rlamch_dump_qd Rlamch_dump_dd Rlamch_dump_td Rlamch_dump_binary80 Rlamch_dump_binary128 Rlamch_dump_double Frank_eigenvalues_mpfr Frank_eigenvalues_gmp Frank_eigenvalues_qd Frank_eigenvalues_dd Frank_eigenvalues_td Frank_eigenvalues_binary80 Frank_eigenvalues_binary128 Frank_eigenvalues_double Gejsv_vs_gesvd_mpfr Gejsv_vs_gesvd_gmp Gejsv_vs_gesvd_qd Gejsv_vs_gesvd_dd Gejsv_vs_gesvd_td Gejsv_vs_gesvd_binary80 Gejsv_vs_gesvd_binary128 Gejsv_vs_gesvd_double Hilbert_inverse_mpfr Hilbert_inverse_gmp Hilbert_inverse_qd Hilbert_inverse_dd Hilbert_inverse_td Hilbert_inverse_binary80 Hilbert_inverse_binary128 Hilbert_inverse_double Hilbert_linear_solve_mpfr Hilbert_linear_solve_gmp Hilbert_linear_solve_qd Hilbert_linear_solve_dd Hilbert_linear_solve_td Hilbert_linear_solve_binary80 Hilbert_linear_solve_binary128 Hilbert_linear_solve_double Kahan_rank_reveal_mpfr Kahan_rank_reveal_gmp Kahan_rank_reveal_qd Kahan_rank_reveal_dd Kahan_rank_reveal_td Kahan_rank_reveal_binary80 Kahan_rank_reveal_binary128 Kahan_rank_reveal_double Pascal_inverse_mpfr Pascal_inverse_gmp Pascal_inverse_qd Pascal_inverse_dd Pascal_inverse_td Pascal_inverse_binary80 Pascal_inverse_binary128 Pascal_inverse_double Vandermonde_solve_mpfr Vandermonde_solve_gmp Vandermonde_solve_qd Vandermonde_solve_dd Vandermonde_solve_td Vandermonde_solve_binary80 Vandermonde_solve_binary128 Vandermonde_solve_double Wilkinson_roots_mpfr Wilkinson_roots_gmp Wilkinson_roots_qd Wilkinson_roots_dd Wilkinson_roots_td Wilkinson_roots_binary80 Wilkinson_roots_binary128 Wilkinson_roots_double
 
 all: $(programs)
 
@@ -30,6 +31,9 @@ Rlamch_dump_qd: Rlamch_dump_qd.o
 
 Rlamch_dump_dd: Rlamch_dump_dd.o
 	$(CXX) -o Rlamch_dump_dd Rlamch_dump_dd.o $(LIBFLAGS) $(DDLIBS)
+
+Rlamch_dump_td: Rlamch_dump_td.o
+	$(CXX) -o Rlamch_dump_td Rlamch_dump_td.o $(LIBFLAGS) $(TDLIBS)
 
 Rlamch_dump_binary80: Rlamch_dump_binary80.o
 	$(CXX) -o Rlamch_dump_binary80 Rlamch_dump_binary80.o $(LIBFLAGS) $(BINARY80LIBS)
@@ -55,6 +59,9 @@ Frank_eigenvalues_qd: Frank_eigenvalues_qd.o
 Frank_eigenvalues_dd: Frank_eigenvalues_dd.o
 	$(CXX) -o Frank_eigenvalues_dd Frank_eigenvalues_dd.o $(LIBFLAGS) $(DDLIBS)
 
+Frank_eigenvalues_td: Frank_eigenvalues_td.o
+	$(CXX) -o Frank_eigenvalues_td Frank_eigenvalues_td.o $(LIBFLAGS) $(TDLIBS)
+
 Frank_eigenvalues_binary80: Frank_eigenvalues_binary80.o
 	$(CXX) -o Frank_eigenvalues_binary80 Frank_eigenvalues_binary80.o $(LIBFLAGS) $(BINARY80LIBS)
 
@@ -75,6 +82,9 @@ Gejsv_vs_gesvd_qd: Gejsv_vs_gesvd_qd.o
 
 Gejsv_vs_gesvd_dd: Gejsv_vs_gesvd_dd.o
 	$(CXX) -o Gejsv_vs_gesvd_dd Gejsv_vs_gesvd_dd.o $(LIBFLAGS) $(DDLIBS)
+
+Gejsv_vs_gesvd_td: Gejsv_vs_gesvd_td.o
+	$(CXX) -o Gejsv_vs_gesvd_td Gejsv_vs_gesvd_td.o $(LIBFLAGS) $(TDLIBS)
 
 Gejsv_vs_gesvd_binary80: Gejsv_vs_gesvd_binary80.o
 	$(CXX) -o Gejsv_vs_gesvd_binary80 Gejsv_vs_gesvd_binary80.o $(LIBFLAGS) $(BINARY80LIBS)
@@ -97,6 +107,9 @@ Hilbert_inverse_qd: Hilbert_inverse_qd.o
 Hilbert_inverse_dd: Hilbert_inverse_dd.o
 	$(CXX) -o Hilbert_inverse_dd Hilbert_inverse_dd.o $(LIBFLAGS) $(DDLIBS)
 
+Hilbert_inverse_td: Hilbert_inverse_td.o
+	$(CXX) -o Hilbert_inverse_td Hilbert_inverse_td.o $(LIBFLAGS) $(TDLIBS)
+
 Hilbert_inverse_binary80: Hilbert_inverse_binary80.o
 	$(CXX) -o Hilbert_inverse_binary80 Hilbert_inverse_binary80.o $(LIBFLAGS) $(BINARY80LIBS)
 
@@ -117,6 +130,9 @@ Hilbert_linear_solve_qd: Hilbert_linear_solve_qd.o
 
 Hilbert_linear_solve_dd: Hilbert_linear_solve_dd.o
 	$(CXX) -o Hilbert_linear_solve_dd Hilbert_linear_solve_dd.o $(LIBFLAGS) $(DDLIBS)
+
+Hilbert_linear_solve_td: Hilbert_linear_solve_td.o
+	$(CXX) -o Hilbert_linear_solve_td Hilbert_linear_solve_td.o $(LIBFLAGS) $(TDLIBS)
 
 Hilbert_linear_solve_binary80: Hilbert_linear_solve_binary80.o
 	$(CXX) -o Hilbert_linear_solve_binary80 Hilbert_linear_solve_binary80.o $(LIBFLAGS) $(BINARY80LIBS)
@@ -139,6 +155,9 @@ Kahan_rank_reveal_qd: Kahan_rank_reveal_qd.o
 Kahan_rank_reveal_dd: Kahan_rank_reveal_dd.o
 	$(CXX) -o Kahan_rank_reveal_dd Kahan_rank_reveal_dd.o $(LIBFLAGS) $(DDLIBS)
 
+Kahan_rank_reveal_td: Kahan_rank_reveal_td.o
+	$(CXX) -o Kahan_rank_reveal_td Kahan_rank_reveal_td.o $(LIBFLAGS) $(TDLIBS)
+
 Kahan_rank_reveal_binary80: Kahan_rank_reveal_binary80.o
 	$(CXX) -o Kahan_rank_reveal_binary80 Kahan_rank_reveal_binary80.o $(LIBFLAGS) $(BINARY80LIBS)
 
@@ -159,6 +178,9 @@ Pascal_inverse_qd: Pascal_inverse_qd.o
 
 Pascal_inverse_dd: Pascal_inverse_dd.o
 	$(CXX) -o Pascal_inverse_dd Pascal_inverse_dd.o $(LIBFLAGS) $(DDLIBS)
+
+Pascal_inverse_td: Pascal_inverse_td.o
+	$(CXX) -o Pascal_inverse_td Pascal_inverse_td.o $(LIBFLAGS) $(TDLIBS)
 
 Pascal_inverse_binary80: Pascal_inverse_binary80.o
 	$(CXX) -o Pascal_inverse_binary80 Pascal_inverse_binary80.o $(LIBFLAGS) $(BINARY80LIBS)
@@ -181,6 +203,9 @@ Vandermonde_solve_qd: Vandermonde_solve_qd.o
 Vandermonde_solve_dd: Vandermonde_solve_dd.o
 	$(CXX) -o Vandermonde_solve_dd Vandermonde_solve_dd.o $(LIBFLAGS) $(DDLIBS)
 
+Vandermonde_solve_td: Vandermonde_solve_td.o
+	$(CXX) -o Vandermonde_solve_td Vandermonde_solve_td.o $(LIBFLAGS) $(TDLIBS)
+
 Vandermonde_solve_binary80: Vandermonde_solve_binary80.o
 	$(CXX) -o Vandermonde_solve_binary80 Vandermonde_solve_binary80.o $(LIBFLAGS) $(BINARY80LIBS)
 
@@ -201,6 +226,9 @@ Wilkinson_roots_qd: Wilkinson_roots_qd.o
 
 Wilkinson_roots_dd: Wilkinson_roots_dd.o
 	$(CXX) -o Wilkinson_roots_dd Wilkinson_roots_dd.o $(LIBFLAGS) $(DDLIBS)
+
+Wilkinson_roots_td: Wilkinson_roots_td.o
+	$(CXX) -o Wilkinson_roots_td Wilkinson_roots_td.o $(LIBFLAGS) $(TDLIBS)
 
 Wilkinson_roots_binary80: Wilkinson_roots_binary80.o
 	$(CXX) -o Wilkinson_roots_binary80 Wilkinson_roots_binary80.o $(LIBFLAGS) $(BINARY80LIBS)

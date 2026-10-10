@@ -156,6 +156,31 @@ Rgemm_dd_opt_LDFLAGS = $(dd_opt_libdepends)
 
 endif
 
+if ENABLE_TD
+mpblasexamples_PROGRAMS += Cgemm_td Rgemm_td Cgemm_td_opt Rgemm_td_opt
+
+td_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(QD_INCLUDEDIR)
+td_libdepends = -L$(top_builddir)/mplapack/reference -lmplapack_td -L$(QD_LIBDIR) -lqd
+td_opt_libdepends = -L$(top_builddir)/mpblas/optimized/td -lmplapack_td_opt -L$(QD_LIBDIR) -lqd
+
+Cgemm_td_SOURCES = Cgemm_td.cpp
+Cgemm_td_CXXFLAGS = $(td_cxxflags)
+Cgemm_td_LDFLAGS = $(td_libdepends)
+
+Rgemm_td_SOURCES = Rgemm_td.cpp
+Rgemm_td_CXXFLAGS = $(td_cxxflags)
+Rgemm_td_LDFLAGS = $(td_libdepends)
+
+Cgemm_td_opt_SOURCES = Cgemm_td.cpp
+Cgemm_td_opt_CXXFLAGS = $(td_cxxflags)
+Cgemm_td_opt_LDFLAGS = $(td_opt_libdepends)
+
+Rgemm_td_opt_SOURCES = Rgemm_td.cpp
+Rgemm_td_opt_CXXFLAGS = $(td_cxxflags)
+Rgemm_td_opt_LDFLAGS = $(td_opt_libdepends)
+
+endif
+
 if ENABLE_QD
 mpblasexamples_PROGRAMS += Cgemm_qd Rgemm_qd Cgemm_qd_opt Rgemm_qd_opt
 
@@ -183,7 +208,7 @@ endif
 
 mpblasexamplesdir=$(prefix)/share/examples/mpblas/
 
-mpblasexamples_DATA = Cgemm_mpfr.cpp Cgemm_gmp.cpp Cgemm_binary128.cpp Cgemm_binary80.cpp Cgemm_double.cpp Cgemm_dd.cpp Cgemm_qd.cpp Rgemm_mpfr.cpp Rgemm_gmp.cpp Rgemm_binary128.cpp Rgemm_binary80.cpp Rgemm_double.cpp Rgemm_dd.cpp Rgemm_qd.cpp \
+mpblasexamples_DATA = Cgemm_mpfr.cpp Cgemm_gmp.cpp Cgemm_binary128.cpp Cgemm_binary80.cpp Cgemm_double.cpp Cgemm_dd.cpp Cgemm_td.cpp Cgemm_qd.cpp Rgemm_mpfr.cpp Rgemm_gmp.cpp Rgemm_binary128.cpp Rgemm_binary80.cpp Rgemm_double.cpp Rgemm_dd.cpp Rgemm_td.cpp Rgemm_qd.cpp \
 Makefile.freebsd Makefile.linux Makefile.linux.inteloneAPI Makefile.linux_cuda Makefile.macos Makefile.mingw
 
 install-data-hook:
@@ -244,6 +269,10 @@ endif
 if ENABLE_DD
 else
 DISABLED_EXAMPLE_SUFFIXES += dd
+endif
+if ENABLE_TD
+else
+DISABLED_EXAMPLE_SUFFIXES += td
 endif
 if ENABLE_DOUBLE
 else

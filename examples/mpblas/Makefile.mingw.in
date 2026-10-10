@@ -9,6 +9,7 @@ MPFRLIBS=-lmplapack_mpfr -lmpfr -lmpc -lgmp
 GMPLIBS=-lmplapack_gmp -lgmp
 QDLIBS=-lmplapack_qd -lqd
 DDLIBS=-lmplapack_dd -lqd
+TDLIBS=-lmplapack_td -lqd
 BINARY80LIBS=-lmplapack_binary80
 BINARY128LIBS=-lmplapack_binary128%%LIBQUADMATH%%
 DOUBLELIBS=-lmplapack_double
@@ -17,6 +18,7 @@ MPFROPTLIBS=-fopenmp -lmplapack_mpfr_opt -lmpfr -lmpc -lgmp
 GMPOPTLIBS=-fopenmp -lmplapack_gmp_opt -lgmp
 QDOPTLIBS=-fopenmp -lmplapack_qd_opt -lqd
 DDOPTLIBS=-fopenmp -lmplapack_dd_opt -lqd
+TDOPTLIBS=-fopenmp -lmplapack_td_opt -lqd
 BINARY80OPTLIBS=-fopenmp -lmplapack_binary80_opt
 BINARY128OPTLIBS=-fopenmp -lmplapack_binary128_opt%%LIBQUADMATH%%
 DOUBLEOPTLIBS=-fopenmp -lmplapack_double_opt
@@ -25,8 +27,8 @@ BLAS=
 LAPACK=
 FLIBS=
 
-programs=Rgemm_mpfr.exe Rgemm_gmp.exe Rgemm_qd.exe Rgemm_dd.exe Rgemm_binary80.exe Rgemm_binary128.exe Rgemm_double.exe \
-Rgemm_mpfr_opt.exe Rgemm_gmp_opt.exe Rgemm_qd_opt.exe Rgemm_dd_opt.exe Rgemm_binary80_opt.exe Rgemm_binary128_opt.exe Rgemm_double_opt.exe
+programs=Rgemm_mpfr.exe Rgemm_gmp.exe Rgemm_qd.exe Rgemm_dd.exe Rgemm_td.exe Rgemm_binary80.exe Rgemm_binary128.exe Rgemm_double.exe \
+Rgemm_mpfr_opt.exe Rgemm_gmp_opt.exe Rgemm_qd_opt.exe Rgemm_dd_opt.exe Rgemm_td_opt.exe Rgemm_binary80_opt.exe Rgemm_binary128_opt.exe Rgemm_double_opt.exe
 
 all: $(programs)
 
@@ -54,8 +56,14 @@ Rgemm_qd_opt.exe: Rgemm_qd.o
 Rgemm_dd.exe: Rgemm_dd.o
 	$(CXX) -o Rgemm_dd.exe Rgemm_dd.o $(LIBFLAGS) $(DDLIBS)
 
+Rgemm_td.exe: Rgemm_td.o
+	$(CXX) -o Rgemm_td.exe Rgemm_td.o $(LIBFLAGS) $(TDLIBS)
+
 Rgemm_dd_opt.exe: Rgemm_dd.o
 	$(CXX) -o Rgemm_dd_opt.exe Rgemm_dd.o $(LIBFLAGS) $(DDOPTLIBS)
+
+Rgemm_td_opt.exe: Rgemm_td.o
+	$(CXX) -o Rgemm_td_opt.exe Rgemm_td.o $(LIBFLAGS) $(TDOPTLIBS)
 
 Rgemm_binary80.exe: Rgemm_binary80.o
 	$(CXX) -o Rgemm_binary80.exe Rgemm_binary80.o $(LIBFLAGS) $(BINARY80LIBS)

@@ -9,6 +9,7 @@ MPFRLIBS= -lmplapack_mpfr -lmpfr -lmpc -lgmp
 GMPLIBS=-lmplapack_gmp -lgmp
 QDLIBS=-lmplapack_qd -lqd
 DDLIBS=-lmplapack_dd -lqd
+TDLIBS=-lmplapack_td -lqd
 BINARY80LIBS=-lmplapack_binary80
 BINARY128LIBS=-lmplapack_binary128%%LIBQUADMATH%%
 DOUBLELIBS=-lmplapack_double
@@ -16,7 +17,7 @@ BLAS=
 LAPACK=
 FLIBS=
 
-programs=Chegv_example_mpfr.exe Chegv_example_gmp.exe Chegv_example_qd.exe Chegv_example_dd.exe Chegv_example_binary80.exe Chegv_example_binary128.exe Chegv_example_double.exe Rsygv_example_mpfr.exe Rsygv_example_gmp.exe Rsygv_example_qd.exe Rsygv_example_dd.exe Rsygv_example_binary80.exe Rsygv_example_binary128.exe Rsygv_example_double.exe
+programs=Chegv_example_mpfr.exe Chegv_example_gmp.exe Chegv_example_qd.exe Chegv_example_dd.exe Chegv_example_td.exe Chegv_example_binary80.exe Chegv_example_binary128.exe Chegv_example_double.exe Rsygv_example_mpfr.exe Rsygv_example_gmp.exe Rsygv_example_qd.exe Rsygv_example_dd.exe Rsygv_example_td.exe Rsygv_example_binary80.exe Rsygv_example_binary128.exe Rsygv_example_double.exe
 
 all: $(programs)
 
@@ -34,6 +35,9 @@ Rsygv_example_qd.exe: Rsygv_example_qd.o
 
 Rsygv_example_dd.exe: Rsygv_example_dd.o
 	$(CXX) -o Rsygv_example_dd.exe Rsygv_example_dd.o $(LIBFLAGS) $(DDLIBS)
+
+Rsygv_example_td.exe: Rsygv_example_td.o
+	$(CXX) -o Rsygv_example_td.exe Rsygv_example_td.o $(LIBFLAGS) $(TDLIBS)
 
 Rsygv_example_binary80.exe: Rsygv_example_binary80.o
 	$(CXX) -o Rsygv_example_binary80 Rsygv_example_binary80.o $(LIBFLAGS) $(BINARY80LIBS)
@@ -58,6 +62,9 @@ Chegv_example_qd.exe: Chegv_example_qd.o
 
 Chegv_example_dd.exe: Chegv_example_dd.o
 	$(CXX) -o Chegv_example_dd.exe Chegv_example_dd.o $(LIBFLAGS) $(DDLIBS)
+
+Chegv_example_td.exe: Chegv_example_td.o
+	$(CXX) -o Chegv_example_td.exe Chegv_example_td.o $(LIBFLAGS) $(TDLIBS)
 
 Chegv_example_binary80.exe: Chegv_example_binary80.o
 	$(CXX) -o Chegv_example_binary80.exe Chegv_example_binary80.o $(LIBFLAGS) $(BINARY80LIBS)

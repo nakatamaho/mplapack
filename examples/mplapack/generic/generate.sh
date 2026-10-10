@@ -6,7 +6,7 @@
 FILES=`(ls R*_generic.cpp C*_generic.cpp 2>/dev/null; ls [^RC]*_generic.cpp 2>/dev/null)`
 pushd .. ; _MATFILES=`ls M*.txt` ; popd
 MATFILES=`echo $_MATFILES`
-MPLIBS="mpfr gmp binary128 binary80 double dd qd"
+MPLIBS="mpfr gmp binary128 binary80 double dd td qd"
 
 if [ `uname` = "Darwin" ]; then
     SED=gsed
@@ -30,7 +30,7 @@ append_makefile_rules() {
     _rules=""
     for _template in $FILES; do
         _routine=`echo $_template | $SED 's/_generic\.cpp//g'`
-        for _mplib in mpfr gmp qd dd binary80 binary128 double; do
+        for _mplib in mpfr gmp qd dd td binary80 binary128 double; do
             if [ "$_template" = "Cgeev_NPR_generic.cpp" ] && [ "$_mplib" = "gmp" ]; then
                 continue
             fi
@@ -45,6 +45,7 @@ append_makefile_rules() {
                 gmp) _libs=GMPLIBS ;;
                 qd) _libs=QDLIBS ;;
                 dd) _libs=DDLIBS ;;
+                td) _libs=TDLIBS ;;
                 binary80) _libs=BINARY80LIBS ;;
                 binary128) _libs=BINARY128LIBS ;;
                 double) _libs=DOUBLELIBS ;;
@@ -68,9 +69,9 @@ append_makefile_rules Makefile.mingw.in ".exe" ""
 
 SOURCEFILES=""
 for _file in $FILES; do
-    MPLIBS="mpfr gmp binary128 binary80 double dd qd"
+    MPLIBS="mpfr gmp binary128 binary80 double dd td qd"
     if [ "$_file" = "Cgeev_NPR_generic.cpp" ]; then
-        MPLIBS="mpfr binary128 binary80 double dd qd"
+        MPLIBS="mpfr binary128 binary80 double dd td qd"
     fi
     for _mplib in $MPLIBS; do
         resultfilename=`echo $_file | $SED "s/generic/${_mplib}/g"`
@@ -92,6 +93,9 @@ for _file in $FILES; do
         if [ x"$_mplib" = x"dd" ]; then
             $SED -i -e "s/REAL/dd_real/g" -e "s/COMPLEX/dd_complex/g" -e "s/INTEGER/mplapackint/g" -e "s/InTEGER/INTEGER_${_mplib}/g" -e "s/ReAL/REAL_${_mplib}/g" -e "s/Rlamch/Rlamch_${_mplib}/g" -e "s/%%MPLIB%%/${_mplib}/g" ../$resultfilename
         fi 
+        if [ x"$_mplib" = x"td" ]; then
+            $SED -i -e "s/REAL/td_real/g" -e "s/COMPLEX/td_complex/g" -e "s/INTEGER/mplapackint/g" -e "s/InTEGER/INTEGER_${_mplib}/g" -e "s/ReAL/REAL_${_mplib}/g" -e "s/Rlamch/Rlamch_${_mplib}/g" -e "s/%%MPLIB%%/${_mplib}/g" ../$resultfilename
+        fi
         if [ x"$_mplib" = x"qd" ]; then
             $SED -i -e "s/REAL/qd_real/g" -e "s/COMPLEX/qd_complex/g" -e "s/INTEGER/mplapackint/g" -e "s/InTEGER/INTEGER_${_mplib}/g" -e "s/ReAL/REAL_${_mplib}/g" -e "s/Rlamch/Rlamch_${_mplib}/g" -e "s/%%MPLIB%%/${_mplib}/g" ../$resultfilename
         fi
@@ -106,7 +110,7 @@ done
 
 echo "mplapackexamples_PROGRAMS =" > ../Makefile.am
 
-MPLIBS="mpfr gmp binary128 binary80 double dd qd"
+MPLIBS="mpfr gmp binary128 binary80 double dd td qd"
 for _mplib in $MPLIBS; do
     if [ x"$_mplib" = x"mpfr" ]; then
         echo ""               >> ../Makefile.am
@@ -229,6 +233,25 @@ for _mplib in $MPLIBS; do
         echo "endif"             >> ../Makefile.am
     fi
 
+    if [ x"$_mplib" = x"td" ]; then
+        echo ""               >> ../Makefile.am
+        echo "if ENABLE_TD" >> ../Makefile.am
+        executefilenames=`echo $FILES | $SED 's/\.cpp//g' | $SED "s/generic/${_mplib}/g"`
+        echo "mplapackexamples_PROGRAMS += $executefilenames" >> ../Makefile.am
+        echo ""               >> ../Makefile.am
+        echo "${_mplib}_cxxflags = \$(OPENMP_CXXFLAGS) -I\$(top_srcdir)/include -I\$(QD_INCLUDEDIR)" >> ../Makefile.am
+        echo "${_mplib}_libdepends = -Wl,-rpath,\$(libdir) -L\$(top_builddir)/mplapack/reference -lmplapack_td -L\$(QD_LIBDIR) -lqd"  >> ../Makefile.am
+        echo ""               >> ../Makefile.am
+        for _file in $FILES; do
+            A=`echo $_file | $SED "s/generic\.cpp/${_mplib}/g"`
+            echo "${A}_SOURCES = ${A}.cpp" >> ../Makefile.am
+            echo "${A}_CXXFLAGS = \$(${_mplib}_cxxflags)" >> ../Makefile.am
+            echo "${A}_LDFLAGS = \$(${_mplib}_libdepends)" >> ../Makefile.am
+            echo ""               >> ../Makefile.am
+        done
+        echo "endif"             >> ../Makefile.am
+    fi
+
     if [ x"$_mplib" = x"qd" ]; then
         echo ""               >> ../Makefile.am
         echo "if ENABLE_QD" >> ../Makefile.am
@@ -315,6 +338,10 @@ endif
 if ENABLE_DD
 else
 DISABLED_EXAMPLE_SUFFIXES += dd
+endif
+if ENABLE_TD
+else
+DISABLED_EXAMPLE_SUFFIXES += td
 endif
 if ENABLE_DOUBLE
 else

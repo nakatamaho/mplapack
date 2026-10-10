@@ -340,6 +340,62 @@ Rgtsv_example_dd_LDFLAGS = $(dd_libdepends)
 
 endif
 
+if ENABLE_TD
+mplapackexamples_PROGRAMS += Cgesv_example_td Cgetrf_getrs_example_td Cgetri_example_td Rgbsv_example_td Rgecon_example_td Rgesv_example_td Rgesvx_example_td Rgetrf_getrs_example_td Rgetri_example2_td Rgetri_example3_td Rgetri_example_td Rgtsv_example_td
+
+td_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(QD_INCLUDEDIR)
+td_libdepends = -Wl,-rpath,$(libdir) -L$(top_builddir)/mplapack/reference -lmplapack_td -L$(QD_LIBDIR) -lqd
+
+Cgesv_example_td_SOURCES = Cgesv_example_td.cpp
+Cgesv_example_td_CXXFLAGS = $(td_cxxflags)
+Cgesv_example_td_LDFLAGS = $(td_libdepends)
+
+Cgetrf_getrs_example_td_SOURCES = Cgetrf_getrs_example_td.cpp
+Cgetrf_getrs_example_td_CXXFLAGS = $(td_cxxflags)
+Cgetrf_getrs_example_td_LDFLAGS = $(td_libdepends)
+
+Cgetri_example_td_SOURCES = Cgetri_example_td.cpp
+Cgetri_example_td_CXXFLAGS = $(td_cxxflags)
+Cgetri_example_td_LDFLAGS = $(td_libdepends)
+
+Rgbsv_example_td_SOURCES = Rgbsv_example_td.cpp
+Rgbsv_example_td_CXXFLAGS = $(td_cxxflags)
+Rgbsv_example_td_LDFLAGS = $(td_libdepends)
+
+Rgecon_example_td_SOURCES = Rgecon_example_td.cpp
+Rgecon_example_td_CXXFLAGS = $(td_cxxflags)
+Rgecon_example_td_LDFLAGS = $(td_libdepends)
+
+Rgesv_example_td_SOURCES = Rgesv_example_td.cpp
+Rgesv_example_td_CXXFLAGS = $(td_cxxflags)
+Rgesv_example_td_LDFLAGS = $(td_libdepends)
+
+Rgesvx_example_td_SOURCES = Rgesvx_example_td.cpp
+Rgesvx_example_td_CXXFLAGS = $(td_cxxflags)
+Rgesvx_example_td_LDFLAGS = $(td_libdepends)
+
+Rgetrf_getrs_example_td_SOURCES = Rgetrf_getrs_example_td.cpp
+Rgetrf_getrs_example_td_CXXFLAGS = $(td_cxxflags)
+Rgetrf_getrs_example_td_LDFLAGS = $(td_libdepends)
+
+Rgetri_example2_td_SOURCES = Rgetri_example2_td.cpp
+Rgetri_example2_td_CXXFLAGS = $(td_cxxflags)
+Rgetri_example2_td_LDFLAGS = $(td_libdepends)
+
+Rgetri_example3_td_SOURCES = Rgetri_example3_td.cpp
+Rgetri_example3_td_CXXFLAGS = $(td_cxxflags)
+Rgetri_example3_td_LDFLAGS = $(td_libdepends)
+
+Rgetri_example_td_SOURCES = Rgetri_example_td.cpp
+Rgetri_example_td_CXXFLAGS = $(td_cxxflags)
+Rgetri_example_td_LDFLAGS = $(td_libdepends)
+
+Rgtsv_example_td_SOURCES = Rgtsv_example_td.cpp
+Rgtsv_example_td_CXXFLAGS = $(td_cxxflags)
+Rgtsv_example_td_LDFLAGS = $(td_libdepends)
+
+endif
+
 if ENABLE_QD
 mplapackexamples_PROGRAMS += Cgesv_example_qd Cgetrf_getrs_example_qd Cgetri_example_qd Rgbsv_example_qd Rgecon_example_qd Rgesv_example_qd Rgesvx_example_qd Rgetrf_getrs_example_qd Rgetri_example2_qd Rgetri_example3_qd Rgetri_example_qd Rgtsv_example_qd
 
@@ -398,7 +454,7 @@ endif
 
 mplapackexamplesdir=$(prefix)/share/examples/mplapack/00_GeneralLinearEquations
 
-mplapackexamples_DATA = Cgesv_example_mpfr.cpp Cgesv_example_gmp.cpp Cgesv_example_binary128.cpp Cgesv_example_binary80.cpp Cgesv_example_double.cpp Cgesv_example_dd.cpp Cgesv_example_qd.cpp Cgetrf_getrs_example_mpfr.cpp Cgetrf_getrs_example_gmp.cpp Cgetrf_getrs_example_binary128.cpp Cgetrf_getrs_example_binary80.cpp Cgetrf_getrs_example_double.cpp Cgetrf_getrs_example_dd.cpp Cgetrf_getrs_example_qd.cpp Cgetri_example_mpfr.cpp Cgetri_example_gmp.cpp Cgetri_example_binary128.cpp Cgetri_example_binary80.cpp Cgetri_example_double.cpp Cgetri_example_dd.cpp Cgetri_example_qd.cpp Rgbsv_example_mpfr.cpp Rgbsv_example_gmp.cpp Rgbsv_example_binary128.cpp Rgbsv_example_binary80.cpp Rgbsv_example_double.cpp Rgbsv_example_dd.cpp Rgbsv_example_qd.cpp Rgecon_example_mpfr.cpp Rgecon_example_gmp.cpp Rgecon_example_binary128.cpp Rgecon_example_binary80.cpp Rgecon_example_double.cpp Rgecon_example_dd.cpp Rgecon_example_qd.cpp Rgesv_example_mpfr.cpp Rgesv_example_gmp.cpp Rgesv_example_binary128.cpp Rgesv_example_binary80.cpp Rgesv_example_double.cpp Rgesv_example_dd.cpp Rgesv_example_qd.cpp Rgesvx_example_mpfr.cpp Rgesvx_example_gmp.cpp Rgesvx_example_binary128.cpp Rgesvx_example_binary80.cpp Rgesvx_example_double.cpp Rgesvx_example_dd.cpp Rgesvx_example_qd.cpp Rgetrf_getrs_example_mpfr.cpp Rgetrf_getrs_example_gmp.cpp Rgetrf_getrs_example_binary128.cpp Rgetrf_getrs_example_binary80.cpp Rgetrf_getrs_example_double.cpp Rgetrf_getrs_example_dd.cpp Rgetrf_getrs_example_qd.cpp Rgetri_example2_mpfr.cpp Rgetri_example2_gmp.cpp Rgetri_example2_binary128.cpp Rgetri_example2_binary80.cpp Rgetri_example2_double.cpp Rgetri_example2_dd.cpp Rgetri_example2_qd.cpp Rgetri_example3_mpfr.cpp Rgetri_example3_gmp.cpp Rgetri_example3_binary128.cpp Rgetri_example3_binary80.cpp Rgetri_example3_double.cpp Rgetri_example3_dd.cpp Rgetri_example3_qd.cpp Rgetri_example_mpfr.cpp Rgetri_example_gmp.cpp Rgetri_example_binary128.cpp Rgetri_example_binary80.cpp Rgetri_example_double.cpp Rgetri_example_dd.cpp Rgetri_example_qd.cpp Rgtsv_example_mpfr.cpp Rgtsv_example_gmp.cpp Rgtsv_example_binary128.cpp Rgtsv_example_binary80.cpp Rgtsv_example_double.cpp Rgtsv_example_dd.cpp Rgtsv_example_qd.cpp \
+mplapackexamples_DATA = Cgesv_example_mpfr.cpp Cgesv_example_gmp.cpp Cgesv_example_binary128.cpp Cgesv_example_binary80.cpp Cgesv_example_double.cpp Cgesv_example_dd.cpp Cgesv_example_td.cpp Cgesv_example_qd.cpp Cgetrf_getrs_example_mpfr.cpp Cgetrf_getrs_example_gmp.cpp Cgetrf_getrs_example_binary128.cpp Cgetrf_getrs_example_binary80.cpp Cgetrf_getrs_example_double.cpp Cgetrf_getrs_example_dd.cpp Cgetrf_getrs_example_td.cpp Cgetrf_getrs_example_qd.cpp Cgetri_example_mpfr.cpp Cgetri_example_gmp.cpp Cgetri_example_binary128.cpp Cgetri_example_binary80.cpp Cgetri_example_double.cpp Cgetri_example_dd.cpp Cgetri_example_td.cpp Cgetri_example_qd.cpp Rgbsv_example_mpfr.cpp Rgbsv_example_gmp.cpp Rgbsv_example_binary128.cpp Rgbsv_example_binary80.cpp Rgbsv_example_double.cpp Rgbsv_example_dd.cpp Rgbsv_example_td.cpp Rgbsv_example_qd.cpp Rgecon_example_mpfr.cpp Rgecon_example_gmp.cpp Rgecon_example_binary128.cpp Rgecon_example_binary80.cpp Rgecon_example_double.cpp Rgecon_example_dd.cpp Rgecon_example_td.cpp Rgecon_example_qd.cpp Rgesv_example_mpfr.cpp Rgesv_example_gmp.cpp Rgesv_example_binary128.cpp Rgesv_example_binary80.cpp Rgesv_example_double.cpp Rgesv_example_dd.cpp Rgesv_example_td.cpp Rgesv_example_qd.cpp Rgesvx_example_mpfr.cpp Rgesvx_example_gmp.cpp Rgesvx_example_binary128.cpp Rgesvx_example_binary80.cpp Rgesvx_example_double.cpp Rgesvx_example_dd.cpp Rgesvx_example_td.cpp Rgesvx_example_qd.cpp Rgetrf_getrs_example_mpfr.cpp Rgetrf_getrs_example_gmp.cpp Rgetrf_getrs_example_binary128.cpp Rgetrf_getrs_example_binary80.cpp Rgetrf_getrs_example_double.cpp Rgetrf_getrs_example_dd.cpp Rgetrf_getrs_example_td.cpp Rgetrf_getrs_example_qd.cpp Rgetri_example2_mpfr.cpp Rgetri_example2_gmp.cpp Rgetri_example2_binary128.cpp Rgetri_example2_binary80.cpp Rgetri_example2_double.cpp Rgetri_example2_dd.cpp Rgetri_example2_td.cpp Rgetri_example2_qd.cpp Rgetri_example3_mpfr.cpp Rgetri_example3_gmp.cpp Rgetri_example3_binary128.cpp Rgetri_example3_binary80.cpp Rgetri_example3_double.cpp Rgetri_example3_dd.cpp Rgetri_example3_td.cpp Rgetri_example3_qd.cpp Rgetri_example_mpfr.cpp Rgetri_example_gmp.cpp Rgetri_example_binary128.cpp Rgetri_example_binary80.cpp Rgetri_example_double.cpp Rgetri_example_dd.cpp Rgetri_example_td.cpp Rgetri_example_qd.cpp Rgtsv_example_mpfr.cpp Rgtsv_example_gmp.cpp Rgtsv_example_binary128.cpp Rgtsv_example_binary80.cpp Rgtsv_example_double.cpp Rgtsv_example_dd.cpp Rgtsv_example_td.cpp Rgtsv_example_qd.cpp \
  Makefile.freebsd Makefile.linux Makefile.linux.inteloneAPI Makefile.macos Makefile.mingw
 
 install-data-hook:
@@ -457,6 +513,10 @@ endif
 if ENABLE_DD
 else
 DISABLED_EXAMPLE_SUFFIXES += dd
+endif
+if ENABLE_TD
+else
+DISABLED_EXAMPLE_SUFFIXES += td
 endif
 if ENABLE_DOUBLE
 else

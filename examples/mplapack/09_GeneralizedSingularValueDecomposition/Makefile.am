@@ -76,6 +76,18 @@ Rggsvd3_example_dd_LDFLAGS = $(dd_libdepends)
 
 endif
 
+if ENABLE_TD
+mplapackexamples_PROGRAMS += Rggsvd3_example_td
+
+td_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(QD_INCLUDEDIR)
+td_libdepends = -Wl,-rpath,$(libdir) -L$(top_builddir)/mplapack/reference -lmplapack_td -L$(QD_LIBDIR) -lqd
+
+Rggsvd3_example_td_SOURCES = Rggsvd3_example_td.cpp
+Rggsvd3_example_td_CXXFLAGS = $(td_cxxflags)
+Rggsvd3_example_td_LDFLAGS = $(td_libdepends)
+
+endif
+
 if ENABLE_QD
 mplapackexamples_PROGRAMS += Rggsvd3_example_qd
 
@@ -90,7 +102,7 @@ endif
 
 mplapackexamplesdir=$(prefix)/share/examples/mplapack/09_GeneralizedSingularValueDecomposition
 
-mplapackexamples_DATA = Rggsvd3_example_mpfr.cpp Rggsvd3_example_gmp.cpp Rggsvd3_example_binary128.cpp Rggsvd3_example_binary80.cpp Rggsvd3_example_double.cpp Rggsvd3_example_dd.cpp Rggsvd3_example_qd.cpp \
+mplapackexamples_DATA = Rggsvd3_example_mpfr.cpp Rggsvd3_example_gmp.cpp Rggsvd3_example_binary128.cpp Rggsvd3_example_binary80.cpp Rggsvd3_example_double.cpp Rggsvd3_example_dd.cpp Rggsvd3_example_td.cpp Rggsvd3_example_qd.cpp \
  Makefile.freebsd Makefile.linux Makefile.linux.inteloneAPI Makefile.macos Makefile.mingw
 
 install-data-hook:
@@ -149,6 +161,10 @@ endif
 if ENABLE_DD
 else
 DISABLED_EXAMPLE_SUFFIXES += dd
+endif
+if ENABLE_TD
+else
+DISABLED_EXAMPLE_SUFFIXES += td
 endif
 if ENABLE_DOUBLE
 else
