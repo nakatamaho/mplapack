@@ -48,6 +48,9 @@ function(mplapack_add_consume_tests flavor)
   elseif(flavor MATCHES "^dd")
     set(_consume_source
       "${PROJECT_SOURCE_DIR}/misc/backend_dd_pkgconfig_consumer.cpp")
+  elseif(flavor MATCHES "^td")
+    set(_consume_source
+      "${PROJECT_SOURCE_DIR}/misc/backend_td_pkgconfig_consumer.cpp")
   else()
     set(_consume_source "${CMAKE_CURRENT_SOURCE_DIR}/consume/main.cpp")
   endif()
@@ -152,6 +155,8 @@ mplapack_add_consume_tests(qd)
 mplapack_add_consume_tests(qd_opt)
 mplapack_add_consume_tests(dd)
 mplapack_add_consume_tests(dd_opt)
+mplapack_add_consume_tests(td)
+mplapack_add_consume_tests(td_opt)
 mplapack_add_consume_tests(mpfr)
 mplapack_add_consume_tests(mpfr_opt)
 
@@ -183,18 +188,22 @@ if(PkgConfig_FOUND)
   set(_pkgconfig_flavors
     mplapack_gmp mplapack_gmp_opt
     mplapack_qd mplapack_qd_opt
-    mplapack_dd mplapack_dd_opt mplapack_dd_opt_cuda)
+    mplapack_dd mplapack_dd_opt mplapack_dd_opt_cuda
+    mplapack_td mplapack_td_opt)
   foreach(_flavor IN LISTS _pkgconfig_flavors)
     if(NOT TARGET ${_flavor})
       continue()
     endif()
-    if(_flavor MATCHES "^mplapack_(gmp|qd|dd)(_|$)")
+    if(_flavor MATCHES "^mplapack_(gmp|qd|dd|td)(_|$)")
       if(_flavor MATCHES "^mplapack_gmp")
         set(_pkgconfig_source
           "${PROJECT_SOURCE_DIR}/misc/backend_gmp_pkgconfig_consumer.cpp")
       elseif(_flavor MATCHES "^mplapack_qd")
         set(_pkgconfig_source
           "${PROJECT_SOURCE_DIR}/misc/backend_qd_pkgconfig_consumer.cpp")
+      elseif(_flavor MATCHES "^mplapack_td")
+        set(_pkgconfig_source
+          "${PROJECT_SOURCE_DIR}/misc/backend_td_pkgconfig_consumer.cpp")
       else()
         set(_pkgconfig_source
           "${PROJECT_SOURCE_DIR}/misc/backend_dd_pkgconfig_consumer.cpp")

@@ -423,6 +423,7 @@ misc/README.test-override-qa.md \
 misc/backend_gmp_pkgconfig_consumer.cpp \
 misc/backend_qd_pkgconfig_consumer.cpp \
 misc/backend_dd_pkgconfig_consumer.cpp \
+misc/backend_td_pkgconfig_consumer.cpp \
 benchmark/Rgetrf1.plt.in \
 benchmark/Rgetrf2.plt.in \
 benchmark/Rgetrf3.plt.in \

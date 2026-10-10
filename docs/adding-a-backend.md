@@ -153,6 +153,26 @@ compare reference data.
 | — | `MIGRATION.md` | nothing (breaking changes only) |
 | — | `doc/manual/manual.tex` | not maintained (still 2.0.1, committed with its PDF) |
 
+### S8. Release tests
+
+The release QA (`release/README.md`: Tier 1 gating with `make distcheck`
+and the full lin/eig suites, Tier 2 tarball and C++ standard builds, Tier 3
+matrix) covers `B` only where `B` is enabled and only through checks that
+know `B`.
+
+| Op | File | Content |
+|---|---|---|
+| `LIST` | release configure options (S7) | Tier 1 `run-*-distcheck.sh` and macOS scripts, Tier 2 via `misc/reconfig.ubuntu26.04.*.sh`, Tier 3 `docker/matrix/*`, `tarball-smoke.sh` |
+| `COPY` | `misc/backend_<b>_pkgconfig_consumer.cpp` from `M` | none |
+| `LIST` | `cmake/tests/CMakeLists.txt` | consume source branch (`flavor MATCHES "^<b>"`), `mplapack_add_consume_tests(<b>)` and `(<b>_opt)`, `_pkgconfig_flavors`, the `(gmp\|qd\|dd\|...)` regex and its source branch |
+| `LIST` | `Makefile.am` `EXTRA_DIST` | `misc/backend_<b>_pkgconfig_consumer.cpp` |
+| `LIST` | `misc/check_backend_support_libraries.sh`, `misc/check_test_override_link.sh` | S4 |
+
+Nothing per backend: `release/check-installed-examples.sh`,
+`release/check-installed-benchmarks.sh`, `misc/summarize_mplapack_tests.py`
+(backend from the directory name), the Tier 1 Fable reproduction (uses
+`compare-fable-outputs.py`, which reads `backends.txt`).
+
 ## 3. Values
 
 How each per-type constant is obtained.  `DERIVED`: computed from the type;
@@ -253,6 +273,7 @@ reports all of them.
 | `KEEP_HAND_WRITTEN_FILES` in the fable scripts lack `*_<b>.h.in` | nothing fails until a fable re-conversion deletes them | `NAME` |
 | lin/eig `Makefile.am` copied before master's link-order fix | old link order kept after the merge (new files, no conflict) | `misc/check_test_link_order.sh` |
 | release QA checks with their own backend lists (`check_test_override_link.sh`, `check_backend_support_install.sh`, `compare-fable-outputs.py`, `check_backend_support_libraries.sh`) | td silently not checked | `LIST` |
+| `cmake/tests/CMakeLists.txt` had no consume or pkg-config test for td | the installed td CMake package and `mplapack_td.pc` were never consumed | `LIST`, `NAME` (since `CMakeLists.txt` is scanned) |
 | `Rlamch.test.cpp` td section left with dd names | compile error | `R(M→B)` applied by hand instead of the script |
 | `sed s/dd/td/` on Makefiles | `LDATD`, `top_builtdir` | use `R(M→B)` |
 
@@ -272,6 +293,11 @@ reports all of them.
 | V10 | lin suite; compare pass lines with `mplapack/test/lin/results/` of the model | same pass lines |
 | V11 | eig suite (hours; full machine, keep logs) | as V10 |
 | V12 | examples: build with both systems; run `*_<b>` (bundled libQD3 needs `LD_LIBRARY_PATH`); `03_SymmetricEigenproblems/Rsyev*_Frank`, `Rsyevd_DingDong` sweep n=5..1000, use `-STARTN 5 -ENDN 200 -STEPN 15` | exit 0 (td: 67/67) |
+| V13 | `python3 release/test-fable-comparison.py`; `python3 release/test-source-preparation.py` | OK / PASS |
+| V14 | `make dist`; per-backend files of `M` and `B` in the tarball, compared after renaming | differ only by `M`-only files (dd: CUDA) |
+| V15 | tarball smoke: unpack, `./configure --enable-<b>=yes` (others off), build | builds |
+| V16 | CMake with tests: `ctest -R 'consume\|pkgconfig'` | `consume_*_<b>_*`, `pkgconfig_mplapack_<b>_*` pass |
+| V17 | Fable reproduction as in Tier 1 (`release/docker/common/check-fable-reproduction.sh` steps: fresh clone, `fable/go.sh`, `fable/go_testing.sh`, `compare-fable-outputs.py <tree> <clone>`; needs universal-ctags, clang-format, GNU parallel, the LAPACK tarball) | no content difference |
 
 ## 9. Plan for the 3.1 backends
 
