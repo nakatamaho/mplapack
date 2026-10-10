@@ -42,6 +42,7 @@ KEEP_HAND_WRITTEN_FILES=(
   mplapack_eig_gmp.h.in
   mplapack_eig_mpfr.h.in
   mplapack_eig_qd.h.in
+  mplapack_eig_td.h.in
   mplapack_lin.h.in
   mplapack_lin_binary128.h.in
   mplapack_lin_binary80.h.in
@@ -50,6 +51,7 @@ KEEP_HAND_WRITTEN_FILES=(
   mplapack_lin_gmp.h.in
   mplapack_lin_mpfr.h.in
   mplapack_lin_qd.h.in
+  mplapack_lin_td.h.in
   mplapack_matgen.h.in
   mplapack_matgen_binary128.h.in
   mplapack_matgen_binary80.h.in
@@ -58,6 +60,7 @@ KEEP_HAND_WRITTEN_FILES=(
   mplapack_matgen_gmp.h.in
   mplapack_matgen_mpfr.h.in
   mplapack_matgen_qd.h.in
+  mplapack_matgen_td.h.in
   Makefile.am
   Makefile.in
   Makefile

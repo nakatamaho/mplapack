@@ -2708,12 +2708,12 @@ static void check_blue_scaling_td(const char *tag, bool print_values) {
 
     // Boundary classification probes specialized for exact Blue constants.
     // q.tsml and q.tbig are exact pure powers of two here, so their lower limbs are zero.
-    // Use a 1-double-step probe in the lowest dd slot instead of relative (1 +/- delta).
+    // Use a 1-double-step probe in the lowest td slot instead of relative (1 +/- delta).
     const double td_low_up = std::nextafter(0.0, +std::numeric_limits<double>::infinity());
     const double td_low_dn = std::nextafter(0.0, -std::numeric_limits<double>::infinity());
 
-    const td_real td_probe_up(0.0, td_low_up);
-    const td_real td_probe_dn(0.0, td_low_dn);
+    const td_real td_probe_up(0.0, 0.0, td_low_up);
+    const td_real td_probe_dn(0.0, 0.0, td_low_dn);
 
     const td_real below_tsml = q.tsml + td_probe_dn;
     const td_real at_tsml = q.tsml;
@@ -2781,7 +2781,7 @@ static void check_blue_scaling_td(const char *tag, bool print_values) {
     }
 }
 
-static void check_lamch_dd_values(const char *tag, bool print_values) {
+static void check_lamch_td_values(const char *tag, bool print_values) {
     const LamchExpectedDD ex = compute_expected_td();
 
     // Fetch actual values from Rlamch_td
@@ -2864,7 +2864,7 @@ static void check_lamch_dd_values(const char *tag, bool print_values) {
 
 } // namespace
 
-void Rlamch_dd_test() {
+void Rlamch_td_test() {
 #if defined VERBOSE_TEST
     const bool print_values = true;
 #else
@@ -2873,7 +2873,7 @@ void Rlamch_dd_test() {
 
     const char *tag = "td_real";
     check_arithmetic_params_td(tag, print_values);
-    check_lamch_dd_values(tag, print_values);
+    check_lamch_td_values(tag, print_values);
     check_blue_scaling_td(tag, print_values);
 }
 
