@@ -139,6 +139,23 @@ git ls-files | grep -v '^external/\|/results/\|^examples/' \
 
 `fable/3.9.1/` holds patches for an older LAPACK and is not used.
 
+### Places that were missed for td
+
+All three were found only by failing tests, not by review.  The first and
+third are not found by the grep above.
+
+- `mpblas/test/common/Mxerbla.override.cpp` defines `Mxerbla_<b>` for every
+  backend without any `MPLAPACK_BUILD_WITH_*` guard.  Without a definition
+  for the new backend, the invalid-argument tests reach the library's own
+  `Mxerbla`, which exits; for td 98 of 150 mpblas tests failed.
+- `fable/fem/read.hpp`, `fable/fem/write.hpp` (listed above): without a
+  branch the lin/eig/matgen test build stops at `#error`, while the library
+  and the mpblas tests build normally.
+- `fable/convert_blas_all.sh`, `fable/convert_lapack_all.sh`,
+  `fable/go_testing.sh`: the `KEEP_HAND_WRITTEN_FILES` lists must include the
+  new `*_<b>.h.in` files.  Otherwise a fable re-conversion deletes them; the
+  current build is unaffected, so nothing fails until the next conversion.
+
 ## 5. Special cases to decide per backend
 
 Some fable-generated sources treat a subset of backends differently.  For
