@@ -4,8 +4,13 @@
 set -eu
 test "$#" -ge 1 && test "$#" -le 2 || exit 2
 srcdir=$(cd "$1" && pwd)
+if test -f "$srcdir/backends.txt"; then
+    backends=$(awk '!/^#/ && NF { print $1 }' "$srcdir/backends.txt")
+else
+    backends="gmp mpfr qd dd double binary80 binary128"
+fi
 for family in lin eig; do
-    for backend in gmp mpfr qd dd double binary80 binary128; do
+    for backend in $backends; do
         makefile="$srcdir/mplapack/test/$family/$backend/Makefile.am"
         if grep -Eq '_LDFLAGS.*\$\((.*libdepends|mplibs)\)|whole-archive' "$makefile"; then
             echo "FAIL: libraries precede executable objects in $makefile" >&2

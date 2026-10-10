@@ -13,11 +13,13 @@ $(mplapack_td_test_PROGRAMS): ../libeig_td.la
 $(mplapack_td_opt_test_PROGRAMS): ../libeig_td_opt.la
 
 if IS_MINGW
-libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,$(top_builddir)/mplapack/test/eig/.libs/libeig_td.a,$(top_builddir)/mplapack/test/matgen/.libs/libmatgen_td.a,$(top_builddir)/mplapack/reference/.libs/libmplapack_td.a,--no-whole-archive
-opt_libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,$(top_builddir)/mplapack/test/eig/.libs/libeig_td_opt.a,$(top_builddir)/mplapack/test/matgen/.libs/libmatgen_td_opt.a,$(top_builddir)/mpblas/optimized/td/.libs/libmplapack_td_opt.a,--no-whole-archive
-dmd_libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,$(top_builddir)/mplapack/test/eig/.libs/libeig_td.a,$(top_builddir)/mplapack/test/matgen/.libs/libmatgen_td.a,$(top_builddir)/mplapack/reference/.libs/libmplapack_td.a,--no-whole-archive
-dmd_opt_libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,$(top_builddir)/mplapack/test/eig/.libs/libeig_td_opt.a,$(top_builddir)/mplapack/test/matgen/.libs/libmatgen_td_opt.a,$(top_builddir)/mpblas/optimized/td/.libs/libmplapack_td_opt.a,--no-whole-archive
+test_ldflags = -Wl,--allow-multiple-definition
+libdepends = $(top_builddir)/mplapack/test/eig/.libs/libeig_td.a $(top_builddir)/mplapack/test/matgen/.libs/libmatgen_td.a $(top_builddir)/mplapack/reference/.libs/libmplapack_td.a
+opt_libdepends = $(top_builddir)/mplapack/test/eig/.libs/libeig_td_opt.a $(top_builddir)/mplapack/test/matgen/.libs/libmatgen_td_opt.a $(top_builddir)/mpblas/optimized/td/.libs/libmplapack_td_opt.a
+dmd_libdepends = $(top_builddir)/mplapack/test/eig/.libs/libeig_td.a $(top_builddir)/mplapack/test/matgen/.libs/libmatgen_td.a $(top_builddir)/mplapack/reference/.libs/libmplapack_td.a
+dmd_opt_libdepends = $(top_builddir)/mplapack/test/eig/.libs/libeig_td_opt.a $(top_builddir)/mplapack/test/matgen/.libs/libmatgen_td_opt.a $(top_builddir)/mpblas/optimized/td/.libs/libmplapack_td_opt.a
 else
+test_ldflags =
 libdepends = -L$(top_builddir)/mplapack/test/eig -leig_td -L$(top_builddir)/mplapack/test/matgen -lmatgen_td -L$(top_builddir)/mplapack/reference -lmplapack_td
 opt_libdepends = -L$(top_builddir)/mplapack/test/eig -leig_td_opt -L$(top_builddir)/mplapack/test/matgen -lmatgen_td_opt -L$(top_builddir)/mpblas/optimized/td -lmplapack_td_opt
 dmd_libdepends = -L$(top_builddir)/mplapack/test/eig -leig_td -L$(top_builddir)/mplapack/test/matgen -lmatgen_td -L$(top_builddir)/mplapack/reference -lmplapack_td
@@ -29,37 +31,37 @@ cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(LAPACK_INCLUDEDIR) -I$
 
 xeigtstR_td_SOURCES  = ../common/Rchkee.cpp $(TEST_OVERRIDE_SOURCES)
 xeigtstR_td_opt_SOURCES  = ../common/Rchkee.cpp $(TEST_OVERRIDE_SOURCES)
-xeigtstR_td_LDFLAGS  = $(libdepends) $(mplibs) #-L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
-xeigtstR_td_opt_LDFLAGS  = $(opt_libdepends) $(mplibs) #-L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
-xeigtstR_td_LDFLAGS += -Wl,-rpath,$(libdir)
-xeigtstR_td_opt_LDFLAGS += -Wl,-rpath,$(libdir)
+xeigtstR_td_LDADD  = $(libdepends) $(mplibs) #-L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xeigtstR_td_opt_LDADD  = $(opt_libdepends) $(mplibs) #-L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xeigtstR_td_LDFLAGS = $(test_ldflags) -Wl,-rpath,$(libdir)
+xeigtstR_td_opt_LDFLAGS = $(test_ldflags) -Wl,-rpath,$(libdir)
 xeigtstR_td_CXXFLAGS = $(cxxflags) $(DD_CXXFLAGS)
 xeigtstR_td_opt_CXXFLAGS = $(cxxflags) $(DD_CXXFLAGS)
 
 xeigtstC_td_SOURCES  = ../common/Cchkee.cpp $(TEST_OVERRIDE_SOURCES)
 xeigtstC_td_opt_SOURCES  = ../common/Cchkee.cpp $(TEST_OVERRIDE_SOURCES)
-xeigtstC_td_LDFLAGS  = $(libdepends) $(mplibs) #-L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
-xeigtstC_td_opt_LDFLAGS  = $(opt_libdepends) $(mplibs) #-L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
-xeigtstC_td_LDFLAGS += -Wl,-rpath,$(libdir)
-xeigtstC_td_opt_LDFLAGS += -Wl,-rpath,$(libdir)
+xeigtstC_td_LDADD  = $(libdepends) $(mplibs) #-L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xeigtstC_td_opt_LDADD  = $(opt_libdepends) $(mplibs) #-L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xeigtstC_td_LDFLAGS = $(test_ldflags) -Wl,-rpath,$(libdir)
+xeigtstC_td_opt_LDFLAGS = $(test_ldflags) -Wl,-rpath,$(libdir)
 xeigtstC_td_CXXFLAGS = $(cxxflags) $(DD_CXXFLAGS)
 xeigtstC_td_opt_CXXFLAGS = $(cxxflags) $(DD_CXXFLAGS)
 
 xdmdeigtstR_td_SOURCES  = ../common/Rchkdmd.cpp ../common/Mxerbla.cpp ../common/Mxlaenv.cpp
 xdmdeigtstR_td_opt_SOURCES  = ../common/Rchkdmd.cpp ../common/Mxerbla.cpp ../common/Mxlaenv.cpp
-xdmdeigtstR_td_LDFLAGS  = $(dmd_libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
-xdmdeigtstR_td_opt_LDFLAGS  = $(dmd_opt_libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
-xdmdeigtstR_td_LDFLAGS += -Wl,-rpath,$(libdir)
-xdmdeigtstR_td_opt_LDFLAGS += -Wl,-rpath,$(libdir)
+xdmdeigtstR_td_LDADD  = $(dmd_libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xdmdeigtstR_td_opt_LDADD  = $(dmd_opt_libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xdmdeigtstR_td_LDFLAGS = $(test_ldflags) -Wl,-rpath,$(libdir)
+xdmdeigtstR_td_opt_LDFLAGS = $(test_ldflags) -Wl,-rpath,$(libdir)
 xdmdeigtstR_td_CXXFLAGS = $(cxxflags) $(DD_CXXFLAGS)
 xdmdeigtstR_td_opt_CXXFLAGS = $(cxxflags) $(DD_CXXFLAGS)
 
 xdmdeigtstC_td_SOURCES  = ../common/Cchkdmd.cpp ../common/Mxerbla.cpp ../common/Mxlaenv.cpp
 xdmdeigtstC_td_opt_SOURCES  = ../common/Cchkdmd.cpp ../common/Mxerbla.cpp ../common/Mxlaenv.cpp
-xdmdeigtstC_td_LDFLAGS  = $(dmd_libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
-xdmdeigtstC_td_opt_LDFLAGS  = $(dmd_opt_libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
-xdmdeigtstC_td_LDFLAGS += -Wl,-rpath,$(libdir)
-xdmdeigtstC_td_opt_LDFLAGS += -Wl,-rpath,$(libdir)
+xdmdeigtstC_td_LDADD  = $(dmd_libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xdmdeigtstC_td_opt_LDADD  = $(dmd_opt_libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xdmdeigtstC_td_LDFLAGS = $(test_ldflags) -Wl,-rpath,$(libdir)
+xdmdeigtstC_td_opt_LDFLAGS = $(test_ldflags) -Wl,-rpath,$(libdir)
 xdmdeigtstC_td_CXXFLAGS = $(cxxflags) $(DD_CXXFLAGS)
 xdmdeigtstC_td_opt_CXXFLAGS = $(cxxflags) $(DD_CXXFLAGS)
 
