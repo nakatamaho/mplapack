@@ -750,6 +750,16 @@ AS_HELP_STRING([--enable-dd], [Enable DD version]),
         esac],[enable_dd=yes])
 AM_CONDITIONAL(ENABLE_DD, test x$enable_dd = xyes)
 
+dnl enable TD (triple-double, libQD3) version of MPLAPACK.
+AC_ARG_ENABLE(td,
+AS_HELP_STRING([--enable-td], [Enable TD (triple-double) version]),
+[case "${enableval}" in
+    yes) enable_td=yes ;;
+    no)  enable_td=no  ;;
+    *) AC_MSG_ERROR(bad value ${enableval} for --enable-td) ;;
+        esac],[enable_td=no])
+AM_CONDITIONAL(ENABLE_TD, test x$enable_td = xyes)
+
 dnl enable double
 AC_ARG_ENABLE(double,
 AS_HELP_STRING([--enable-double], [Enable double version]),
@@ -2204,7 +2214,7 @@ if test  $QD_PATHSET = 1 ; then
 		QD_LIBDIR="$with_system_qd/lib"
 	fi
 fi
-if test x$enable_qd = x"yes" -o x$enable_dd = x"yes" -o x$enable_test = x"yes"; then
+if test x$enable_qd = x"yes" -o x$enable_dd = x"yes" -o x$enable_td = x"yes" -o x$enable_test = x"yes"; then
     if test x$with_system_qd != x"no"; then
         HAVE_QD=""
         save_CXXFLAGS=$CXXFLAGS
@@ -2327,7 +2337,7 @@ fi
 #AM_CONDITIONAL(NEED_INTERNAL_GMPLIB, test x$need_internal_gmplib = xyes)
 
 need_internal_qdlib=no
-if test x$enable_qd = x"yes" || test x$enable_dd = x"yes"; then
+if test x$enable_qd = x"yes" || test x$enable_dd = x"yes" || test x$enable_td = x"yes"; then
     if test x$SYSTEM_QD != x"yes"; then
        need_internal_qdlib=yes
        AC_SUBST(QD_DIR, [qd])
@@ -2529,6 +2539,11 @@ AC_MSG_RESULT([Enable DD version])
 else
 AC_MSG_RESULT([Disable DD version])
 fi
+if test x$enable_td = x"yes"; then
+AC_MSG_RESULT([Enable TD version])
+else
+AC_MSG_RESULT([Disable TD version])
+fi
 
 if test x$enable_cuda = x"yes"; then
 AC_MSG_RESULT([Enable CUDA version : the home of CUDA Toolkit : $CUDATOOLKITHOME])
@@ -2719,6 +2734,12 @@ if test x$enable_dd = x"yes"; then
   AC_MSG_NOTICE([DD backend:       enabled])
 else
   AC_MSG_NOTICE([DD backend:       disabled])
+fi
+
+if test x$enable_td = x"yes"; then
+  AC_MSG_NOTICE([TD backend:       enabled])
+else
+  AC_MSG_NOTICE([TD backend:       disabled])
 fi
 
 if test x$enable_cuda = x"yes"; then
@@ -3094,6 +3115,7 @@ mpblas/optimized/mpfr/Makefile
 mpblas/optimized/qd/Makefile
 mpblas/optimized/dd/Makefile
 mpblas/optimized/dd/cuda/Makefile
+mpblas/optimized/td/Makefile
 mpblas/optimized/double/Makefile
 mpblas/optimized/binary80/Makefile
 mpblas/optimized/binary128/Makefile
@@ -3103,6 +3125,7 @@ mplapack/optimized/gmp/Makefile
 mplapack/optimized/mpfr/Makefile
 mplapack/optimized/qd/Makefile
 mplapack/optimized/dd/Makefile
+mplapack/optimized/td/Makefile
 mplapack/optimized/double/Makefile
 mplapack/optimized/binary80/Makefile
 mplapack/optimized/binary128/Makefile
@@ -3111,6 +3134,7 @@ mpblas/test/gmp/Makefile
 mpblas/test/mpfr/Makefile
 mpblas/test/qd/Makefile
 mpblas/test/dd/Makefile
+mpblas/test/td/Makefile
 mpblas/test/double/Makefile
 mpblas/test/binary80/Makefile
 mpblas/test/binary128/Makefile
@@ -3121,6 +3145,7 @@ mplapack/test/compare/gmp/Makefile
 mplapack/test/compare/mpfr/Makefile
 mplapack/test/compare/qd/Makefile
 mplapack/test/compare/dd/Makefile
+mplapack/test/compare/td/Makefile
 mplapack/test/compare/double/Makefile
 mplapack/test/compare/binary80/Makefile
 mplapack/test/compare/binary128/Makefile
@@ -3130,6 +3155,7 @@ mplapack/test/lin/mpfr/Makefile
 mplapack/test/lin/gmp/Makefile
 mplapack/test/lin/qd/Makefile
 mplapack/test/lin/dd/Makefile
+mplapack/test/lin/td/Makefile
 mplapack/test/lin/double/Makefile
 mplapack/test/lin/binary80/Makefile
 mplapack/test/lin/binary128/Makefile
@@ -3138,6 +3164,7 @@ mplapack/test/eig/mpfr/Makefile
 mplapack/test/eig/gmp/Makefile
 mplapack/test/eig/qd/Makefile
 mplapack/test/eig/dd/Makefile
+mplapack/test/eig/td/Makefile
 mplapack/test/eig/double/Makefile
 mplapack/test/eig/binary80/Makefile
 mplapack/test/eig/binary128/Makefile

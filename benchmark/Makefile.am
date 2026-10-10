@@ -100,6 +100,9 @@ endif
 if ENABLE_DD
 include Makefile.dd.am
 endif
+if ENABLE_TD
+include Makefile.td.am
+endif
 if ENABLE_CUDA
 include Makefile.dd_cuda.am
 endif

@@ -25,6 +25,11 @@ lib_LTLIBRARIES += liblin_dd.la liblin_dd_opt.la
 SUBDIRS += dd
 CHECK_BACKENDS += dd
 endif
+if ENABLE_TD
+lib_LTLIBRARIES += liblin_td.la liblin_td_opt.la
+SUBDIRS += td
+CHECK_BACKENDS += td
+endif
 
 if ENABLE_QD
 lib_LTLIBRARIES += liblin_qd.la liblin_qd_opt.la
@@ -121,6 +126,20 @@ liblin_dd_opt_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INF
 if IS_MACOS
 liblin_dd_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
 liblin_dd_opt_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
+endif
+endif
+if ENABLE_TD
+liblin_td_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(QD_INCLUDEDIR) -DMPLAPACK_BUILD_WITH_TD @qd_extra_cxxflags@ -DMPLAPACK_INTERNAL
+liblin_td_opt_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(QD_INCLUDEDIR) -DMPLAPACK_BUILD_WITH_TD @qd_extra_cxxflags@ -DMPLAPACK_INTERNAL
+liblin_td_la_SOURCES = $(LIN_SOURCES)
+liblin_td_opt_la_SOURCES = $(LIN_SOURCES)
+liblin_td_la_LIBADD = $(top_builddir)/mplapack/test/matgen/libmatgen_td.la $(top_builddir)/mplapack/reference/libmplapack_td.la $(QD_LIBADD)
+liblin_td_opt_la_LIBADD = $(top_builddir)/mplapack/test/matgen/libmatgen_td_opt.la $(top_builddir)/mpblas/optimized/td/libmplapack_td_opt.la $(QD_LIBADD)
+liblin_td_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
+liblin_td_opt_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
+if IS_MACOS
+liblin_td_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
+liblin_td_opt_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif
 endif
 

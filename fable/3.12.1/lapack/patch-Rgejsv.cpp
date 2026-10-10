@@ -4,7 +4,7 @@
      epsln = Rlamch("Epsilon");
      sfmin = Rlamch("SafeMinimum");
      small = sfmin / epsln;
-+#if defined MPLAPACK_BUILD_WITH_DD || defined MPLAPACK_BUILD_WITH_QD ||  defined MPLAPACK_BUILD_WITH_MPFR ||  defined MPLAPACK_BUILD_WITH_GMP
++#if defined MPLAPACK_BUILD_WITH_DD || defined MPLAPACK_BUILD_WITH_TD || defined MPLAPACK_BUILD_WITH_QD ||  defined MPLAPACK_BUILD_WITH_MPFR ||  defined MPLAPACK_BUILD_WITH_GMP
 +    big = one / sfmin;
 +#else
      big = Rlamch("O");

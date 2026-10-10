@@ -3,7 +3,7 @@
 ## What this repository is
 
 MPLAPACK: multiple-precision BLAS + LAPACK in C++. Backends: gmp, mpfr, qd,
-dd, double, binary80, binary128. Two build systems in parallel: autotools
+dd, td, double, binary80, binary128. Two build systems in parallel: autotools
 (configure.ac, Makefile.am tree, regenerated via ./gen_configure.sh) and
 modern CMake (CMakeLists.txt + cmake/). Both must stay green.
 

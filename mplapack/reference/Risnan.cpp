@@ -102,6 +102,15 @@ bool Risnan(REAL const &x) {
 #endif // MPLAPACK_BUILD_WITH_DD
 
 // -----------------------------------------------------------------------
+// TD (triple-double)
+// -----------------------------------------------------------------------
+#if defined MPLAPACK_BUILD_WITH_TD
+bool Risnan(REAL const &x) {
+    return x.isnan();
+}
+#endif // MPLAPACK_BUILD_WITH_TD
+
+// -----------------------------------------------------------------------
 // QD (quad-double)
 // -----------------------------------------------------------------------
 #if defined MPLAPACK_BUILD_WITH_QD

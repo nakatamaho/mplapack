@@ -4,7 +4,7 @@
  
  #include <mplapack_matgen.h>
  
-+#if defined MPLAPACK_BUILD_WITH_DD
++#if defined MPLAPACK_BUILD_WITH_DD || defined MPLAPACK_BUILD_WITH_TD
 +#pragma GCC push_options
 +#pragma GCC optimize("O0")
 +#endif
@@ -35,7 +35,7 @@
      //
  }
 +
-+#if defined MPLAPACK_BUILD_WITH_DD
++#if defined MPLAPACK_BUILD_WITH_DD || defined MPLAPACK_BUILD_WITH_TD
 +#pragma GCC pop_options
 +#endif
 
@@ -62,7 +62,7 @@
      //
  }
 +
-+#if defined MPLAPACK_BUILD_WITH_DD
++#if defined MPLAPACK_BUILD_WITH_DD || defined MPLAPACK_BUILD_WITH_TD
 +#pragma GCC pop_options
 +#endif
 

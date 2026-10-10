@@ -2357,6 +2357,528 @@ void Rlamch_dd_test() {
 
 #endif // MPLAPACK_BUILD_WITH_DD
 
+#if defined MPLAPACK_BUILD_WITH_TD
+
+#include <cmath>
+#include <cstdio>
+#include <cstdlib>
+#include <limits>
+
+namespace {
+
+// -----------------------------------------------------------------------------
+// td_real machine constants
+// -----------------------------------------------------------------------------
+// This test matches the current arithmetic_params-based implementation:
+// - E and P are fixed literals: E = 2^-157 = 2^-digits (libQD3 td_real::_eps), P = 2E
+// - U and O are taken from td_real::_min_normalized / td_real::_max
+// - N is taken from std::numeric_limits<td_real>::digits
+// - The exponent range matches IEEE-754 binary64 (double)
+//
+// IMPORTANT:
+// Do NOT derive O via std::ldexp(1.0, 1024) (it overflows in double).
+// Use td_real::_max (as the implementation does).
+// -----------------------------------------------------------------------------
+
+constexpr int TD_MANTISSA_BITS = std::numeric_limits<td_real>::digits;
+constexpr int TD_EMAX = std::numeric_limits<double>::max_exponent; // 1024
+
+// Fail/assert utilities
+[[noreturn]] static void td_test_fail(const char *what) {
+    printf("*** Testing Mutils (td) failed: %s ***\n", what);
+    exit(1);
+}
+
+static void td_assert(bool cond, const char *what) {
+    if (!cond)
+        td_test_fail(what);
+}
+
+static void td_assert_case(bool cond, const char *tag, const char *what) {
+    if (cond)
+        return;
+    char buf[256];
+    snprintf(buf, sizeof(buf), "%s: %s", tag, what);
+    td_test_fail(buf);
+}
+
+static void assert_equal_td(const char *tag, const char *name, const td_real &got, const td_real &expected) {
+    if (got == expected)
+        return;
+
+    printf("*** Testing Mutils (td) failed: %s mismatch in %s ***\n", tag, name);
+    printf("    got      = ");
+    printnum(got);
+    printf("\n");
+    printf("    expected = ");
+    printnum(expected);
+    printf("\n");
+    exit(1);
+}
+
+static void check_arithmetic_params_td(const char *tag, bool print_values) {
+    const auto p = mplapack::get_arithmetic_params<td_real>();
+    const auto q = mplapack::get_blue_scaling_params<td_real>();
+    const auto q2 = mplapack::make_blue_scaling_params(p);
+
+    assert_equal_td(tag, "params.E", p.eps, Rlamch_td("E"));
+    assert_equal_td(tag, "params.S", p.sfmin, Rlamch_td("S"));
+    assert_equal_td(tag, "params.B", p.base, Rlamch_td("B"));
+    assert_equal_td(tag, "params.P", p.prec, Rlamch_td("P"));
+    assert_equal_td(tag, "params.R", p.rnd, Rlamch_td("R"));
+    assert_equal_td(tag, "params.U", p.rmin, Rlamch_td("U"));
+    assert_equal_td(tag, "params.O", p.rmax, Rlamch_td("O"));
+
+    assert_equal_td(tag, "params.N", mplapack::detail::to_rlamch_real<td_real>(p.t), Rlamch_td("N"));
+    assert_equal_td(tag, "params.M", mplapack::detail::to_rlamch_real<td_real>(p.emin), Rlamch_td("M"));
+    assert_equal_td(tag, "params.L", mplapack::detail::to_rlamch_real<td_real>(p.emax), Rlamch_td("L"));
+
+    assert_equal_td(tag, "params.prec_consistency", p.prec, p.eps * p.base);
+    assert_equal_td(tag, "params.safmin", p.safmin, mplapack::detail::compute_safmin<td_real>(p.emin, p.emax));
+    assert_equal_td(tag, "params.safmax", p.safmax, mplapack::detail::compute_safmax<td_real>(p.emin, p.emax));
+
+    td_assert_case(q.exp_tsml == q2.exp_tsml, tag, "ArithmeticParams->Blue builder mismatch: exp_tsml");
+    td_assert_case(q.exp_tbig == q2.exp_tbig, tag, "ArithmeticParams->Blue builder mismatch: exp_tbig");
+    td_assert_case(q.exp_ssml == q2.exp_ssml, tag, "ArithmeticParams->Blue builder mismatch: exp_ssml");
+    td_assert_case(q.exp_sbig == q2.exp_sbig, tag, "ArithmeticParams->Blue builder mismatch: exp_sbig");
+
+    assert_equal_td(tag, "ArithmeticParams->Blue tsml", q.tsml, q2.tsml);
+    assert_equal_td(tag, "ArithmeticParams->Blue tbig", q.tbig, q2.tbig);
+    assert_equal_td(tag, "ArithmeticParams->Blue ssml", q.ssml, q2.ssml);
+    assert_equal_td(tag, "ArithmeticParams->Blue sbig", q.sbig, q2.sbig);
+
+    if (print_values) {
+        char _spbuf[MPLAPACK_BUFLEN];
+        char _sphexbuf[MPLAPACK_BUFLEN];
+
+        dual_printf("[params/%s] t=%lld emin=%lld emax=%lld\n",
+                    tag, (long long)p.t, (long long)p.emin, (long long)p.emax);
+
+        sprintnum(_spbuf, p.safmin);
+        sprinthex_td(_sphexbuf, sizeof(_sphexbuf), p.safmin);
+        dual_printf("[params/%s] safmin %40s    %40s\n", tag, _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, p.safmax);
+        sprinthex_td(_sphexbuf, sizeof(_sphexbuf), p.safmax);
+        dual_printf("[params/%s] safmax %40s    %40s\n", tag, _spbuf, _sphexbuf);
+
+        dual_printf("[params/%s] builder exp_tsml=%lld exp_tbig=%lld exp_ssml=%lld exp_sbig=%lld\n",
+                    tag,
+                    (long long)q2.exp_tsml, (long long)q2.exp_tbig,
+                    (long long)q2.exp_ssml, (long long)q2.exp_sbig);
+
+        sprintnum(_spbuf, q2.tsml);
+        sprinthex_td(_sphexbuf, sizeof(_sphexbuf), q2.tsml);
+        dual_printf("[params/%s] builder tsml   %40s    %40s\n", tag, _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, q2.tbig);
+        sprinthex_td(_sphexbuf, sizeof(_sphexbuf), q2.tbig);
+        dual_printf("[params/%s] builder tbig   %40s    %40s\n", tag, _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, q2.ssml);
+        sprinthex_td(_sphexbuf, sizeof(_sphexbuf), q2.ssml);
+        dual_printf("[params/%s] builder ssml   %40s    %40s\n", tag, _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, q2.sbig);
+        sprinthex_td(_sphexbuf, sizeof(_sphexbuf), q2.sbig);
+        dual_printf("[params/%s] builder sbig   %40s    %40s\n", tag, _spbuf, _sphexbuf);
+    }
+}
+
+// Expected values structure
+struct LamchExpectedDD {
+    td_real E; // eps (unit roundoff)
+    td_real S; // sfmin (safe minimum)
+    td_real B; // base
+    td_real P; // precision (ulp at 1)
+    td_real N; // digits (mantissa bits)
+    td_real R; // rounding mode indicator
+    td_real M; // min exponent
+    td_real U; // rmin (underflow threshold)
+    td_real L; // max exponent
+    td_real O; // rmax (overflow threshold)
+    td_real Z; // dummy (always 0)
+};
+
+// Compute expected values for td_real
+static LamchExpectedDD compute_expected_td() {
+    const td_real zero(0.0);
+    const td_real one(1.0);
+    const td_real two(2.0);
+
+    LamchExpectedDD ex{};
+
+    // Match Rlamch_td implementation.
+    ex.B = two;
+    ex.E = td_real(+0x1.0000000000000p-157, +0x0.0000000000000p+0000, +0x0.0000000000000p+0000);
+    ex.P = td_real(+0x1.0000000000000p-156, +0x0.0000000000000p+0000, +0x0.0000000000000p+0000);
+    ex.N = td_real(static_cast<double>(TD_MANTISSA_BITS));
+    ex.R = one;
+
+    // M: replicate RlamchM_td (frexp exponent of the minimum normalized value).
+    int emin = 0;
+    (void)std::frexp(td_real::_min_normalized, &emin);
+    ex.M = td_real(static_cast<double>(emin));
+
+    // U/O/L: direct constants used by RlamchU_td/RlamchO_td/RlamchL_td.
+    ex.U = td_real::_min_normalized;
+    ex.L = td_real(static_cast<double>(TD_EMAX));
+    ex.O = td_real::_max;
+
+    // S: replicate RlamchS_td (Netlib-style safe minimum logic).
+    td_real sfmin = ex.U;
+    const td_real small = one / ex.O;
+    if (small >= sfmin) {
+        sfmin = small * (one + ex.E);
+    }
+    ex.S = sfmin;
+
+    // Z: Dummy (always 0)
+    ex.Z = zero;
+
+    return ex;
+}
+
+// Operational checks
+static void check_operational_eps_prec_td(const char *tag, const td_real &E, const td_real &P) {
+    const td_real one(1.0);
+    const td_real two(2.0);
+
+    // td_real is a triple-double type. Addition does NOT round to a fixed p-bit
+    // floating-point format, so the classic half-ULP tie test (fl(1 + P/2) == 1)
+    // does not apply.
+    //
+    // Here we only test invariants consistent with the implementation:
+    //   P == 2*E (base 2), and E matches the nominal precision implied by digits.
+    td_assert_case(E * two == P, tag, "expected P == 2*E (base 2)");
+
+    // Sanity: these should strictly increase (td_real can represent tiny increments near 1).
+    td_assert_case(one + E > one, tag, "expected 1 + E > 1 (td_real has no half-ULP tie behavior)");
+    td_assert_case(one + P > one, tag, "expected 1 + P > 1");
+
+    // For td_real, E == 2^(-digits) by construction (see
+    // mplapack_arithmetic_params_td.h); the exact value is validated against
+    // compute_expected_td().
+}
+
+static void check_range_checks_td(const char *tag, const td_real &U, const td_real &O, const td_real &S) {
+    const td_real zero(0.0);
+    const td_real one(1.0);
+    const td_real two(2.0);
+
+    td_assert_case(U > zero && U < one, tag, "U (rmin) is not in (0,1)");
+    td_assert_case(O > one, tag, "O (rmax) is not > 1");
+    td_assert_case(S > zero && S < one, tag, "S (sfmin) is not in (0,1)");
+
+    // Scaling check near zero (avoid being stuck at 0)
+    td_assert_case((U * two) > U, tag, "U * 2 <= U (stuck at zero?)");
+
+    // Reciprocal checks
+    td_assert_case((one / S) > zero, tag, "1/S is not positive");
+    td_assert_case(isfinite(one / S), tag, "1/S is not finite");
+}
+
+static void check_sfmin_inequalities_td(const char *tag, const td_real &S, const td_real &U, const td_real &O) {
+    const td_real one(1.0);
+
+    const td_real invS = one / S; // S = min_normalized, 1/S is in normal range: safe
+
+    // Netlib-style sfmin inequalities
+    td_assert_case(invS <= O, tag, "1/S > O (violates safe minimum contract)");
+    td_assert_case(S >= U, tag, "S < U (violates sfmin >= rmin)");
+
+    // 1/O is in the subnormal double range (~5.56e-309); td_real division is
+    // unreliable there. Use double arithmetic, which handles subnormals correctly.
+    const double invO_d = 1.0 / to_double(O);
+    td_assert_case(to_double(S) >= invO_d, tag, "S < 1/O (violates sfmin >= 1/rmax)");
+}
+
+static long td_to_long_checked(const td_real &x, const char *what) {
+    const double d = to_double(x);
+    const long v = static_cast<long>(d);
+    // Ensure x is exactly an integer representable as double (expected for M/L in this test)
+    td_assert_case(td_real(static_cast<double>(v)) == x, what, "expected an exact integer value");
+    return v;
+}
+
+static void check_cross_consistency_rmin_rmax_td(const char *tag, const td_real &M, const td_real &U, const td_real &L, const td_real &O) {
+    const td_real two(2.0);
+
+    td_assert_case(U > td_real(0.0), tag, "U is not positive");
+    td_assert_case(U / two < U, tag, "U/2 >= U (not smaller)");
+    td_assert_case(isfinite(O), tag, "O is not finite");
+
+    // Match RlamchM_td / RlamchL_td semantics:
+    // They are derived from frexp() / known exponent constants in the implementation.
+    const long m = td_to_long_checked(M, "M");
+    const long l = td_to_long_checked(L, "L");
+
+    const double dU = to_double(U);
+    td_assert_case(dU > 0.0, tag, "U converts to non-positive double");
+    int expU = 0;
+    (void)std::frexp(dU, &expU);
+    td_assert_case(expU == m, tag, "frexp exponent of U inconsistent with M");
+
+    const double dO = to_double(O);
+    td_assert_case(std::isfinite(dO) && dO > 0.0, tag, "O converts to non-finite/non-positive double");
+    int expO = 0;
+    (void)std::frexp(dO, &expO);
+    td_assert_case(expO == l, tag, "frexp exponent of O inconsistent with L");
+}
+
+template <typename BlueQ> static int classify_blue_td_value(const BlueQ &q, const td_real &x) {
+    td_real ax = x;
+    if (ax < td_real(0.0))
+        ax = -ax;
+    if (ax > q.tbig)
+        return +1;
+    if (ax < q.tsml)
+        return -1;
+    return 0;
+}
+
+template <typename BlueQ> static void check_blue_threshold_boundaries_td(const char *tag, const BlueQ &q, const td_real &delta) {
+    const td_real zero(0.0), one(1.0), minus_one(-1.0);
+
+    const td_real below_tsml = q.tsml * (one - delta);
+    const td_real above_tsml = q.tsml * (one + delta);
+    const td_real below_tbig = q.tbig * (one - delta);
+    const td_real above_tbig = q.tbig * (one + delta);
+
+    td_assert_case(below_tsml < q.tsml, tag, "BlueScale boundary: below-tsml probe is not < tsml");
+    td_assert_case(above_tsml > q.tsml, tag, "BlueScale boundary: above-tsml probe is not > tsml");
+    td_assert_case(below_tbig < q.tbig, tag, "BlueScale boundary: below-tbig probe is not < tbig");
+    td_assert_case(above_tbig > q.tbig, tag, "BlueScale boundary: above-tbig probe is not > tbig");
+
+    td_assert_case(classify_blue_td_value(q, below_tsml) == -1, tag, "BlueScale boundary: below-tsml probe must classify as small");
+    td_assert_case(classify_blue_td_value(q, q.tsml) == 0, tag, "BlueScale boundary: tsml must classify as medium");
+    td_assert_case(classify_blue_td_value(q, above_tsml) == 0, tag, "BlueScale boundary: above-tsml probe must classify as medium");
+    td_assert_case(classify_blue_td_value(q, below_tbig) == 0, tag, "BlueScale boundary: below-tbig probe must classify as medium");
+    td_assert_case(classify_blue_td_value(q, q.tbig) == 0, tag, "BlueScale boundary: tbig must classify as medium");
+    td_assert_case(classify_blue_td_value(q, above_tbig) == +1, tag, "BlueScale boundary: above-tbig probe must classify as big");
+
+    td_assert_case(classify_blue_td_value(q, minus_one * below_tsml) == -1, tag, "BlueScale boundary: negative below-tsml probe must classify as small");
+    td_assert_case(classify_blue_td_value(q, minus_one * above_tbig) == +1, tag, "BlueScale boundary: negative above-tbig probe must classify as big");
+    td_assert_case(classify_blue_td_value(q, zero) == -1, tag, "BlueScale boundary: 0 must classify as small");
+    td_assert_case(classify_blue_td_value(q, one) == 0, tag, "BlueScale boundary: 1 must classify as medium");
+
+    const td_real scaled_small = below_tsml * q.ssml;
+    const td_real scaled_big = above_tbig * q.sbig;
+    td_assert_case(classify_blue_td_value(q, scaled_small) == 0, tag, "BlueScale boundary: below-tsml probe * ssml must classify as medium");
+    td_assert_case(classify_blue_td_value(q, scaled_big) == 0, tag, "BlueScale boundary: above-tbig probe * sbig must classify as medium");
+}
+
+static void check_blue_scaling_td(const char *tag, bool print_values) {
+    using mplapack::arithmetic_int;
+
+    const auto q = mplapack::get_blue_scaling_params<td_real>();
+
+    int emin_int = 0;
+    (void)std::frexp(td_real::_min_normalized, &emin_int);
+    const arithmetic_int emin = static_cast<arithmetic_int>(emin_int);
+    const arithmetic_int emax = static_cast<arithmetic_int>(std::numeric_limits<double>::max_exponent);
+    const arithmetic_int digits = static_cast<arithmetic_int>(std::numeric_limits<td_real>::digits);
+
+    td_assert_case(q.exp_tsml == mplapack::detail::ceildiv2(emin - 1), tag, "BlueScale: exp_tsml mismatch");
+    td_assert_case(q.exp_tbig == mplapack::detail::floordiv2(emax - digits + 1), tag, "BlueScale: exp_tbig mismatch");
+    td_assert_case(q.exp_ssml == -mplapack::detail::floordiv2(emin - digits), tag, "BlueScale: exp_ssml mismatch");
+    td_assert_case(q.exp_sbig == -mplapack::detail::ceildiv2(emax + digits - 1), tag, "BlueScale: exp_sbig mismatch");
+
+    assert_equal_td(tag, "BlueScale tsml", q.tsml, ::ldexp(td_real(1.0), static_cast<int>(q.exp_tsml)));
+    assert_equal_td(tag, "BlueScale tbig", q.tbig, ::ldexp(td_real(1.0), static_cast<int>(q.exp_tbig)));
+    assert_equal_td(tag, "BlueScale ssml", q.ssml, ::ldexp(td_real(1.0), static_cast<int>(q.exp_ssml)));
+    assert_equal_td(tag, "BlueScale sbig", q.sbig, ::ldexp(td_real(1.0), static_cast<int>(q.exp_sbig)));
+
+    const td_real zero(0.0), one(1.0);
+    td_assert_case(q.tsml > zero, tag, "BlueScale: tsml must be positive");
+    td_assert_case(q.tsml < one, tag, "BlueScale: tsml must be < 1");
+    td_assert_case(q.tbig > one, tag, "BlueScale: tbig must be > 1");
+    td_assert_case(q.ssml > q.tbig, tag, "BlueScale: ssml must be > tbig");
+    td_assert_case(q.sbig > zero, tag, "BlueScale: sbig must be positive");
+    td_assert_case(q.sbig < q.tsml, tag, "BlueScale: sbig must be < tsml");
+
+    const td_real prod_ts = q.tsml * q.ssml;
+    td_assert_case(isfinite(prod_ts) && prod_ts > zero, tag, "BlueScale: tsml*ssml is not a positive finite value");
+    const td_real prod_bs = q.tbig * q.sbig;
+    td_assert_case(isfinite(prod_bs) && prod_bs > zero, tag, "BlueScale: tbig*sbig is not a positive finite value");
+    const td_real tsml_sq = q.tsml * q.tsml;
+    td_assert_case(tsml_sq > zero, tag, "BlueScale: tsml^2 underflowed to zero");
+    const td_real tbig_sq = q.tbig * q.tbig;
+    td_assert_case(isfinite(tbig_sq), tag, "BlueScale: tbig^2 overflowed");
+
+    // Boundary classification probes specialized for exact Blue constants.
+    // q.tsml and q.tbig are exact pure powers of two here, so their lower limbs are zero.
+    // Use a 1-double-step probe in the lowest dd slot instead of relative (1 +/- delta).
+    const double td_low_up = std::nextafter(0.0, +std::numeric_limits<double>::infinity());
+    const double td_low_dn = std::nextafter(0.0, -std::numeric_limits<double>::infinity());
+
+    const td_real td_probe_up(0.0, td_low_up);
+    const td_real td_probe_dn(0.0, td_low_dn);
+
+    const td_real below_tsml = q.tsml + td_probe_dn;
+    const td_real at_tsml = q.tsml;
+    const td_real above_tsml = q.tsml + td_probe_up;
+
+    const td_real below_tbig = q.tbig + td_probe_dn;
+    const td_real at_tbig = q.tbig;
+    const td_real above_tbig = q.tbig + td_probe_up;
+
+    const auto classify_blue = [&](const td_real &x) -> int {
+        const td_real ax = (x < zero) ? -x : x;
+        if (ax > q.tbig)
+            return +1; // big
+        if (ax < q.tsml)
+            return -1; // small
+        return 0;      // medium
+    };
+
+    td_assert_case(classify_blue(below_tsml) == -1, tag, "BlueScale boundary: below_tsml must classify as small");
+    td_assert_case(classify_blue(at_tsml) == 0, tag, "BlueScale boundary: tsml must classify as medium");
+    td_assert_case(classify_blue(above_tsml) == 0, tag, "BlueScale boundary: above_tsml must classify as medium");
+
+    td_assert_case(classify_blue(below_tbig) == 0, tag, "BlueScale boundary: below_tbig must classify as medium");
+    td_assert_case(classify_blue(at_tbig) == 0, tag, "BlueScale boundary: tbig must classify as medium");
+    td_assert_case(classify_blue(above_tbig) == +1, tag, "BlueScale boundary: above_tbig must classify as big");
+
+    td_assert_case(classify_blue(-below_tsml) == -1, tag, "BlueScale boundary: negative below_tsml must classify as small");
+    td_assert_case(classify_blue(-above_tbig) == +1, tag, "BlueScale boundary: negative above_tbig must classify as big");
+
+    td_assert_case(classify_blue(td_real(0.0)) == -1, tag, "BlueScale boundary: zero must classify as small");
+    td_assert_case(classify_blue(td_real(1.0)) == 0, tag, "BlueScale boundary: one must classify as medium");
+
+    const td_real rescaled_small = below_tsml * q.ssml;
+    const td_real rescaled_big = above_tbig * q.sbig;
+    td_assert_case(classify_blue(rescaled_small) == 0, tag, "BlueScale boundary: below_tsml * ssml must classify as medium");
+    td_assert_case(classify_blue(rescaled_big) == 0, tag, "BlueScale boundary: above_tbig * sbig must classify as medium");
+
+    const td_real delta = Rlamch_td("P");
+    check_blue_threshold_boundaries_td(tag, q, delta);
+
+    if (print_values) {
+        char _spbuf[MPLAPACK_BUFLEN];
+        char _sphexbuf[MPLAPACK_BUFLEN];
+
+        dual_printf("BlueScale exp_tsml: %lld\n", (long long)q.exp_tsml);
+        dual_printf("BlueScale exp_tbig: %lld\n", (long long)q.exp_tbig);
+        dual_printf("BlueScale exp_ssml: %lld\n", (long long)q.exp_ssml);
+        dual_printf("BlueScale exp_sbig: %lld\n", (long long)q.exp_sbig);
+
+        sprintnum(_spbuf, q.tsml);
+        sprinthex_td(_sphexbuf, sizeof(_sphexbuf), q.tsml);
+        dual_printf("BlueScale tsml:     %40s    %40s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, q.tbig);
+        sprinthex_td(_sphexbuf, sizeof(_sphexbuf), q.tbig);
+        dual_printf("BlueScale tbig:     %40s    %40s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, q.ssml);
+        sprinthex_td(_sphexbuf, sizeof(_sphexbuf), q.ssml);
+        dual_printf("BlueScale ssml:     %40s    %40s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, q.sbig);
+        sprinthex_td(_sphexbuf, sizeof(_sphexbuf), q.sbig);
+        dual_printf("BlueScale sbig:     %40s    %40s\n", _spbuf, _sphexbuf);
+    }
+}
+
+static void check_lamch_dd_values(const char *tag, bool print_values) {
+    const LamchExpectedDD ex = compute_expected_td();
+
+    // Fetch actual values from Rlamch_td
+    const td_real gotE = Rlamch_td("E");
+    const td_real gotS = Rlamch_td("S");
+    const td_real gotB = Rlamch_td("B");
+    const td_real gotP = Rlamch_td("P");
+    const td_real gotN = Rlamch_td("N");
+    const td_real gotR = Rlamch_td("R");
+    const td_real gotM = Rlamch_td("M");
+    const td_real gotU = Rlamch_td("U");
+    const td_real gotL = Rlamch_td("L");
+    const td_real gotO = Rlamch_td("O");
+    const td_real gotZ = Rlamch_td("Z");
+
+    // Exact-value checks (match implementation-defined constants)
+    assert_equal_td(tag, "E", gotE, ex.E);
+    assert_equal_td(tag, "B", gotB, ex.B);
+    assert_equal_td(tag, "P", gotP, ex.P);
+    assert_equal_td(tag, "N", gotN, ex.N);
+    assert_equal_td(tag, "R", gotR, ex.R);
+    assert_equal_td(tag, "M", gotM, ex.M);
+    assert_equal_td(tag, "U", gotU, ex.U);
+    assert_equal_td(tag, "L", gotL, ex.L);
+    assert_equal_td(tag, "O", gotO, ex.O);
+    assert_equal_td(tag, "S", gotS, ex.S);
+    td_assert_case(gotZ == ex.Z, tag, "Z (dummy) is not 0");
+
+    // Operational property checks
+    check_operational_eps_prec_td(tag, gotE, gotP);
+    check_range_checks_td(tag, gotU, gotO, gotS);
+    check_sfmin_inequalities_td(tag, gotS, gotU, gotO);
+    check_cross_consistency_rmin_rmax_td(tag, gotM, gotU, gotL, gotO);
+
+    if (print_values) {
+        char _spbuf[MPLAPACK_BUFLEN];
+        char _sphexbuf[MPLAPACK_BUFLEN];
+
+        sprintnum(_spbuf, gotE);
+        sprinthex_td(_sphexbuf, sizeof(_sphexbuf), gotE);
+        dual_printf("Rlamch E: Epsilon                      %40s    %40s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotS);
+        sprinthex_td(_sphexbuf, sizeof(_sphexbuf), gotS);
+        dual_printf("Rlamch S: Safe minimum                 %40s    %40s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotB);
+        sprinthex_td(_sphexbuf, sizeof(_sphexbuf), gotB);
+        dual_printf("Rlamch B: Base                         %40s    %40s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotP);
+        sprinthex_td(_sphexbuf, sizeof(_sphexbuf), gotP);
+        dual_printf("Rlamch P: Precision                    %40s    %40s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotN);
+        sprinthex_td(_sphexbuf, sizeof(_sphexbuf), gotN);
+        dual_printf("Rlamch N: Number of digits in mantissa %40s    %40s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotR);
+        sprinthex_td(_sphexbuf, sizeof(_sphexbuf), gotR);
+        dual_printf("Rlamch R: Rounding mode                %40s    %40s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotM);
+        sprinthex_td(_sphexbuf, sizeof(_sphexbuf), gotM);
+        dual_printf("Rlamch M: Minimum exponent             %40s    %40s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotU);
+        sprinthex_td(_sphexbuf, sizeof(_sphexbuf), gotU);
+        dual_printf("Rlamch U: Underflow threshold          %40s    %40s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotL);
+        sprinthex_td(_sphexbuf, sizeof(_sphexbuf), gotL);
+        dual_printf("Rlamch L: Largest exponent             %40s    %40s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotO);
+        sprinthex_td(_sphexbuf, sizeof(_sphexbuf), gotO);
+        dual_printf("Rlamch O: Overflow threshold           %40s    %40s\n", _spbuf, _sphexbuf);
+    }
+}
+
+} // namespace
+
+void Rlamch_dd_test() {
+#if defined VERBOSE_TEST
+    const bool print_values = true;
+#else
+    const bool print_values = false;
+#endif
+
+    const char *tag = "td_real";
+    check_arithmetic_params_td(tag, print_values);
+    check_lamch_dd_values(tag, print_values);
+    check_blue_scaling_td(tag, print_values);
+}
+
+#endif // MPLAPACK_BUILD_WITH_TD
+
 #if defined MPLAPACK_BUILD_WITH_DOUBLE
 
 #include <cmath>
@@ -3743,6 +4265,9 @@ int main(int argc, char *argv[]) {
 #endif
 #if defined MPLAPACK_BUILD_WITH_DD
     Rlamch_dd_test();
+#endif
+#if defined MPLAPACK_BUILD_WITH_TD
+    Rlamch_td_test();
 #endif
 #if defined MPLAPACK_BUILD_WITH_DOUBLE
     Rlamch_double_test();

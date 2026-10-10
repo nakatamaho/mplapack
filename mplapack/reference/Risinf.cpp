@@ -87,6 +87,15 @@ bool Risinf(REAL const &x) {
 #endif // MPLAPACK_BUILD_WITH_DD
 
 // -----------------------------------------------------------------------
+// TD (triple-double)
+// -----------------------------------------------------------------------
+#if defined MPLAPACK_BUILD_WITH_TD
+bool Risinf(REAL const &x) {
+    return x.isinf();
+}
+#endif // MPLAPACK_BUILD_WITH_TD
+
+// -----------------------------------------------------------------------
 // QD (quad-double)
 // -----------------------------------------------------------------------
 #if defined MPLAPACK_BUILD_WITH_QD

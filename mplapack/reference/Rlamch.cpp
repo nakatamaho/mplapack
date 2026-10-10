@@ -140,6 +140,15 @@ dd_real Rlamch_dd(const char *cmach) {
 }
 #endif
 
+// ---------------------------------------------------------------------------
+// TD
+// ---------------------------------------------------------------------------
+#if defined(MPLAPACK_BUILD_WITH_TD)
+td_real Rlamch_td(const char *cmach) {
+    return rlamch_dispatch_impl<td_real>(cmach);
+}
+#endif
+
 #undef MPLAPACK_RLAMCH_DISPATCH
 
 // =============================================================================

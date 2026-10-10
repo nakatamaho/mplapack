@@ -44,6 +44,10 @@ if ENABLE_CUDA
 MPLAPACK_UNIQUE_SYMBOL_ARCHIVES += $(top_builddir)/mpblas/optimized/dd/cuda/.libs/libmplapack_dd_opt_cuda.a
 endif
 endif
+if ENABLE_TD
+MPLAPACK_UNIQUE_SYMBOL_ARCHIVES += $(top_builddir)/mplapack/reference/.libs/libmplapack_td.a
+MPLAPACK_UNIQUE_SYMBOL_ARCHIVES += $(top_builddir)/mpblas/optimized/td/.libs/libmplapack_td_opt.a
+endif
 
 if ENABLE_DOUBLE
 MPLAPACK_UNIQUE_SYMBOL_ARCHIVES += $(top_builddir)/mplapack/reference/.libs/libmplapack_double.a
@@ -144,6 +148,21 @@ if ENABLE_DD
 			fi; \
 		done
 endif
+if ENABLE_TD
+	@for backend_lib in \
+		$(top_builddir)/mplapack/reference/.libs/libmplapack_td.so* \
+		$(top_builddir)/mplapack/reference/.libs/libmplapack_td.dylib \
+		$(top_builddir)/mpblas/optimized/td/.libs/libmplapack_td_opt.so* \
+		$(top_builddir)/mpblas/optimized/td/.libs/libmplapack_td_opt.dylib; do \
+			if test -f "$$backend_lib"; then \
+				runtime_dirs="$(top_builddir)/mplapack/reference/.libs:$(top_builddir)/mpblas/optimized/td/.libs:$(QD_LIBDIR)"; \
+				LD_LIBRARY_PATH="$$runtime_dirs$${LD_LIBRARY_PATH:+:$$LD_LIBRARY_PATH}" \
+				DYLD_LIBRARY_PATH="$$runtime_dirs$${DYLD_LIBRARY_PATH:+:$$DYLD_LIBRARY_PATH}" \
+				$(QD_SHARED_LOAD) "$$backend_lib" || exit $$?; \
+				$(SHELL) $(top_srcdir)/misc/check_backend_elf_dependencies.sh "$$backend_lib" qd || test $$? -eq 77; \
+			fi; \
+		done
+endif
 endif
 
 if ENABLE_TEST
@@ -154,7 +173,7 @@ endif
 # distcheck runs this after install. The installed probe has no build RPATH.
 if IS_MACOS
 installcheck-local:
-	@set -e; for flavor in qd dd; do \
+	@set -e; for flavor in qd dd td; do \
 		for build_lib in \
 		  "$(top_builddir)/mplapack/reference/.libs/libmplapack_$$flavor.dylib" \
 		  "$(top_builddir)/mpblas/optimized/$$flavor/.libs/libmplapack_$${flavor}_opt.dylib"; do \
@@ -180,6 +199,14 @@ mplapack_include_HEADERS += \
     include/mplapack_arithmetic_params_dd.h \
     include/mplapack_dd.h \
     include/mplapack_utils_dd.h
+endif
+
+if ENABLE_TD
+mplapack_include_HEADERS += \
+    include/mpblas_td.h \
+    include/mplapack_arithmetic_params_td.h \
+    include/mplapack_td.h \
+    include/mplapack_utils_td.h
 endif
 
 if ENABLE_GMP
@@ -256,6 +283,7 @@ noinst_HEADERS = \
     include/mplapack_benchmark_gmp.h \
     include/mplapack_benchmark_mpfr.h \
     include/mplapack_benchmark_qd.h \
+    include/mplapack_benchmark_td.h \
     include/mplapack_matgen.h \
     include/mplapack_matgen_binary128.h \
     include/mplapack_matgen_binary80.h \
@@ -264,6 +292,7 @@ noinst_HEADERS = \
     include/mplapack_matgen_gmp.h \
     include/mplapack_matgen_mpfr.h \
     include/mplapack_matgen_qd.h \
+    include/mplapack_matgen_td.h \
     include/mplapack_lin.h \
     include/mplapack_lin_binary128.h \
     include/mplapack_lin_binary80.h \
@@ -272,6 +301,7 @@ noinst_HEADERS = \
     include/mplapack_lin_gmp.h \
     include/mplapack_lin_mpfr.h \
     include/mplapack_lin_qd.h \
+    include/mplapack_lin_td.h \
     include/mplapack_eig.h \
     include/mplapack_eig_binary128.h \
     include/mplapack_eig_binary80.h \
@@ -279,7 +309,8 @@ noinst_HEADERS = \
     include/mplapack_eig_double.h \
     include/mplapack_eig_gmp.h \
     include/mplapack_eig_mpfr.h \
-    include/mplapack_eig_qd.h
+    include/mplapack_eig_qd.h \
+    include/mplapack_eig_td.h
 
 MPLAPACK_PKGCONFIG_FILES =
 if ENABLE_GMP
@@ -296,6 +327,9 @@ MPLAPACK_PKGCONFIG_FILES += mplapack_dd.pc mplapack_dd_opt.pc
 if ENABLE_CUDA
 MPLAPACK_PKGCONFIG_FILES += mplapack_dd_opt_cuda.pc
 endif
+endif
+if ENABLE_TD
+MPLAPACK_PKGCONFIG_FILES += mplapack_td.pc mplapack_td_opt.pc
 endif
 if ENABLE_DOUBLE
 MPLAPACK_PKGCONFIG_FILES += mplapack_double.pc mplapack_double_opt.pc
@@ -332,12 +366,12 @@ $(MPLAPACK_PKGCONFIG_FILES): cmake/mplapack.pc.cmake.in
 	        pc_requires='$(GMP_PC_REQUIRES)'; \
 	        pc_cflags_extra='$(GMP_PC_CFLAGS)'; \
 	        pc_libs_extra='$(GMP_PC_LIBS)';; \
-	    mplapack_qd|mplapack_qd_opt|mplapack_dd|mplapack_dd_opt|mplapack_dd_opt_cuda) \
+	    mplapack_qd|mplapack_qd_opt|mplapack_dd|mplapack_dd_opt|mplapack_dd_opt_cuda|mplapack_td|mplapack_td_opt) \
 	        pc_requires='$(QD_PC_REQUIRES)'; \
 	        pc_cflags_extra='$(QD_PC_CFLAGS)'; \
 	        pc_libs_extra='$(QD_PC_LIBS)'; \
 	        case "$$pc_name" in \
-	            mplapack_qd|mplapack_qd_opt|mplapack_dd|mplapack_dd_opt) \
+	            mplapack_qd|mplapack_qd_opt|mplapack_dd|mplapack_dd_opt|mplapack_td|mplapack_td_opt) \
 	                pc_libs_private='$(QD_PC_LIBS_PRIVATE)';; \
 	            mplapack_dd_opt_cuda) \
 	                pc_libs_private='$(QD_PC_LIBS_PRIVATE) $(CUDA_LIBS) -lcudart';; \
@@ -361,6 +395,7 @@ $(MPLAPACK_PKGCONFIG_FILES): cmake/mplapack.pc.cmake.in
 	    $(srcdir)/cmake/mplapack.pc.cmake.in > '$@'
 
 EXTRA_DIST = \
+backends.txt \
 misc/check_shared_load.c \
 misc/check_macos_shared_load.sh \
 cmake/mplapack.pc.cmake.in \

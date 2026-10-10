@@ -61,7 +61,11 @@ Headers in `include/`:
   must stay normalized, which raises the effective emin (dd has emin -968,
   not -1021).
 - `mplapack_utils_<b>.h`: conversions, printing and helper functions.
-- `mplapack_benchmark_<b>.h`.
+- `mplapack_benchmark_<b>.h`: mangled routine names for the benchmarks.
+  Generate it after the library builds with
+  `misc/gen_benchmark_header.py <b> path/to/libmplapack_<b>.a`; renaming
+  another backend's header gives wrong names, because libQD3 complex types
+  are aliases of `qd3_complex<T>`.
 
 Templates for the generated prototype headers (section 2, step 3):
 
@@ -126,7 +130,7 @@ subsets at the time of writing:
 | Subset | Files (reference / test) |
 |---|---|
 | binary80, binary128 | `Cgeev`, `Cgges`, `Cgges3`, `Clatrs`; tests `Cget23`, `Cqrt13`, `Cqrt15`, `Clatb4` |
-| dd, qd | `Cgejsv`, `Cgesvj`, `Rgejsv`, `Rgesvj` (with gmp, mpfr), `iMieeeck` (with gmp); tests `Cchkbd`, `Rchkbd`, `Clatb4`, `Rlatb4`; `Rget32`, `Rget34` (qd only); matgen `Claror` (dd only) |
+| dd, td, qd | `Cgejsv`, `Cgesvj`, `Rgejsv`, `Rgesvj` (with gmp, mpfr), `iMieeeck` (with gmp); tests `Cchkbd`, `Rchkbd`, `Clatb4`, `Rlatb4` (dd, td); `Rget32`, `Rget34` (qd only); matgen `Claror` (dd, td) |
 | gmp, mpfr | `Rlarrb`, `Rlarrd`, `Rlarrk`, `Rstebz`, `Cgges3`; tests `Rdrgev3`, `Rget38` |
 | gmp only | `Cbdsqr`, `Rbdsqr`, `Rbdsvdx`; test `Cchkee` |
 | binary80, double, gmp | tests `Cchktsqr`, `Rchktsqr` |
@@ -134,7 +138,20 @@ subsets at the time of writing:
 
 Change these through the patches in `fable/3.12.1/lapack/patch-*.cpp` and
 regenerate; never edit `mpblas/reference/`, `mplapack/reference/` or the
-generated test sources directly.  To list the current subsets:
+generated test sources directly.  When only `+` lines of a patch change
+(adding a backend to an `#if` condition), editing the patch and the
+generated source the same way is equivalent to regenerating; check it by
+reverse-applying the patch to the edited source and comparing with the
+reverse of the old pair (`patch -R -o out source < patch`).
+`patch-Claror.cpp` contains its hunks twice and already reverse-applies with
+offsets and a leftover line; that predates the td backend.
+
+Decisions taken for td, as a reference for the next expansion types: td
+joins every dd/qd case above that guards against non-IEEE arithmetic or
+the double exponent range; in `Cchkbd` it takes qd's narrower singular
+value range (`-(half * half) * log(ulp)`); it does not take the qd-only
+`Rget32`/`Rget34` workarounds or the dd-only threshold increase in
+`Rchkee`.  To list the current subsets:
 
 ```sh
 grep -lr MPLAPACK_BUILD_WITH_ mplapack/reference mplapack/test/*/common \

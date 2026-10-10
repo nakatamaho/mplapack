@@ -45,8 +45,8 @@ INTEGER iMieeeck(INTEGER const ispec, REAL const zero, REAL const one) {
     // would invoke undefined behavior on GMP arithmetic, so return 0 here.
     return 0;
 #endif
-#if defined MPLAPACK_BUILD_WITH_DD
-    // DD (double-double) arithmetic does not comply with IEEE 754: it lacks
+#if defined MPLAPACK_BUILD_WITH_DD || defined MPLAPACK_BUILD_WITH_TD
+    // DD/TD (double-/triple-double) arithmetic does not comply with IEEE 754: it lacks
     // proper handling of infinities, NaN, and signed zero.  The runtime checks
     // below would invoke undefined behavior on DD arithmetic, so return 0 here.
     return 0;
