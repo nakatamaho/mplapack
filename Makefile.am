@@ -415,6 +415,8 @@ misc/check_backend_pkgconfig.sh \
 misc/check_backend_support_libraries.sh \
 misc/check_backend_support_install.sh \
 misc/check_test_override_link.sh \
+misc/check_test_link_order.sh \
+misc/test_mingw_override.cpp \
 misc/test_override_link.cpp \
 misc/test_override_error.in \
 misc/README.test-override-qa.md \
