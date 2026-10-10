@@ -19,6 +19,8 @@ by hand, and both build systems (autotools and CMake) must keep working.
 | Type-specific headers, optimized BLAS sources, reference data | — | by hand (section 3) |
 | Shared sources with one branch per backend | — | by hand (section 4) |
 | `configure.ac`, the other `Makefile.am` files | — | by hand (section 6) |
+| Example sources and their autotools makefiles | `examples/*/generic/` templates, via `examples/gen_all.sh` | generated; the templates by hand (section 7) |
+| Benchmark driver and plot scripts, packaging, release scripts, README | — | by hand (section 7) |
 
 ## 2. Table entries
 
@@ -156,6 +158,18 @@ third are not found by the grep above.
   new `*_<b>.h.in` files.  Otherwise a fable re-conversion deletes them; the
   current build is unaffected, so nothing fails until the next conversion.
 
+Found while doing section 7 for td:
+
+- `mplapack/test/{lin,eig}/td/Makefile.am` were copied before master's
+  link-order fix and kept the old form after the merge; the merge itself
+  had no conflict, because the td files are new on 3.1.
+  `misc/check_test_link_order.sh` did not look at td, since its backend list
+  was written by hand.
+- The release QA checks `misc/check_test_override_link.sh`,
+  `misc/check_backend_support_install.sh` and
+  `release/docker/common/compare-fable-outputs.py` also had their own
+  backend lists without td.
+
 ## 5. Special cases to decide per backend
 
 Some fable-generated sources treat a subset of backends differently.  For
@@ -229,18 +243,74 @@ need no change.
   `matgen_<b>` libraries, `SUBDIRS`, `CHECK_BACKENDS`.
 - `benchmark/Makefile.am`: `include Makefile.<b>.am` under `if ENABLE_<B>`.
 
-Scripts that list backends: `misc/check_source_manifests.sh`,
-`cmake/tests/CMakeLists.txt` (pkg-config consumer tests).
+When creating `mplapack/test/{lin,eig}/<b>/Makefile.am` by copying another
+backend's, copy the current file: master changed their link order (libraries
+in `LDADD`, after the executable's objects; no `--whole-archive` on MinGW).
+`misc/check_test_link_order.sh .` fails on a file in the old form.
 
-## 7. Deferred until the library and tests pass
+Scripts that list backends by hand: `cmake/tests/CMakeLists.txt`
+(pkg-config consumer tests), and the second loop of
+`misc/check_test_override_link.sh` (backends whose pkg-config file pulls in
+an external library).  `misc/check_source_manifests.sh`,
+`misc/check_test_link_order.sh`, the first loop of
+`misc/check_test_override_link.sh` and
+`release/docker/common/compare-fable-outputs.py` read `backends.txt`;
+`misc/check_backend_support_install.sh` takes whatever
+`mpblas/optimized/*/` was built.
 
-- `examples/` (binary80 has about 70 files; the CMake build picks up
-  `examples/**/*_<b>.cpp` automatically).
-- Benchmark plot and driver scripts (`benchmark/*.plt.in`,
-  `benchmark/go.*.sh.in`).
-- Packaging and release scripts (`packaging/`, `release/`,
-  `misc/reconfig.*.sh`).
-- `README.md`, `MIGRATION.md`, the manual.
+## 7. Examples, benchmark scripts, packaging and README
+
+Do these after the library and tests pass.  None of them reads
+`backends.txt`.
+
+Examples.  The sources under `examples/` are generated from
+`examples/{mpblas,mplapack}/generic/`; CMake builds every
+`examples/**/*_<b>.cpp` it finds, autotools needs the generated
+`Makefile.am`.
+
+- `generic/generate.sh` (mpblas and mplapack): the `MPLIBS` lists (the
+  mplapack one has three, plus the `Cgeev_NPR` list without gmp and the
+  `for _mplib in ...` loop with its `case` that maps a backend to
+  `<B>LIBS`), the `REAL`/`COMPLEX` substitution branch, the
+  `if ENABLE_<B>` block written to `Makefile.am`, and
+  `DISABLED_EXAMPLE_SUFFIXES`.
+- `generic/header_<b>` and `generic/header_<b>_complex`: copy from a
+  similar backend.
+- `generic/Makefile.{freebsd,linux,linux.inteloneAPI,macos,mingw}.in`:
+  the `<B>LIBS` (and for mpblas `<B>OPTLIBS`) line, the `programs=` lists
+  and one rule per program.  `Makefile.linux_cuda.in` is dd only.
+- `examples/mplapack/run_smoke.sh`: `backends=`.
+- Regenerate with `cd examples && bash gen_all.sh`.  Run it once before the
+  change: it reproduces the committed files exactly, so afterwards
+  `git diff examples` must show only the new backend.
+
+Benchmark scripts (`benchmark/Makefile.<b>.am` is generated, section 1):
+
+- `go.<Routine>.sh.in`: add the backend to one of the two `for _mplib`
+  loops.
+- `<Routine>1.plt.in` holds the fast types (binary80, binary128, dd),
+  `<Routine>2.plt.in` the high-precision ones (MPFR, GMP, qd); add a plain
+  and an `_opt` curve to one of them.  td went into the second, before qd.
+
+Packaging and release:
+
+- `--enable-<b>` in `packaging/PKGBUILD.in`, `packaging/debian/rules`,
+  `packaging/mplapack.spec.in` (and its `Provides:` lines),
+  `misc/reconfig.*.sh` and the configure options in `release/`
+  (`buildtest_tier1_macos_*.sh`, `docker/common/tarball-smoke.sh`,
+  `docker/distcheck/*.sh`, `docker/matrix/*`).  Configurations that turn dd
+  off (sanitizer builds, `check-fable-reproduction.sh`) need nothing for a
+  backend that is off by default.
+
+Documentation:
+
+- `README.md`: "Supported Precision Backends", and the CMake option if the
+  backend is off by default.  The install snippets that download an older
+  release tarball stay as they are.
+- `MIGRATION.md` lists breaking changes only; a new backend adds nothing
+  there.
+- `doc/manual/manual.tex` still describes 2.0.1 and is committed with its
+  PDF; it was not updated for td.
 
 ## 8. Verification
 

@@ -100,6 +100,10 @@ BSD-style license, supplemental to the original LAPACK license.
 * **double** (binary64)
 * **DD, QD** https://www.davidhbailey.com/dhbsoftware/
   (DD ≈ binary128, QD ≈ binary256)
+* **TD** (triple-double, 157-bit significand; requires libQD3 1.6.0 or
+  later). Off by default: configure with `--enable-td=yes` or CMake with
+  `-DMPLAPACK_ENABLE_TD=ON`. The `misc/reconfig.*.sh` scripts that enable
+  DD also enable TD.
 * **binary128** (IEEE 754-2018; compiler and platform support is complex —
   see [binary128_binary80_type_support.md](binary128_binary80_type_support.md))
 * **binary80** (80-bit extended precision; Intel/AMD x86 only)
@@ -395,7 +399,9 @@ cmake --build build-cmake -j
 ```
 
 On x86/x86_64 systems, add `-DMPLAPACK_ENABLE_BINARY80=ON` to include the
-binary80 backend. To run the CMake test targets, enable tests and use CTest:
+binary80 backend. Add `-DMPLAPACK_ENABLE_TD=ON` to include the triple-double
+backend (TD), which is off by default. To run the CMake test targets, enable
+tests and use CTest:
 
 ```sh
 cmake -S . -B build-cmake \
