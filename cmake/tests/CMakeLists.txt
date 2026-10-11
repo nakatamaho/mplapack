@@ -167,8 +167,21 @@ mplapack_add_backend_runtime_tests(dd_opt qd)
 # dependency has no .pc file, the MPLAPACK fallback fields are tested instead.
 find_package(PkgConfig QUIET)
 if(PkgConfig_FOUND)
-  set(_pkgconfig_test_path
-    "${_consume_install_prefix}/${CMAKE_INSTALL_LIBDIR}/pkgconfig")
+  # The installed .pc files name CMAKE_INSTALL_PREFIX, not the prefix the
+  # consume tests install into; test copies that point at the latter.
+  set(_pkgconfig_relocated "${_consume_root}/pkgconfig")
+  set(_pkgconfig_fixture mplapack_consume_pkgconfig)
+  add_test(NAME pkgconfig_relocate_installed
+    COMMAND "${CMAKE_COMMAND}"
+      "-DSRC=${_consume_install_prefix}/${CMAKE_INSTALL_LIBDIR}/pkgconfig"
+      "-DDST=${_pkgconfig_relocated}"
+      "-DFROM=${CMAKE_INSTALL_PREFIX}"
+      "-DTO=${_consume_install_prefix}"
+      -P "${CMAKE_CURRENT_SOURCE_DIR}/RelocatePkgConfig.cmake")
+  set_tests_properties(pkgconfig_relocate_installed PROPERTIES
+    FIXTURES_REQUIRED "${_consume_install_fixture}"
+    FIXTURES_SETUP "${_pkgconfig_fixture}")
+  set(_pkgconfig_test_path "${_pkgconfig_relocated}")
   foreach(_dependency_library GMP_LIBRARY QD_LIBRARY)
     if(DEFINED ${_dependency_library} AND
        NOT "${${_dependency_library}}" STREQUAL "")
@@ -205,7 +218,7 @@ if(PkgConfig_FOUND)
           "${PROJECT_SOURCE_DIR}/misc/check_backend_pkgconfig.sh"
           shared "${_flavor}" "${_pkgconfig_source}")
       set_tests_properties("pkgconfig_${_flavor}_shared_consumer" PROPERTIES
-        FIXTURES_REQUIRED "${_consume_install_fixture}")
+        FIXTURES_REQUIRED "${_pkgconfig_fixture}")
       if(NOT BUILD_SHARED_LIBS)
         add_test(NAME "pkgconfig_${_flavor}_static_consumer"
           COMMAND "${CMAKE_COMMAND}" -E env
@@ -213,7 +226,7 @@ if(PkgConfig_FOUND)
             "${PROJECT_SOURCE_DIR}/misc/check_backend_pkgconfig.sh"
             static "${_flavor}" "${_pkgconfig_source}")
         set_tests_properties("pkgconfig_${_flavor}_static_consumer" PROPERTIES
-          FIXTURES_REQUIRED "${_consume_install_fixture}")
+          FIXTURES_REQUIRED "${_pkgconfig_fixture}")
       endif()
     endif()
   endforeach()
