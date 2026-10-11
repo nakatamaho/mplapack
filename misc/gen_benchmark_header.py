@@ -21,6 +21,9 @@ import sys
 
 TOP = pathlib.Path(__file__).resolve().parent.parent
 
+# Backend names used before the 2.1.0 rename (Rlamch__Float64x, ...).
+LEGACY_NAMES = {"binary80": ["_Float64x"], "binary128": ["_Float128"]}
+
 
 def demangled_name(symbol):
     m = re.match(r"_Z(\d+)", symbol)
@@ -49,8 +52,12 @@ def main():
 
     like = args.like
     source = (TOP / "include" / f"mplapack_benchmark_{like}.h").read_text().split("\n")
-    suffix_re = re.compile(rf"_({re.escape(like)}|qd)$")
-    macro_re = re.compile(rf"_({re.escape(like.upper())}|QD)$")
+    # Suffixes in the existing header that stand for the backend: its own
+    # name, "qd" (headers were once copied from the qd one), and the names
+    # binary80/binary128 had before 2.1.0.
+    old_names = [like, "qd"] + LEGACY_NAMES.get(like, [])
+    suffix_re = re.compile(r"_(" + "|".join(re.escape(n) for n in old_names) + r")$")
+    macro_re = re.compile(r"_(" + "|".join(re.escape(n.upper().lstrip("_")) for n in old_names) + r")$")
     out, missing = [], []
     for line in source:
         m = re.match(r'#define (SYMBOL_GCC_\w+) "(_Z\d+\w+?)"$', line)
