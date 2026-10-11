@@ -31,6 +31,12 @@ function(mplapack_configure_dd_arithmetic target)
     target_compile_options(${target} PUBLIC
       $<$<COMPILE_LANGUAGE:CXX>:-ffp-contract=off>)
   endif()
+  # Intel's default fp-model also reassociates; DD_CXXFLAGS in configure.ac
+  # carries -fp-model strict for the same reason.
+  if(CMAKE_CXX_COMPILER_ID MATCHES "^Intel")
+    target_compile_options(${target} PUBLIC
+      $<$<COMPILE_LANGUAGE:CXX>:-fp-model=strict>)
+  endif()
 endfunction()
 
 # Apply the build traits that backends.txt lists for a backend to one of its
