@@ -9,20 +9,20 @@ site where <new> deliberately does not follow <model>.  It reads the files
 tracked by git and skips the per-backend directories and files of both
 backends, generated example sources, release notes and logs.
 
-Kinds of site (docs/adding-a-backend.md names the operation for each):
+Kinds of site (docs/adding-a-backend.md, sections 1 and 2.3-2.7):
 
   PP-OWN    #if/#elif that tests MPLAPACK_BUILD_WITH_<MODEL> alone, in a
-            file with fewer such lines for <new>      -> BLOCK
+            file with fewer such lines for <new>      -> add a block
   PP-GROUP  #if/#elif that tests <MODEL> together with other backends and
-            not <new>                                 -> JOIN
+            not <new>                                 -> decide
   ENABLE    ENABLE_<MODEL>, enable_<model>, --enable-<model>,
             MPLAPACK_ENABLE_<MODEL>, in a file with fewer such lines
-            for <new>                                 -> LIST
+            for <new>                                 -> add <new>
   LIST      a line listing <model> among other backend names, without
-            <new>                                     -> LIST
+            <new>                                     -> add <new>
   NAME      an identifier ending in _<model> (Mxerbla_dd, mpblas_dd.h.in)
-            whose _<new> form does not occur in the file -> BLOCK or LIST
-  PLOT      a benchmark plot that draws <model> but not <new> -> DECIDE
+            whose _<new> form does not occur in the file -> add it
+  PLOT      a benchmark plot that draws <model> but not <new> -> decide
 
 Lines of fable/*/lapack/patch-*.cpp are read without their diff marker
 (removed lines are ignored), so a patch shows up like the source it makes.

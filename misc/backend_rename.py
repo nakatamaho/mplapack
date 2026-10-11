@@ -13,7 +13,7 @@ Names that all libQD3 backends share are never renamed (KEEP): the libQD3
 install variables and library, the qd/ header directory, and DD_CXXFLAGS,
 which holds the no-FMA flags used by every backend with the nofma trait.
 
-See docs/adding-a-backend.md, operation COPY.
+See docs/adding-a-backend.md, sections 1 and 2.2.
 """
 
 import re
