@@ -402,6 +402,7 @@ cmake/mplapack.pc.cmake.in \
 cmake/tests/CMakeLists.txt \
 cmake/tests/consume/CMakeLists.txt \
 cmake/tests/ComparePkgConfig.cmake \
+cmake/tests/RelocatePkgConfig.cmake \
 cmake/tests/consume/main.cpp \
 cmake/tests/consume/mpfr_main.cpp \
 include/mplapack_mpfr_precision.h \
