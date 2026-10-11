@@ -20,6 +20,9 @@ set(_support
   "${_common}/Mxerbla.override.cpp")
 
 file(GLOB _mpblas_tests CONFIGURE_DEPENDS "${_common}/*.test.cpp")
+# mplapack.test.cpp is test support (random numbers), linked into every test
+# through _support; it has no main().
+list(REMOVE_ITEM _mpblas_tests "${_common}/mplapack.test.cpp")
 
 set(_backends ${MPLAPACK_BACKENDS})
 foreach(_b ${_backends})
