@@ -58,6 +58,17 @@ endif()
 set(CMAKE_CXX_STANDARD ${MPLAPACK_CXX_STANDARD})
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS ${MPLAPACK_CXX_EXTENSIONS})
+
+# Intel compilers default to a value-unsafe floating-point model (fp-model
+# fast: reassociation, contraction), which breaks double-double and the
+# other expansion types.  As configure.ac does for CFLAGS/CXXFLAGS, build
+# every translation unit with the strict model.
+if(CMAKE_CXX_COMPILER_ID MATCHES "^Intel")
+  add_compile_options("$<$<COMPILE_LANGUAGE:CXX>:-fp-model=strict>")
+endif()
+if(CMAKE_C_COMPILER_ID MATCHES "^Intel")
+  add_compile_options("$<$<COMPILE_LANGUAGE:C>:-fp-model=strict>")
+endif()
 set(MPLAPACK_CHECK_UNIQUE_SYMBOLS_ENV
     "${CMAKE_COMMAND}" "-E" "env"
     "CXX=${CMAKE_CXX_COMPILER}"
