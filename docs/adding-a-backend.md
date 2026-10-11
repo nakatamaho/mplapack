@@ -221,14 +221,14 @@ model.
 | Suite | Needs for `B` | Run | td result |
 |---|---|---|---|
 | mpblas | generated `mpblas/test/<b>/Makefile.am`; `Mxerbla_<b>` in `Mxerbla.override.cpp`; branches in `arithmetic/complex/mplapack.test.cpp`; `EPSILON`, cast in `compare_debug.h` | `make check-all` in `mpblas/test/<b>` (`make check` runs only the smoke tests) | 150/150 |
-| compare | generated `Makefile.am`; `compare_tolerance`; `Rlamch.test.cpp` branch; reference data | `make check` runs Rlamch/Rlaruv only; `make check-all` builds but runs no routine test (no log rule for `*.test_<b>`, every backend), so `for t in *.test_<b>; do ./$t > $t.out 2>&1 \|\| echo FAIL $t; done` | Rlamch, Rlaruv pass; routines 103/105 (Rpotri, Classq; they also fail for dd/qd and are ignored) |
+| compare | generated `Makefile.am`; `compare_tolerance`; `Rlamch.test.cpp` branch; reference data | `make check` runs Rlamch/Rlaruv only; `make check-all` builds the routine tests but by design runs none of them (it is a QA smoke target, for every backend); to run them: `for t in *.test_<b>; do ./$t > $t.out 2>&1 \|\| echo FAIL $t; done` | Rlamch, Rlaruv pass; routines 103/105 (Rpotri, Classq; they also fail for dd/qd and are ignored) |
 | lin | `lin/<b>/Makefile.am` (from qd), fem branches, fable special cases | `make check` in `mplapack/test/lin/<b>` | Rtest, Ctest, Rtest_rfp, Ctest_rfp: 0 failures, same pass lines as dd's committed results |
 | eig | `eig/<b>/Makefile.am`, fable special cases | `make check` in `mplapack/test/eig/<b>`; hours | **not run** |
 | matgen | `matgen/Makefile.am`, `Claror` | built by lin/eig | builds |
 | link checks | `{lin,eig}/<b>/Makefile.am` in the current form | `sh misc/check_test_link_order.sh .`; `misc/check_test_override_link.sh <build> .`; `misc/check_backend_support_libraries.sh <build> . <qd libdir>` | pass |
 | symbols | | `misc/check_unique_symbols.sh libmplapack_<b>.a libmplapack_<b>_opt.a` | pass |
 | CMake | nothing (table) | `ctest` | library; mpblas 76/76; `compare_td_Rlamch`, `compare_td_Rgesv` pass |
-| CMake consume / pkg-config | section 2.6 | `ctest -R 'consume\|pkgconfig'` | pass, when `CMAKE_INSTALL_PREFIX` is the consume prefix (below) |
+| CMake consume / pkg-config | section 2.6 | `ctest -R 'consume\|pkgconfig'` (`pkgconfig_relocate_installed` points test copies of the installed `.pc` files at the test install) | pass |
 | examples | section 2.7 | build with both systems; run `*_<b>` | 67/67 exit 0 |
 | release | sections 2.7, 4 F6 | `python3 release/test-fable-comparison.py`, `python3 release/test-source-preparation.py`; `make dist` and compare `M`'s and `B`'s files in the tarball; td-only build from the tarball | pass; tarball differs from dd only by dd's CUDA files |
 
@@ -251,8 +251,9 @@ chi-square 92.8 over 100 bins.
 | lin/eig `Makefile.am` from an old copy | old link order after a merge, no conflict (new files) | copy the current file; `check_test_link_order.sh` |
 | bundled libQD3 not installed | test and example binaries fail to load `libqd.so.2` | `LD_LIBRARY_PATH=<build>/external/i/QD/lib` |
 | long examples | `03_SymmetricEigenproblems/Rsyev*_Frank`, `Rsyevd_DingDong` sweep n=5..1000 | `-STARTN 5 -ENDN 200 -STEPN 15` |
-| CMake pkg-config tests | `.pc` files carry `CMAKE_INSTALL_PREFIX` from configure time; with the default `/usr/local` they fail for every backend | configure with `-DCMAKE_INSTALL_PREFIX=<build>/cmake/tests/consume/install` |
+| CMake pkg-config tests | the installed `.pc` files carry `CMAKE_INSTALL_PREFIX`; with the default `/usr/local` the consumer tests failed for every backend | fixed on master and 3.1 (`pkgconfig_relocate_installed`); 2.4 has no such test |
 | CMake mpblas tests | `mplapack.test.cpp` was globbed as a test without `main()`, so no CMake test build ever completed (fixed on master, 2.4, 3.1) | — |
+| Intel icpx/icx under CMake | the default value-unsafe fp-model breaks expansion arithmetic; CMake added only `-ffp-contract=off` | fixed on master, 2.4, 3.1: `-fp-model=strict` on every TU and in the exported options of `nofma` targets, as `configure.ac` does |
 | CMake mpfr mpblas tests | after that fix, `Rnrm2`, `RCnrm2`, `Crotg` fail for mpfr under CMake but pass under autotools | open, not td-specific |
 
 ## 6. Other precisions
