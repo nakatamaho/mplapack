@@ -34,6 +34,10 @@ if(NOT _mplapack_ref_lapack_ok)
   return()
 endif()
 
+# The static reference libraries need the Fortran runtime; take it from the
+# Fortran compiler instead of searching for libgfortran.
+enable_language(Fortran)
+
 # Version, tarball checksum and patch list come from the Autotools files, so
 # both build systems test against the same reference.
 set(_ext "${PROJECT_SOURCE_DIR}/external")
@@ -93,10 +97,15 @@ ExternalProject_Add(mplapack_reference_lapack
   BUILD_BYPRODUCTS "${_blas}" "${_lapack}")
 
 add_library(mplapack_reference_blas STATIC IMPORTED GLOBAL)
-set_target_properties(mplapack_reference_blas PROPERTIES IMPORTED_LOCATION "${_blas}")
+set_target_properties(mplapack_reference_blas PROPERTIES
+  IMPORTED_LOCATION "${_blas}"
+  INTERFACE_LINK_LIBRARIES "${CMAKE_Fortran_IMPLICIT_LINK_LIBRARIES}"
+  INTERFACE_LINK_DIRECTORIES "${CMAKE_Fortran_IMPLICIT_LINK_DIRECTORIES}")
 add_dependencies(mplapack_reference_blas mplapack_reference_lapack)
 add_library(mplapack_reference_lapack_lib STATIC IMPORTED GLOBAL)
-set_target_properties(mplapack_reference_lapack_lib PROPERTIES IMPORTED_LOCATION "${_lapack}")
+set_target_properties(mplapack_reference_lapack_lib PROPERTIES
+  IMPORTED_LOCATION "${_lapack}"
+  INTERFACE_LINK_LIBRARIES "mplapack_reference_blas")
 add_dependencies(mplapack_reference_lapack_lib mplapack_reference_lapack)
 
 set(BLAS_FOUND TRUE)
