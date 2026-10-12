@@ -40,6 +40,7 @@ import re
 import subprocess
 import sys
 
+sys.dont_write_bytecode = True  # importing backend_rename must not leave misc/__pycache__
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 from backend_rename import rename  # noqa: E402
 
