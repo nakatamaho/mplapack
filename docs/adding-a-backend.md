@@ -254,7 +254,7 @@ chi-square 92.8 over 100 bins.
 | CMake pkg-config tests | the installed `.pc` files carry `CMAKE_INSTALL_PREFIX`; with the default `/usr/local` the consumer tests failed for every backend | fixed on master and 3.1 (`pkgconfig_relocate_installed`); 2.4 has no such test |
 | CMake mpblas tests | `mplapack.test.cpp` was globbed as a test without `main()`, so no CMake test build ever completed (fixed on master, 2.4, 3.1) | — |
 | Intel icpx/icx under CMake | the default value-unsafe fp-model breaks expansion arithmetic; CMake added only `-ffp-contract=off` | fixed on master, 2.4, 3.1: `-fp-model=strict` on every TU and in the exported options of `nofma` targets, as `configure.ac` does |
-| CMake mpfr mpblas tests | after that fix, `Rnrm2`, `RCnrm2`, `Crotg` fail for mpfr under CMake but pass under autotools | open, not td-specific |
+| CMake test oracle | CMake linked the system BLAS (OpenBLAS); it differs from reference BLAS 3.12 in edge cases (`dnrm2` with `incx = 0` returns 0), so `Rnrm2`, `RCnrm2`, `Crotg` failed for mpfr | fixed: CMake builds the bundled reference LAPACK with the same patches as autotools (`cmake/MplapackReferenceLapack.cmake`, `MPLAPACK_TEST_BUNDLED_LAPACK`) |
 
 ## 6. Other precisions
 
