@@ -20,6 +20,9 @@ Kinds of site (docs/adding-a-backend.md, sections 1 and 2.3-2.7):
             for <new>                                 -> add <new>
   LIST      a line listing <model> among other backend names, without
             <new>                                     -> add <new>
+  COPY      in a file that already mentions <new>, a line naming <model>
+            whose renamed form (backend_rename.py) is not in the file
+                                                      -> add the renamed line
   NAME      an identifier ending in _<model> (Mxerbla_dd, mpblas_dd.h.in)
             whose _<new> form does not occur in the file -> add it
   PLOT      a benchmark plot that draws <model> but not <new> -> decide
@@ -35,6 +38,10 @@ import collections
 import pathlib
 import re
 import subprocess
+import sys
+
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
+from backend_rename import rename  # noqa: E402
 
 SKIP_PREFIX = (
     "external/", "fable/3.9.1/", "doc/", "docs/", ".agents/",
@@ -120,6 +127,19 @@ def main():
             sites["PP-OWN"] += [(f, i, s) for i, s in own_m]
         if len(en_lines) > en_count_n:
             sites["ENABLE"] += [(f, i, s) for i, s in en_lines]
+        # In a file that already handles <new>, a line naming <model> should
+        # have its renamed counterpart: "mplapack_add_x(dd qd)" wants
+        # "mplapack_add_x(td qd)".
+        if tok_n.search(text) or pp_n.search(text):
+            present = {l.strip() for l in lines}
+            listed = {i for g, i, _ in sites["LIST"] if g == f}
+            for i, line in enumerate(lines, 1):
+                s = line.strip()
+                if (i in listed or not tok_m.search(s) or tok_n.search(s)
+                        or s.startswith("#") or en_m.search(s)):
+                    continue
+                if rename(s, m, n) not in present:
+                    sites["COPY"].append((f, i, s))
         seen = set()
         for i, line in enumerate(lines, 1):
             for base in name_m.findall(line):
@@ -129,7 +149,7 @@ def main():
                 if not re.search(rf"\b{re.escape(base)}_{n}\b", text):
                     sites["NAME"].append((f, i, f"{base}_{m}: {line.strip()}"))
 
-    for kind in ("PP-OWN", "PP-GROUP", "ENABLE", "LIST", "NAME", "PLOT"):
+    for kind in ("PP-OWN", "PP-GROUP", "ENABLE", "LIST", "COPY", "NAME", "PLOT"):
         entries = sites.get(kind, [])
         print(f"== {kind} ({len(entries)})")
         for f, i, s in entries:

@@ -166,6 +166,8 @@ mplapack_add_backend_runtime_tests(qd qd)
 mplapack_add_backend_runtime_tests(qd_opt qd)
 mplapack_add_backend_runtime_tests(dd qd)
 mplapack_add_backend_runtime_tests(dd_opt qd)
+mplapack_add_backend_runtime_tests(td qd)
+mplapack_add_backend_runtime_tests(td_opt qd)
 
 # Exercise installed pkg-config metadata independently of the CMake export.
 # Dependency pkg-config directories are added only to this test process. If a

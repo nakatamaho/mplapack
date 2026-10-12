@@ -1,8 +1,8 @@
 # Adding an arithmetic backend
 
 How to add a backend (a REAL/COMPLEX type pair) to MPLAPACK, written from
-the td backend (`td_real`/`td_complex`, libQD3 1.6.0, branch 3.1; commits
-745aaa91a … d2d0e43b2).  It is meant to be replayed for ds, ts, qs, edd and
+the td backend (`td_real`/`td_complex`, libQD3 1.6.0, branch 3.1; td work
+starts at commit 745aaa91a).  It is meant to be replayed for ds, ts, qs, edd and
 float.
 
 Read `AGENTS.md` first: sources under `mpblas/reference/` and
@@ -41,10 +41,10 @@ Tools (git tree only, not shipped):
 | Tool | Use |
 |---|---|
 | `misc/backend_rename.py M B <file>` | Copy-rename.  Replaces `M`/`M↑` where it is a token (`dd_real`, `Rlamch_dd`, `_dd_opt`, `Rgemm.dd`, `optimized/dd/`, `ENABLE_DD`), never inside words (`LDADD`, `top_builddir` stay intact), and never the names all libQD3 backends share: `QD_LIBDIR`, `QD_INCLUDEDIR`, `QD_RPATH_LDFLAGS`, `QD_EXTRA_CXXFLAGS`, `@qd_extra_cxxflags@`, `-lqd`, `libqd`, `<qd/…>`, `include/qd`, `DD_CXXFLAGS` (the no-FMA flags of every `nofma` backend).  `sed s/dd/td/` is wrong: it produced `LDATD` and `top_builtdir` during td. |
-| `misc/backend_sites.py M B` | To-do list: every place that names `M` but not `B`.  Kinds: `PP-OWN` (an `#if` for `M` alone → add a block for `B`), `PP-GROUP` (`M` in an `\|\|` group → decide whether `B` joins), `ENABLE` (`ENABLE_M`, `--enable-m` lists), `LIST` (`M` in a list of backend names), `NAME` (an unguarded `…_m` identifier such as `Mxerbla_dd`), `PLOT` (benchmark plot).  Run it on the tree before td, it reports every shared file td had to change, including the ones found only by failing tests.  Repeat until only intended differences remain (section 7.3). |
+| `misc/backend_sites.py M B` | To-do list: every place that names `M` but not `B`.  Kinds: `PP-OWN` (an `#if` for `M` alone → add a block for `B`), `PP-GROUP` (`M` in an `\|\|` group → decide whether `B` joins), `ENABLE` (`ENABLE_M`, `--enable-m` lists), `LIST` (`M` in a list of backend names), `COPY` (in a file that already mentions `B`, a line naming `M` whose renamed form is missing, e.g. `mplapack_add_backend_runtime_tests(dd qd)` without the td line), `NAME` (an unguarded `…_m` identifier such as `Mxerbla_dd`), `PLOT` (benchmark plot).  Run it on the tree before td, it reports every shared file td had to change, including the ones found only by failing tests.  Repeat until only intended differences remain (section 7.3). |
 | `misc/gen_backend_makefiles.py` | Per-backend `Makefile.am` files from `backends.txt` + `misc/backend_makefiles/` |
 | `fable/gen_include_*.sh` | Prototype headers from `backends.txt` + `.h.in` |
-| `misc/gen_benchmark_header.py B libmplapack_<b>.a` | Benchmark symbol header from the built library |
+| `misc/gen_benchmark_header.py B libmplapack_<b>.a --like M` | Benchmark symbol header from the built library: routine list from `M`'s header, names from the library (on master, 2.4 and 3.1) |
 | `examples/gen_all.sh` | Example sources and makefiles |
 
 Model choice: dd/td/qd for a double expansion; td for ds/ts/qs; dd for the
@@ -124,8 +124,8 @@ the same way; section 4.
 | File | Content |
 |---|---|
 | `fable/convert_blas_all.sh`, `fable/convert_lapack_all.sh`, `fable/go_testing.sh` | `KEEP_HAND_WRITTEN_FILES`: the five `*_<b>.h.in` |
-| `cmake/tests/CMakeLists.txt` | consume source branch, `mplapack_add_consume_tests(<b>)`/`(<b>_opt)`, `_pkgconfig_flavors`, the `(gmp\|qd\|dd\|td)` regex and its branch |
-| `misc/check_backend_support_libraries.sh` | `<b> <b>_opt`, dependency case |
+| `cmake/tests/CMakeLists.txt` | consume source branch, `mplapack_add_consume_tests(<b>)`/`(<b>_opt)`, `mplapack_add_backend_runtime_tests(<b> qd)`/`(<b>_opt qd)` (shared-load and ELF dependency checks), `_pkgconfig_flavors`, the `(gmp\|qd\|dd\|td)` regex and its branch |
+| `misc/check_backend_support_libraries.sh` | `runtime_dirs` (`mpblas/optimized/<b>/.libs`), `<b> <b>_opt`, dependency case |
 | `misc/check_test_override_link.sh` | second loop (backends whose `.pc` pulls an external library) |
 
 These read `backends.txt` and need nothing: CMake, the fable header
@@ -192,8 +192,8 @@ each extra limb raises the minimum by one limb's digits.
 | cast to MPFR | `mplapack_compare_debug.h` | derived | `mpfr_set_d` limb 0, `mpfr_add_d` limbs 1..L-1 | | 3 limbs | |
 | random numbers | `mplapack.test.cpp` | library | the type's generator | `ddrand` | `tdrand` | `qdrand` |
 | `compare_tolerance` | `backends.conf` | chosen | `1e-(15·L)` for double limbs, about `10^-(_ndigits-1)`; validated by compare Rlamch/Rlaruv | 1e-30 | 1e-45 | 1e-60 |
-| `EPSILON` | `mplapack_compare_debug.h` | chosen | about `compare_tolerance` | 1e-31 | 1e-45 | 1e-61 |
-| `EPSILON2..12` | `mplapack_compare_debug.h` | chosen | dd's ladder moved to start at 1e-45 with a smaller step (td: 1e-42, 1e-42, 1e-41, 1e-40, 1e-39, 1e-39, 1e-38, 1e-37, 1e-36; dd: 1e-27 … 1e-20); validated by the compare routine tests (103/105, the two failures also fail for dd/qd) | | | |
+| `EPSILON` | `mplapack_compare_debug.h` | derived | dd's value × `10^(-16·(L-2))` (one double limb ≈ 16 digits) | 1e-29 | 1e-45 | 1e-61 |
+| `EPSILON2..12` | `mplapack_compare_debug.h` | derived for td | dd's ladder × 1e-16 (dd: 1e-26, 1e-26, 1e-25, 1e-24, 1e-23, 1e-23, 1e-22, 1e-21, 1e-20; td: 1e-42 … 1e-36); qd's ladder is its own (1e-55, then 1e-54); validated by the compare routine tests (td 103/105, the two failures also fail for dd/qd) | | | |
 | `Cchkbd` singular value range | `Cchkbd.cpp` (patch) | chosen | qd's `-(half*half)*log(ulp)` | | | |
 | reference data | `compare/<b>/*_reference.txt` | measured | section 5.2 | | | |
 | benchmark symbols | `mplapack_benchmark_<b>.h` | measured | section 2.1 | | | |
@@ -227,7 +227,7 @@ model.
 | matgen | `matgen/Makefile.am`, `Claror` | built by lin/eig | builds |
 | link checks | `{lin,eig}/<b>/Makefile.am` in the current form | `sh misc/check_test_link_order.sh .`; `misc/check_test_override_link.sh <build> .`; `misc/check_backend_support_libraries.sh <build> . <qd libdir>` | pass |
 | symbols | | `misc/check_unique_symbols.sh libmplapack_<b>.a libmplapack_<b>_opt.a` | pass |
-| CMake | nothing (table) | `ctest` | library; mpblas 76/76; `compare_td_Rlamch`, `compare_td_Rgesv` pass |
+| CMake | nothing (table) | `ctest` (the oracle is the bundled reference LAPACK, as with autotools) | mpblas 76/76; compare: all but Classq and Rpotri (as autotools) |
 | CMake consume / pkg-config | section 2.6 | `ctest -R 'consume\|pkgconfig'` (`pkgconfig_relocate_installed` points test copies of the installed `.pc` files at the test install) | pass |
 | examples | section 2.7 | build with both systems; run `*_<b>` | 67/67 exit 0 |
 | release | sections 2.7, 4 F6 | `python3 release/test-fable-comparison.py`, `python3 release/test-source-preparation.py`; `make dist` and compare `M`'s and `B`'s files in the tarball; td-only build from the tarball | pass; tarball differs from dd only by dd's CUDA files |
@@ -254,7 +254,7 @@ chi-square 92.8 over 100 bins.
 | CMake pkg-config tests | the installed `.pc` files carry `CMAKE_INSTALL_PREFIX`; with the default `/usr/local` the consumer tests failed for every backend | fixed on master and 3.1 (`pkgconfig_relocate_installed`); 2.4 has no such test |
 | CMake mpblas tests | `mplapack.test.cpp` was globbed as a test without `main()`, so no CMake test build ever completed (fixed on master, 2.4, 3.1) | — |
 | Intel icpx/icx under CMake | the default value-unsafe fp-model breaks expansion arithmetic; CMake added only `-ffp-contract=off` | fixed on master, 2.4, 3.1: `-fp-model=strict` on every TU and in the exported options of `nofma` targets, as `configure.ac` does |
-| CMake test oracle | CMake linked the system BLAS (OpenBLAS); it differs from reference BLAS 3.12 in edge cases (`dnrm2` with `incx = 0` returns 0), so `Rnrm2`, `RCnrm2`, `Crotg` failed for mpfr | fixed: CMake builds the bundled reference LAPACK with the same patches as autotools (`cmake/MplapackReferenceLapack.cmake`, `MPLAPACK_TEST_BUNDLED_LAPACK`) |
+| CMake test oracle | CMake linked the system BLAS (OpenBLAS); it differs from reference BLAS 3.12 in edge cases (`dnrm2` with `incx = 0` returns 0), so `Rnrm2`, `RCnrm2`, `Crotg` failed for mpfr | fixed on master, 2.4, 3.1: CMake builds the bundled reference LAPACK with the same patches as autotools (`cmake/MplapackReferenceLapack.cmake`, `MPLAPACK_TEST_BUNDLED_LAPACK`) |
 
 ## 6. Other precisions
 
@@ -305,6 +305,7 @@ running lin/eig.
 | lin/eig `Makefile.am` in the pre-merge form | merging master | `check_test_link_order.sh` |
 | release checks with own lists (`check_test_override_link.sh`, `check_backend_support_install.sh`, `compare-fable-outputs.py`, `check_backend_support_libraries.sh`) | `backend_sites.py` | `LIST` |
 | no CMake consume / pkg-config test | release review | `LIST`, `NAME` |
+| no CMake shared-load / ELF test (`mplapack_add_backend_runtime_tests`), no td directory in `check_backend_support_libraries.sh` `runtime_dirs` | memo review | `COPY` |
 | `Rlamch.test.cpp` dd leftovers | compile error | use the rename tool |
 | `LDATD`, `top_builtdir` | build | use the rename tool |
 
@@ -317,6 +318,9 @@ running lin/eig.
 | `LIST` | `benchmark/go.*.sh.in` fast loop | td is in the other loop |
 | `LIST` | fallback lists in `check_test_link_order.sh`, `check_test_override_link.sh`, `compare-fable-outputs.py` | used only without `backends.txt` |
 | `LIST`, `NAME` | `examples/README` | historical |
+| `COPY` | `Makefile.am`, `configure.ac` (`mpblas/optimized/dd/cuda`) | dd-only CUDA |
+| `COPY` | `examples/mplapack/generic/generate.sh` (`dd) _libs=DDLIBS`) | false positive: the td line exists, but the rename tool does not touch `DD` inside `DDLIBS` |
+| `COPY` | `misc/gen_benchmark_header.py` (`--like dd` default) | documentation of the default |
 | `NAME` | `cmake/tests/consume/main.cpp` | single-backend sample |
 | `NAME` | `examples/mpblas/generic/Makefile.linux_cuda.in` | dd-only CUDA |
 | `NAME` | comments in `include/mplapack_symbol_resolver.h`, `mplapack/reference/Rlamch.cpp` | comments |
