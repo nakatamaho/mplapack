@@ -13,7 +13,8 @@ $(mplapack_mpfr_test_PROGRAMS): ../liblin_mpfr.la
 $(mplapack_mpfr_opt_test_PROGRAMS): ../liblin_mpfr_opt.la
 
 if IS_MINGW
-test_ldflags = -Wl,--allow-multiple-definition
+# Retain the constructor-only backend object without whole-archive linking.
+test_ldflags = -Wl,--allow-multiple-definition -Wl,-u,_Z24mplapack_initialize_mpfrv
 libdepends = $(top_builddir)/mplapack/test/lin/.libs/liblin_mpfr.a $(top_builddir)/mplapack/test/matgen/.libs/libmatgen_mpfr.a $(top_builddir)/mplapack/reference/.libs/libmplapack_mpfr.a
 opt_libdepends = $(top_builddir)/mplapack/test/lin/.libs/liblin_mpfr_opt.a $(top_builddir)/mplapack/test/matgen/.libs/libmatgen_mpfr_opt.a $(top_builddir)/mpblas/optimized/mpfr/.libs/libmplapack_mpfr_opt.a
 else

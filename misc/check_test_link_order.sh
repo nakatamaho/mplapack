@@ -12,7 +12,16 @@ fi
 for family in lin eig; do
     for backend in $backends; do
         makefile="$srcdir/mplapack/test/$family/$backend/Makefile.am"
-        if grep -Eq '_LDFLAGS.*\$\((.*libdepends|mplibs)\)|whole-archive' "$makefile"; then
+        # New GMP uses its context provider and has no initializer constructor.
+        if test "$backend" != gmp; then
+            initializer="mplapack_initialize_$backend"
+            symbol="_Z${#initializer}${initializer}v"
+            if ! grep -Fq "test_ldflags = -Wl,--allow-multiple-definition -Wl,-u,$symbol" "$makefile"; then
+                echo "FAIL: missing MinGW initializer retention in $makefile" >&2
+                exit 1
+            fi
+        fi
+        if grep -Eq '_LDFLAGS.*\$\((.*libdepends|mplibs)\)|^[^#]*whole-archive' "$makefile"; then
             echo "FAIL: libraries precede executable objects in $makefile" >&2
             exit 1
         fi
