@@ -13,7 +13,8 @@ $(mplapack_double_test_PROGRAMS): ../liblin_double.la
 $(mplapack_double_opt_test_PROGRAMS): ../liblin_double_opt.la
 
 if IS_MINGW
-test_ldflags = -Wl,--allow-multiple-definition
+# Retain the constructor-only backend object without whole-archive linking.
+test_ldflags = -Wl,--allow-multiple-definition -Wl,-u,_Z26mplapack_initialize_doublev
 libdepends = $(top_builddir)/mplapack/test/lin/.libs/liblin_double.a $(top_builddir)/mplapack/test/matgen/.libs/libmatgen_double.a $(top_builddir)/mplapack/reference/.libs/libmplapack_double.a
 opt_libdepends = $(top_builddir)/mplapack/test/lin/.libs/liblin_double_opt.a $(top_builddir)/mplapack/test/matgen/.libs/libmatgen_double_opt.a $(top_builddir)/mpblas/optimized/double/.libs/libmplapack_double_opt.a
 else

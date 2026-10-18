@@ -13,7 +13,8 @@ $(mplapack_binary80_test_PROGRAMS): ../liblin_binary80.la
 $(mplapack_binary80_opt_test_PROGRAMS): ../liblin_binary80_opt.la
 
 if IS_MINGW
-test_ldflags = -Wl,--allow-multiple-definition
+# Retain the constructor-only backend object without whole-archive linking.
+test_ldflags = -Wl,--allow-multiple-definition -Wl,-u,_Z28mplapack_initialize_binary80v
 libdepends = $(top_builddir)/mplapack/test/lin/.libs/liblin_binary80.a $(top_builddir)/mplapack/test/matgen/.libs/libmatgen_binary80.a $(top_builddir)/mplapack/reference/.libs/libmplapack_binary80.a
 opt_libdepends = $(top_builddir)/mplapack/test/lin/.libs/liblin_binary80_opt.a $(top_builddir)/mplapack/test/matgen/.libs/libmatgen_binary80_opt.a $(top_builddir)/mpblas/optimized/binary80/.libs/libmplapack_binary80_opt.a
 else

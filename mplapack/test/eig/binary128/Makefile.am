@@ -13,7 +13,8 @@ $(mplapack_binary128_test_PROGRAMS): ../libeig_binary128.la
 $(mplapack_binary128_opt_test_PROGRAMS): ../libeig_binary128_opt.la
 
 if IS_MINGW
-test_ldflags = -Wl,--allow-multiple-definition
+# Retain the constructor-only backend object without whole-archive linking.
+test_ldflags = -Wl,--allow-multiple-definition -Wl,-u,_Z29mplapack_initialize_binary128v
 libdepends = $(top_builddir)/mplapack/test/eig/.libs/libeig_binary128.a $(top_builddir)/mplapack/test/matgen/.libs/libmatgen_binary128.a $(top_builddir)/mplapack/reference/.libs/libmplapack_binary128.a
 opt_libdepends = $(top_builddir)/mplapack/test/eig/.libs/libeig_binary128_opt.a $(top_builddir)/mplapack/test/matgen/.libs/libmatgen_binary128_opt.a $(top_builddir)/mpblas/optimized/binary128/.libs/libmplapack_binary128_opt.a
 dmd_libdepends = $(top_builddir)/mplapack/test/eig/.libs/libeig_binary128.a $(top_builddir)/mplapack/test/matgen/.libs/libmatgen_binary128.a $(top_builddir)/mplapack/reference/.libs/libmplapack_binary128.a

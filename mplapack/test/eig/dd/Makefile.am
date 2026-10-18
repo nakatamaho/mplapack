@@ -13,7 +13,8 @@ $(mplapack_dd_test_PROGRAMS): ../libeig_dd.la
 $(mplapack_dd_opt_test_PROGRAMS): ../libeig_dd_opt.la
 
 if IS_MINGW
-test_ldflags = -Wl,--allow-multiple-definition
+# Retain the constructor-only backend object without whole-archive linking.
+test_ldflags = -Wl,--allow-multiple-definition -Wl,-u,_Z22mplapack_initialize_ddv
 libdepends = $(top_builddir)/mplapack/test/eig/.libs/libeig_dd.a $(top_builddir)/mplapack/test/matgen/.libs/libmatgen_dd.a $(top_builddir)/mplapack/reference/.libs/libmplapack_dd.a
 opt_libdepends = $(top_builddir)/mplapack/test/eig/.libs/libeig_dd_opt.a $(top_builddir)/mplapack/test/matgen/.libs/libmatgen_dd_opt.a $(top_builddir)/mpblas/optimized/dd/.libs/libmplapack_dd_opt.a
 dmd_libdepends = $(top_builddir)/mplapack/test/eig/.libs/libeig_dd.a $(top_builddir)/mplapack/test/matgen/.libs/libmatgen_dd.a $(top_builddir)/mplapack/reference/.libs/libmplapack_dd.a

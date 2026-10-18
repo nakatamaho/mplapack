@@ -44,6 +44,23 @@ function(_mplapack_test_setup tgt backend_target internal)
   # the driver executables link the backend explicitly inside a LINK_GROUP so
   # that ordering/override resolution is under our control.
   target_link_libraries(${tgt} PRIVATE ${backend_target})
+  # Constructor-only objects are not extracted by ordinary static linking.
+  # GMP uses a normally referenced context provider, not an init constructor.
+  get_target_property(_target_type ${tgt} TYPE)
+  get_target_property(_backend_type ${backend_target} TYPE)
+  if(_target_type STREQUAL "EXECUTABLE" AND _backend_type STREQUAL "STATIC_LIBRARY"
+      AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    string(REGEX REPLACE "^mplapack_([^_]+)(_opt)?$" "\\1" _backend "${backend_target}")
+    if(NOT _backend STREQUAL "gmp")
+      set(_initializer "mplapack_initialize_${_backend}")
+      string(LENGTH "${_initializer}" _initializer_length)
+      set(_initializer_symbol "_Z${_initializer_length}${_initializer}v")
+      if(APPLE OR (MINGW AND CMAKE_SIZEOF_VOID_P EQUAL 4))
+        string(PREPEND _initializer_symbol "_")
+      endif()
+      target_link_options(${tgt} PRIVATE "LINKER:-u,${_initializer_symbol}")
+    endif()
+  endif()
   target_include_directories(${tgt} PRIVATE "${_fable_dir}")
   if(internal)
     target_compile_definitions(${tgt} PRIVATE MPLAPACK_INTERNAL)

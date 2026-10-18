@@ -13,7 +13,8 @@ $(mplapack_qd_test_PROGRAMS): ../liblin_qd.la
 $(mplapack_qd_opt_test_PROGRAMS): ../liblin_qd_opt.la
 
 if IS_MINGW
-test_ldflags = -Wl,--allow-multiple-definition
+# Retain the constructor-only backend object without whole-archive linking.
+test_ldflags = -Wl,--allow-multiple-definition -Wl,-u,_Z22mplapack_initialize_qdv
 libdepends = $(top_builddir)/mplapack/test/lin/.libs/liblin_qd.a $(top_builddir)/mplapack/test/matgen/.libs/libmatgen_qd.a $(top_builddir)/mplapack/reference/.libs/libmplapack_qd.a
 opt_libdepends = $(top_builddir)/mplapack/test/lin/.libs/liblin_qd_opt.a $(top_builddir)/mplapack/test/matgen/.libs/libmatgen_qd_opt.a $(top_builddir)/mpblas/optimized/qd/.libs/libmplapack_qd_opt.a
 else
