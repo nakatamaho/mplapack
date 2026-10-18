@@ -15,7 +15,8 @@ $(mplapack_qd_test_PROGRAMS): ../libeig_qd.la
 $(mplapack_qd_opt_test_PROGRAMS): ../libeig_qd_opt.la
 
 if IS_MINGW
-test_ldflags = -Wl,--allow-multiple-definition
+# Keep the constructor-only backend object when selecting static archive members.
+test_ldflags = -Wl,--allow-multiple-definition -Wl,-u,_Z22mplapack_initialize_qdv
 libdepends = $(top_builddir)/mplapack/test/eig/.libs/libeig_qd.a $(top_builddir)/mplapack/test/matgen/.libs/libmatgen_qd.a $(top_builddir)/mplapack/reference/.libs/libmplapack_qd.a
 dmd_libdepends = $(top_builddir)/mplapack/test/eig/.libs/libeig_qd.a $(top_builddir)/mplapack/test/matgen/.libs/libmatgen_qd.a $(top_builddir)/mplapack/reference/.libs/libmplapack_qd.a
 opt_libdepends = $(top_builddir)/mplapack/test/eig/.libs/libeig_qd_opt.a $(top_builddir)/mplapack/test/matgen/.libs/libmatgen_qd_opt.a $(top_builddir)/mpblas/optimized/qd/.libs/libmplapack_qd_opt.a

@@ -4,8 +4,20 @@
 #include <fem.hpp>
 #include <mplapack_lin.h>
 #include <mplapack_debug.h>
+#include <cstdlib>
 
 int main() {
+#if defined(___MPLAPACK_BUILD_WITH_GMP___)
+    // Archive extraction must not silently leave GMP at its 64-bit default.
+    // Honor the same environment override as the backend constructor.
+    const char *precision = std::getenv("MPLAPACK_GMP_PRECISION");
+    const unsigned long requested = precision ? std::strtoul(precision, nullptr, 10)
+                                              : ___MPLAPACK_GMP_DEFAULT_PRECISION___;
+    const unsigned long limb = GMP_NUMB_BITS;
+    const unsigned long expected = ((requested + limb - 1) / limb) * limb;
+    if (mpf_get_default_prec() != expected)
+        return 3;
+#endif
     nout = 6;
     infot = 1;
     srnamt = "Rgetrf";

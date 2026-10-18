@@ -15,7 +15,8 @@ $(mplapack_binary80_test_PROGRAMS): ../libeig_binary80.la
 $(mplapack_binary80_opt_test_PROGRAMS): ../libeig_binary80_opt.la
 
 if IS_MINGW
-test_ldflags = -Wl,--allow-multiple-definition
+# Keep the constructor-only backend object when selecting static archive members.
+test_ldflags = -Wl,--allow-multiple-definition -Wl,-u,_Z28mplapack_initialize_binary80v
 libdepends = $(top_builddir)/mplapack/test/eig/.libs/libeig_binary80.a $(top_builddir)/mplapack/test/matgen/.libs/libmatgen_binary80.a $(top_builddir)/mplapack/reference/.libs/libmplapack_binary80.a
 dmd_libdepends = $(top_builddir)/mplapack/test/eig/.libs/libeig_binary80.a $(top_builddir)/mplapack/test/matgen/.libs/libmatgen_binary80.a $(top_builddir)/mplapack/reference/.libs/libmplapack_binary80.a
 opt_libdepends = $(top_builddir)/mplapack/test/eig/.libs/libeig_binary80_opt.a $(top_builddir)/mplapack/test/matgen/.libs/libmatgen_binary80_opt.a $(top_builddir)/mpblas/optimized/binary80/.libs/libmplapack_binary80_opt.a

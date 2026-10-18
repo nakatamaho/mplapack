@@ -38,7 +38,8 @@ $(mplapack_mpfr_test_PROGRAMS): ../libeig_mpfr.la
 $(mplapack_mpfr_opt_test_PROGRAMS): ../libeig_mpfr_opt.la
 
 if IS_MINGW
-test_ldflags = -Wl,--allow-multiple-definition
+# Keep the constructor-only backend object when selecting static archive members.
+test_ldflags = -Wl,--allow-multiple-definition -Wl,-u,_Z24mplapack_initialize_mpfrv
 libdepends = $(top_builddir)/mplapack/test/eig/.libs/libeig_mpfr.a $(top_builddir)/mplapack/test/matgen/.libs/libmatgen_mpfr.a $(top_builddir)/mplapack/reference/.libs/libmplapack_mpfr.a
 dmd_libdepends = $(top_builddir)/mplapack/test/eig/.libs/libeig_mpfr.a $(top_builddir)/mplapack/test/matgen/.libs/libmatgen_mpfr.a $(top_builddir)/mplapack/reference/.libs/libmplapack_mpfr.a
 opt_libdepends = $(top_builddir)/mplapack/test/eig/.libs/libeig_mpfr_opt.a $(top_builddir)/mplapack/test/matgen/.libs/libmatgen_mpfr_opt.a $(top_builddir)/mpblas/optimized/mpfr/.libs/libmplapack_mpfr_opt.a

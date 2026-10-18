@@ -13,7 +13,8 @@ $(mplapack_gmp_test_PROGRAMS): ../liblin_gmp.la
 $(mplapack_gmp_opt_test_PROGRAMS): ../liblin_gmp_opt.la
 
 if IS_MINGW
-test_ldflags = -Wl,--allow-multiple-definition
+# Keep the constructor-only backend object when selecting static archive members.
+test_ldflags = -Wl,--allow-multiple-definition -Wl,-u,_Z23mplapack_initialize_gmpv
 libdepends = $(top_builddir)/mplapack/test/lin/.libs/liblin_gmp.a $(top_builddir)/mplapack/test/matgen/.libs/libmatgen_gmp.a $(top_builddir)/mplapack/reference/.libs/libmplapack_gmp.a
 opt_libdepends = $(top_builddir)/mplapack/test/lin/.libs/liblin_gmp_opt.a $(top_builddir)/mplapack/test/matgen/.libs/libmatgen_gmp_opt.a $(top_builddir)/mpblas/optimized/gmp/.libs/libmplapack_gmp_opt.a
 else

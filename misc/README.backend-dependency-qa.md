@@ -82,3 +82,14 @@ CMake uses the same executable-owned overrides and builds no override
 archives. Run ctest --test-dir <builddir> -R '^test_override_' after building
 to check LIN/EIG ownership, production DMD tuning and process finalization
 for reference and optimized variants without running numerical suites.
+
+MinGW LIN/EIG drivers use static backend archives. Each driver (including
+reference, optimized, and DMD variants) retains its backend initializer with
+`-Wl,-u,<mangled initializer symbol>`; a constructor attribute alone does not
+extract an archive member. Do not restore whole-archive linking of test
+libraries, which would reintroduce override ownership/order problems. CMake
+static test executables retain the initializer as well. The GMP override probe
+checks the effective default precision (512 bits unless overridden through
+`MPLAPACK_GMP_PRECISION`) before running its error-exit checks. Run
+`sh misc/check_test_link_order.sh .` to check all seven MinGW backend rules,
+and add `--mingw` on a MinGW/Wine-equipped host for the override-order probes.
