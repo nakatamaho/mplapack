@@ -194,13 +194,13 @@ RT_HD void l3_rt_lane(const l3_shape &s, long prec, int nl, const dpack &al, con
     e.prec = prec;
     e.nl = nl;
     e.W = W;
-    l3_mats<l3_rt_engine> x;
+    blas_mats<l3_rt_engine> x;
     x.al.P = al, x.al.ld = 1;
     x.be.P = be, x.be.ld = 1;
     x.a.P = A, x.a.ld = s.lda;
     x.b.P = B, x.b.ld = s.ldb;
     x.c.P = C, x.c.ld = s.ldc;
-    l3_lane(e, s, x, lane);
+    blas_lane(e, s, x, lane);
 }
 
 RT_HD inline size_t opB_index(const gemm_shape &s, long l, long j) { return s.notb ? (size_t)(l + j * s.ldb) : (size_t)(j + l * s.ldb); }
@@ -466,7 +466,7 @@ int gemm_rt(const gemm_shape &s, long prec, const rt_pack &alpha, const rt_pack 
 int blas3_rt(const l3_shape &s, long prec, const rt_pack &alpha, const rt_pack &beta, const rt_pack &A, size_t countA, const rt_pack &B, size_t countB, rt_pack &C, size_t countC)
 {
     const int nl = (int)((prec + 63) / 64);
-    const long lanes = l3_lanes(s);
+    const long lanes = blas_lanes(s);
 #ifdef MPLAPACK_MPFR_CUDA_HOST_EMULATION
     (void)countA, (void)countB, (void)countC;
     dpack dal = {(cu_mp_limb_t *)alpha.limbs, alpha.exp, alpha.kind}, dbe = {(cu_mp_limb_t *)beta.limbs, beta.exp, beta.kind};

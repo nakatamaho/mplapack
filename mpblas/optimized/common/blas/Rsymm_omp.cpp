@@ -26,8 +26,24 @@
  *
  */
 
-// The reference Rsyr2k (FABLE translation, unchanged) under the name
-// Rsyr2k_reference_cpu, the CPU fallback of Rsyr2k.cpp.
+// The reference Rsymm (mpblas/reference/Rsymm.cpp, unchanged) under the name
+// Rsymm_reference_cpu, and Rsymm_omp: the same operations in parallel lanes.
 
-#define Rsyr2k Rsyr2k_reference_cpu
-#include "../../../reference/Rsyr2k.cpp"
+#define Rsymm Rsymm_reference_cpu
+#include "../../../reference/Rsymm.cpp"
+#undef Rsymm
+
+#include "../Rblas_cpu_common.h"
+
+namespace {
+bool ls(const char *a, const char *b) { return Mlsame(a, b) != 0; }
+} // namespace
+
+bool Rsymm_omp(const char *side, const char *uplo, INTEGER const m, INTEGER const n, REAL const alpha, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL const beta, REAL *cc, INTEGER const ldc)
+{
+    using namespace mplapack_blas;
+    blas_call<REAL> c;
+    if (!make_symm<REAL>(c, ls, side, uplo, m, n, alpha, a, lda, b, ldb, beta, cc, ldc))
+        return false;
+    return blas_cpu(c);
+}

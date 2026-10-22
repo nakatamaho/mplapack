@@ -26,8 +26,8 @@
  *
  */
 
-// Blocked OpenMP Rgemm for td_real, plus the opt-in branch-free SIMD kernel
-// (MPLAPACK_TD_GEMM_BF=1) and the Winograd and Ozaki variants
+// Blocked SIMD/OpenMP Rgemm for td_real (branch-free arithmetic, as libQD3
+// built with QD_BF), plus the opt-in Winograd and Ozaki variants
 // (../../common/Rgemm_cpu_common.h).  Called by ../Rgemm.cpp.
 
 #include <mpblas_td.h>
@@ -40,7 +40,5 @@ template <> struct ozaki_traits<td_real> : qd_like_ozaki_traits<td_real, 159, 3>
 
 bool Rgemm_blocked_omp(bool nota, bool notb, mplapackint m, mplapackint n, mplapackint k, td_real alpha, td_real *A, mplapackint lda, td_real *B, mplapackint ldb, td_real beta, td_real *C, mplapackint ldc) {
     const mplapack_gemm::shape s = {nota, notb, (long)m, (long)n, (long)k, (long)lda, (long)ldb, (long)ldc};
-    if (mplapack_gemm::env_long("MPLAPACK_TD_GEMM_BF", 0) > 0)
-        return mplapack_gemm::gemm_cpu<mplapack_gemm::td_bf_kernel<td_real> >("MPLAPACK_TD", s, alpha, beta, A, B, C);
-    return mplapack_gemm::gemm_cpu<mplapack_gemm::scalar_kernel<td_real, 32, 32, 128> >("MPLAPACK_TD", s, alpha, beta, A, B, C);
+    return mplapack_gemm::gemm_cpu<mplapack_gemm::td_bf_kernel<td_real> >("MPLAPACK_TD", s, alpha, beta, A, B, C);
 }

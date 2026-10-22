@@ -177,6 +177,25 @@ endif()
 set(MPLAPACK_QD_MIN_VERSION 1.6.0)
 if(MPLAPACK_USES_QD)
   find_package(QD ${MPLAPACK_QD_MIN_VERSION} REQUIRED)
+  # dd, td and qd are computed with libQD3's branch-free arithmetic (QD_BF;
+  # mpblas/optimized/common/Rgemm_qd_ops_common.h).
+  include(CheckCXXSourceCompiles)
+  set(CMAKE_REQUIRED_INCLUDES "${QD_INCLUDE_DIR}")
+  check_cxx_source_compiles([=[
+#include <qd/dd_real.h>
+#include <qd/td_real.h>
+#include <qd/qd_real.h>
+#if !defined(QD_BF_ADD) || !defined(QD_BF_MUL)
+#error libQD3 without QD_BF
+#endif
+int main() { return 0; }
+]=] MPLAPACK_QD_HAS_BF)
+  unset(CMAKE_REQUIRED_INCLUDES)
+  if(NOT MPLAPACK_QD_HAS_BF)
+    message(FATAL_ERROR
+      "libQD3 in ${QD_INCLUDE_DIR} is not built with branch-free arithmetic. "
+      "MPLAPACK needs libQD3 configured with -DQD_ENABLE_BF=ON (QD_BF).")
+  endif()
 endif()
 if(MPLAPACK_ENABLE_CUDA AND NOT MPLAPACK_ENABLE_DD)
   message(FATAL_ERROR "MPLAPACK_ENABLE_CUDA requires MPLAPACK_ENABLE_DD=ON")
@@ -321,18 +340,24 @@ if(TARGET mplapack_qd_opt)
   mplapack_configure_dd_arithmetic(mplapack_qd_opt)
 endif()
 
+# dd/td/qd Level 1/2/3 BLAS on the GPU (dispatchers and host side).
+file(GLOB _mplapack_blas_cuda_sources CONFIGURE_DEPENDS
+  "${CMAKE_CURRENT_SOURCE_DIR}/mpblas/optimized/common/blas_cuda/*.cpp")
+
 if(MPLAPACK_ENABLE_CUDA)
   file(GLOB _mplapack_cuda_sources CONFIGURE_DEPENDS
     "${CMAKE_CURRENT_SOURCE_DIR}/mpblas/optimized/dd/cuda/*.cu")
   # Split kernels are textually included by the six CUDA translation units.
   list(FILTER _mplapack_cuda_sources EXCLUDE REGEX
     "/(Rgemm_(fermi|tesla)_(NN|NT|TN|TT)_[0p]|Rsyrk_[NT][LU]_[0p])\\.cu$")
-  # cuda/Rgemm.cpp and cuda/Rsyrk.cu shadow the same-stem CPU/reference files;
-  # Rgemm_gpu_cuda.cu (dd/qd kernels of mpblas/optimized/common) and
-  # Rgemm_bridge_cuda.cpp are helpers.
+  # cuda/Rgemm.cpp and the Level 1/2/3 BLAS of optimized/common/blas_cuda
+  # shadow the same-stem CPU files; Rgemm_gpu_cuda.cu (kernels of
+  # mpblas/optimized/common), Rsyrk_legacy_cuda.cu and the *_bridge_cuda.cpp
+  # files are helpers.
   mplapack_add_accelerator_backend(dd cuda ${_mplapack_cuda_sources}
     "${CMAKE_CURRENT_SOURCE_DIR}/mpblas/optimized/dd/cuda/Rgemm.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/mpblas/optimized/dd/cuda/Rgemm_bridge_cuda.cpp")
+    "${CMAKE_CURRENT_SOURCE_DIR}/mpblas/optimized/dd/cuda/Rgemm_bridge_cuda.cpp"
+    ${_mplapack_blas_cuda_sources})
   target_sources(mplapack_dd_opt_cuda PRIVATE
     "${CMAKE_CURRENT_SOURCE_DIR}/mpblas/optimized/dd/cuda/dd_real_cuda.h")
   target_include_directories(mplapack_dd_opt_cuda PRIVATE
@@ -349,16 +374,19 @@ if(MPLAPACK_ENABLE_CUDA)
   list(APPEND MPLAPACK_INSTALL_TARGETS mplapack_dd_opt_cuda)
 endif()
 
-# qd and td CUDA libraries: Rgemm of mpblas/optimized/common on the GPU.
+# qd and td CUDA libraries: Rgemm and Level 1/2/3 BLAS of
+# mpblas/optimized/common on the GPU.
 foreach(_b qd td)
   string(TOUPPER "${_b}" _B)
   if(NOT MPLAPACK_ENABLE_${_B}_CUDA)
     continue()
   endif()
-  # cuda/Rgemm.cpp shadows optimized/<b>/Rgemm.cpp; the *_cuda files are helpers.
+  # cuda/Rgemm.cpp shadows optimized/<b>/Rgemm.cpp and common/blas_cuda/R*.cpp
+  # the CPU dispatchers of common/blas; the *_cuda files are helpers.
   set(_dir "${CMAKE_CURRENT_SOURCE_DIR}/mpblas/optimized/${_b}/cuda")
   mplapack_add_accelerator_backend(${_b} cuda
-    "${_dir}/Rgemm.cpp" "${_dir}/Rgemm_bridge_cuda.cpp" "${_dir}/Rgemm_gpu_cuda.cu")
+    "${_dir}/Rgemm.cpp" "${_dir}/Rgemm_bridge_cuda.cpp" "${_dir}/Rgemm_gpu_cuda.cu"
+    ${_mplapack_blas_cuda_sources})
   target_link_libraries(mplapack_${_b}_opt_cuda PUBLIC QD::QD CUDA::cudart CUDA::cublas)
   mplapack_configure_dd_arithmetic(mplapack_${_b}_opt_cuda)
   target_compile_options(mplapack_${_b}_opt_cuda PRIVATE "$<$<COMPILE_LANGUAGE:CUDA>:-fmad=false>")
@@ -396,14 +424,13 @@ if(_mplapack_mpc_cuda_bundled)
 endif()
 
 if(MPLAPACK_ENABLE_MPFR_CUDA)
-  # cuda/Rgemm.cpp shadows optimized/mpfr/Rgemm.cpp and cuda/R{syrk,syr2k,
-  # symm,trmm,trsm}.cpp the reference files (whose code they call, renamed,
-  # through *_ref_cuda.cpp); the *_cuda files are helpers.
+  # cuda/Rgemm.cpp shadows optimized/mpfr/Rgemm.cpp and the Level 1/2/3
+  # cuda/R*.cpp the dispatchers of optimized/common/blas (whose CPU code they
+  # call through common/blas/*_omp.cpp); the *_cuda files are helpers.
   set(_mplapack_mpfr_cuda_dir "${CMAKE_CURRENT_SOURCE_DIR}/mpblas/optimized/mpfr/cuda")
   set(_mplapack_mpfr_cuda_l3 "")
-  foreach(_r Rsyrk Rsyr2k Rsymm Rtrmm Rtrsm)
-    list(APPEND _mplapack_mpfr_cuda_l3
-      "${_mplapack_mpfr_cuda_dir}/${_r}.cpp" "${_mplapack_mpfr_cuda_dir}/${_r}_ref_cuda.cpp")
+  foreach(_r Rsyrk Rsyr2k Rsymm Rtrmm Rtrsm Rgemv Rsymv Rtrmv Rger Rsyr Rsyr2 Rscal Rswap Rrot)
+    list(APPEND _mplapack_mpfr_cuda_l3 "${_mplapack_mpfr_cuda_dir}/${_r}.cpp")
   endforeach()
   mplapack_add_accelerator_backend(mpfr cuda
     "${_mplapack_mpfr_cuda_dir}/Rgemm.cpp"
@@ -508,6 +535,16 @@ if(MPLAPACK_BUILD_TESTS)
   # to the OpenMP loops; Winograd, Ozaki (and the branch-free td/qd kernels)
   # exact on integers and bounded on reals.
   set(_mplapack_opt_common "${CMAKE_CURRENT_SOURCE_DIR}/mpblas/optimized/common")
+  # Lane-parallel Level 1/2/3 BLAS of every optimized library (common/blas):
+  # bit-identical to the reference routines.
+  foreach(b IN LISTS MPLAPACK_BACKENDS)
+    if(TARGET mplapack_${b}_opt)
+      add_executable(${b}_opt_Rblas_omp_test "${_mplapack_opt_common}/test/Rblas_omp_test.cpp")
+      target_link_libraries(${b}_opt_Rblas_omp_test PRIVATE mplapack_${b}_opt)
+      add_test(NAME ${b}_opt_Rblas_omp COMMAND ${b}_opt_Rblas_omp_test)
+      set_tests_properties(${b}_opt_Rblas_omp PROPERTIES ENVIRONMENT "OMP_NUM_THREADS=4")
+    endif()
+  endforeach()
   foreach(b dd td qd binary128)
     if(TARGET mplapack_${b}_opt)
       string(TOUPPER "${b}" _B)
@@ -515,6 +552,17 @@ if(MPLAPACK_BUILD_TESTS)
       target_compile_definitions(${b}_opt_Rgemm_test PRIVATE RGEMM_TEST_${_B})
       target_link_libraries(${b}_opt_Rgemm_test PRIVATE mplapack_${b}_opt)
       add_test(NAME ${b}_opt_Rgemm COMMAND ${b}_opt_Rgemm_test)
+    endif()
+  endforeach()
+  # The dd/td/qd arithmetic of the SIMD and GPU kernels against libQD3's
+  # (branch-free) operators, bit for bit.
+  foreach(b dd td qd)
+    if(TARGET mplapack_${b}_opt)
+      add_executable(qd_ops_test "${_mplapack_opt_common}/test/Rqd_ops_test.cpp")
+      target_link_libraries(qd_ops_test PRIVATE mplapack_${b}_opt)
+      mplapack_configure_dd_arithmetic(qd_ops_test)
+      add_test(NAME qd_ops COMMAND qd_ops_test)
+      break()
     endif()
   endforeach()
   # dd/td/qd CUDA Rgemm.  The host variant runs the GPU code on the host and
@@ -531,6 +579,14 @@ if(MPLAPACK_BUILD_TESTS)
       target_link_libraries(${_exe} PRIVATE mplapack_${b}_opt)
       mplapack_configure_dd_arithmetic(${_exe})
       add_test(NAME ${b}_cuda_Rgemm_host COMMAND ${_exe})
+      # Level 1/2/3 BLAS of common/blas_cuda, every call on the (emulated) GPU
+      set(_exe ${b}_cuda_Rblas_host_test)
+      add_executable(${_exe} "${_mplapack_opt_common}/test/Rblas_gpu_test.cpp" ${_mplapack_blas_cuda_sources})
+      target_compile_definitions(${_exe} PRIVATE MPLAPACK_GEMM_CUDA_HOST_EMULATION)
+      target_link_libraries(${_exe} PRIVATE mplapack_${b}_opt)
+      mplapack_configure_dd_arithmetic(${_exe})
+      add_test(NAME ${b}_cuda_Rblas_host COMMAND ${_exe})
+      set_tests_properties(${b}_cuda_Rblas_host PROPERTIES ENVIRONMENT "OMP_NUM_THREADS=4")
     endif()
     if(TARGET mplapack_${b}_opt_cuda)
       set(_exe ${b}_cuda_Rgemm_device_test)
@@ -548,6 +604,11 @@ if(MPLAPACK_BUILD_TESTS)
         CUDA_STANDARD_REQUIRED ON)
       add_test(NAME ${b}_cuda_Rgemm_device COMMAND ${_exe})
       set_tests_properties(${b}_cuda_Rgemm_device PROPERTIES SKIP_RETURN_CODE 77)
+      set(_exe ${b}_cuda_Rblas_device_test)
+      add_executable(${_exe} "${_mplapack_opt_common}/test/Rblas_gpu_test.cpp")
+      target_link_libraries(${_exe} PRIVATE mplapack_${b}_opt_cuda CUDA::cudart)
+      add_test(NAME ${b}_cuda_Rblas_device COMMAND ${_exe})
+      set_tests_properties(${b}_cuda_Rblas_device PROPERTIES SKIP_RETURN_CODE 77)
     endif()
   endforeach()
   if(MPLAPACK_ENABLE_MPFR_CUDA)
@@ -657,6 +718,37 @@ if(MPLAPACK_BUILD_TESTS)
       if(_mplapack_mpc_cuda_bundled)
         add_dependencies(${_l3exe} mpc_cuda_bundled)
       endif()
+      # Level 1/2/3 through the dispatchers, every call on the GPU
+      # (common/test/Rblas_gpu_test.cpp, cu_mpfr engine).
+      set(_bexe mpfr_cuda_Rblas_${_variant}_test)
+      add_executable(${_bexe}
+        "${_mplapack_opt_common}/test/Rblas_gpu_test.cpp"
+        ${_mplapack_mpfr_cuda_l3}
+        "${_mplapack_mpfr_cuda_dir}/blas3_bridge_cuda.cpp"
+        "${_mplapack_mpfr_cuda_dir}/blas3_device_cuda.cu"
+        "${_fixed}"
+        "${_mplapack_mpfr_cuda_dir}/Rgemm_rt_cuda.cu")
+      if(_variant STREQUAL "host")
+        target_compile_definitions(${_bexe} PRIVATE MPLAPACK_MPFR_CUDA_HOST_EMULATION)
+        target_link_libraries(${_bexe} PRIVATE mplapack_mpfr_opt CUDA::cudart)
+      else()
+        target_link_libraries(${_bexe} PRIVATE mplapack_mpfr_opt "${MPLAPACK_MPC_CUDA_LIBRARY}" CUDA::cudart)
+      endif()
+      target_include_directories(${_bexe} PRIVATE
+        "${MPLAPACK_MPC_CUDA_INCLUDE_DIR}" "${_mplapack_mpfr_cuda_dir}")
+      target_compile_options(${_bexe} PRIVATE "$<$<COMPILE_LANGUAGE:CUDA>:-fmad=false>")
+      set_target_properties(${_bexe} PROPERTIES
+        CUDA_ARCHITECTURES "${MPLAPACK_CUDA_ARCHITECTURES}"
+        CUDA_STANDARD 17
+        CUDA_STANDARD_REQUIRED ON
+        CUDA_SEPARABLE_COMPILATION ON
+        CUDA_RESOLVE_DEVICE_SYMBOLS ON)
+      if(_mplapack_mpc_cuda_bundled)
+        add_dependencies(${_bexe} mpc_cuda_bundled)
+      endif()
+      add_test(NAME mpfr_cuda_Rblas_${_variant} COMMAND ${_bexe})
+      set_tests_properties(mpfr_cuda_Rblas_${_variant} PROPERTIES SKIP_RETURN_CODE 77)
+
       add_test(NAME mpfr_cuda_blas3_${_variant} COMMAND ${_l3exe})
       add_test(NAME mpfr_cuda_blas3_${_variant}_runtime COMMAND ${_l3exe})
       set_tests_properties(mpfr_cuda_blas3_${_variant} PROPERTIES SKIP_RETURN_CODE 77)

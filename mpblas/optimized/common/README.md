@@ -1,16 +1,20 @@
-# Optimized Rgemm for dd, td, qd and binary128
+# Optimized Rgemm and Level 1/2/3 BLAS
 
-Header-only code shared by `libmplapack_{dd,td,qd,binary128}_opt` (CPU) and
+Rgemm: header-only code shared by `libmplapack_{dd,td,qd,binary128}_opt` (CPU) and
 `libmplapack_{dd,td,qd}_opt_cuda` (GPU). It covers the matrix-multiplication
 features of [BNCmatmul](https://github.com/tkouya/bncmatmul): SIMD, cache
 blocking, OpenMP, Strassen/Winograd and the Ozaki scheme on the CPU, and naive,
 tiled, Winograd and Ozaki kernels on the GPU. The code is an independent
 implementation of the algorithms, not a copy of BNCmatmul (LGPL).
 
+Level 1/2/3 BLAS (`Rsyrk`, `Rsyr2k`, `Rsymm`, `Rtrmm`, `Rtrsm`, `Rgemv`,
+`Rsymv`, `Rtrmv`, `Rger`, `Rsyr`, `Rsyr2`, `Rscal`, `Rswap`, `Rrot`): OpenMP for
+every optimized library, and the GPU for dd, td and qd. See
+[Level 1/2/3 BLAS](#level-123-blas).
+
 | | dd (106 bits) | td (159 bits) | qd (212 bits) | binary128 (113 bits) |
 |---|---|---|---|---|
-| CPU conventional | blocked + OpenMP + AVX2 SIMD, **bit-identical** | blocked + OpenMP, **bit-identical** | blocked + OpenMP, **bit-identical** | blocked + OpenMP, **bit-identical** |
-| CPU branch-free SIMD | (the default is branch-free) | `MPLAPACK_TD_GEMM_BF=1` (AVX2) | `MPLAPACK_QD_GEMM_BF=1` (AVX2) | no hardware SIMD for binary128 |
+| CPU conventional | blocked + OpenMP + AVX2 SIMD (BF), **bit-identical** | blocked + OpenMP + AVX2 SIMD (BF), **bit-identical** | blocked + OpenMP + AVX2 SIMD (BF), **bit-identical** | blocked + OpenMP, **bit-identical** |
 | CPU Winograd | `MPLAPACK_DD_GEMM_WINOGRAD_CUTOFF=N` | `MPLAPACK_TD_GEMM_WINOGRAD_CUTOFF=N` | `MPLAPACK_QD_GEMM_WINOGRAD_CUTOFF=N` | `MPLAPACK_BINARY128_GEMM_WINOGRAD_CUTOFF=N` |
 | CPU Ozaki | `MPLAPACK_DD_GEMM_OZAKI=1` | `MPLAPACK_TD_GEMM_OZAKI=1` | `MPLAPACK_QD_GEMM_OZAKI=1` | `MPLAPACK_BINARY128_GEMM_OZAKI=1` |
 | GPU naive / tiled | bit-identical to the CPU | bit-identical to the CPU | bit-identical to the CPU | (CPU only) |
@@ -22,7 +26,7 @@ in the same order, as in `openmp/Rgemm_{NN,NT,TN,TT}_omp.cpp`. Only the loops
 over i and j are blocked and reordered. Every combination of transposes is
 supported.
 
-Winograd, Ozaki and the td/qd branch-free kernels are opt-in. Their results differ
+Winograd and Ozaki are opt-in. Their results differ
 from the conventional ones in rounding, and their errors are bounded normwise,
 not elementwise.
 
@@ -31,14 +35,20 @@ not elementwise.
 | File | Contents |
 |---|---|
 | `Rgemm_blocked_common.h` | blocked engine (packing, OpenMP over C blocks), generic scalar kernel |
-| `Rgemm_simd_kernels_common.h` | dd kernel, td/qd branch-free kernels (vectorized over i) |
+| `Rgemm_simd_kernels_common.h` | dd/td/qd branch-free kernels (vectorized over i) |
 | `Rgemm_simd_common.h` | AVX2 / baseline function multiversioning (x86-64 ELF), `omp simd` |
-| `Rgemm_qd_ops_common.h` | dd/td/qd arithmetic on doubles for host and device, identical to libqd |
+| `Rgemm_qd_ops_common.h` | dd/td/qd branch-free arithmetic on doubles for host and device, identical to libQD3 built with `QD_BF` |
 | `Rgemm_winograd_common.h` | Winograd recursion (BNCmatmul's schedule), CPU backend |
 | `Rgemm_ozaki_common.h` | Ozaki splitting, exact integer DGEMM, accumulation |
 | `Rgemm_cpu_common.h` | CPU driver: environment variables, choice of algorithm |
 | `Rgemm_cuda_ops_common.h`, `Rgemm_cuda_common.cuh` | GPU kernels, and their host emulation |
 | `Rgemm_cuda_bridge_common.h` | GPU eligibility, choice of algorithm, CPU fallback |
+| `Rblas_lanes_common.h` | Level 1/2/3 BLAS as independent lanes (host and device) |
+| `Rblas_calls_common.h` | BLAS arguments to lane descriptions |
+| `Rblas_cpu_common.h` | OpenMP over the lanes, for every type |
+| `Rblas_cuda_common.cuh`, `Rblas_cuda_bridge_common.h` | the lanes on the GPU (dd, td, qd), host emulation, transfers |
+| `blas/R*.cpp`, `blas/R*_omp.cpp` | CPU dispatchers; the reference code renamed `R*_reference_cpu` and `R*_omp` |
+| `blas_cuda/R*.cpp`, `blas_cuda/Rblas_bridge_cuda.cpp` | dd/td/qd CUDA dispatchers and `R*_gpu` |
 
 Per type, `<type>/openmp/Rgemm_blocked_omp.cpp` instantiates the CPU code and
 is called by `<type>/Rgemm.cpp`. `<type>/cuda/{Rgemm.cpp,
@@ -61,21 +71,19 @@ Environment variables are read at every call. `<P>` is one of `MPLAPACK_DD`,
 | `<P>_GEMM_WINOGRAD_CUTOFF=N` | Winograd when `min(m,n,k) > N` (default 0: off) |
 | `<P>_GEMM_OZAKI=1` | Ozaki scheme (takes precedence over Winograd) |
 | `<P>_GEMM_OZAKI_SLICES=S` | number of slices (default: enough for precision + 8 bits) |
-| `MPLAPACK_TD_GEMM_BF=1` | td: branch-free SIMD kernel (Kouya's TWBFAdd/TWBFMul) |
-| `MPLAPACK_QD_GEMM_BF=1` | qd: branch-free SIMD kernel (Kouya's QWBFAdd/QDBFMul) |
 
-SIMD:
+Arithmetic and SIMD:
 
-- **dd:** libqd's `dd_real` IEEE addition and multiplication have no branches.
-  The kernel performs them on the high and low words of 4 elements of C at a
-  time (AVX2 + FMA). It uses FMA exactly where libqd does (`QD_FMS`).
-- **td, qd:** libqd's IEEE `td_real` / `qd_real` additions branch on the
-  data, so the conventional td and qd kernels are scalar.
-  `MPLAPACK_TD_GEMM_BF=1` uses `td_real::bf_add` / `bf_mul` (bit-identical to
-  them). `MPLAPACK_QD_GEMM_BF=1` uses
-  `qd_real::bf_add` / `bf_mul` instead, which can be vectorized; its results
-  are bit-identical to libqd's `bf_*` functions, not to the default
-  `qd_real` operators.
+- MPLAPACK computes dd, td and qd with the branch-free (BF) arithmetic of
+  libQD3 (Kouya's DWBFAdd/DWBFMul, TWBFAdd/TWBFMul, QWBFAdd/QWBFMul).
+  libQD3 must be built with `QD_BF` (CMake `-DQD_ENABLE_BF=ON`; the bundled
+  `external/qd` does so, and the configure step rejects a libQD3 without it),
+  so that `+`, `-` (`a + (-b)`) and `*` of `dd_real`, `td_real` and
+  `qd_real` are the BF functions. The kernels are therefore bit-identical to
+  the C++ operators, and so to the reference BLAS.
+- BF additions and multiplications have no data-dependent branches. The
+  kernels perform them on the words of 4 elements of C at a time (AVX2 +
+  FMA). They use FMA exactly where libQD3 does (`QD_FMS`).
 - **Instruction sets:** on x86-64 ELF systems the kernels are built twice,
   for AVX2 + FMA (x86-64-v3) and for the baseline, and the variant is chosen
   when the library is loaded. AVX-512 is not used. Both variants produce the
@@ -116,27 +124,60 @@ GPU run fails, uses the CPU code above.
 | `<P>_CUDA_OZAKI=1` | Ozaki: slices made on the host, products by cuBLAS DGEMM, sums on the GPU |
 | `<P>_CUDA_OZAKI_SLICES=S` | number of slices |
 | `<P>_CUDA_VERBOSE=1` | report CUDA errors that cause a CPU fallback |
-| `MPLAPACK_DD_CUDA_LEGACY=1` | dd: the former 2010-2011 kernels (`Rgemm_fermi.cu`, sloppy dd arithmetic) |
+| `MPLAPACK_DD_CUDA_LEGACY=1` | dd: the former 2010-2011 kernels (`Rgemm_fermi.cu`; BF dd arithmetic, its own summation order) |
 
 The naive and tiled kernels are bit-identical to the CPU `Rgemm`. The device
-functions reproduce libqd's operations, compiled with `-fmad=false`. The GPU
+functions are libQD3's BF operations, compiled with `-fmad=false`. The GPU
 Ozaki result is bit-identical to the CPU Ozaki result.
-
-The GPU is used only when libqd is configured with IEEE add and accurate
-multiplication. This is how `external/qd` (libQD3 1.6.0) is built.
 
 Limitations:
 
 - one element of C per thread;
-- td's and qd's IEEE additions index a local array and use a local-memory
-  frame per thread (192 bytes for qd);
 - Ozaki keeps all slices on the GPU (`S (mk + kn)` doubles);
 - not yet measured on a GPU.
+
+## Level 1/2/3 BLAS
+
+Each routine is split into lanes that are independent of each other: an
+element of the referenced triangle (`Rsyrk`, `Rsyr2k`, `Rsyr`, `Rsyr2`), an
+element of A (`Rger`), an element of y or x (`Rgemv`, `Rsymv`, `Rtrmv`, Level
+1), a column of B or C for side L and a row for side R (`Rsymm`, `Rtrmm`,
+`Rtrsm`). Every lane performs the operations of the reference routine
+(`mpblas/reference`, unchanged) for its elements, in the same order, so that
+the result is the reference result bit for bit whatever the engine:
+
+- **CPU (every type):** `blas/R*.cpp` runs the lanes in parallel with OpenMP
+  (`R*_omp`) and otherwise the reference code (`R*_reference_cpu`). The
+  arithmetic is that of the C++ type. For MPFR and GMP, the precision,
+  rounding mode and exponent range of the calling thread are installed in
+  every worker.
+- **GPU (dd, td, qd):** `blas_cuda/R*.cpp` sends eligible calls to the GPU
+  (`R*_gpu`, one thread per lane) with the BF arithmetic of
+  `Rgemm_qd_ops_common.h`, including libQD3's division (`accurate_div`), and
+  otherwise falls back to the CPU code. dd's former `Rsyrk` kernels
+  (`dd/cuda/Rsyrk_legacy_cuda.cu`) remain available with
+  `MPLAPACK_DD_CUDA_LEGACY=1`.
+
+Invalid arguments, quick returns, `alpha == 0` (Level 2/3) and zero
+increments always run the reference code.
+
+| Variable | Meaning |
+|---|---|
+| `MPLAPACK_BLAS_OMP=0` | no OpenMP lanes |
+| `MPLAPACK_BLAS_OMP_MIN=N` | smallest number of multiply-adds for OpenMP (32768; Level 1 needs 4N) |
+| `<P>_BLAS_CUDA=0` | dd/td/qd: no GPU |
+| `<P>_BLAS_CUDA_MIN=N` | smallest number of multiply-adds sent to the GPU (32768) |
+| `<P>_BLAS_CUDA_L12=1` | also Level 1 and 2 on the GPU (off: transfer-bound, for debugging) |
+
+Each operand is copied to the GPU as the memory span it occupies, and the
+written operands are copied back. Limitations: Level 1 and 2 are bound by
+the transfers; with side L or R, `Rsymm`, `Rtrmm` and `Rtrsm` have only n or
+m lanes; the GPU code has not been run on a device yet.
 
 ## Benchmarks
 
 `benchmark/go.Rgemm_algo.sh` runs `Rgemm.{dd,td,qd,binary128}_opt` once per
-algorithm: blocked, former, Winograd, Ozaki, and td/qd BF. It plots MFLOPS against
+algorithm: blocked, former, Winograd and Ozaki. It plots MFLOPS against
 the dimension, one PDF page per type (`Rgemm_algo.plt.in`).
 
 `benchmark/go.Rgemm_cuda.sh` does the same for `Rgemm.{dd,td,qd}_cuda_total`:
@@ -154,9 +195,13 @@ Both build systems build the programs and generate the scripts:
 
 | CMake test | autotools `make check` in | Checks |
 |---|---|---|
-| `{dd,td,qd,binary128}_opt_Rgemm` | `mpblas/optimized/<type>` (`Rgemm_opt_test`) | blocked = OpenMP loops bit for bit; Winograd (cutoffs 1, 2, 3, 8), Ozaki, td/qd BF exact on integers and within `2^(20-p) (k|alpha| max|A| max|B| + |beta| max|C|)` on reals; Ozaki fallback |
+| `{dd,td,qd,binary128}_opt_Rgemm` | `mpblas/optimized/<type>` (`Rgemm_opt_test`) | blocked = OpenMP loops bit for bit; Winograd (cutoffs 1, 2, 3, 8), Ozaki exact on integers and within `2^(20-p) (k|alpha| max|A| max|B| + |beta| max|C|)` on reals; Ozaki fallback |
 | `{dd,td,qd}_cuda_Rgemm_host` | `mpblas/optimized/{dd,td,qd}` (`Rgemm_gpu_host_test`) | GPU code run on the host: naive = CPU bit for bit, Ozaki = CPU Ozaki bit for bit, Winograd exact / bounded |
 | `{dd,td,qd}_cuda_Rgemm_device` | | the same on the GPU, including the tiled kernel; skipped without a device |
+| `<type>_opt_Rblas_omp` | `mpblas/optimized/<type>` (`Rblas_omp_test_<type>`) | Level 1/2/3 BLAS with OpenMP = reference bit for bit (all transposes, sides, triangles, diagonals, alpha/beta in {1, 0, random}, increments 1, 2, -2) |
+| `{dd,td,qd}_cuda_Rblas_host` | `mpblas/optimized/{dd,td,qd}` (`Rblas_gpu_host_test_<type>`) | the same with every call on the GPU, run on the host |
+| `{dd,td,qd}_cuda_Rblas_device` | | the same on the GPU; skipped without a device |
+| `qd_ops` | `mpblas/optimized/dd` (`Rqd_ops_test`) | `Rgemm_qd_ops_common.h` = libQD3 operators (`+ - * /`, mixed double forms) bit for bit, NaNs aside, including special values and rescaled division |
 
 autotools builds the tests from `<type>/test/*.cpp`, which include the files
 of `common/test`.

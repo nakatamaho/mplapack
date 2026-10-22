@@ -57,11 +57,6 @@ namespace mplapack_gemm {
 template <class T, class Ops> bool gemm_cuda_bridge(const char *prefix, const shape &s, const T &alpha, const T &beta, const T *A, const T *B, T *C) {
     typedef typename Ops::F F;
     static_assert(sizeof(T) == sizeof(F), "element layout");
-#if !MPLAPACK_GEMM_QD_OPS_MATCH_LIBQD
-    // the device arithmetic reproduces libqd's IEEE add / accurate mul only
-    (void)prefix, (void)s, (void)alpha, (void)beta, (void)A, (void)B, (void)C;
-    return false;
-#else
     const std::string P(prefix);
     if (env_long((P + "_CUDA").c_str(), 1) == 0)
         return false;
@@ -97,7 +92,6 @@ template <class T, class Ops> bool gemm_cuda_bridge(const char *prefix, const sh
     if (rc != 0 && verbose)
         std::fprintf(stderr, "%s Rgemm: GPU error %d, computing on the CPU\n", prefix, rc);
     return rc == 0;
-#endif
 }
 
 } // namespace mplapack_gemm

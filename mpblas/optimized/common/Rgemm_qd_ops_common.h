@@ -27,31 +27,34 @@
  */
 
 /*
- * Double-double and quad-double arithmetic on plain doubles, usable on the
- * host and in CUDA device code.  Every function performs the operations of
- * the corresponding libqd (QD3) inline function in the same order:
+ * Double-, triple- and quad-double arithmetic on plain doubles, usable on
+ * the host and in CUDA device code.  Every function performs the operations
+ * of the corresponding libQD3 inline function in the same order:
  *
- *   dd_add  dd_real::ieee_add        dd_mul  operator*(dd_real, dd_real)
- *   qd_add  qd_real::ieee_add        qd_mul  qd_real::accurate_mul
- *   qd_bf_add / qd_bf_mul            qd_real::bf_add / qd_real::bf_mul
- *                                    (Kouya, branch-free)
- *   td_add  td_real::ieee_add        td_mul  operator*(td_real, td_real)
- *   td_sub  operator-(td_real, td_real) (IEEE)
- *   td_bf_add / td_bf_mul            td_real::bf_add / td_real::bf_mul
+ *   dd_bf_add  dd_real::bf_add (Kouya Algorithm 6, DWBFAdd)
+ *   dd_bf_mul  dd_real::bf_mul (Algorithm 8, DWBFMul)
+ *   td_bf_add  td_real::bf_add (TWBFAdd)    td_bf_mul  td_real::bf_mul (TWBFMul)
+ *   qd_bf_add  qd_real::bf_add (QWBFAdd)    qd_bf_mul  qd_real::bf_mul (QWBFMul)
+ *   dd_add_d / td_add_d / qd_add_d          operator+(x_real, double)
+ *   dd_mul_d / td_mul_d / qd_mul_d          operator*(x_real, double)
+ *   dd_div / td_div / qd_div                operator/(x_real, x_real) (accurate_div)
  *
- * so that the results are bit-identical to libqd configured with
- * QD_IEEE_ADD and without QD_SLOPPY_MUL / QD_BF_*, which is how MPLAPACK
- * builds it (external/qd).  The error-free product uses fma when libqd does
- * (QD_FMS defined in qd/qd_config.h), Dekker's splitting otherwise.  Code
- * using these functions must be compiled without floating-point contraction
- * (-ffp-contract=off, nvcc -fmad=false) and without value-unsafe
- * optimizations.
+ * MPLAPACK computes dd, td and qd with the branch-free (BF) arithmetic of
+ * libQD3: libQD3 must be built with QD_BF (QD_BF_ADD and QD_BF_MUL), as
+ * external/qd does, so that operator+, operator- (a + (-b)) and operator*
+ * of dd_real, td_real and qd_real are these functions and the results are
+ * bit-identical to the C++ types.  The error-free product uses fma when
+ * libQD3 does (QD_FMS defined in qd/qd_config.h), Dekker's splitting
+ * otherwise.  Code using these functions must be compiled without
+ * floating-point contraction (-ffp-contract=off, nvcc -fmad=false) and
+ * without value-unsafe optimizations.
  */
 
 #ifndef _MPLAPACK_RGEMM_QD_OPS_COMMON_H_
 #define _MPLAPACK_RGEMM_QD_OPS_COMMON_H_
 
 #include <cmath>
+#include <limits>
 #include <qd/qd_config.h>
 
 #if defined(__CUDACC__)
@@ -72,11 +75,12 @@
 #define MPLAPACK_GEMM_ISINF(a) std::isinf(a)
 #endif
 
-// The configurations of libqd these functions reproduce.
-#if defined(QD_IEEE_ADD) && !defined(QD_SLOPPY_MUL) && !defined(QD_BF_ADD) && !defined(QD_BF_MUL) && !defined(QD_BF)
+// The configuration of libQD3 these functions reproduce: BF addition and
+// multiplication (QD_BF implies both).
+#if defined(QD_BF) || (defined(QD_BF_ADD) && defined(QD_BF_MUL))
 #define MPLAPACK_GEMM_QD_OPS_MATCH_LIBQD 1
 #else
-#define MPLAPACK_GEMM_QD_OPS_MATCH_LIBQD 0
+#error "MPLAPACK needs libQD3 built with branch-free arithmetic (QD_BF; CMake -DQD_ENABLE_BF=ON)"
 #endif
 
 namespace mplapack_gemm {
@@ -146,24 +150,37 @@ MPLAPACK_GEMM_HD double two_prod(double a, double b, double &err) {
 
 // ---- double-double ----
 
-MPLAPACK_GEMM_HD dd2 dd_add(const dd2 &a, const dd2 &b) {
-    double s1, s2, t1, t2;
-    s1 = two_sum(a.x[0], b.x[0], s2);
-    t1 = two_sum(a.x[1], b.x[1], t2);
-    s2 += t1;
-    s1 = quick_two_sum(s1, s2, s2);
-    s2 += t2;
+// Kouya Algorithm 6, DWBFAdd (dd_real::bf_add)
+MPLAPACK_GEMM_HD void dd_bf_add_w(double a0, double a1, double b0, double b1, double &r0, double &r1) {
+    double g1, g1e, g2, g2e, g3, g3e, g4, g5;
+    g1 = two_sum(a0, b0, g1e);
+    g2 = two_sum(a1, b1, g2e);
+    g3 = quick_two_sum(g1, g2, g3e);
+    g4 = g1e + g2e;
+    g5 = g4 + g3e;
+    r0 = quick_two_sum(g3, g5, r1);
+}
+
+// Kouya Algorithm 8, DWBFMul (dd_real::bf_mul)
+MPLAPACK_GEMM_HD void dd_bf_mul_w(double a0, double a1, double b0, double b1, double &r0, double &r1) {
+    double p00, pe00, p01, p10, g1, g2;
+    p00 = two_prod(a0, b0, pe00);
+    p01 = a0 * b1;
+    p10 = a1 * b0;
+    g1 = p01 + p10;
+    g2 = pe00 + g1;
+    r0 = quick_two_sum(p00, g2, r1);
+}
+
+MPLAPACK_GEMM_HD dd2 dd_bf_add(const dd2 &a, const dd2 &b) {
     dd2 r;
-    r.x[0] = quick_two_sum(s1, s2, r.x[1]);
+    dd_bf_add_w(a.x[0], a.x[1], b.x[0], b.x[1], r.x[0], r.x[1]);
     return r;
 }
 
-MPLAPACK_GEMM_HD dd2 dd_mul(const dd2 &a, const dd2 &b) {
-    double p1, p2;
-    p1 = two_prod(a.x[0], b.x[0], p2);
-    p2 += (a.x[0] * b.x[1] + a.x[1] * b.x[0]);
+MPLAPACK_GEMM_HD dd2 dd_bf_mul(const dd2 &a, const dd2 &b) {
     dd2 r;
-    r.x[0] = quick_two_sum(p1, p2, r.x[1]);
+    dd_bf_mul_w(a.x[0], a.x[1], b.x[0], b.x[1], r.x[0], r.x[1]);
     return r;
 }
 
@@ -177,53 +194,7 @@ MPLAPACK_GEMM_HD dd2 dd_add_d(const dd2 &a, double b) {
     return r;
 }
 
-// The same on separate words (vectorizes better than the struct forms).
-MPLAPACK_GEMM_HD void dd_mul_w(double a0, double a1, double b0, double b1, double &r0, double &r1) {
-    double p1, p2;
-    p1 = two_prod(a0, b0, p2);
-    p2 += (a0 * b1 + a1 * b0);
-    r0 = quick_two_sum(p1, p2, r1);
-}
-
-MPLAPACK_GEMM_HD void dd_add_w(double a0, double a1, double b0, double b1, double &r0, double &r1) {
-    double s1, s2, t1, t2;
-    s1 = two_sum(a0, b0, s2);
-    t1 = two_sum(a1, b1, t2);
-    s2 += t1;
-    s1 = quick_two_sum(s1, s2, s2);
-    s2 += t2;
-    r0 = quick_two_sum(s1, s2, r1);
-}
-
 // ---- quad-double ----
-
-MPLAPACK_GEMM_HD void renorm(double &c0, double &c1, double &c2, double &c3) {
-    double s0, s1, s2 = 0.0, s3 = 0.0;
-    if (MPLAPACK_GEMM_ISINF(c0))
-        return;
-    s0 = quick_two_sum(c2, c3, c3);
-    s0 = quick_two_sum(c1, s0, c2);
-    c0 = quick_two_sum(c0, s0, c1);
-    s0 = c0;
-    s1 = c1;
-    if (s1 != 0.0) {
-        s1 = quick_two_sum(s1, c2, s2);
-        if (s2 != 0.0)
-            s2 = quick_two_sum(s2, c3, s3);
-        else
-            s1 = quick_two_sum(s1, c3, s2);
-    } else {
-        s0 = quick_two_sum(s0, c2, s1);
-        if (s1 != 0.0)
-            s1 = quick_two_sum(s1, c3, s2);
-        else
-            s0 = quick_two_sum(s0, c3, s1);
-    }
-    c0 = s0;
-    c1 = s1;
-    c2 = s2;
-    c3 = s3;
-}
 
 MPLAPACK_GEMM_HD void renorm(double &c0, double &c1, double &c2, double &c3, double &c4) {
     double s0, s1, s2 = 0.0, s3 = 0.0;
@@ -270,154 +241,6 @@ MPLAPACK_GEMM_HD void renorm(double &c0, double &c1, double &c2, double &c3, dou
     c1 = s1;
     c2 = s2;
     c3 = s3;
-}
-
-MPLAPACK_GEMM_HD void three_sum(double &a, double &b, double &c) {
-    double t1, t2, t3;
-    t1 = two_sum(a, b, t2);
-    a = two_sum(c, t1, t3);
-    b = two_sum(t2, t3, c);
-}
-
-MPLAPACK_GEMM_HD double quick_three_accum(double &a, double &b, double c) {
-    double s;
-    bool za, zb;
-    s = two_sum(b, c, b);
-    s = two_sum(a, s, a);
-    za = (a != 0.0);
-    zb = (b != 0.0);
-    if (za && zb)
-        return s;
-    if (!zb) {
-        b = a;
-        a = s;
-    } else {
-        a = s;
-    }
-    return 0.0;
-}
-
-MPLAPACK_GEMM_HD qd4 qd_add(const qd4 &a, const qd4 &b) {
-    int i, j, k;
-    double s, t;
-    double u, v; // double-length accumulator
-    double x[4] = {0.0, 0.0, 0.0, 0.0};
-
-    i = j = k = 0;
-    if (MPLAPACK_GEMM_FABS(a.x[i]) > MPLAPACK_GEMM_FABS(b.x[j]))
-        u = a.x[i++];
-    else
-        u = b.x[j++];
-    if (MPLAPACK_GEMM_FABS(a.x[i]) > MPLAPACK_GEMM_FABS(b.x[j]))
-        v = a.x[i++];
-    else
-        v = b.x[j++];
-
-    u = quick_two_sum(u, v, v);
-
-    while (k < 4) {
-        if (i >= 4 && j >= 4) {
-            x[k] = u;
-            if (k < 3)
-                x[++k] = v;
-            break;
-        }
-        if (i >= 4)
-            t = b.x[j++];
-        else if (j >= 4)
-            t = a.x[i++];
-        else if (MPLAPACK_GEMM_FABS(a.x[i]) > MPLAPACK_GEMM_FABS(b.x[j])) {
-            t = a.x[i++];
-        } else
-            t = b.x[j++];
-
-        s = quick_three_accum(u, v, t);
-        if (s != 0.0) {
-            x[k++] = s;
-        }
-    }
-
-    // add the rest
-    for (k = i; k < 4; k++)
-        x[3] += a.x[k];
-    for (k = j; k < 4; k++)
-        x[3] += b.x[k];
-
-    renorm(x[0], x[1], x[2], x[3]);
-    qd4 r;
-    r.x[0] = x[0];
-    r.x[1] = x[1];
-    r.x[2] = x[2];
-    r.x[3] = x[3];
-    return r;
-}
-
-MPLAPACK_GEMM_HD qd4 qd_mul(const qd4 &qa, const qd4 &qb) {
-    const double *a = qa.x, *b = qb.x;
-    double p0, p1, p2, p3, p4, p5;
-    double q0, q1, q2, q3, q4, q5;
-    double p6, p7, p8, p9;
-    double q6, q7, q8, q9;
-    double r0, r1;
-    double t0, t1;
-    double s0, s1, s2;
-
-    p0 = two_prod(a[0], b[0], q0);
-
-    p1 = two_prod(a[0], b[1], q1);
-    p2 = two_prod(a[1], b[0], q2);
-
-    p3 = two_prod(a[0], b[2], q3);
-    p4 = two_prod(a[1], b[1], q4);
-    p5 = two_prod(a[2], b[0], q5);
-
-    // Start Accumulation
-    three_sum(p1, p2, q0);
-
-    // Six-Three Sum of p2, q1, q2, p3, p4, p5.
-    three_sum(p2, q1, q2);
-    three_sum(p3, p4, p5);
-    // compute (s0, s1, s2) = (p2, q1, q2) + (p3, p4, p5).
-    s0 = two_sum(p2, p3, t0);
-    s1 = two_sum(q1, p4, t1);
-    s2 = q2 + p5;
-    s1 = two_sum(s1, t0, t0);
-    s2 += (t0 + t1);
-
-    // O(eps^3) order terms
-    p6 = two_prod(a[0], b[3], q6);
-    p7 = two_prod(a[1], b[2], q7);
-    p8 = two_prod(a[2], b[1], q8);
-    p9 = two_prod(a[3], b[0], q9);
-
-    // Nine-Two-Sum of q0, s1, q3, q4, q5, p6, p7, p8, p9.
-    q0 = two_sum(q0, q3, q3);
-    q4 = two_sum(q4, q5, q5);
-    p6 = two_sum(p6, p7, p7);
-    p8 = two_sum(p8, p9, p9);
-    // Compute (t0, t1) = (q0, q3) + (q4, q5).
-    t0 = two_sum(q0, q4, t1);
-    t1 += (q3 + q5);
-    // Compute (r0, r1) = (p6, p7) + (p8, p9).
-    r0 = two_sum(p6, p8, r1);
-    r1 += (p7 + p9);
-    // Compute (q3, q4) = (t0, t1) + (r0, r1).
-    q3 = two_sum(t0, r0, q4);
-    q4 += (t1 + r1);
-    // Compute (t0, t1) = (q3, q4) + s1.
-    t0 = two_sum(q3, s1, t1);
-    t1 += q4;
-
-    // O(eps^4) terms -- Nine-One-Sum
-    t1 += a[1] * b[3] + a[2] * b[2] + a[3] * b[1] + q6 + q7 + q8 + q9 + s2;
-
-    renorm(p0, p1, s0, t0, t1);
-    qd4 r;
-    r.x[0] = p0;
-    r.x[1] = p1;
-    r.x[2] = s0;
-    r.x[3] = t0;
-    return r;
 }
 
 // qd + double (operator+(const qd_real &, double))
@@ -563,130 +386,12 @@ MPLAPACK_GEMM_HD void td_renorm(double &c0, double &c1, double &c2, double &c3) 
     c2 = s2;
 }
 
-MPLAPACK_GEMM_HD void td_renorm(double &c0, double &c1, double &c2, double &c3, double &c4) {
-    double s0, s1, s2 = 0.0, s3 = 0.0;
-    if (MPLAPACK_GEMM_ISINF(c0))
-        return;
-    s0 = quick_two_sum(c3, c4, c4);
-    s0 = quick_two_sum(c2, s0, c3);
-    s0 = quick_two_sum(c1, s0, c2);
-    c0 = quick_two_sum(c0, s0, c1);
-    s0 = c0;
-    s1 = c1;
-    if (s1 != 0.0) {
-        s1 = quick_two_sum(s1, c2, s2);
-        if (s2 != 0.0) {
-            s2 = quick_two_sum(s2, c3, s3);
-            if (s3 != 0.0) {
-                s3 += c4;
-            } else {
-                s2 = quick_two_sum(s2, c4, s3);
-            }
-        } else {
-            s1 = quick_two_sum(s1, c3, s2);
-            if (s2 != 0.0) {
-                s2 = quick_two_sum(s2, c4, s3);
-            } else {
-                s1 = quick_two_sum(s1, c4, s2);
-            }
-        }
-    } else {
-        s0 = quick_two_sum(s0, c2, s1);
-        if (s1 != 0.0) {
-            s1 = quick_two_sum(s1, c3, s2);
-            if (s2 != 0.0) {
-                s2 = quick_two_sum(s2, c4, s3);
-            } else {
-                s1 = quick_two_sum(s1, c4, s2);
-            }
-        } else {
-            s0 = quick_two_sum(s0, c3, s1);
-            if (s1 != 0.0) {
-                s1 = quick_two_sum(s1, c4, s2);
-            } else {
-                s0 = quick_two_sum(s0, c4, s1);
-            }
-        }
-    }
-    c0 = s0;
-    c1 = s1;
-    c2 = s2;
-}
-
 MPLAPACK_GEMM_HD td3 td_make(double a, double b, double c) {
     td3 r;
     r.x[0] = a;
     r.x[1] = b;
     r.x[2] = c;
     return r;
-}
-
-MPLAPACK_GEMM_HD td3 td_add(const td3 &ta, const td3 &tb) {
-    const double *a = ta.x, *b = tb.x;
-    int i = 0, j = 0, k = 0;
-    double s, t, u, v;
-    double x[4] = {0.0, 0.0, 0.0, 0.0};
-
-    if (MPLAPACK_GEMM_FABS(a[i]) > MPLAPACK_GEMM_FABS(b[j]))
-        u = a[i++];
-    else
-        u = b[j++];
-
-    if (i >= 3)
-        v = b[j++];
-    else if (j >= 3)
-        v = a[i++];
-    else if (MPLAPACK_GEMM_FABS(a[i]) > MPLAPACK_GEMM_FABS(b[j]))
-        v = a[i++];
-    else
-        v = b[j++];
-
-    u = quick_two_sum(u, v, v);
-
-    while (k < 3) {
-        if (i >= 3 && j >= 3) {
-            x[k] = u;
-            if (k < 2)
-                x[++k] = v;
-            else
-                x[3] += v;
-            break;
-        }
-        if (i >= 3)
-            t = b[j++];
-        else if (j >= 3)
-            t = a[i++];
-        else if (MPLAPACK_GEMM_FABS(a[i]) > MPLAPACK_GEMM_FABS(b[j]))
-            t = a[i++];
-        else
-            t = b[j++];
-
-        s = quick_three_accum(u, v, t);
-        if (s != 0.0)
-            x[k++] = s;
-    }
-
-    for (k = i; k < 3; k++)
-        x[3] += a[k];
-    for (k = j; k < 3; k++)
-        x[3] += b[k];
-
-    td_renorm(x[0], x[1], x[2], x[3]);
-    return td_make(x[0], x[1], x[2]);
-}
-
-// operator-(td_real, td_real) with QD_IEEE_ADD
-MPLAPACK_GEMM_HD td3 td_sub(const td3 &ta, const td3 &tb) {
-    const double *a = ta.x, *b = tb.x;
-    double s0, s1, s2, t0, t1, t2;
-    s0 = two_diff(a[0], b[0], t0);
-    s1 = two_diff(a[1], b[1], t1);
-    s2 = two_diff(a[2], b[2], t2);
-    s1 = two_sum(s1, t0, t0);
-    three_sum(s2, t0, t1);
-    t0 += t2;
-    td_renorm(s0, s1, s2, t0);
-    return td_make(s0, s1, s2);
 }
 
 // operator+(const td_real &, double)
@@ -697,34 +402,6 @@ MPLAPACK_GEMM_HD td3 td_add_d(const td3 &a, double b) {
     c2 = two_sum(a.x[2], e, e);
     td_renorm(c0, c1, c2, e);
     return td_make(c0, c1, c2);
-}
-
-MPLAPACK_GEMM_HD td3 td_mul(const td3 &ta, const td3 &tb) {
-    const double *a = ta.x, *b = tb.x;
-    double p0, p1, p2, p3, p4, p5;
-    double q0, q1, q2, q3, q4, q5;
-    double t0, t1, s0, s1, s2;
-
-    p0 = two_prod(a[0], b[0], q0);
-    p1 = two_prod(a[0], b[1], q1);
-    p2 = two_prod(a[1], b[0], q2);
-    p3 = two_prod(a[0], b[2], q3);
-    p4 = two_prod(a[1], b[1], q4);
-    p5 = two_prod(a[2], b[0], q5);
-
-    three_sum(p1, p2, q0);
-    three_sum(p2, q1, q2);
-    three_sum(p3, p4, p5);
-
-    s0 = two_sum(p2, p3, t0);
-    s1 = two_sum(q1, p4, t1);
-    s2 = q2 + p5;
-    s1 = two_sum(s1, t0, t0);
-    s2 += t0 + t1;
-
-    s1 += a[1] * b[2] + a[2] * b[1] + q0 + q3 + q4 + q5;
-    td_renorm(p0, p1, s0, s1, s2);
-    return td_make(p0, p1, s0);
 }
 
 // Kouya, branch-free triple-word addition (TWBFAdd)
@@ -785,6 +462,246 @@ MPLAPACK_GEMM_HD td3 td_bf_mul(const td3 &a, const td3 &b) {
     td3 r;
     td_bf_mul_w(a.x[0], a.x[1], a.x[2], b.x[0], b.x[1], b.x[2], r.x[0], r.x[1], r.x[2]);
     return r;
+}
+
+
+// ---- division (operator/ of libQD3 without QD_SLOPPY_DIV: accurate_div,
+// with its special values and the rescaling of large numerators; the
+// additions and subtractions inside are the BF ones) ----
+
+MPLAPACK_GEMM_HD double qd_ops_nan() {
+#if defined(__CUDA_ARCH__)
+    return __longlong_as_double(0x7ff8000000000000LL);
+#else
+    return std::numeric_limits<double>::quiet_NaN();
+#endif
+}
+MPLAPACK_GEMM_HD double qd_ops_inf() {
+#if defined(__CUDA_ARCH__)
+    return __longlong_as_double(0x7ff0000000000000LL);
+#else
+    return std::numeric_limits<double>::infinity();
+#endif
+}
+MPLAPACK_GEMM_HD bool qd_ops_isnan(double a) {
+#if defined(__CUDA_ARCH__)
+    return isnan(a);
+#else
+    return std::isnan(a);
+#endif
+}
+MPLAPACK_GEMM_HD bool qd_ops_signbit(double a) {
+#if defined(__CUDA_ARCH__)
+    return signbit(a);
+#else
+    return std::signbit(a);
+#endif
+}
+MPLAPACK_GEMM_HD double qd_ops_copysign(double a, double b) {
+#if defined(__CUDA_ARCH__)
+    return copysign(a, b);
+#else
+    return std::copysign(a, b);
+#endif
+}
+
+// Special cases of x_div_special: 0 = none, 1 = NaN, 2 = +-Inf, 3 = +-0;
+// the sign is negative if the signs of the leading words differ.
+MPLAPACK_GEMM_HD int qd_ops_div_special(bool a_nan, bool b_nan, bool a_inf, bool b_inf, bool a_zero, bool b_zero) {
+    if (a_nan || b_nan || (a_inf && b_inf) || (a_zero && b_zero))
+        return 1;
+    if (b_zero || a_inf)
+        return 2;
+    if (a_zero || b_inf)
+        return 3;
+    return 0;
+}
+
+// operator*(const dd_real &, double)
+MPLAPACK_GEMM_HD dd2 dd_mul_d(const dd2 &a, double b) {
+    double p1, p2;
+    p1 = two_prod(a.x[0], b, p2);
+    p2 += (a.x[1] * b);
+    dd2 r;
+    r.x[0] = quick_two_sum(p1, p2, r.x[1]);
+    return r;
+}
+
+MPLAPACK_GEMM_HD dd2 dd_fill(double v) {
+    dd2 r;
+    r.x[0] = r.x[1] = v;
+    return r;
+}
+
+MPLAPACK_GEMM_HD dd2 dd_neg(const dd2 &a) {
+    dd2 r;
+    r.x[0] = -a.x[0];
+    r.x[1] = -a.x[1];
+    return r;
+}
+
+// dd_real::accurate_div
+MPLAPACK_GEMM_HD dd2 dd_div(const dd2 &a, const dd2 &b) {
+    const bool negative = qd_ops_signbit(a.x[0]) != qd_ops_signbit(b.x[0]);
+    const int sp = qd_ops_div_special(qd_ops_isnan(a.x[0]) || qd_ops_isnan(a.x[1]), qd_ops_isnan(b.x[0]) || qd_ops_isnan(b.x[1]),
+                                      MPLAPACK_GEMM_ISINF(a.x[0]), MPLAPACK_GEMM_ISINF(b.x[0]), a.x[0] == 0.0, b.x[0] == 0.0);
+    if (sp == 1)
+        return dd_fill(qd_ops_nan());
+    if (sp == 2)
+        return negative ? dd_fill(-qd_ops_inf()) : dd_fill(qd_ops_inf());
+    if (sp == 3) {
+        dd2 z;
+        z.x[0] = qd_ops_copysign(0.0, negative ? -1.0 : 1.0);
+        z.x[1] = 0.0;
+        return z;
+    }
+    const bool rescale = MPLAPACK_GEMM_FABS(a.x[0]) > 0x1p+969;
+    dd2 aa = a;
+    if (rescale)
+        aa.x[0] = a.x[0] * 0x1p-53, aa.x[1] = a.x[1] * 0x1p-53;
+    double q1 = aa.x[0] / b.x[0];
+    if (MPLAPACK_GEMM_ISINF(q1))
+        return qd_ops_signbit(q1) ? dd_fill(-qd_ops_inf()) : dd_fill(qd_ops_inf());
+    dd2 r = dd_bf_add(aa, dd_neg(dd_mul_d(b, q1)));
+    double q2 = r.x[0] / b.x[0];
+    r = dd_bf_add(r, dd_neg(dd_mul_d(b, q2)));
+    double q3 = r.x[0] / b.x[0];
+    q1 = quick_two_sum(q1, q2, q2);
+    dd2 t;
+    t.x[0] = q1;
+    t.x[1] = q2;
+    r = dd_add_d(t, q3);
+    if (rescale)
+        r.x[0] = r.x[0] * 0x1p+53, r.x[1] = r.x[1] * 0x1p+53;
+    if (MPLAPACK_GEMM_ISINF(r.x[0]))
+        return qd_ops_signbit(r.x[0]) ? dd_fill(-qd_ops_inf()) : dd_fill(qd_ops_inf());
+    return r;
+}
+
+// operator*(const td_real &, double)
+MPLAPACK_GEMM_HD td3 td_mul_d(const td3 &a, double b) {
+    double p0, p1, p2, q0, q1, q2;
+    p0 = two_prod(a.x[0], b, q0);
+    p1 = two_prod(a.x[1], b, q1);
+    p2 = two_prod(a.x[2], b, q2);
+    p1 = two_sum(p1, q0, q0);
+    p2 = two_sum(p2, q1, q1);
+    q0 += q1 + q2;
+    td_renorm(p0, p1, p2, q0);
+    return td_make(p0, p1, p2);
+}
+
+MPLAPACK_GEMM_HD td3 td_neg(const td3 &a) { return td_make(-a.x[0], -a.x[1], -a.x[2]); }
+
+// td_real::accurate_div
+MPLAPACK_GEMM_HD td3 td_div(const td3 &a, const td3 &b) {
+    const bool negative = qd_ops_signbit(a.x[0]) != qd_ops_signbit(b.x[0]);
+    const int sp = qd_ops_div_special(qd_ops_isnan(a.x[0]) || qd_ops_isnan(a.x[1]) || qd_ops_isnan(a.x[2]),
+                                      qd_ops_isnan(b.x[0]) || qd_ops_isnan(b.x[1]) || qd_ops_isnan(b.x[2]),
+                                      MPLAPACK_GEMM_ISINF(a.x[0]), MPLAPACK_GEMM_ISINF(b.x[0]),
+                                      a.x[0] == 0.0 && a.x[1] == 0.0 && a.x[2] == 0.0, b.x[0] == 0.0 && b.x[1] == 0.0 && b.x[2] == 0.0);
+    const double inf = qd_ops_inf();
+    if (sp == 1)
+        return td_make(qd_ops_nan(), qd_ops_nan(), qd_ops_nan());
+    if (sp == 2)
+        return negative ? td_make(-inf, -inf, -inf) : td_make(inf, inf, inf);
+    if (sp == 3)
+        return td_make(qd_ops_copysign(0.0, negative ? -1.0 : 1.0), 0.0, 0.0);
+    const bool rescale = MPLAPACK_GEMM_FABS(a.x[0]) > 0x1p+969;
+    const td3 aa = rescale ? td_make(a.x[0] * 0x1p-53, a.x[1] * 0x1p-53, a.x[2] * 0x1p-53) : a;
+    double q0 = aa.x[0] / b.x[0];
+    if (MPLAPACK_GEMM_ISINF(q0))
+        return qd_ops_signbit(q0) ? td_make(-inf, -inf, -inf) : td_make(inf, inf, inf);
+    td3 r = td_bf_add(aa, td_neg(td_mul_d(b, q0)));
+    double q1 = r.x[0] / b.x[0];
+    r = td_bf_add(r, td_neg(td_mul_d(b, q1)));
+    double q2 = r.x[0] / b.x[0];
+    r = td_bf_add(r, td_neg(td_mul_d(b, q2)));
+    double q3 = r.x[0] / b.x[0];
+    td_renorm(q0, q1, q2, q3);
+    td3 res = td_make(q0, q1, q2);
+    if (rescale)
+        res = td_make(res.x[0] * 0x1p+53, res.x[1] * 0x1p+53, res.x[2] * 0x1p+53);
+    if (MPLAPACK_GEMM_ISINF(res.x[0]))
+        return qd_ops_signbit(res.x[0]) ? td_make(-inf, -inf, -inf) : td_make(inf, inf, inf);
+    return res;
+}
+
+MPLAPACK_GEMM_HD void qd_three_sum(double &a, double &b, double &c) {
+    double t1, t2, t3;
+    t1 = two_sum(a, b, t2);
+    a = two_sum(c, t1, t3);
+    b = two_sum(t2, t3, c);
+}
+
+MPLAPACK_GEMM_HD void qd_three_sum2(double &a, double &b, double &c) {
+    double t1, t2, t3;
+    t1 = two_sum(a, b, t2);
+    a = two_sum(c, t1, t3);
+    b = t2 + t3;
+}
+
+MPLAPACK_GEMM_HD qd4 qd_make(double a, double b, double c, double d) {
+    qd4 r;
+    r.x[0] = a;
+    r.x[1] = b;
+    r.x[2] = c;
+    r.x[3] = d;
+    return r;
+}
+
+// operator*(const qd_real &, double)
+MPLAPACK_GEMM_HD qd4 qd_mul_d(const qd4 &a, double b) {
+    double p0, p1, p2, p3, q0, q1, q2, s0, s1, s2, s3, s4;
+    p0 = two_prod(a.x[0], b, q0);
+    p1 = two_prod(a.x[1], b, q1);
+    p2 = two_prod(a.x[2], b, q2);
+    p3 = a.x[3] * b;
+    s0 = p0;
+    s1 = two_sum(q0, p1, s2);
+    qd_three_sum(s2, q1, p2);
+    qd_three_sum2(q1, q2, p3);
+    s3 = q1;
+    s4 = q2 + p2;
+    renorm(s0, s1, s2, s3, s4);
+    return qd_make(s0, s1, s2, s3);
+}
+
+MPLAPACK_GEMM_HD qd4 qd_neg(const qd4 &a) { return qd_make(-a.x[0], -a.x[1], -a.x[2], -a.x[3]); }
+
+// qd_real::accurate_div
+MPLAPACK_GEMM_HD qd4 qd_div(const qd4 &a, const qd4 &b) {
+    const bool negative = qd_ops_signbit(a.x[0]) != qd_ops_signbit(b.x[0]);
+    const int sp = qd_ops_div_special(qd_ops_isnan(a.x[0]) || qd_ops_isnan(a.x[1]) || qd_ops_isnan(a.x[2]) || qd_ops_isnan(a.x[3]),
+                                      qd_ops_isnan(b.x[0]) || qd_ops_isnan(b.x[1]) || qd_ops_isnan(b.x[2]) || qd_ops_isnan(b.x[3]),
+                                      MPLAPACK_GEMM_ISINF(a.x[0]), MPLAPACK_GEMM_ISINF(b.x[0]), a.x[0] == 0.0, b.x[0] == 0.0);
+    const double inf = qd_ops_inf(), nan = qd_ops_nan();
+    if (sp == 1)
+        return qd_make(nan, nan, nan, nan);
+    if (sp == 2)
+        return negative ? qd_make(-inf, -inf, -inf, -inf) : qd_make(inf, inf, inf, inf);
+    if (sp == 3)
+        return qd_make(qd_ops_copysign(0.0, negative ? -1.0 : 1.0), 0.0, 0.0, 0.0);
+    const bool rescale = MPLAPACK_GEMM_FABS(a.x[0]) > 0x1p+969;
+    const qd4 aa = rescale ? qd_make(a.x[0] * 0x1p-53, a.x[1] * 0x1p-53, a.x[2] * 0x1p-53, a.x[3] * 0x1p-53) : a;
+    double q0 = aa.x[0] / b.x[0];
+    if (MPLAPACK_GEMM_ISINF(q0))
+        return qd_ops_signbit(q0) ? qd_make(-inf, -inf, -inf, -inf) : qd_make(inf, inf, inf, inf);
+    qd4 r = qd_bf_add(aa, qd_neg(qd_mul_d(b, q0)));
+    double q1 = r.x[0] / b.x[0];
+    r = qd_bf_add(r, qd_neg(qd_mul_d(b, q1)));
+    double q2 = r.x[0] / b.x[0];
+    r = qd_bf_add(r, qd_neg(qd_mul_d(b, q2)));
+    double q3 = r.x[0] / b.x[0];
+    r = qd_bf_add(r, qd_neg(qd_mul_d(b, q3)));
+    double q4 = r.x[0] / b.x[0];
+    renorm(q0, q1, q2, q3, q4);
+    qd4 res = qd_make(q0, q1, q2, q3);
+    if (rescale)
+        res = qd_make(res.x[0] * 0x1p+53, res.x[1] * 0x1p+53, res.x[2] * 0x1p+53, res.x[3] * 0x1p+53);
+    if (MPLAPACK_GEMM_ISINF(res.x[0]))
+        return qd_ops_signbit(res.x[0]) ? qd_make(-inf, -inf, -inf, -inf) : qd_make(inf, inf, inf, inf);
+    return res;
 }
 
 

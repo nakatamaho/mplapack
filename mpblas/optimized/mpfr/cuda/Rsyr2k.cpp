@@ -27,17 +27,21 @@
  */
 
 // Rsyr2k of libmplapack_mpfr_opt_cuda: eligible calls run on the GPU
-// (blas3_bridge_cuda.cpp), all others in the reference implementation
-// (Rsyr2k_ref_cuda.cpp: ../../../reference/Rsyr2k.cpp under another name).
+// (blas3_bridge_cuda.cpp), all others on the CPU
+// (../../common/blas/Rsyr2k_omp.cpp: lane-parallel OpenMP, else the reference
+// code under the name Rsyr2k_reference_cpu).
 
 #include <mpblas_mpfr.h>
 
 bool Rsyr2k_mpfr_cuda(const char *uplo, const char *trans, mplapackint n, mplapackint k, const mpfr_class &alpha, const mpfr_class *a, mplapackint lda, const mpfr_class *b, mplapackint ldb, const mpfr_class &beta, mpfr_class *c, mplapackint ldc);
 void Rsyr2k_reference_cpu(const char *uplo, const char *trans, mplapackint const n, mplapackint const k, mpfr_class const alpha, mpfr_class *a, mplapackint const lda, mpfr_class *b, mplapackint const ldb, mpfr_class const beta, mpfr_class *c, mplapackint const ldc);
+bool Rsyr2k_omp(const char *uplo, const char *trans, mplapackint const n, mplapackint const k, mpfr_class const alpha, mpfr_class *a, mplapackint const lda, mpfr_class *b, mplapackint const ldb, mpfr_class const beta, mpfr_class *c, mplapackint const ldc);
 
 void Rsyr2k(const char *uplo, const char *trans, mplapackint const n, mplapackint const k, mpfr_class const alpha, mpfr_class *a, mplapackint const lda, mpfr_class *b, mplapackint const ldb, mpfr_class const beta, mpfr_class *c, mplapackint const ldc)
 {
     if (Rsyr2k_mpfr_cuda(uplo, trans, n, k, alpha, a, lda, b, ldb, beta, c, ldc))
+        return;
+    if (Rsyr2k_omp(uplo, trans, n, k, alpha, a, lda, b, ldb, beta, c, ldc))
         return;
     Rsyr2k_reference_cpu(uplo, trans, n, k, alpha, a, lda, b, ldb, beta, c, ldc);
 }

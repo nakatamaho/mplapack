@@ -29,15 +29,16 @@
 /*
  * SIMD kernels for the blocked Rgemm engine (Rgemm_blocked_common.h).
  *
- * dd_simd_kernel: double-double, bit-identical to dd_real (IEEE add).  The
- *   packed planes are the high and low words; the loop over i is vectorized,
- *   each lane performing the dd_real operations of one element of C.
- * qd_bf_kernel: quad-double with Kouya's branch-free addition and
- *   multiplication (qd_real::bf_add, qd_real::bf_mul), vectorized the same
- *   way.  libqd's default qd_real arithmetic (IEEE add) branches on the data
- *   and is not vectorized; this kernel is therefore an opt-in alternative
- *   whose result differs from the default one in the last bits.
+ * dd_simd_kernel: double-double with Kouya's branch-free addition and
+ *   multiplication (dd_real::bf_add, dd_real::bf_mul).  The packed planes are
+ *   the high and low words; the loop over i is vectorized, each lane
+ *   performing the dd_real operations of one element of C.
+ * qd_bf_kernel: the same for quad-double (qd_real::bf_add, qd_real::bf_mul).
  * td_bf_kernel: the same for triple-double (td_real::bf_add, td_real::bf_mul).
+ *
+ * libQD3 is built with QD_BF (Rgemm_qd_ops_common.h), so these are the
+ * operators of dd_real, qd_real and td_real and the kernels are
+ * bit-identical to them.
  *
  * The block functions are compiled for several instruction sets
  * (Rgemm_simd_common.h); the operations, and hence the results, are the same
@@ -64,15 +65,15 @@ MPLAPACK_GEMM_CLONES static void dd_simd_block(bool axpy, long mc, long nc, long
                 MPLAPACK_GEMM_SIMD
                 for (long i = 0; i < mc; i++) {
                     double p0, p1;
-                    dd_mul_w(b0, b1, a0[i], a1[i], p0, p1);
-                    dd_add_w(c0[i], c1[i], p0, p1, c0[i], c1[i]);
+                    dd_bf_mul_w(b0, b1, a0[i], a1[i], p0, p1);
+                    dd_bf_add_w(c0[i], c1[i], p0, p1, c0[i], c1[i]);
                 }
             } else {
                 MPLAPACK_GEMM_SIMD
                 for (long i = 0; i < mc; i++) {
                     double p0, p1;
-                    dd_mul_w(a0[i], a1[i], b0, b1, p0, p1);
-                    dd_add_w(c0[i], c1[i], p0, p1, c0[i], c1[i]);
+                    dd_bf_mul_w(a0[i], a1[i], b0, b1, p0, p1);
+                    dd_bf_add_w(c0[i], c1[i], p0, p1, c0[i], c1[i]);
                 }
             }
         }

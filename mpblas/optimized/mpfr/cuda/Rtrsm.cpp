@@ -27,17 +27,21 @@
  */
 
 // Rtrsm of libmplapack_mpfr_opt_cuda: eligible calls run on the GPU
-// (blas3_bridge_cuda.cpp), all others in the reference implementation
-// (Rtrsm_ref_cuda.cpp: ../../../reference/Rtrsm.cpp under another name).
+// (blas3_bridge_cuda.cpp), all others on the CPU
+// (../../common/blas/Rtrsm_omp.cpp: lane-parallel OpenMP, else the reference
+// code under the name Rtrsm_reference_cpu).
 
 #include <mpblas_mpfr.h>
 
 bool Rtrsm_mpfr_cuda(const char *side, const char *uplo, const char *transa, const char *diag, mplapackint m, mplapackint n, const mpfr_class &alpha, const mpfr_class *a, mplapackint lda, mpfr_class *b, mplapackint ldb);
 void Rtrsm_reference_cpu(const char *side, const char *uplo, const char *transa, const char *diag, mplapackint const m, mplapackint const n, mpfr_class const alpha, mpfr_class *a, mplapackint const lda, mpfr_class *b, mplapackint const ldb);
+bool Rtrsm_omp(const char *side, const char *uplo, const char *transa, const char *diag, mplapackint const m, mplapackint const n, mpfr_class const alpha, mpfr_class *a, mplapackint const lda, mpfr_class *b, mplapackint const ldb);
 
 void Rtrsm(const char *side, const char *uplo, const char *transa, const char *diag, mplapackint const m, mplapackint const n, mpfr_class const alpha, mpfr_class *a, mplapackint const lda, mpfr_class *b, mplapackint const ldb)
 {
     if (Rtrsm_mpfr_cuda(side, uplo, transa, diag, m, n, alpha, a, lda, b, ldb))
+        return;
+    if (Rtrsm_omp(side, uplo, transa, diag, m, n, alpha, a, lda, b, ldb))
         return;
     Rtrsm_reference_cpu(side, uplo, transa, diag, m, n, alpha, a, lda, b, ldb);
 }

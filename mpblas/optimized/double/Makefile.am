@@ -15,6 +15,20 @@ Rcopy.cpp Rcopy_ref.cpp openmp/Rcopy_omp.cpp \
 Rdot.cpp  Rdot_ref.cpp  openmp/Rdot_omp.cpp \
 Rgemm.cpp Rgemm_ref.cpp openmp/Rgemm_NN_omp.cpp openmp/Rgemm_NT_omp.cpp openmp/Rgemm_TN_omp.cpp openmp/Rgemm_TT_omp.cpp \
 Raxpy.cpp Raxpy_ref.cpp openmp/Raxpy_omp.cpp \
+../common/blas/Rsyrk.cpp ../common/blas/Rsyrk_omp.cpp \
+../common/blas/Rsyr2k.cpp ../common/blas/Rsyr2k_omp.cpp \
+../common/blas/Rsymm.cpp ../common/blas/Rsymm_omp.cpp \
+../common/blas/Rtrmm.cpp ../common/blas/Rtrmm_omp.cpp \
+../common/blas/Rtrsm.cpp ../common/blas/Rtrsm_omp.cpp \
+../common/blas/Rgemv.cpp ../common/blas/Rgemv_omp.cpp \
+../common/blas/Rsymv.cpp ../common/blas/Rsymv_omp.cpp \
+../common/blas/Rtrmv.cpp ../common/blas/Rtrmv_omp.cpp \
+../common/blas/Rger.cpp ../common/blas/Rger_omp.cpp \
+../common/blas/Rsyr.cpp ../common/blas/Rsyr_omp.cpp \
+../common/blas/Rsyr2.cpp ../common/blas/Rsyr2_omp.cpp \
+../common/blas/Rscal.cpp ../common/blas/Rscal_omp.cpp \
+../common/blas/Rswap.cpp ../common/blas/Rswap_omp.cpp \
+../common/blas/Rrot.cpp ../common/blas/Rrot_omp.cpp \
 ../../reference/CRrot.cpp \
 ../../reference/CRscal.cpp \
 ../../reference/Caxpy.cpp \
@@ -59,32 +73,18 @@ Raxpy.cpp Raxpy_ref.cpp openmp/Raxpy_omp.cpp \
 ../../reference/Rasum.cpp \
 ../../reference/Rgbmv.cpp \
 ../../reference/Rgemmtr.cpp \
-../../reference/Rgemv.cpp \
-../../reference/Rger.cpp \
 ../../reference/Rnrm2.cpp \
-../../reference/Rrot.cpp \
 ../../reference/Rrotg.cpp \
 ../../reference/Rrotm.cpp \
 ../../reference/Rrotmg.cpp \
 ../../reference/Rsbmv.cpp \
-../../reference/Rscal.cpp \
 ../../reference/Rspmv.cpp \
 ../../reference/Rspr.cpp \
 ../../reference/Rspr2.cpp \
-../../reference/Rswap.cpp \
-../../reference/Rsymm.cpp \
-../../reference/Rsymv.cpp \
-../../reference/Rsyr.cpp \
-../../reference/Rsyr2.cpp \
-../../reference/Rsyr2k.cpp \
-../../reference/Rsyrk.cpp \
 ../../reference/Rtbmv.cpp \
 ../../reference/Rtbsv.cpp \
 ../../reference/Rtpmv.cpp \
 ../../reference/Rtpsv.cpp \
-../../reference/Rtrmm.cpp \
-../../reference/Rtrmv.cpp \
-../../reference/Rtrsm.cpp \
 ../../reference/Rtrsv.cpp \
 ../../reference/iCamax.cpp \
 ../../reference/iRamax.cpp \
@@ -100,3 +100,12 @@ endif
 if IS_MINGW
 libmplapack_double_opt_la_LDFLAGS += -no-undefined
 endif
+
+# Lane-parallel Level 1/2/3 BLAS (../common/blas): bit-identical to the
+# reference routines.
+check_PROGRAMS = Rblas_omp_test_double
+Rblas_omp_test_double_SOURCES = ../common/test/Rblas_omp_test.cpp
+Rblas_omp_test_double_CPPFLAGS = $(libmplapack_double_opt_la_CPPFLAGS)
+Rblas_omp_test_double_LDFLAGS = -static
+Rblas_omp_test_double_LDADD = libmplapack_double_opt.la $(libmplapack_double_opt_la_LIBADD)
+TESTS = Rblas_omp_test_double

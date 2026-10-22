@@ -26,8 +26,22 @@
  *
  */
 
-// The reference Rtrmm (FABLE translation, unchanged) under the name
-// Rtrmm_reference_cpu, the CPU fallback of Rtrmm.cpp.
+// Rsyr of the dd/td/qd CUDA libraries: eligible calls run on the GPU
+// (Rblas_bridge_cuda.cpp, ../Rblas_cuda_common.cuh), the others on the CPU
+// (../blas/Rsyr_omp.cpp: lane-parallel OpenMP, else the reference code).
+// All of them give the reference result bit for bit.
 
-#define Rtrmm Rtrmm_reference_cpu
-#include "../../../reference/Rtrmm.cpp"
+#include <mpblas.h>
+
+bool Rsyr_gpu(const char *uplo, INTEGER const n, REAL const alpha, REAL *x, INTEGER const incx, REAL *a, INTEGER const lda);
+bool Rsyr_omp(const char *uplo, INTEGER const n, REAL const alpha, REAL *x, INTEGER const incx, REAL *a, INTEGER const lda);
+void Rsyr_reference_cpu(const char *uplo, INTEGER const n, REAL const alpha, REAL *x, INTEGER const incx, REAL *a, INTEGER const lda);
+
+void Rsyr(const char *uplo, INTEGER const n, REAL const alpha, REAL *x, INTEGER const incx, REAL *a, INTEGER const lda)
+{
+    if (Rsyr_gpu(uplo, n, alpha, x, incx, a, lda))
+        return;
+    if (Rsyr_omp(uplo, n, alpha, x, incx, a, lda))
+        return;
+    Rsyr_reference_cpu(uplo, n, alpha, x, incx, a, lda);
+}

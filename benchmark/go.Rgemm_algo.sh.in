@@ -73,11 +73,11 @@ run_variant() {
 # ---------------------------------------------------------------------------
 # Rgemm algorithms of libmplapack_{dd,td,qd,binary128}_opt
 # (mpblas/optimized/common/README.md), selected by environment variables:
-#   blocked  : default; cache-blocked OpenMP (+ AVX2 for dd), bit-identical
+#   blocked  : default; cache-blocked OpenMP (+ AVX2 BF kernels for dd, td,
+#              qd), bit-identical
 #   former   : <P>_GEMM_BLOCKED=0, the plain OpenMP loops
 #   winograd : <P>_GEMM_WINOGRAD_CUTOFF=N
 #   ozaki    : <P>_GEMM_OZAKI=1
-#   bf       : MPLAPACK_{TD,QD}_GEMM_BF=1 (td/qd, branch-free SIMD kernel)
 # Sizes: m = n = k = 16, 32, ..., 1024 (dd) and 8, 16, ..., 512 (td, qd,
 # binary128).
 # ---------------------------------------------------------------------------
@@ -93,13 +93,11 @@ run_variant blocked  ""                                  Rgemm.td_opt ${SIZES}
 run_variant former   "MPLAPACK_TD_GEMM_BLOCKED=0"         Rgemm.td_opt ${SIZES}
 run_variant winograd "MPLAPACK_TD_GEMM_WINOGRAD_CUTOFF=64" Rgemm.td_opt ${SIZES}
 run_variant ozaki    "MPLAPACK_TD_GEMM_OZAKI=1"           Rgemm.td_opt ${SIZES}
-run_variant bf       "MPLAPACK_TD_GEMM_BF=1"              Rgemm.td_opt ${SIZES}
 
 run_variant blocked  ""                                  Rgemm.qd_opt ${SIZES}
 run_variant former   "MPLAPACK_QD_GEMM_BLOCKED=0"         Rgemm.qd_opt ${SIZES}
 run_variant winograd "MPLAPACK_QD_GEMM_WINOGRAD_CUTOFF=64" Rgemm.qd_opt ${SIZES}
 run_variant ozaki    "MPLAPACK_QD_GEMM_OZAKI=1"           Rgemm.qd_opt ${SIZES}
-run_variant bf       "MPLAPACK_QD_GEMM_BF=1"              Rgemm.qd_opt ${SIZES}
 
 run_variant blocked  ""                                         Rgemm.binary128_opt ${SIZES}
 run_variant former   "MPLAPACK_BINARY128_GEMM_BLOCKED=0"         Rgemm.binary128_opt ${SIZES}

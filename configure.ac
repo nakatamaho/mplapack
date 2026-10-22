@@ -2302,7 +2302,28 @@ return z.real() == ds_real(0.0f);]])],
             LDFLAGS=$save_LDFLAGS
             LIBS=$save_LIBS
         fi
-        if test x$HAVE_QD = xold; then
+        dnl MPLAPACK computes dd, td and qd with libQD3's branch-free arithmetic
+        dnl (QD_BF; mpblas/optimized/common/Rgemm_qd_ops_common.h).
+        if test x$HAVE_QD = xyes; then
+            AC_MSG_CHECKING([whether the system QD uses branch-free arithmetic (QD_BF)])
+            save_CXXFLAGS=$CXXFLAGS
+            CXXFLAGS="$CXXFLAGS -I$QD_INCLUDEDIR"
+            AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <qd/dd_real.h>
+#include <qd/td_real.h>
+#include <qd/qd_real.h>
+#if !defined(QD_BF_ADD) || !defined(QD_BF_MUL)
+#error libQD3 without QD_BF
+#endif]], [[]])],
+                [AC_MSG_RESULT([yes])],
+                [AC_MSG_RESULT([no])
+                 HAVE_QD=nobf])
+            CXXFLAGS=$save_CXXFLAGS
+        fi
+        if test x$HAVE_QD = xnobf; then
+              AC_MSG_WARN([QD in $QD_INCLUDEDIR is not built with QD_BF (-DQD_ENABLE_BF=ON); using internal one instead])
+			QD_INCLUDEDIR=$highest_abs_top_builddir/external/i/QD/include/
+			QD_LIBDIR=$highest_abs_top_builddir/external/i/QD/lib/
+        elif test x$HAVE_QD = xold; then
               AC_MSG_WARN([QD in $QD_INCLUDEDIR and $QD_LIBDIR is older than libQD3 1.6.0; using internal one instead])
 			QD_INCLUDEDIR=$highest_abs_top_builddir/external/i/QD/include/
 			QD_LIBDIR=$highest_abs_top_builddir/external/i/QD/lib/

@@ -1,7 +1,9 @@
 # libmplapack_mpfr_opt_cuda
 
 MPFR flavor of MPLAPACK whose `Rgemm` and Level 3 BLAS (`Rsyrk`, `Rsyr2k`,
-`Rsymm`, `Rtrmm`, `Rtrsm`) run on an NVIDIA GPU. Every other routine, and
+`Rsymm`, `Rtrmm`, `Rtrsm`) run on an NVIDIA GPU, and, for debugging, Level 1
+and 2 BLAS (`Rgemv`, `Rsymv`, `Rtrmv`, `Rger`, `Rsyr`, `Rsyr2`, `Rscal`,
+`Rswap`, `Rrot`) with `MPLAPACK_MPFR_CUDA_L12=1`. Every other routine, and
 every call that is not eligible, uses the same code as `libmplapack_mpfr_opt`.
 
 The GPU arithmetic comes from [mpc_cuda](https://github.com/tkouya/mpc_cuda)
@@ -31,7 +33,7 @@ column at that level. The schedule follows `mul_mpfmatrix_winograd_even()` of
 result differs from the conventional `Rgemm` in rounding, and its error is
 bounded normwise rather than elementwise. All temporaries stay on the GPU.
 
-## Level 3: Rsyrk, Rsyr2k, Rsymm, Rtrmm, Rtrsm
+## Level 1/2/3 BLAS
 
 The kernels are in `blas3_kernel_cuda.h`, the host side in
 `blas3_bridge_cuda.cpp`. They perform, for every element of the result, the
@@ -44,9 +46,16 @@ The work is split into independent lanes:
 
 | Routine | Lane |
 |---|---|
-| `Rsyrk`, `Rsyr2k` | one element of the referenced triangle of C |
+| `Rsyrk`, `Rsyr2k`, `Rsyr`, `Rsyr2` | one element of the referenced triangle |
 | `Rsymm`, `Rtrmm`, `Rtrsm` with side L | one column |
 | `Rsymm`, `Rtrmm`, `Rtrsm` with side R | one row |
+| `Rger` | one element of A |
+| `Rgemv`, `Rsymv`, `Rtrmv`, Level 1 | one element of y (`Rtrmv`: x) |
+
+The lanes are those of `../../common/Rblas_lanes_common.h`, shared with the
+CPU (OpenMP) and dd/td/qd GPU versions; the host side
+(`blas3_bridge_cuda.cpp`) takes the call descriptions of
+`../../common/Rblas_calls_common.h`.
 
 Each routine is written once against an arithmetic engine:
 
@@ -57,13 +66,16 @@ Each routine is written once against an arithmetic engine:
   default `[1-2^30, 2^30-1]`, so that overflow and underflow happen as on the
   host.
 
-`cuda/R*.cpp` replaces the reference file. Calls that do not run on the GPU
-go to the reference code, compiled unchanged under another name by
-`R*_ref_cuda.cpp`. This includes invalid arguments, quick returns,
-`alpha == 0` and the cases listed for `Rgemm` below. The size threshold is
-`MPLAPACK_MPFR_CUDA_MIN_MNK`, compared with `n*n*k` for `Rsyrk`/`Rsyr2k` and
-with `m*m*n` or `m*n*n` for the others. `MPLAPACK_MPFR_CUDA_L3=0` disables
-these routines on the GPU.
+`cuda/R*.cpp` replaces the CPU dispatcher of `../../common/blas`. Calls that
+do not run on the GPU go to the CPU code of `../../common/blas/R*_omp.cpp`:
+the lane-parallel OpenMP version, or the reference code, compiled unchanged
+under another name. This includes invalid arguments, quick returns,
+`alpha == 0` (Level 2/3), zero increments and the cases listed for `Rgemm`
+below. The size threshold is `MPLAPACK_MPFR_CUDA_MIN_MNK`, compared with the
+number of multiply-adds (`n*n*k` for `Rsyrk`, `m*n*n` or `m*m*n` for
+`Rsymm`/`Rtrmm`/`Rtrsm`, `m*n` for `Rgemv`, ...). `MPLAPACK_MPFR_CUDA_L3=0`
+disables Level 3 on the GPU; Level 1 and 2 run there only with
+`MPLAPACK_MPFR_CUDA_L12=1`, since their transfers dominate.
 
 Limitations:
 
@@ -149,6 +161,10 @@ for bit with the reference. They cover every side, uplo, trans and diag,
 `alpha` in {1, -1/2, random}, `beta` in {0, 1, 3/4, -5/4}, and odd sizes and
 leading dimensions, at 256, 512, 768, 1024, 2048, 64, 200 and 333 bits.
 Elements outside the referenced part must be left untouched.
+
+`mpfr_cuda_Rblas_{host,device}` run `../../common/test/Rblas_omp_test.cpp`
+through the dispatchers with every call, Level 1 and 2 included, on the GPU
+(`cu_mpfr` engine), and compare with the reference routines bit for bit.
 
 `mpfr_cuda_Rgemm_winograd_{host,device}` check the Winograd path at
 256/512/768/1024/2048 bits with cutoffs 1, 2, 3 and 8: integer matrices (no rounding) must

@@ -39,9 +39,5 @@ template <> struct ozaki_traits<dd_real> : qd_like_ozaki_traits<dd_real, 106, 2>
 
 bool Rgemm_blocked_omp(bool nota, bool notb, mplapackint m, mplapackint n, mplapackint k, dd_real alpha, dd_real *A, mplapackint lda, dd_real *B, mplapackint ldb, dd_real beta, dd_real *C, mplapackint ldc) {
     const mplapack_gemm::shape s = {nota, notb, (long)m, (long)n, (long)k, (long)lda, (long)ldb, (long)ldc};
-#if MPLAPACK_GEMM_QD_OPS_MATCH_LIBQD
     return mplapack_gemm::gemm_cpu<mplapack_gemm::dd_simd_kernel<dd_real> >("MPLAPACK_DD", s, alpha, beta, A, B, C);
-#else
-    return mplapack_gemm::gemm_cpu<mplapack_gemm::scalar_kernel<dd_real, 64, 64, 256> >("MPLAPACK_DD", s, alpha, beta, A, B, C);
-#endif
 }

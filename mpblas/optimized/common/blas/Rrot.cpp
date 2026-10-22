@@ -26,8 +26,18 @@
  *
  */
 
-// The reference Rsymm (FABLE translation, unchanged) under the name
-// Rsymm_reference_cpu, the CPU fallback of Rsymm.cpp.
+// Rrot of the optimized libraries: large calls run the reference
+// operations in parallel lanes (Rrot_omp.cpp, ../Rblas_cpu_common.h), with
+// the reference result bit for bit; the others run the reference code.
 
-#define Rsymm Rsymm_reference_cpu
-#include "../../../reference/Rsymm.cpp"
+#include <mpblas.h>
+
+bool Rrot_omp(INTEGER const n, REAL *dx, INTEGER const incx, REAL *dy, INTEGER const incy, REAL const c, REAL const s);
+void Rrot_reference_cpu(INTEGER const n, REAL *dx, INTEGER const incx, REAL *dy, INTEGER const incy, REAL const c, REAL const s);
+
+void Rrot(INTEGER const n, REAL *dx, INTEGER const incx, REAL *dy, INTEGER const incy, REAL const c, REAL const s)
+{
+    if (Rrot_omp(n, dx, incx, dy, incy, c, s))
+        return;
+    Rrot_reference_cpu(n, dx, incx, dy, incy, c, s);
+}

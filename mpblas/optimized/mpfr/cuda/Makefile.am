@@ -3,8 +3,11 @@ include $(top_srcdir)/mplapack/reference/accelerator-sources.am
 # Layered basename shadowing:
 # - cuda/Rgemm.cpp replaces ../Rgemm.cpp; it computes eligible calls on
 #   the GPU and otherwise runs the same OpenMP code as ../Rgemm.cpp.
-# - cuda/R{syrk,syr2k,symm,trmm,trsm}.cpp replace the reference files; the
-#   reference code is compiled under other names by R*_ref_cuda.cpp.
+# - cuda/R{syrk,syr2k,symm,trmm,trsm,gemv,symv,trmv,ger,syr,syr2,scal,swap,
+#   rot}.cpp replace ../../common/blas/R*.cpp (the GPU: blas3_bridge_cuda.cpp;
+#   Level 1 and 2 only with MPLAPACK_MPFR_CUDA_L12=1); the CPU fallback is
+#   ../../common/blas/R*_omp.cpp (lane-parallel OpenMP and the reference code
+#   under the name R*_reference_cpu).
 # - *_cuda.* files are helpers and never shadow.
 MPLAPACK_MPFR_CUDA_LAPACK_OPTIMIZED_SOURCES =
 
@@ -36,6 +39,20 @@ libmplapack_mpfr_opt_cuda_la_SOURCES = \
 ../Rdot.cpp  ../Rdot_ref.cpp  ../openmp/Rdot_omp.cpp \
 ../Rgemm_ref.cpp ../openmp/Rgemm_NN_omp.cpp ../openmp/Rgemm_NT_omp.cpp ../openmp/Rgemm_TN_omp.cpp ../openmp/Rgemm_TT_omp.cpp \
 ../Raxpy.cpp ../Raxpy_ref.cpp ../openmp/Raxpy_omp.cpp \
+../../common/blas/Rsyrk_omp.cpp \
+../../common/blas/Rsyr2k_omp.cpp \
+../../common/blas/Rsymm_omp.cpp \
+../../common/blas/Rtrmm_omp.cpp \
+../../common/blas/Rtrsm_omp.cpp \
+../../common/blas/Rgemv_omp.cpp Rgemv.cpp \
+../../common/blas/Rsymv_omp.cpp Rsymv.cpp \
+../../common/blas/Rtrmv_omp.cpp Rtrmv.cpp \
+../../common/blas/Rger_omp.cpp Rger.cpp \
+../../common/blas/Rsyr_omp.cpp Rsyr.cpp \
+../../common/blas/Rsyr2_omp.cpp Rsyr2.cpp \
+../../common/blas/Rscal_omp.cpp Rscal.cpp \
+../../common/blas/Rswap_omp.cpp Rswap.cpp \
+../../common/blas/Rrot_omp.cpp Rrot.cpp \
 ../../../reference/CRrot.cpp \
 ../../../reference/CRscal.cpp \
 ../../../reference/Caxpy.cpp \
@@ -80,27 +97,18 @@ libmplapack_mpfr_opt_cuda_la_SOURCES = \
 ../../../reference/Rasum.cpp \
 ../../../reference/Rgbmv.cpp \
 ../../../reference/Rgemmtr.cpp \
-../../../reference/Rgemv.cpp \
-../../../reference/Rger.cpp \
 ../../../reference/Rnrm2.cpp \
-../../../reference/Rrot.cpp \
 ../../../reference/Rrotg.cpp \
 ../../../reference/Rrotm.cpp \
 ../../../reference/Rrotmg.cpp \
 ../../../reference/Rsbmv.cpp \
-../../../reference/Rscal.cpp \
 ../../../reference/Rspmv.cpp \
 ../../../reference/Rspr.cpp \
 ../../../reference/Rspr2.cpp \
-../../../reference/Rswap.cpp \
-../../../reference/Rsymv.cpp \
-../../../reference/Rsyr.cpp \
-../../../reference/Rsyr2.cpp \
 ../../../reference/Rtbmv.cpp \
 ../../../reference/Rtbsv.cpp \
 ../../../reference/Rtpmv.cpp \
 ../../../reference/Rtpsv.cpp \
-../../../reference/Rtrmv.cpp \
 ../../../reference/Rtrsv.cpp \
 ../../../reference/iCamax.cpp \
 ../../../reference/iRamax.cpp \
@@ -109,8 +117,7 @@ $(MPLAPACK_ACCEL_REFERENCE_SOURCES) \
 $(MPLAPACK_MPFR_CUDA_LAPACK_OPTIMIZED_SOURCES) \
 Rgemm.cpp Rgemm_bridge_cuda.cpp Rgemm_device_cuda.cu Rgemm_kernel_cuda.h \
 Rgemm_rt_cuda.cu Rgemm_rt_cuda.h Rgemm_winograd_cuda.h mpfr_pack_cuda.h \
-Rsyrk.cpp Rsyrk_ref_cuda.cpp Rsyr2k.cpp Rsyr2k_ref_cuda.cpp Rsymm.cpp Rsymm_ref_cuda.cpp \
-Rtrmm.cpp Rtrmm_ref_cuda.cpp Rtrsm.cpp Rtrsm_ref_cuda.cpp \
+Rsyrk.cpp Rsyr2k.cpp Rsymm.cpp Rtrmm.cpp Rtrsm.cpp \
 blas3_bridge_cuda.cpp blas3_device_cuda.cu blas3_kernel_cuda.h
 
 libmplapack_mpfr_opt_cuda_la_LDFLAGS = $(AM_LDFLAGS) $(CUDA_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO) -Wl,-rpath,$(libdir)

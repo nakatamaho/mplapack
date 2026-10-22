@@ -54,13 +54,13 @@ template <int PB> L3_HD void fixed_lane(const fixed_args<PB> &f, long lane)
 {
     typedef l3_fixed_engine<PB> E;
     E e;
-    l3_mats<E> x;
+    blas_mats<E> x;
     x.al.p = f.al, x.al.ld = 1;
     x.be.p = f.be, x.be.ld = 1;
     x.a.p = f.a, x.a.ld = f.s.lda;
     x.b.p = f.b, x.b.ld = f.s.ldb;
     x.c.p = f.c, x.c.ld = f.s.ldc;
-    l3_lane(e, f.s, x, lane);
+    blas_lane(e, f.s, x, lane);
 }
 
 #ifndef MPLAPACK_MPFR_CUDA_HOST_EMULATION
@@ -102,7 +102,7 @@ template <class T> struct dbuf {
 
 template <int PB> int blas3_fixed(const l3_shape &s, const real_t<PB> &alpha, const real_t<PB> &beta, const real_t<PB> *A, size_t countA, const real_t<PB> *B, size_t countB, real_t<PB> *C, size_t countC)
 {
-    const long lanes = l3_lanes(s);
+    const long lanes = blas_lanes(s);
 #ifdef MPLAPACK_MPFR_CUDA_HOST_EMULATION
     (void)countA, (void)countB, (void)countC;
     real_t<PB> al = alpha, be = beta;

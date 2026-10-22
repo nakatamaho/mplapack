@@ -26,8 +26,24 @@
  *
  */
 
-// The reference Rsyrk (FABLE translation, unchanged) under the name
-// Rsyrk_reference_cpu, the CPU fallback of Rsyrk.cpp.
+// The reference Rtrmm (mpblas/reference/Rtrmm.cpp, unchanged) under the name
+// Rtrmm_reference_cpu, and Rtrmm_omp: the same operations in parallel lanes.
 
-#define Rsyrk Rsyrk_reference_cpu
-#include "../../../reference/Rsyrk.cpp"
+#define Rtrmm Rtrmm_reference_cpu
+#include "../../../reference/Rtrmm.cpp"
+#undef Rtrmm
+
+#include "../Rblas_cpu_common.h"
+
+namespace {
+bool ls(const char *a, const char *b) { return Mlsame(a, b) != 0; }
+} // namespace
+
+bool Rtrmm_omp(const char *side, const char *uplo, const char *transa, const char *diag, INTEGER const m, INTEGER const n, REAL const alpha, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb)
+{
+    using namespace mplapack_blas;
+    blas_call<REAL> c;
+    if (!make_trxm<REAL>(c, ls, false, side, uplo, transa, diag, m, n, alpha, a, lda, b, ldb))
+        return false;
+    return blas_cpu(c);
+}

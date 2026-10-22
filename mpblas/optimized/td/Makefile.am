@@ -21,6 +21,20 @@ Rcopy.cpp Rcopy_ref.cpp openmp/Rcopy_omp.cpp \
 Rdot.cpp  Rdot_ref.cpp  openmp/Rdot_omp.cpp \
 Rgemm.cpp Rgemm_ref.cpp openmp/Rgemm_blocked_omp.cpp openmp/Rgemm_NN_omp.cpp openmp/Rgemm_NT_omp.cpp openmp/Rgemm_TN_omp.cpp openmp/Rgemm_TT_omp.cpp \
 Raxpy.cpp Raxpy_ref.cpp openmp/Raxpy_omp.cpp \
+../common/blas/Rsyrk.cpp ../common/blas/Rsyrk_omp.cpp \
+../common/blas/Rsyr2k.cpp ../common/blas/Rsyr2k_omp.cpp \
+../common/blas/Rsymm.cpp ../common/blas/Rsymm_omp.cpp \
+../common/blas/Rtrmm.cpp ../common/blas/Rtrmm_omp.cpp \
+../common/blas/Rtrsm.cpp ../common/blas/Rtrsm_omp.cpp \
+../common/blas/Rgemv.cpp ../common/blas/Rgemv_omp.cpp \
+../common/blas/Rsymv.cpp ../common/blas/Rsymv_omp.cpp \
+../common/blas/Rtrmv.cpp ../common/blas/Rtrmv_omp.cpp \
+../common/blas/Rger.cpp ../common/blas/Rger_omp.cpp \
+../common/blas/Rsyr.cpp ../common/blas/Rsyr_omp.cpp \
+../common/blas/Rsyr2.cpp ../common/blas/Rsyr2_omp.cpp \
+../common/blas/Rscal.cpp ../common/blas/Rscal_omp.cpp \
+../common/blas/Rswap.cpp ../common/blas/Rswap_omp.cpp \
+../common/blas/Rrot.cpp ../common/blas/Rrot_omp.cpp \
 ../../reference/CRrot.cpp \
 ../../reference/CRscal.cpp \
 ../../reference/Caxpy.cpp \
@@ -65,32 +79,18 @@ Raxpy.cpp Raxpy_ref.cpp openmp/Raxpy_omp.cpp \
 ../../reference/Rasum.cpp \
 ../../reference/Rgbmv.cpp \
 ../../reference/Rgemmtr.cpp \
-../../reference/Rgemv.cpp \
-../../reference/Rger.cpp \
 ../../reference/Rnrm2.cpp \
-../../reference/Rrot.cpp \
 ../../reference/Rrotg.cpp \
 ../../reference/Rrotm.cpp \
 ../../reference/Rrotmg.cpp \
 ../../reference/Rsbmv.cpp \
-../../reference/Rscal.cpp \
 ../../reference/Rspmv.cpp \
 ../../reference/Rspr.cpp \
 ../../reference/Rspr2.cpp \
-../../reference/Rswap.cpp \
-../../reference/Rsymm.cpp \
-../../reference/Rsymv.cpp \
-../../reference/Rsyr.cpp \
-../../reference/Rsyr2.cpp \
-../../reference/Rsyr2k.cpp \
-../../reference/Rsyrk.cpp \
 ../../reference/Rtbmv.cpp \
 ../../reference/Rtbsv.cpp \
 ../../reference/Rtpmv.cpp \
 ../../reference/Rtpsv.cpp \
-../../reference/Rtrmm.cpp \
-../../reference/Rtrmv.cpp \
-../../reference/Rtrsm.cpp \
 ../../reference/Rtrsv.cpp \
 ../../reference/iCamax.cpp \
 ../../reference/iRamax.cpp \
@@ -107,18 +107,30 @@ if IS_MINGW
 libmplapack_td_opt_la_LDFLAGS += -no-undefined
 endif
 
+# Lane-parallel Level 1/2/3 BLAS (../common/blas): bit-identical to the
+# reference routines.
+check_PROGRAMS = Rblas_omp_test_td Rgemm_opt_test Rgemm_gpu_host_test Rblas_gpu_host_test_td
+Rblas_omp_test_td_SOURCES = ../common/test/Rblas_omp_test.cpp
+Rblas_omp_test_td_CPPFLAGS = $(libmplapack_td_opt_la_CPPFLAGS)
+Rblas_omp_test_td_LDFLAGS = -static $(QD_RPATH_LDFLAGS)
+Rblas_omp_test_td_LDADD = libmplapack_td_opt.la $(libmplapack_td_opt_la_LIBADD)
 # Optimized Rgemm (../common/Rgemm_*_common.h): the blocked engine is
 # bit-identical to openmp/Rgemm_*_omp.cpp; Winograd and Ozaki are bounded.
-check_PROGRAMS = Rgemm_opt_test Rgemm_gpu_host_test
 Rgemm_opt_test_SOURCES = test/Rgemm_opt_test.cpp
 Rgemm_opt_test_CPPFLAGS = $(libmplapack_td_opt_la_CPPFLAGS) -DRGEMM_TEST_TD
 Rgemm_opt_test_CXXFLAGS = $(DD_CXXFLAGS)
 Rgemm_opt_test_LDFLAGS = -static $(QD_RPATH_LDFLAGS)
 Rgemm_opt_test_LDADD = libmplapack_td_opt.la $(libmplapack_td_opt_la_LIBADD)
+# The CUDA Level 1/2/3 BLAS code run on the host (no CUDA needed).
+Rblas_gpu_host_test_td_SOURCES = ../common/test/Rblas_gpu_test.cpp ../common/blas_cuda/Rblas_bridge_cuda.cpp ../common/blas_cuda/Rsyrk.cpp ../common/blas_cuda/Rsyr2k.cpp ../common/blas_cuda/Rsymm.cpp ../common/blas_cuda/Rtrmm.cpp ../common/blas_cuda/Rtrsm.cpp ../common/blas_cuda/Rgemv.cpp ../common/blas_cuda/Rsymv.cpp ../common/blas_cuda/Rtrmv.cpp ../common/blas_cuda/Rger.cpp ../common/blas_cuda/Rsyr.cpp ../common/blas_cuda/Rsyr2.cpp ../common/blas_cuda/Rscal.cpp ../common/blas_cuda/Rswap.cpp ../common/blas_cuda/Rrot.cpp
+Rblas_gpu_host_test_td_CPPFLAGS = $(libmplapack_td_opt_la_CPPFLAGS) -DMPLAPACK_GEMM_CUDA_HOST_EMULATION
+Rblas_gpu_host_test_td_CXXFLAGS = $(DD_CXXFLAGS)
+Rblas_gpu_host_test_td_LDFLAGS = -static $(QD_RPATH_LDFLAGS)
+Rblas_gpu_host_test_td_LDADD = libmplapack_td_opt.la $(libmplapack_td_opt_la_LIBADD)
 # The CUDA Rgemm code run on the host (no CUDA needed).
 Rgemm_gpu_host_test_SOURCES = test/Rgemm_gpu_host_test.cpp cuda/Rgemm_bridge_cuda.cpp
 Rgemm_gpu_host_test_CPPFLAGS = $(libmplapack_td_opt_la_CPPFLAGS) -DRGEMM_TEST_TD -DMPLAPACK_GEMM_CUDA_HOST_EMULATION
 Rgemm_gpu_host_test_CXXFLAGS = $(DD_CXXFLAGS)
 Rgemm_gpu_host_test_LDFLAGS = -static $(QD_RPATH_LDFLAGS)
 Rgemm_gpu_host_test_LDADD = libmplapack_td_opt.la $(libmplapack_td_opt_la_LIBADD)
-TESTS = Rgemm_opt_test Rgemm_gpu_host_test
+TESTS = Rblas_omp_test_td Rgemm_opt_test Rgemm_gpu_host_test Rblas_gpu_host_test_td

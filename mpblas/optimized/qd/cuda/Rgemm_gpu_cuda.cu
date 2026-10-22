@@ -26,13 +26,19 @@
  *
  */
 
-// Device code of the qd CUDA Rgemm (../../common/Rgemm_cuda_common.cuh).
+// Device code of the qd CUDA Rgemm (../../common/Rgemm_cuda_common.cuh) and
+// Level 1/2/3 BLAS (../../common/Rblas_cuda_common.cuh).
 // Compile with -fmad=false.  With MPLAPACK_GEMM_CUDA_HOST_EMULATION and a
 // C++ compiler (-x c++ -ffp-contract=off) the same code runs on the host.
 
 #include "../../common/Rgemm_cuda_common.cuh"
+#include "../../common/Rblas_cuda_common.cuh"
 
 namespace mplapack_gemm {
 template int gemm_cuda<qd_ops>(const shape &, int, long, const ozaki_plan *, const gpu_scalars<qd_ops::F> &, const qd_ops::F *, const qd_ops::F *, qd_ops::F *);
 template int gpu_device_count<qd_ops>();
 } // namespace mplapack_gemm
+
+namespace mplapack_blas {
+template int blas_gpu<mplapack_gemm::qd_ops>(const blas_shape &, const mplapack_gemm::qd_ops::F &, const mplapack_gemm::qd_ops::F &, const gpu_operand<mplapack_gemm::qd_ops::F> &, const gpu_operand<mplapack_gemm::qd_ops::F> &, const gpu_operand<mplapack_gemm::qd_ops::F> &);
+} // namespace mplapack_blas

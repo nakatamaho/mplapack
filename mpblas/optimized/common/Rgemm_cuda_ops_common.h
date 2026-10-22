@@ -43,54 +43,83 @@ namespace mplapack_gemm {
 
 enum { GPU_NAIVE = 0, GPU_TILED = 1, GPU_WINOGRAD = 2, GPU_OZAKI = 3 };
 
-// Arithmetic of the element type F, as libqd's operators.
+// Arithmetic of the element type F, as libQD3's operators with QD_BF:
+// a + b = bf_add(a, b), a - b = bf_add(a, -b), a * b = bf_mul(a, b).
 struct dd_ops {
     typedef dd2 F;
-    static MPLAPACK_GEMM_HD F add(const F &a, const F &b) { return dd_add(a, b); }
-    static MPLAPACK_GEMM_HD F mul(const F &a, const F &b) { return dd_mul(a, b); }
-    // a - b: libqd's ieee subtraction performs the operations of a + (-b)
+    static MPLAPACK_GEMM_HD F add(const F &a, const F &b) { return dd_bf_add(a, b); }
+    static MPLAPACK_GEMM_HD F mul(const F &a, const F &b) { return dd_bf_mul(a, b); }
     static MPLAPACK_GEMM_HD F sub(const F &a, const F &b) {
         F nb;
         nb.x[0] = -b.x[0];
         nb.x[1] = -b.x[1];
-        return dd_add(a, nb);
+        return dd_bf_add(a, nb);
     }
     static MPLAPACK_GEMM_HD F add_d(const F &a, double b) { return dd_add_d(a, b); }
+    static MPLAPACK_GEMM_HD F div(const F &a, const F &b) { return dd_div(a, b); }
     static MPLAPACK_GEMM_HD F from_d(double d) {
         F r;
         r.x[0] = d;
         r.x[1] = 0.0;
         return r;
     }
+    // a == b: qd::dd_comparison_eq
+    static MPLAPACK_GEMM_HD bool eq(const F &a, const F &b) {
+        if (qd_ops_isnan(a.x[0]) || qd_ops_isnan(a.x[1]) || qd_ops_isnan(b.x[0]) || qd_ops_isnan(b.x[1]))
+            return false;
+        if (MPLAPACK_GEMM_ISINF(a.x[0]) || MPLAPACK_GEMM_ISINF(b.x[0]))
+            return a.x[0] == b.x[0];
+        return sub(a, b).x[0] == 0.0;
+    }
 };
 
 struct qd_ops {
     typedef qd4 F;
-    static MPLAPACK_GEMM_HD F add(const F &a, const F &b) { return qd_add(a, b); }
-    static MPLAPACK_GEMM_HD F mul(const F &a, const F &b) { return qd_mul(a, b); }
+    static MPLAPACK_GEMM_HD F add(const F &a, const F &b) { return qd_bf_add(a, b); }
+    static MPLAPACK_GEMM_HD F mul(const F &a, const F &b) { return qd_bf_mul(a, b); }
     static MPLAPACK_GEMM_HD F sub(const F &a, const F &b) {
         F nb;
         for (int q = 0; q < 4; q++)
             nb.x[q] = -b.x[q];
-        return qd_add(a, nb);
+        return qd_bf_add(a, nb);
     }
     static MPLAPACK_GEMM_HD F add_d(const F &a, double b) { return qd_add_d(a, b); }
+    static MPLAPACK_GEMM_HD F div(const F &a, const F &b) { return qd_div(a, b); }
     static MPLAPACK_GEMM_HD F from_d(double d) {
         F r;
         r.x[0] = d;
         r.x[1] = r.x[2] = r.x[3] = 0.0;
         return r;
     }
+    // a == b: qd::comparison_eq
+    static MPLAPACK_GEMM_HD bool eq(const F &a, const F &b) {
+        for (int q = 0; q < 4; q++)
+            if (qd_ops_isnan(a.x[q]) || qd_ops_isnan(b.x[q]))
+                return false;
+        if (MPLAPACK_GEMM_ISINF(a.x[0]) || MPLAPACK_GEMM_ISINF(b.x[0]))
+            return a.x[0] == b.x[0];
+        return sub(a, b).x[0] == 0.0;
+    }
 };
 
 struct td_ops {
     typedef td3 F;
-    static MPLAPACK_GEMM_HD F add(const F &a, const F &b) { return td_add(a, b); }
-    static MPLAPACK_GEMM_HD F mul(const F &a, const F &b) { return td_mul(a, b); }
-    // libqd's IEEE td subtraction is its own algorithm, not a + (-b)
-    static MPLAPACK_GEMM_HD F sub(const F &a, const F &b) { return td_sub(a, b); }
+    static MPLAPACK_GEMM_HD F add(const F &a, const F &b) { return td_bf_add(a, b); }
+    static MPLAPACK_GEMM_HD F mul(const F &a, const F &b) { return td_bf_mul(a, b); }
+    static MPLAPACK_GEMM_HD F sub(const F &a, const F &b) { return td_bf_add(a, td_make(-b.x[0], -b.x[1], -b.x[2])); }
     static MPLAPACK_GEMM_HD F add_d(const F &a, double b) { return td_add_d(a, b); }
+    static MPLAPACK_GEMM_HD F div(const F &a, const F &b) { return td_div(a, b); }
     static MPLAPACK_GEMM_HD F from_d(double d) { return td_make(d, 0.0, 0.0); }
+    // a == b: td::comparison_eq
+    static MPLAPACK_GEMM_HD bool eq(const F &a, const F &b) {
+        for (int q = 0; q < 3; q++)
+            if (qd_ops_isnan(a.x[q]) || qd_ops_isnan(b.x[q]))
+                return false;
+        if (MPLAPACK_GEMM_ISINF(a.x[0]) || MPLAPACK_GEMM_ISINF(b.x[0]))
+            return a.x[0] == b.x[0];
+        const F d = sub(a, b);
+        return d.x[0] == 0.0 && d.x[1] == 0.0 && d.x[2] == 0.0;
+    }
 };
 
 // Scalars of a call; beta_zero / beta_one are computed on the host with the

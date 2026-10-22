@@ -36,7 +36,7 @@
  *    the plain OpenMP loops openmp/Rgemm_{NN,NT,TN,TT}_omp.cpp, for all
  *    transpose combinations, odd sizes, leading dimensions larger than
  *    needed, alpha/beta in {general, 0, 1};
- *  - Winograd (cutoffs 1, 2, 3, 8), Ozaki and (td, qd) the branch-free kernel are
+ *  - Winograd (cutoffs 1, 2, 3, 8) and Ozaki are
  *    exact on small integer matrices and agree with the conventional result
  *    within 2^(20-p) (k |alpha| max|A| max|B| + |beta| max|C|) on random
  *    real matrices (p: precision in bits).
@@ -115,7 +115,6 @@ static void reset_env() {
     setenv_s("_GEMM_WINOGRAD_CUTOFF", NULL);
     setenv_s("_GEMM_OZAKI", NULL);
     setenv_s("_GEMM_OZAKI_SLICES", NULL);
-    setenv_s("_GEMM_BF", NULL);
 }
 
 struct problem {
@@ -233,9 +232,9 @@ int main() {
                     reset_env();
                 }
 
-    // Winograd, Ozaki, branch-free qd: exact on integers, bounded on reals.
+    // Winograd and Ozaki: exact on integers, bounded on reals.
     const long wsizes[][3] = {{1, 1, 1}, {7, 5, 3}, {17, 9, 33}, {64, 64, 64}, {65, 70, 129}, {100, 3, 40}};
-    for (int variant = 0; variant < 7; variant++) {
+    for (int variant = 0; variant < 6; variant++) {
         const char *name = "?";
         reset_env();
         switch (variant) {
@@ -245,14 +244,6 @@ int main() {
         case 3: name = "winograd cutoff 8"; setenv_s("_GEMM_WINOGRAD_CUTOFF", "8"); break;
         case 4: name = "ozaki"; setenv_s("_GEMM_OZAKI", "1"); break;
         case 5: name = "ozaki + winograd"; setenv_s("_GEMM_OZAKI", "1"); setenv_s("_GEMM_WINOGRAD_CUTOFF", "4"); break;
-        case 6:
-#if defined(RGEMM_TEST_QD) || defined(RGEMM_TEST_TD)
-            name = "branch-free";
-            setenv_s("_GEMM_BF", "1");
-            break;
-#else
-            continue;
-#endif
         }
         for (auto &z : wsizes) {
             // small cutoffs recurse deeply: keep them to small sizes

@@ -120,7 +120,9 @@ function(mplapack_collect_opt_backend_sources
   # CPU-only sources. Accelerator subdirectories are separate libraries.
   file(GLOB _mpblas_opt_sources CONFIGURE_DEPENDS
     "${CMAKE_CURRENT_SOURCE_DIR}/mpblas/optimized/${backend}/*.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/mpblas/optimized/${backend}/openmp/*.cpp")
+    "${CMAKE_CURRENT_SOURCE_DIR}/mpblas/optimized/${backend}/openmp/*.cpp"
+    # Lane-parallel Level 1/2/3 BLAS shared by every backend.
+    "${CMAKE_CURRENT_SOURCE_DIR}/mpblas/optimized/common/blas/*.cpp")
   # Despite its helper-style name, this legacy file defines public Rgemm
   # again. The explicit autotools source lists intentionally exclude it.
   list(FILTER _mpblas_opt_sources EXCLUDE REGEX "/openmp/Rgemm_omp\\.cpp$")

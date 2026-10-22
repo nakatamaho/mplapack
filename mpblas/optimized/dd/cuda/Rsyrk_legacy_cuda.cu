@@ -85,7 +85,7 @@ void Is_cuda_Rgemm_error(cudaError_t rc, const char *mes, mplapackint n, mplapac
 #include <Rsyrk_TL_0.cu>
 #include <Rsyrk_TL_p.cu>
 
-void Rsyrk(const char *uplo, const char *trans, mplapackint n, mplapackint k, dd_real alpha, dd_real * A, mplapackint lda, dd_real beta, dd_real * C, mplapackint ldc)
+void Rsyrk_legacy(const char *uplo, const char *trans, mplapackint n, mplapackint k, dd_real alpha, dd_real * A, mplapackint lda, dd_real beta, dd_real * C, mplapackint ldc)
 {
     mplapackint i, j, nota, upper, info, nrowa;
     dd_real temp, Zero, One;

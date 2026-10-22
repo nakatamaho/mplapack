@@ -39,8 +39,12 @@ OUTPUTS = [
 CONF_KEYS = {
     "accelerator", "smoke_check_only", "smoke_extra", "compare_tolerance",
     "compare_rlamch_per_abi", "compare_test_env", "bench_quadmath_conditional",
-    "bench_note", "opt_nofma", "rgemm_opt", "rgemm_gpu_host_test",
+    "bench_note", "opt_nofma", "rgemm_opt", "rgemm_gpu_host_test", "qd_ops_test",
 }
+
+# Sources of mpblas/optimized/common/blas_cuda (the dd/td/qd CUDA BLAS).
+BLAS_CUDA_SOURCES = ["Rblas_bridge_cuda", "Rsyrk", "Rsyr2k", "Rsymm", "Rtrmm", "Rtrsm", "Rgemv",
+                     "Rsymv", "Rtrmv", "Rger", "Rsyr", "Rsyr2", "Rscal", "Rswap", "Rrot"]
 
 # The MPFR backend is the test oracle; every other backend's tests link it.
 ORACLE = "mpfr"
@@ -104,26 +108,52 @@ def values(name, traits, conf):
     rgemm_opt = c.get("rgemm_opt", "no") == "yes"
     gpu_host = c.get("rgemm_gpu_host_test", "no") == "yes"
     v["opt_rgemm_sources"] = " openmp/Rgemm_blocked_omp.cpp" if rgemm_opt else ""
-    tests = []
+    # Program names carry the backend: their objects of ../common/test/*.cpp
+    # are built in that shared directory.
+    programs = ["Rblas_omp_test_%%b%%"]
+    tests = ["",
+             "# Lane-parallel Level 1/2/3 BLAS (../common/blas): bit-identical to the",
+             "# reference routines.",
+             "Rblas_omp_test_%%b%%_SOURCES = ../common/test/Rblas_omp_test.cpp",
+             "Rblas_omp_test_%%b%%_CPPFLAGS = $(libmplapack_%%b%%_opt_la_CPPFLAGS)",
+             "Rblas_omp_test_%%b%%_LDFLAGS = -static" + (" $(QD_RPATH_LDFLAGS)" if qd else ""),
+             "Rblas_omp_test_%%b%%_LDADD = libmplapack_%%b%%_opt.la $(libmplapack_%%b%%_opt_la_LIBADD)"]
+    if c.get("qd_ops_test", "no") == "yes":
+        programs.append("Rqd_ops_test")
+        tests += ["# The dd/td/qd arithmetic of the SIMD and GPU kernels against libQD3's",
+                  "# (branch-free) operators, bit for bit.",
+                  "Rqd_ops_test_SOURCES = ../common/test/Rqd_ops_test.cpp",
+                  "Rqd_ops_test_CPPFLAGS = $(libmplapack_%%b%%_opt_la_CPPFLAGS)",
+                  "Rqd_ops_test_CXXFLAGS = $(DD_CXXFLAGS)",
+                  "Rqd_ops_test_LDFLAGS = -static $(QD_RPATH_LDFLAGS)",
+                  "Rqd_ops_test_LDADD = $(QD_LIBADD)"]
     if rgemm_opt:
-        programs = "Rgemm_opt_test" + (" Rgemm_gpu_host_test" if gpu_host else "")
-        tests = ["",
-                 "# Optimized Rgemm (../common/Rgemm_*_common.h): the blocked engine is",
-                 "# bit-identical to openmp/Rgemm_*_omp.cpp; Winograd and Ozaki are bounded.",
-                 f"check_PROGRAMS = {programs}",
-                 "Rgemm_opt_test_SOURCES = test/Rgemm_opt_test.cpp",
-                 "Rgemm_opt_test_CPPFLAGS = $(libmplapack_%%b%%_opt_la_CPPFLAGS) -DRGEMM_TEST_%%B%%",
-                 "Rgemm_opt_test_CXXFLAGS = $(DD_CXXFLAGS)",
-                 "Rgemm_opt_test_LDFLAGS = -static $(QD_RPATH_LDFLAGS)",
-                 "Rgemm_opt_test_LDADD = libmplapack_%%b%%_opt.la $(libmplapack_%%b%%_opt_la_LIBADD)"]
+        programs.append("Rgemm_opt_test")
+        tests += ["# Optimized Rgemm (../common/Rgemm_*_common.h): the blocked engine is",
+                  "# bit-identical to openmp/Rgemm_*_omp.cpp; Winograd and Ozaki are bounded.",
+                  "Rgemm_opt_test_SOURCES = test/Rgemm_opt_test.cpp",
+                  "Rgemm_opt_test_CPPFLAGS = $(libmplapack_%%b%%_opt_la_CPPFLAGS) -DRGEMM_TEST_%%B%%",
+                  "Rgemm_opt_test_CXXFLAGS = $(DD_CXXFLAGS)",
+                  "Rgemm_opt_test_LDFLAGS = -static $(QD_RPATH_LDFLAGS)",
+                  "Rgemm_opt_test_LDADD = libmplapack_%%b%%_opt.la $(libmplapack_%%b%%_opt_la_LIBADD)"]
         if gpu_host:
-            tests += ["# The CUDA Rgemm code run on the host (no CUDA needed).",
+            programs.append("Rgemm_gpu_host_test")
+            programs.append("Rblas_gpu_host_test_%%b%%")
+            tests += ["# The CUDA Level 1/2/3 BLAS code run on the host (no CUDA needed).",
+                      "Rblas_gpu_host_test_%%b%%_SOURCES = ../common/test/Rblas_gpu_test.cpp " + " ".join(
+                          "../common/blas_cuda/%s.cpp" % r for r in BLAS_CUDA_SOURCES),
+                      "Rblas_gpu_host_test_%%b%%_CPPFLAGS = $(libmplapack_%%b%%_opt_la_CPPFLAGS) -DMPLAPACK_GEMM_CUDA_HOST_EMULATION",
+                      "Rblas_gpu_host_test_%%b%%_CXXFLAGS = $(DD_CXXFLAGS)",
+                      "Rblas_gpu_host_test_%%b%%_LDFLAGS = -static $(QD_RPATH_LDFLAGS)",
+                      "Rblas_gpu_host_test_%%b%%_LDADD = libmplapack_%%b%%_opt.la $(libmplapack_%%b%%_opt_la_LIBADD)",
+                      "# The CUDA Rgemm code run on the host (no CUDA needed).",
                       "Rgemm_gpu_host_test_SOURCES = test/Rgemm_gpu_host_test.cpp cuda/Rgemm_bridge_cuda.cpp",
                       "Rgemm_gpu_host_test_CPPFLAGS = $(libmplapack_%%b%%_opt_la_CPPFLAGS) -DRGEMM_TEST_%%B%% -DMPLAPACK_GEMM_CUDA_HOST_EMULATION",
                       "Rgemm_gpu_host_test_CXXFLAGS = $(DD_CXXFLAGS)",
                       "Rgemm_gpu_host_test_LDFLAGS = -static $(QD_RPATH_LDFLAGS)",
                       "Rgemm_gpu_host_test_LDADD = libmplapack_%%b%%_opt.la $(libmplapack_%%b%%_opt_la_LIBADD)"]
-        tests.append(f"TESTS = {programs}")
+    tests.insert(3, "check_PROGRAMS = " + " ".join(programs))
+    tests.append("TESTS = " + " ".join(programs))
     v["opt_rgemm_tests"] = tests
     v["opt_mingw_ldflags"] = " -lquadmath" if "binary128libs" in traits else ""
     accelerator = c.get("accelerator", "")

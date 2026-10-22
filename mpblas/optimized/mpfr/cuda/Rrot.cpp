@@ -26,8 +26,22 @@
  *
  */
 
-// The reference Rtrsm (FABLE translation, unchanged) under the name
-// Rtrsm_reference_cpu, the CPU fallback of Rtrsm.cpp.
+// Rrot of libmplapack_mpfr_opt_cuda: with MPLAPACK_MPFR_CUDA_L12=1 eligible
+// calls run on the GPU (blas3_bridge_cuda.cpp), the others on the CPU
+// (../../common/blas/Rrot_omp.cpp: lane-parallel OpenMP, else the reference
+// code).
 
-#define Rtrsm Rtrsm_reference_cpu
-#include "../../../reference/Rtrsm.cpp"
+#include <mpblas_mpfr.h>
+
+bool Rrot_mpfr_cuda(mplapackint const n, mpfr_class *dx, mplapackint const incx, mpfr_class *dy, mplapackint const incy, mpfr_class const c, mpfr_class const s);
+bool Rrot_omp(mplapackint const n, mpfr_class *dx, mplapackint const incx, mpfr_class *dy, mplapackint const incy, mpfr_class const c, mpfr_class const s);
+void Rrot_reference_cpu(mplapackint const n, mpfr_class *dx, mplapackint const incx, mpfr_class *dy, mplapackint const incy, mpfr_class const c, mpfr_class const s);
+
+void Rrot(mplapackint const n, mpfr_class *dx, mplapackint const incx, mpfr_class *dy, mplapackint const incy, mpfr_class const c, mpfr_class const s)
+{
+    if (Rrot_mpfr_cuda(n, dx, incx, dy, incy, c, s))
+        return;
+    if (Rrot_omp(n, dx, incx, dy, incy, c, s))
+        return;
+    Rrot_reference_cpu(n, dx, incx, dy, incy, c, s);
+}
