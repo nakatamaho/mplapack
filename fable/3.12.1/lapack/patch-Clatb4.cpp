@@ -28,7 +28,7 @@
 -    }
 +    REAL eps = Rlamch("Precision");
 +    REAL badc2 = tenth / eps;
-+#if defined MPLAPACK_BUILD_WITH_DD || defined MPLAPACK_BUILD_WITH_BINARY128 || defined MPLAPACK_BUILD_WITH_MPFR
++#if defined MPLAPACK_BUILD_WITH_DD || defined MPLAPACK_BUILD_WITH_TD || defined MPLAPACK_BUILD_WITH_BINARY128 || defined MPLAPACK_BUILD_WITH_MPFR
 +    const REAL badc2_cap = 1.0e24;
 +    badc2 = min(badc2, badc2_cap);
 +#elif defined MPLAPACK_BUILD_WITH_QD || defined MPLAPACK_BUILD_WITH_GMP

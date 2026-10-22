@@ -22,6 +22,7 @@ CONFIG_FLAGS=(
   "--enable-binary128=yes"
   "--enable-qd=yes"
   "--enable-dd=yes"
+  "--enable-td=yes"
   "--enable-double=yes"
   "--enable-test=yes"
   "--enable-benchmark=yes"

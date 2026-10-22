@@ -15,7 +15,7 @@
                  //
 +#if defined MPLAPACK_BUILD_WITH_DD
 +                temp1 = -half * log(ulp);
-+#elif defined MPLAPACK_BUILD_WITH_QD
++#elif defined MPLAPACK_BUILD_WITH_QD || defined MPLAPACK_BUILD_WITH_TD
 +                temp1 = -(half * half) * log(ulp);
 +#else
                  temp1 = -two * log(ulp);

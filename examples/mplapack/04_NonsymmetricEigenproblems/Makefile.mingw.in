@@ -9,6 +9,7 @@ MPFRLIBS= -lmplapack_mpfr -lmpfr -lmpc -lgmp
 GMPLIBS=-lmplapack_gmp -lgmp
 QDLIBS=-lmplapack_qd -lqd
 DDLIBS=-lmplapack_dd -lqd
+TDLIBS=-lmplapack_td -lqd
 BINARY80LIBS=-lmplapack_binary80
 BINARY128LIBS=-lmplapack_binary128%%LIBQUADMATH%%
 DOUBLELIBS=-lmplapack_double
@@ -16,7 +17,7 @@ BLAS=
 LAPACK=
 FLIBS=
 
-programs=Cgees_test_mpfr.exe Cgees_test_gmp.exe Cgees_test_qd.exe Cgees_test_dd.exe Cgees_test_binary80.exe Cgees_test_binary128.exe Cgees_test_double.exe Cgeev_NPR_mpfr.exe Cgeev_NPR_qd.exe Cgeev_NPR_dd.exe Cgeev_NPR_binary80.exe Cgeev_NPR_binary128.exe Cgeev_NPR_double.exe Cgeev_test2_mpfr.exe Cgeev_test2_gmp.exe Cgeev_test2_qd.exe Cgeev_test2_dd.exe Cgeev_test2_binary80.exe Cgeev_test2_binary128.exe Cgeev_test2_double.exe Cgeev_test_mpfr.exe Cgeev_test_gmp.exe Cgeev_test_qd.exe Cgeev_test_dd.exe Cgeev_test_binary80.exe Cgeev_test_binary128.exe Cgeev_test_double.exe Rgees_Grcar_mpfr.exe Rgees_Grcar_gmp.exe Rgees_Grcar_qd.exe Rgees_Grcar_dd.exe Rgees_Grcar_binary80.exe Rgees_Grcar_binary128.exe Rgees_Grcar_double.exe Rgees_readfromfile_mpfr.exe Rgees_readfromfile_gmp.exe Rgees_readfromfile_qd.exe Rgees_readfromfile_dd.exe Rgees_readfromfile_binary80.exe Rgees_readfromfile_binary128.exe Rgees_readfromfile_double.exe Rgees_test_mpfr.exe Rgees_test_gmp.exe Rgees_test_qd.exe Rgees_test_dd.exe Rgees_test_binary80.exe Rgees_test_binary128.exe Rgees_test_double.exe Rgeev_Frank_mpfr.exe Rgeev_Frank_gmp.exe Rgeev_Frank_qd.exe Rgeev_Frank_dd.exe Rgeev_Frank_binary80.exe Rgeev_Frank_binary128.exe Rgeev_Frank_double.exe Rgeev_random_highcond_mpfr.exe Rgeev_random_highcond_gmp.exe Rgeev_random_highcond_qd.exe Rgeev_random_highcond_dd.exe Rgeev_random_highcond_binary80.exe Rgeev_random_highcond_binary128.exe Rgeev_random_highcond_double.exe Rgeev_readfromfile_mpfr.exe Rgeev_readfromfile_gmp.exe Rgeev_readfromfile_qd.exe Rgeev_readfromfile_dd.exe Rgeev_readfromfile_binary80.exe Rgeev_readfromfile_binary128.exe Rgeev_readfromfile_double.exe Rgeev_test_mpfr.exe Rgeev_test_gmp.exe Rgeev_test_qd.exe Rgeev_test_dd.exe Rgeev_test_binary80.exe Rgeev_test_binary128.exe Rgeev_test_double.exe
+programs=Cgees_test_mpfr.exe Cgees_test_gmp.exe Cgees_test_qd.exe Cgees_test_dd.exe Cgees_test_td.exe Cgees_test_binary80.exe Cgees_test_binary128.exe Cgees_test_double.exe Cgeev_NPR_mpfr.exe Cgeev_NPR_qd.exe Cgeev_NPR_dd.exe Cgeev_NPR_td.exe Cgeev_NPR_binary80.exe Cgeev_NPR_binary128.exe Cgeev_NPR_double.exe Cgeev_test2_mpfr.exe Cgeev_test2_gmp.exe Cgeev_test2_qd.exe Cgeev_test2_dd.exe Cgeev_test2_td.exe Cgeev_test2_binary80.exe Cgeev_test2_binary128.exe Cgeev_test2_double.exe Cgeev_test_mpfr.exe Cgeev_test_gmp.exe Cgeev_test_qd.exe Cgeev_test_dd.exe Cgeev_test_td.exe Cgeev_test_binary80.exe Cgeev_test_binary128.exe Cgeev_test_double.exe Rgees_Grcar_mpfr.exe Rgees_Grcar_gmp.exe Rgees_Grcar_qd.exe Rgees_Grcar_dd.exe Rgees_Grcar_td.exe Rgees_Grcar_binary80.exe Rgees_Grcar_binary128.exe Rgees_Grcar_double.exe Rgees_readfromfile_mpfr.exe Rgees_readfromfile_gmp.exe Rgees_readfromfile_qd.exe Rgees_readfromfile_dd.exe Rgees_readfromfile_td.exe Rgees_readfromfile_binary80.exe Rgees_readfromfile_binary128.exe Rgees_readfromfile_double.exe Rgees_test_mpfr.exe Rgees_test_gmp.exe Rgees_test_qd.exe Rgees_test_dd.exe Rgees_test_td.exe Rgees_test_binary80.exe Rgees_test_binary128.exe Rgees_test_double.exe Rgeev_Frank_mpfr.exe Rgeev_Frank_gmp.exe Rgeev_Frank_qd.exe Rgeev_Frank_dd.exe Rgeev_Frank_td.exe Rgeev_Frank_binary80.exe Rgeev_Frank_binary128.exe Rgeev_Frank_double.exe Rgeev_random_highcond_mpfr.exe Rgeev_random_highcond_gmp.exe Rgeev_random_highcond_qd.exe Rgeev_random_highcond_dd.exe Rgeev_random_highcond_td.exe Rgeev_random_highcond_binary80.exe Rgeev_random_highcond_binary128.exe Rgeev_random_highcond_double.exe Rgeev_readfromfile_mpfr.exe Rgeev_readfromfile_gmp.exe Rgeev_readfromfile_qd.exe Rgeev_readfromfile_dd.exe Rgeev_readfromfile_td.exe Rgeev_readfromfile_binary80.exe Rgeev_readfromfile_binary128.exe Rgeev_readfromfile_double.exe Rgeev_test_mpfr.exe Rgeev_test_gmp.exe Rgeev_test_qd.exe Rgeev_test_dd.exe Rgeev_test_td.exe Rgeev_test_binary80.exe Rgeev_test_binary128.exe Rgeev_test_double.exe
 
 all: $(programs)
 
@@ -34,6 +35,9 @@ Rgees_Grcar_qd.exe: Rgees_Grcar_qd.o
 
 Rgees_Grcar_dd.exe: Rgees_Grcar_dd.o
 	$(CXX) -o Rgees_Grcar_dd.exe Rgees_Grcar_dd.o $(LIBFLAGS) $(DDLIBS)
+
+Rgees_Grcar_td.exe: Rgees_Grcar_td.o
+	$(CXX) -o Rgees_Grcar_td.exe Rgees_Grcar_td.o $(LIBFLAGS) $(TDLIBS)
 
 Rgees_Grcar_binary80.exe: Rgees_Grcar_binary80.o
 	$(CXX) -o Rgees_Grcar_binary80 Rgees_Grcar_binary80.o $(LIBFLAGS) $(BINARY80LIBS)
@@ -59,6 +63,9 @@ Cgees_test_qd.exe: Cgees_test_qd.o
 Cgees_test_dd.exe: Cgees_test_dd.o
 	$(CXX) -o Cgees_test_dd.exe Cgees_test_dd.o $(LIBFLAGS) $(DDLIBS)
 
+Cgees_test_td.exe: Cgees_test_td.o
+	$(CXX) -o Cgees_test_td.exe Cgees_test_td.o $(LIBFLAGS) $(TDLIBS)
+
 Cgees_test_binary80.exe: Cgees_test_binary80.o
 	$(CXX) -o Cgees_test_binary80.exe Cgees_test_binary80.o $(LIBFLAGS) $(BINARY80LIBS)
 
@@ -76,6 +83,9 @@ Cgeev_NPR_qd.exe: Cgeev_NPR_qd.o
 
 Cgeev_NPR_dd.exe: Cgeev_NPR_dd.o
 	$(CXX) -o Cgeev_NPR_dd.exe Cgeev_NPR_dd.o $(LIBFLAGS) $(DDLIBS)
+
+Cgeev_NPR_td.exe: Cgeev_NPR_td.o
+	$(CXX) -o Cgeev_NPR_td.exe Cgeev_NPR_td.o $(LIBFLAGS) $(TDLIBS)
 
 Cgeev_NPR_binary80.exe: Cgeev_NPR_binary80.o
 	$(CXX) -o Cgeev_NPR_binary80.exe Cgeev_NPR_binary80.o $(LIBFLAGS) $(BINARY80LIBS)
@@ -98,6 +108,9 @@ Cgeev_test2_qd.exe: Cgeev_test2_qd.o
 Cgeev_test2_dd.exe: Cgeev_test2_dd.o
 	$(CXX) -o Cgeev_test2_dd.exe Cgeev_test2_dd.o $(LIBFLAGS) $(DDLIBS)
 
+Cgeev_test2_td.exe: Cgeev_test2_td.o
+	$(CXX) -o Cgeev_test2_td.exe Cgeev_test2_td.o $(LIBFLAGS) $(TDLIBS)
+
 Cgeev_test2_binary80.exe: Cgeev_test2_binary80.o
 	$(CXX) -o Cgeev_test2_binary80.exe Cgeev_test2_binary80.o $(LIBFLAGS) $(BINARY80LIBS)
 
@@ -118,6 +131,9 @@ Cgeev_test_qd.exe: Cgeev_test_qd.o
 
 Cgeev_test_dd.exe: Cgeev_test_dd.o
 	$(CXX) -o Cgeev_test_dd.exe Cgeev_test_dd.o $(LIBFLAGS) $(DDLIBS)
+
+Cgeev_test_td.exe: Cgeev_test_td.o
+	$(CXX) -o Cgeev_test_td.exe Cgeev_test_td.o $(LIBFLAGS) $(TDLIBS)
 
 Cgeev_test_binary80.exe: Cgeev_test_binary80.o
 	$(CXX) -o Cgeev_test_binary80.exe Cgeev_test_binary80.o $(LIBFLAGS) $(BINARY80LIBS)
@@ -140,6 +156,9 @@ Rgees_readfromfile_qd.exe: Rgees_readfromfile_qd.o
 Rgees_readfromfile_dd.exe: Rgees_readfromfile_dd.o
 	$(CXX) -o Rgees_readfromfile_dd.exe Rgees_readfromfile_dd.o $(LIBFLAGS) $(DDLIBS)
 
+Rgees_readfromfile_td.exe: Rgees_readfromfile_td.o
+	$(CXX) -o Rgees_readfromfile_td.exe Rgees_readfromfile_td.o $(LIBFLAGS) $(TDLIBS)
+
 Rgees_readfromfile_binary80.exe: Rgees_readfromfile_binary80.o
 	$(CXX) -o Rgees_readfromfile_binary80.exe Rgees_readfromfile_binary80.o $(LIBFLAGS) $(BINARY80LIBS)
 
@@ -160,6 +179,9 @@ Rgees_test_qd.exe: Rgees_test_qd.o
 
 Rgees_test_dd.exe: Rgees_test_dd.o
 	$(CXX) -o Rgees_test_dd.exe Rgees_test_dd.o $(LIBFLAGS) $(DDLIBS)
+
+Rgees_test_td.exe: Rgees_test_td.o
+	$(CXX) -o Rgees_test_td.exe Rgees_test_td.o $(LIBFLAGS) $(TDLIBS)
 
 Rgees_test_binary80.exe: Rgees_test_binary80.o
 	$(CXX) -o Rgees_test_binary80.exe Rgees_test_binary80.o $(LIBFLAGS) $(BINARY80LIBS)
@@ -182,6 +204,9 @@ Rgeev_Frank_qd.exe: Rgeev_Frank_qd.o
 Rgeev_Frank_dd.exe: Rgeev_Frank_dd.o
 	$(CXX) -o Rgeev_Frank_dd.exe Rgeev_Frank_dd.o $(LIBFLAGS) $(DDLIBS)
 
+Rgeev_Frank_td.exe: Rgeev_Frank_td.o
+	$(CXX) -o Rgeev_Frank_td.exe Rgeev_Frank_td.o $(LIBFLAGS) $(TDLIBS)
+
 Rgeev_Frank_binary80.exe: Rgeev_Frank_binary80.o
 	$(CXX) -o Rgeev_Frank_binary80.exe Rgeev_Frank_binary80.o $(LIBFLAGS) $(BINARY80LIBS)
 
@@ -202,6 +227,9 @@ Rgeev_random_highcond_qd.exe: Rgeev_random_highcond_qd.o
 
 Rgeev_random_highcond_dd.exe: Rgeev_random_highcond_dd.o
 	$(CXX) -o Rgeev_random_highcond_dd.exe Rgeev_random_highcond_dd.o $(LIBFLAGS) $(DDLIBS)
+
+Rgeev_random_highcond_td.exe: Rgeev_random_highcond_td.o
+	$(CXX) -o Rgeev_random_highcond_td.exe Rgeev_random_highcond_td.o $(LIBFLAGS) $(TDLIBS)
 
 Rgeev_random_highcond_binary80.exe: Rgeev_random_highcond_binary80.o
 	$(CXX) -o Rgeev_random_highcond_binary80.exe Rgeev_random_highcond_binary80.o $(LIBFLAGS) $(BINARY80LIBS)
@@ -224,6 +252,9 @@ Rgeev_readfromfile_qd.exe: Rgeev_readfromfile_qd.o
 Rgeev_readfromfile_dd.exe: Rgeev_readfromfile_dd.o
 	$(CXX) -o Rgeev_readfromfile_dd.exe Rgeev_readfromfile_dd.o $(LIBFLAGS) $(DDLIBS)
 
+Rgeev_readfromfile_td.exe: Rgeev_readfromfile_td.o
+	$(CXX) -o Rgeev_readfromfile_td.exe Rgeev_readfromfile_td.o $(LIBFLAGS) $(TDLIBS)
+
 Rgeev_readfromfile_binary80.exe: Rgeev_readfromfile_binary80.o
 	$(CXX) -o Rgeev_readfromfile_binary80.exe Rgeev_readfromfile_binary80.o $(LIBFLAGS) $(BINARY80LIBS)
 
@@ -244,6 +275,9 @@ Rgeev_test_qd.exe: Rgeev_test_qd.o
 
 Rgeev_test_dd.exe: Rgeev_test_dd.o
 	$(CXX) -o Rgeev_test_dd.exe Rgeev_test_dd.o $(LIBFLAGS) $(DDLIBS)
+
+Rgeev_test_td.exe: Rgeev_test_td.o
+	$(CXX) -o Rgeev_test_td.exe Rgeev_test_td.o $(LIBFLAGS) $(TDLIBS)
 
 Rgeev_test_binary80.exe: Rgeev_test_binary80.o
 	$(CXX) -o Rgeev_test_binary80.exe Rgeev_test_binary80.o $(LIBFLAGS) $(BINARY80LIBS)

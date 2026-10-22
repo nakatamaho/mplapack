@@ -47,6 +47,7 @@ KEEP_HAND_WRITTEN_FILES=(
   mpblas_gmp.h.in
   mpblas_mpfr.h.in
   mpblas_qd.h.in
+  mpblas_td.h.in
   Makefile.am
   Makefile.in
   Makefile

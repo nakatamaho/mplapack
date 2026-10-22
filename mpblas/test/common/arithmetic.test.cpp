@@ -52,7 +52,7 @@
 #define MPLAPACK_BUFLEN 1024
 #endif
 
-#if defined MPLAPACK_BUILD_WITH_QD || defined MPLAPACK_BUILD_WITH_DD
+#if defined MPLAPACK_BUILD_WITH_QD || defined MPLAPACK_BUILD_WITH_DD || defined MPLAPACK_BUILD_WITH_TD
 #include <qd/fpu.h>
 static unsigned int g_oldcw;
 static void __attribute__((constructor)) mplapack_test_fpu_init(void) { fpu_fix_start(&g_oldcw); }
@@ -219,6 +219,13 @@ void subst_test1() {
     }
 #elif defined MPLAPACK_BUILD_WITH_DD
     if (strncmp(buf1, buf2, 30) == 0 && strncmp(buf2, buf3, 30) == 0)
+        printf("ok!\n");
+    else {
+        printf("failed!\n");
+        exit(1);
+    }
+#elif defined MPLAPACK_BUILD_WITH_TD
+    if (strncmp(buf1, buf2, 46) == 0 && strncmp(buf2, buf3, 46) == 0)
         printf("ok!\n");
     else {
         printf("failed!\n");

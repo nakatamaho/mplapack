@@ -172,6 +172,34 @@ Rgesvd_test_dd_LDFLAGS = $(dd_libdepends)
 
 endif
 
+if ENABLE_TD
+mplapackexamples_PROGRAMS += Cgesvd_test_td Rgesvd_random_highcond_td Rgesvd_readfromfile_td Rgesvd_test2_td Rgesvd_test_td
+
+td_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(QD_INCLUDEDIR)
+td_libdepends = -Wl,-rpath,$(libdir) -L$(top_builddir)/mplapack/reference -lmplapack_td -L$(QD_LIBDIR) -lqd
+
+Cgesvd_test_td_SOURCES = Cgesvd_test_td.cpp
+Cgesvd_test_td_CXXFLAGS = $(td_cxxflags)
+Cgesvd_test_td_LDFLAGS = $(td_libdepends)
+
+Rgesvd_random_highcond_td_SOURCES = Rgesvd_random_highcond_td.cpp
+Rgesvd_random_highcond_td_CXXFLAGS = $(td_cxxflags)
+Rgesvd_random_highcond_td_LDFLAGS = $(td_libdepends)
+
+Rgesvd_readfromfile_td_SOURCES = Rgesvd_readfromfile_td.cpp
+Rgesvd_readfromfile_td_CXXFLAGS = $(td_cxxflags)
+Rgesvd_readfromfile_td_LDFLAGS = $(td_libdepends)
+
+Rgesvd_test2_td_SOURCES = Rgesvd_test2_td.cpp
+Rgesvd_test2_td_CXXFLAGS = $(td_cxxflags)
+Rgesvd_test2_td_LDFLAGS = $(td_libdepends)
+
+Rgesvd_test_td_SOURCES = Rgesvd_test_td.cpp
+Rgesvd_test_td_CXXFLAGS = $(td_cxxflags)
+Rgesvd_test_td_LDFLAGS = $(td_libdepends)
+
+endif
+
 if ENABLE_QD
 mplapackexamples_PROGRAMS += Cgesvd_test_qd Rgesvd_random_highcond_qd Rgesvd_readfromfile_qd Rgesvd_test2_qd Rgesvd_test_qd
 
@@ -202,7 +230,7 @@ endif
 
 mplapackexamplesdir=$(prefix)/share/examples/mplapack/05_SingularValueDecomposition
 
-mplapackexamples_DATA = Cgesvd_test_mpfr.cpp Cgesvd_test_gmp.cpp Cgesvd_test_binary128.cpp Cgesvd_test_binary80.cpp Cgesvd_test_double.cpp Cgesvd_test_dd.cpp Cgesvd_test_qd.cpp Rgesvd_random_highcond_mpfr.cpp Rgesvd_random_highcond_gmp.cpp Rgesvd_random_highcond_binary128.cpp Rgesvd_random_highcond_binary80.cpp Rgesvd_random_highcond_double.cpp Rgesvd_random_highcond_dd.cpp Rgesvd_random_highcond_qd.cpp Rgesvd_readfromfile_mpfr.cpp Rgesvd_readfromfile_gmp.cpp Rgesvd_readfromfile_binary128.cpp Rgesvd_readfromfile_binary80.cpp Rgesvd_readfromfile_double.cpp Rgesvd_readfromfile_dd.cpp Rgesvd_readfromfile_qd.cpp Rgesvd_test2_mpfr.cpp Rgesvd_test2_gmp.cpp Rgesvd_test2_binary128.cpp Rgesvd_test2_binary80.cpp Rgesvd_test2_double.cpp Rgesvd_test2_dd.cpp Rgesvd_test2_qd.cpp Rgesvd_test_mpfr.cpp Rgesvd_test_gmp.cpp Rgesvd_test_binary128.cpp Rgesvd_test_binary80.cpp Rgesvd_test_double.cpp Rgesvd_test_dd.cpp Rgesvd_test_qd.cpp \
+mplapackexamples_DATA = Cgesvd_test_mpfr.cpp Cgesvd_test_gmp.cpp Cgesvd_test_binary128.cpp Cgesvd_test_binary80.cpp Cgesvd_test_double.cpp Cgesvd_test_dd.cpp Cgesvd_test_td.cpp Cgesvd_test_qd.cpp Rgesvd_random_highcond_mpfr.cpp Rgesvd_random_highcond_gmp.cpp Rgesvd_random_highcond_binary128.cpp Rgesvd_random_highcond_binary80.cpp Rgesvd_random_highcond_double.cpp Rgesvd_random_highcond_dd.cpp Rgesvd_random_highcond_td.cpp Rgesvd_random_highcond_qd.cpp Rgesvd_readfromfile_mpfr.cpp Rgesvd_readfromfile_gmp.cpp Rgesvd_readfromfile_binary128.cpp Rgesvd_readfromfile_binary80.cpp Rgesvd_readfromfile_double.cpp Rgesvd_readfromfile_dd.cpp Rgesvd_readfromfile_td.cpp Rgesvd_readfromfile_qd.cpp Rgesvd_test2_mpfr.cpp Rgesvd_test2_gmp.cpp Rgesvd_test2_binary128.cpp Rgesvd_test2_binary80.cpp Rgesvd_test2_double.cpp Rgesvd_test2_dd.cpp Rgesvd_test2_td.cpp Rgesvd_test2_qd.cpp Rgesvd_test_mpfr.cpp Rgesvd_test_gmp.cpp Rgesvd_test_binary128.cpp Rgesvd_test_binary80.cpp Rgesvd_test_double.cpp Rgesvd_test_dd.cpp Rgesvd_test_td.cpp Rgesvd_test_qd.cpp \
 Matrix_01.txt Matrix_02.txt Matrix_03.txt Makefile.freebsd Makefile.linux Makefile.linux.inteloneAPI Makefile.macos Makefile.mingw
 
 install-data-hook:
@@ -261,6 +289,10 @@ endif
 if ENABLE_DD
 else
 DISABLED_EXAMPLE_SUFFIXES += dd
+endif
+if ENABLE_TD
+else
+DISABLED_EXAMPLE_SUFFIXES += td
 endif
 if ENABLE_DOUBLE
 else

@@ -132,6 +132,7 @@ KEEP_HAND_WRITTEN_FILES=(
   mplapack_gmp.h.in
   mplapack_mpfr.h.in
   mplapack_qd.h.in
+  mplapack_td.h.in
 )
 
 # ------------------------------------------------------------

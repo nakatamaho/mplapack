@@ -22,6 +22,8 @@
 #include "mplapack_utils_binary80.h"
 #elif defined(MPLAPACK_BUILD_WITH_DD)
 #include "mplapack_utils_dd.h"
+#elif defined(MPLAPACK_BUILD_WITH_TD)
+#include "mplapack_utils_td.h"
 #elif defined(MPLAPACK_BUILD_WITH_QD)
 #include "mplapack_utils_qd.h"
 #elif defined(MPLAPACK_BUILD_WITH_DOUBLE)
@@ -30,7 +32,7 @@
 #error "No MPLAPACK backend macro is defined (MPLAPACK_BUILD_WITH_*)."
 #endif
 
-#if defined(MPLAPACK_BUILD_WITH_QD) || defined(MPLAPACK_BUILD_WITH_DD)
+#if defined(MPLAPACK_BUILD_WITH_QD) || defined(MPLAPACK_BUILD_WITH_DD) || defined(MPLAPACK_BUILD_WITH_TD)
 // QD headers define and use qd::nint (and other short identifiers).
 // Temporarily disable macros that would interfere.
 #if defined(nint)
@@ -69,6 +71,10 @@
 #endif
 #if __has_include(<qd/qd_complex.h>)
 #include <qd/qd_complex.h>
+#endif
+#if defined(MPLAPACK_BUILD_WITH_TD)
+#include <qd/td_real.h>
+#include <qd/td_complex.h>
 #endif
 #if defined(FEM_WRITE_RESTORE_sign)
 #pragma pop_macro("sign")
@@ -440,7 +446,7 @@ class write_loop : write_loop_base
         }
     }
 
-#if defined(MPLAPACK_BUILD_WITH_DD) || defined(MPLAPACK_BUILD_WITH_QD)
+#if defined(MPLAPACK_BUILD_WITH_DD) || defined(MPLAPACK_BUILD_WITH_TD) || defined(MPLAPACK_BUILD_WITH_QD)
     //
     // Explicit overload for dd_real to prevent infinite recursion.
     // Without this, dd_real goes through generic template -> char buffer ->
@@ -536,6 +542,51 @@ class write_loop : write_loop_base
     // Explicit overload for qd_complex
     //
     write_loop &operator,(qd_complex const &val) { return (*this), val.real(), val.imag(); }
+#endif
+
+#if defined(MPLAPACK_BUILD_WITH_TD)
+    //
+    // Explicit overload for td_real
+    //
+    write_loop &operator,(td_real const &val) {
+        if (io_mode == io_list_directed) {
+            char buf[128];
+            val.write(buf, sizeof(buf), 48);
+            std::string s(buf);
+            size_t b = s.find_first_not_of(' ');
+            size_t e = s.find_last_not_of(' ');
+            if (b != std::string::npos && e != std::string::npos) {
+                s = s.substr(b, e - b + 1);
+            }
+            if (pos != 0) {
+                out->put(' ');
+                pos++;
+            }
+            for (char c: s) {
+                out->put(c);
+                pos++;
+            }
+        } else if (io_mode == io_formatted) {
+            char buf[128];
+            val.write(buf, sizeof(buf), 48);
+            std::string s(buf);
+            size_t b = s.find_first_not_of(' ');
+            size_t e = s.find_last_not_of(' ');
+            if (b != std::string::npos && e != std::string::npos) {
+                s = s.substr(b, e - b + 1);
+            }
+            std::string const &ed = next_edit_descriptor();
+            to_stream_fmt_double_given_string(s, ed);
+        } else {
+            to_stream_unformatted(reinterpret_cast<char const *>(&val), sizeof(val));
+        }
+        return *this;
+    }
+
+    //
+    // Explicit overload for td_complex
+    //
+    write_loop &operator,(td_complex const &val) { return (*this), val.real(), val.imag(); }
 #endif
 
   protected: // implementation detail

@@ -220,6 +220,42 @@ Rgglse_example_dd_LDFLAGS = $(dd_libdepends)
 
 endif
 
+if ENABLE_TD
+mplapackexamples_PROGRAMS += Cgels_example_td Cgelss_example_td Rgels_example_td Rgelss_example_td Rgelsy_example_td Rggglm_example_td Rgglse_example_td
+
+td_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(QD_INCLUDEDIR)
+td_libdepends = -Wl,-rpath,$(libdir) -L$(top_builddir)/mplapack/reference -lmplapack_td -L$(QD_LIBDIR) -lqd
+
+Cgels_example_td_SOURCES = Cgels_example_td.cpp
+Cgels_example_td_CXXFLAGS = $(td_cxxflags)
+Cgels_example_td_LDFLAGS = $(td_libdepends)
+
+Cgelss_example_td_SOURCES = Cgelss_example_td.cpp
+Cgelss_example_td_CXXFLAGS = $(td_cxxflags)
+Cgelss_example_td_LDFLAGS = $(td_libdepends)
+
+Rgels_example_td_SOURCES = Rgels_example_td.cpp
+Rgels_example_td_CXXFLAGS = $(td_cxxflags)
+Rgels_example_td_LDFLAGS = $(td_libdepends)
+
+Rgelss_example_td_SOURCES = Rgelss_example_td.cpp
+Rgelss_example_td_CXXFLAGS = $(td_cxxflags)
+Rgelss_example_td_LDFLAGS = $(td_libdepends)
+
+Rgelsy_example_td_SOURCES = Rgelsy_example_td.cpp
+Rgelsy_example_td_CXXFLAGS = $(td_cxxflags)
+Rgelsy_example_td_LDFLAGS = $(td_libdepends)
+
+Rggglm_example_td_SOURCES = Rggglm_example_td.cpp
+Rggglm_example_td_CXXFLAGS = $(td_cxxflags)
+Rggglm_example_td_LDFLAGS = $(td_libdepends)
+
+Rgglse_example_td_SOURCES = Rgglse_example_td.cpp
+Rgglse_example_td_CXXFLAGS = $(td_cxxflags)
+Rgglse_example_td_LDFLAGS = $(td_libdepends)
+
+endif
+
 if ENABLE_QD
 mplapackexamples_PROGRAMS += Cgels_example_qd Cgelss_example_qd Rgels_example_qd Rgelss_example_qd Rgelsy_example_qd Rggglm_example_qd Rgglse_example_qd
 
@@ -258,7 +294,7 @@ endif
 
 mplapackexamplesdir=$(prefix)/share/examples/mplapack/02_LeastSquares
 
-mplapackexamples_DATA = Cgels_example_mpfr.cpp Cgels_example_gmp.cpp Cgels_example_binary128.cpp Cgels_example_binary80.cpp Cgels_example_double.cpp Cgels_example_dd.cpp Cgels_example_qd.cpp Cgelss_example_mpfr.cpp Cgelss_example_gmp.cpp Cgelss_example_binary128.cpp Cgelss_example_binary80.cpp Cgelss_example_double.cpp Cgelss_example_dd.cpp Cgelss_example_qd.cpp Rgels_example_mpfr.cpp Rgels_example_gmp.cpp Rgels_example_binary128.cpp Rgels_example_binary80.cpp Rgels_example_double.cpp Rgels_example_dd.cpp Rgels_example_qd.cpp Rgelss_example_mpfr.cpp Rgelss_example_gmp.cpp Rgelss_example_binary128.cpp Rgelss_example_binary80.cpp Rgelss_example_double.cpp Rgelss_example_dd.cpp Rgelss_example_qd.cpp Rgelsy_example_mpfr.cpp Rgelsy_example_gmp.cpp Rgelsy_example_binary128.cpp Rgelsy_example_binary80.cpp Rgelsy_example_double.cpp Rgelsy_example_dd.cpp Rgelsy_example_qd.cpp Rggglm_example_mpfr.cpp Rggglm_example_gmp.cpp Rggglm_example_binary128.cpp Rggglm_example_binary80.cpp Rggglm_example_double.cpp Rggglm_example_dd.cpp Rggglm_example_qd.cpp Rgglse_example_mpfr.cpp Rgglse_example_gmp.cpp Rgglse_example_binary128.cpp Rgglse_example_binary80.cpp Rgglse_example_double.cpp Rgglse_example_dd.cpp Rgglse_example_qd.cpp \
+mplapackexamples_DATA = Cgels_example_mpfr.cpp Cgels_example_gmp.cpp Cgels_example_binary128.cpp Cgels_example_binary80.cpp Cgels_example_double.cpp Cgels_example_dd.cpp Cgels_example_td.cpp Cgels_example_qd.cpp Cgelss_example_mpfr.cpp Cgelss_example_gmp.cpp Cgelss_example_binary128.cpp Cgelss_example_binary80.cpp Cgelss_example_double.cpp Cgelss_example_dd.cpp Cgelss_example_td.cpp Cgelss_example_qd.cpp Rgels_example_mpfr.cpp Rgels_example_gmp.cpp Rgels_example_binary128.cpp Rgels_example_binary80.cpp Rgels_example_double.cpp Rgels_example_dd.cpp Rgels_example_td.cpp Rgels_example_qd.cpp Rgelss_example_mpfr.cpp Rgelss_example_gmp.cpp Rgelss_example_binary128.cpp Rgelss_example_binary80.cpp Rgelss_example_double.cpp Rgelss_example_dd.cpp Rgelss_example_td.cpp Rgelss_example_qd.cpp Rgelsy_example_mpfr.cpp Rgelsy_example_gmp.cpp Rgelsy_example_binary128.cpp Rgelsy_example_binary80.cpp Rgelsy_example_double.cpp Rgelsy_example_dd.cpp Rgelsy_example_td.cpp Rgelsy_example_qd.cpp Rggglm_example_mpfr.cpp Rggglm_example_gmp.cpp Rggglm_example_binary128.cpp Rggglm_example_binary80.cpp Rggglm_example_double.cpp Rggglm_example_dd.cpp Rggglm_example_td.cpp Rggglm_example_qd.cpp Rgglse_example_mpfr.cpp Rgglse_example_gmp.cpp Rgglse_example_binary128.cpp Rgglse_example_binary80.cpp Rgglse_example_double.cpp Rgglse_example_dd.cpp Rgglse_example_td.cpp Rgglse_example_qd.cpp \
  Makefile.freebsd Makefile.linux Makefile.linux.inteloneAPI Makefile.macos Makefile.mingw
 
 install-data-hook:
@@ -317,6 +353,10 @@ endif
 if ENABLE_DD
 else
 DISABLED_EXAMPLE_SUFFIXES += dd
+endif
+if ENABLE_TD
+else
+DISABLED_EXAMPLE_SUFFIXES += td
 endif
 if ENABLE_DOUBLE
 else

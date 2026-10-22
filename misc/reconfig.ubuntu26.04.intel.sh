@@ -20,4 +20,4 @@ fi
 
 
 autoreconf --force --install
-./configure --prefix=$HOME/MPLAPACK_INTELONEAPI --enable-gmp=yes --enable-mpfr=yes --enable-qd=yes --enable-dd=yes --enable-double=yes --enable-test=yes --enable-benchmark=yes --enable-binary128=yes --enable-binary80=yes "$OPENBLAS_CONFIGURE_OPT"
+./configure --prefix=$HOME/MPLAPACK_INTELONEAPI --enable-gmp=yes --enable-mpfr=yes --enable-qd=yes --enable-dd=yes --enable-td=yes --enable-double=yes --enable-test=yes --enable-benchmark=yes --enable-binary128=yes --enable-binary80=yes "$OPENBLAS_CONFIGURE_OPT"

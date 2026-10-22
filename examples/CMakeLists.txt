@@ -2,7 +2,7 @@
 # self-contained backend library.  The "generic" template examples and the "_opt" optimized-library
 # variants from the autotools build are not part of this CMake port.
 
-set(_mplapack_example_backends gmp mpfr qd dd double binary80 binary128)
+set(_mplapack_example_backends ${MPLAPACK_BACKENDS})
 
 foreach(_layer mpblas mplapack)
   foreach(_b ${_mplapack_example_backends})

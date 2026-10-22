@@ -58,6 +58,17 @@ endif()
 set(CMAKE_CXX_STANDARD ${MPLAPACK_CXX_STANDARD})
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS ${MPLAPACK_CXX_EXTENSIONS})
+
+# Intel compilers default to a value-unsafe floating-point model (fp-model
+# fast: reassociation, contraction), which breaks double-double and the
+# other expansion types.  As configure.ac does for CFLAGS/CXXFLAGS, build
+# every translation unit with the strict model.
+if(CMAKE_CXX_COMPILER_ID MATCHES "^Intel")
+  add_compile_options("$<$<COMPILE_LANGUAGE:CXX>:-fp-model=strict>")
+endif()
+if(CMAKE_C_COMPILER_ID MATCHES "^Intel")
+  add_compile_options("$<$<COMPILE_LANGUAGE:C>:-fp-model=strict>")
+endif()
 set(MPLAPACK_CHECK_UNIQUE_SYMBOLS_ENV
     "${CMAKE_COMMAND}" "-E" "env"
     "CXX=${CMAKE_CXX_COMPILER}"
@@ -71,13 +82,13 @@ set(MPLAPACK_LIB_SOVERSION "3")
 # -----------------------------------------------------------------------------
 # Options
 # -----------------------------------------------------------------------------
-option(MPLAPACK_ENABLE_DOUBLE    "Build the double (binary64) backend"      ON)
-option(MPLAPACK_ENABLE_MPFR      "Build the MPFR backend"                   ON)
-option(MPLAPACK_ENABLE_GMP       "Build the GMP backend"                    ON)
-option(MPLAPACK_ENABLE_QD        "Build the QD (quad-double) backend"       ON)
-option(MPLAPACK_ENABLE_DD        "Build the DD (double-double) backend"     ON)
-option(MPLAPACK_ENABLE_BINARY128 "Build the binary128 backend"             ON)
-option(MPLAPACK_ENABLE_BINARY80  "Build the binary80 backend (x86 only)"  OFF)
+# One MPLAPACK_ENABLE_<NAME> option per row of backends.txt.
+include(MplapackBackendTable)
+foreach(_b IN LISTS MPLAPACK_BACKENDS)
+  string(TOUPPER "${_b}" _B)
+  option(MPLAPACK_ENABLE_${_B} "Build the ${_b} backend"
+    ${MPLAPACK_BACKEND_${_b}_DEFAULT})
+endforeach()
 option(MPLAPACK_ENABLE_OPT       "Build optimized libraries"                ON)
 option(MPLAPACK_ENABLE_CUDA      "Build the DD CUDA accelerator library"    OFF)
 option(MPLAPACK_ENABLE_MPFR_CUDA "Build the MPFR CUDA accelerator library (Rgemm on the GPU)" OFF)
@@ -120,15 +131,26 @@ endif()
 # -----------------------------------------------------------------------------
 # Dependencies and bundled gmpfrxx_mkII header extraction
 # -----------------------------------------------------------------------------
+# Dependencies follow the traits of the enabled backends (backends.txt).
+mplapack_enabled_backend_traits(_mplapack_enabled_traits)
+foreach(_trait gmp mpfr qd)
+  string(TOUPPER "${_trait}" _TRAIT)
+  if(_trait IN_LIST _mplapack_enabled_traits)
+    set(MPLAPACK_USES_${_TRAIT} ON)
+  else()
+    set(MPLAPACK_USES_${_TRAIT} OFF)
+  endif()
+endforeach()
+
 # GMP C interface is needed directly by the GMP backend and transitively by MPFR.
-if(MPLAPACK_ENABLE_GMP OR MPLAPACK_ENABLE_MPFR)
+if(MPLAPACK_USES_GMP OR MPLAPACK_USES_MPFR)
   find_package(GMP REQUIRED)
 endif()
-if(MPLAPACK_ENABLE_MPFR)
+if(MPLAPACK_USES_MPFR)
   find_package(MPFR REQUIRED)
   find_package(MPC REQUIRED)
 endif()
-if(MPLAPACK_ENABLE_GMP OR MPLAPACK_ENABLE_MPFR)
+if(MPLAPACK_USES_GMP OR MPLAPACK_USES_MPFR)
   if(NOT MPLAPACK_ENABLE_GMPFRXX_MKII)
     message(FATAL_ERROR "GMP/MPFR backends require MPLAPACK_ENABLE_GMPFRXX_MKII=ON")
   endif()
@@ -150,8 +172,10 @@ if(MPLAPACK_ENABLE_GMP OR MPLAPACK_ENABLE_MPFR)
     file(WRITE "${MPLAPACK_GMPFRXX_MKII_STAMP}" "${MPLAPACK_GMPFRXX_MKII_VERSION}\n")
   endif()
 endif()
-if(MPLAPACK_ENABLE_QD OR MPLAPACK_ENABLE_DD)
-  find_package(QD REQUIRED)
+# Keep in step with the libQD3 tarball bundled under external/qd.
+set(MPLAPACK_QD_MIN_VERSION 1.6.0)
+if(MPLAPACK_USES_QD)
+  find_package(QD ${MPLAPACK_QD_MIN_VERSION} REQUIRED)
 endif()
 if(MPLAPACK_ENABLE_CUDA AND NOT MPLAPACK_ENABLE_DD)
   message(FATAL_ERROR "MPLAPACK_ENABLE_CUDA requires MPLAPACK_ENABLE_DD=ON")
@@ -272,61 +296,25 @@ check_cxx_compiler_flag("-ffp-contract=off" MPLAPACK_HAS_FP_CONTRACT_OFF)
 # -----------------------------------------------------------------------------
 # Backends
 # -----------------------------------------------------------------------------
-if(MPLAPACK_ENABLE_GMP)
-  mplapack_add_backend(gmp MPLAPACK_BUILD_WITH_GMP)
-  target_include_directories(mplapack_gmp PUBLIC
-      "$<BUILD_INTERFACE:${MPLAPACK_GMPFRXX_MKII_ROOT}/include>")
-  target_link_libraries(mplapack_gmp PUBLIC GMP::GMP)
-  list(APPEND MPLAPACK_INSTALL_TARGETS mplapack_gmp)
-  if(MPLAPACK_ENABLE_OPT)
-    mplapack_add_opt_backend(gmp)
-    target_include_directories(mplapack_gmp_opt PUBLIC
-        "$<BUILD_INTERFACE:${MPLAPACK_GMPFRXX_MKII_ROOT}/include>")
-    target_link_libraries(mplapack_gmp_opt PUBLIC GMP::GMP)
-    list(APPEND MPLAPACK_INSTALL_TARGETS mplapack_gmp_opt)
+# One library (and one optimized library) per enabled row of backends.txt.
+foreach(_b IN LISTS MPLAPACK_BACKENDS)
+  string(TOUPPER "${_b}" _B)
+  if(NOT MPLAPACK_ENABLE_${_B})
+    continue()
   endif()
-endif()
-
-if(MPLAPACK_ENABLE_MPFR)
-  mplapack_add_backend(mpfr MPLAPACK_BUILD_WITH_MPFR)
-  target_include_directories(mplapack_mpfr PUBLIC
-      "$<BUILD_INTERFACE:${MPLAPACK_GMPFRXX_MKII_ROOT}/include>")
-  target_link_libraries(mplapack_mpfr PUBLIC MPC::MPC MPFR::MPFR GMP::GMP)
-  list(APPEND MPLAPACK_INSTALL_TARGETS mplapack_mpfr)
+  mplapack_add_backend(${_b} MPLAPACK_BUILD_WITH_${_B})
+  mplapack_configure_backend_traits(mplapack_${_b} ${_b})
+  list(APPEND MPLAPACK_INSTALL_TARGETS mplapack_${_b})
   if(MPLAPACK_ENABLE_OPT)
-    mplapack_add_opt_backend(mpfr)
-    target_include_directories(mplapack_mpfr_opt PUBLIC
-        "$<BUILD_INTERFACE:${MPLAPACK_GMPFRXX_MKII_ROOT}/include>")
-    target_link_libraries(mplapack_mpfr_opt PUBLIC MPC::MPC MPFR::MPFR GMP::GMP)
-    list(APPEND MPLAPACK_INSTALL_TARGETS mplapack_mpfr_opt)
+    mplapack_add_opt_backend(${_b})
+    mplapack_configure_backend_traits(mplapack_${_b}_opt ${_b})
+    list(APPEND MPLAPACK_INSTALL_TARGETS mplapack_${_b}_opt)
   endif()
-endif()
-
-if(MPLAPACK_ENABLE_QD)
-  mplapack_add_backend(qd MPLAPACK_BUILD_WITH_QD)
-  target_link_libraries(mplapack_qd PUBLIC QD::QD)
-  list(APPEND MPLAPACK_INSTALL_TARGETS mplapack_qd)
-  if(MPLAPACK_ENABLE_OPT)
-    mplapack_add_opt_backend(qd)
-    target_link_libraries(mplapack_qd_opt PUBLIC QD::QD)
-    # The quad-double kernels of the optimized Rgemm rely on uncontracted
-    # floating-point operations, as dd does.
-    mplapack_configure_dd_arithmetic(mplapack_qd_opt)
-    list(APPEND MPLAPACK_INSTALL_TARGETS mplapack_qd_opt)
-  endif()
-endif()
-
-if(MPLAPACK_ENABLE_DD)
-  mplapack_add_backend(dd MPLAPACK_BUILD_WITH_DD)
-  target_link_libraries(mplapack_dd PUBLIC QD::QD)
-  mplapack_configure_dd_arithmetic(mplapack_dd)
-  list(APPEND MPLAPACK_INSTALL_TARGETS mplapack_dd)
-  if(MPLAPACK_ENABLE_OPT)
-    mplapack_add_opt_backend(dd)
-    target_link_libraries(mplapack_dd_opt PUBLIC QD::QD)
-    mplapack_configure_dd_arithmetic(mplapack_dd_opt)
-    list(APPEND MPLAPACK_INSTALL_TARGETS mplapack_dd_opt)
-  endif()
+endforeach()
+# The quad-double kernels of the optimized Rgemm (mpblas/optimized/common)
+# rely on uncontracted floating-point operations, as dd and td do.
+if(TARGET mplapack_qd_opt)
+  mplapack_configure_dd_arithmetic(mplapack_qd_opt)
 endif()
 
 if(MPLAPACK_ENABLE_CUDA)
@@ -434,40 +422,6 @@ if(MPLAPACK_ENABLE_MPFR_CUDA)
   list(APPEND MPLAPACK_INSTALL_TARGETS mplapack_mpfr_opt_cuda)
 endif()
 
-if(MPLAPACK_ENABLE_DOUBLE)
-  mplapack_add_backend(double MPLAPACK_BUILD_WITH_DOUBLE)
-  list(APPEND MPLAPACK_INSTALL_TARGETS mplapack_double)
-  if(MPLAPACK_ENABLE_OPT)
-    mplapack_add_opt_backend(double)
-    list(APPEND MPLAPACK_INSTALL_TARGETS mplapack_double_opt)
-  endif()
-endif()
-
-if(MPLAPACK_ENABLE_BINARY80)
-  mplapack_add_backend(binary80 MPLAPACK_BUILD_WITH_BINARY80)
-  list(APPEND MPLAPACK_INSTALL_TARGETS mplapack_binary80)
-  if(MPLAPACK_ENABLE_OPT)
-    mplapack_add_opt_backend(binary80)
-    list(APPEND MPLAPACK_INSTALL_TARGETS mplapack_binary80_opt)
-  endif()
-endif()
-
-if(MPLAPACK_ENABLE_BINARY128)
-  mplapack_add_backend(binary128 MPLAPACK_BUILD_WITH_BINARY128)
-  if(MPLAPACK_BINARY128_EXTRA_LIBS)
-    target_link_libraries(mplapack_binary128 PUBLIC ${MPLAPACK_BINARY128_EXTRA_LIBS})
-  endif()
-  list(APPEND MPLAPACK_INSTALL_TARGETS mplapack_binary128)
-  if(MPLAPACK_ENABLE_OPT)
-    mplapack_add_opt_backend(binary128)
-    if(MPLAPACK_BINARY128_EXTRA_LIBS)
-      target_link_libraries(mplapack_binary128_opt PUBLIC
-        ${MPLAPACK_BINARY128_EXTRA_LIBS})
-    endif()
-    list(APPEND MPLAPACK_INSTALL_TARGETS mplapack_binary128_opt)
-  endif()
-endif()
-
 if(MPLAPACK_ENABLE_OPENCL)
   file(GLOB _mplapack_opencl_sources CONFIGURE_DEPENDS
     "${CMAKE_CURRENT_SOURCE_DIR}/mpblas/optimized/binary128/opencl/*.cpp")
@@ -502,7 +456,7 @@ if(MPLAPACK_BUILD_EXAMPLES)
 endif()
 if(MPLAPACK_BUILD_TESTS)
   enable_testing()
-  foreach(b gmp mpfr qd dd double binary80 binary128)
+  foreach(b IN LISTS MPLAPACK_BACKENDS)
     if(TARGET mplapack_${b})
       add_test(NAME unique_symbols_${b}
         COMMAND ${MPLAPACK_CHECK_UNIQUE_SYMBOLS_ENV}
@@ -524,14 +478,13 @@ if(MPLAPACK_BUILD_TESTS)
                 "$<TARGET_FILE:mplapack_${accelerator}>")
     endif()
   endforeach()
-  # Shared by both test directories: the override libraries/objects rely on the
+  # Shared by both test directories: executable-owned test overrides rely on the
   # linker keeping the first (overriding) definition of duplicated symbols.
   include(CheckLinkerFlag)
   check_linker_flag(CXX "-Wl,--allow-multiple-definition" MPLAPACK_LD_ALLOW_MULTIDEF)
   # The mpblas/mplapack correctness tests compare against a reference Fortran
   # BLAS/LAPACK and need its Fortran runtime.
-  find_package(BLAS)
-  find_package(LAPACK)
+  include(MplapackReferenceLapack)
   find_library(MPLAPACK_GFORTRAN_LIBRARY NAMES gfortran)
   add_subdirectory(mpblas/test)
   # Optimized CPU Rgemm of dd/qd/binary128: the blocked engine bit-identical

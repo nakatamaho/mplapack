@@ -1,6 +1,7 @@
 check_PROGRAMS = $(mplapack_dd_test_PROGRAMS) $(mplapack_dd_opt_test_PROGRAMS)
 
-# Keep ordinary test overrides in executable objects under --as-needed.
+# Own the test routines and common arrays in the executable only.
+# Do not also link an override library: its finalizers would run twice.
 TEST_OVERRIDE_SOURCES = ../common/Mxerbla.cpp ../common/iMlaenv.cpp ../common/Mxlaenv.cpp
 
 mplapack_dd_test_PROGRAMS = xlintstR_dd xlintstC_dd xlintstrfR_dd xlintstrfC_dd
@@ -8,15 +9,18 @@ mplapack_dd_opt_test_PROGRAMS = xlintstR_dd_opt xlintstC_dd_opt xlintstrfR_dd_op
 mplapack_dd_testdir = $(prefix)/lib/$(target)/mplapack/test/lin
 mplapack_dd_opt_testdir = $(prefix)/lib/$(target)/mplapack/test/lin
 
-$(mplapack_dd_test_PROGRAMS): ../liblin_dd.la ../liblin_override_dd.la
-$(mplapack_dd_opt_test_PROGRAMS): ../liblin_dd_opt.la ../liblin_override_dd_opt.la
+$(mplapack_dd_test_PROGRAMS): ../liblin_dd.la
+$(mplapack_dd_opt_test_PROGRAMS): ../liblin_dd_opt.la
 
 if IS_MINGW
-libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,$(top_builddir)/mplapack/test/lin/.libs/liblin_dd.a,$(top_builddir)/mplapack/test/lin/.libs/liblin_override_dd.a,$(top_builddir)/mplapack/test/matgen/.libs/libmatgen_dd.a,$(top_builddir)/mplapack/reference/.libs/libmplapack_dd.a,--no-whole-archive
-opt_libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,$(top_builddir)/mplapack/test/lin/.libs/liblin_dd_opt.a,$(top_builddir)/mplapack/test/lin/.libs/liblin_override_dd_opt.a,$(top_builddir)/mplapack/test/matgen/.libs/libmatgen_dd_opt.a,$(top_builddir)/mpblas/optimized/dd/.libs/libmplapack_dd_opt.a,--no-whole-archive
+# Retain the constructor-only backend object without whole-archive linking.
+test_ldflags = -Wl,--allow-multiple-definition -Wl,-u,_Z22mplapack_initialize_ddv
+libdepends = $(top_builddir)/mplapack/test/lin/.libs/liblin_dd.a $(top_builddir)/mplapack/test/matgen/.libs/libmatgen_dd.a $(top_builddir)/mplapack/reference/.libs/libmplapack_dd.a
+opt_libdepends = $(top_builddir)/mplapack/test/lin/.libs/liblin_dd_opt.a $(top_builddir)/mplapack/test/matgen/.libs/libmatgen_dd_opt.a $(top_builddir)/mpblas/optimized/dd/.libs/libmplapack_dd_opt.a
 else
-libdepends = -L$(top_builddir)/mplapack/test/lin -llin_dd -llin_override_dd -L$(top_builddir)/mplapack/test/matgen -lmatgen_dd -L$(top_builddir)/mplapack/reference -lmplapack_dd
-opt_libdepends = -L$(top_builddir)/mplapack/test/lin -llin_dd_opt -llin_override_dd_opt -L$(top_builddir)/mplapack/test/matgen -lmatgen_dd_opt -L$(top_builddir)/mpblas/optimized/dd -lmplapack_dd_opt
+test_ldflags =
+libdepends = -L$(top_builddir)/mplapack/test/lin -llin_dd -L$(top_builddir)/mplapack/test/matgen -lmatgen_dd -L$(top_builddir)/mplapack/reference -lmplapack_dd
+opt_libdepends = -L$(top_builddir)/mplapack/test/lin -llin_dd_opt -L$(top_builddir)/mplapack/test/matgen -lmatgen_dd_opt -L$(top_builddir)/mpblas/optimized/dd -lmplapack_dd_opt
 endif
 
 mplibs = -L$(QD_LIBDIR) -lqd $(QD_RPATH_LDFLAGS) -lm
@@ -24,37 +28,37 @@ cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) -DMPLAP
 
 xlintstR_dd_SOURCES  = ../common/Rchkaa.cpp $(TEST_OVERRIDE_SOURCES)
 xlintstR_dd_opt_SOURCES  = ../common/Rchkaa.cpp $(TEST_OVERRIDE_SOURCES)
-xlintstR_dd_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
-xlintstR_dd_opt_LDFLAGS  = $(opt_libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
-xlintstR_dd_LDFLAGS += -Wl,-rpath,$(libdir)
-xlintstR_dd_opt_LDFLAGS += -Wl,-rpath,$(libdir)
+xlintstR_dd_LDADD  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xlintstR_dd_opt_LDADD  = $(opt_libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xlintstR_dd_LDFLAGS = $(test_ldflags) -Wl,-rpath,$(libdir)
+xlintstR_dd_opt_LDFLAGS = $(test_ldflags) -Wl,-rpath,$(libdir)
 xlintstR_dd_CXXFLAGS = $(cxxflags) $(DD_CXXFLAGS)
 xlintstR_dd_opt_CXXFLAGS = $(cxxflags) $(DD_CXXFLAGS)
 
 xlintstC_dd_SOURCES  = ../common/Cchkaa.cpp $(TEST_OVERRIDE_SOURCES)
 xlintstC_dd_opt_SOURCES  = ../common/Cchkaa.cpp $(TEST_OVERRIDE_SOURCES)
-xlintstC_dd_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
-xlintstC_dd_opt_LDFLAGS  = $(opt_libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
-xlintstC_dd_LDFLAGS += -Wl,-rpath,$(libdir)
-xlintstC_dd_opt_LDFLAGS += -Wl,-rpath,$(libdir)
+xlintstC_dd_LDADD  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xlintstC_dd_opt_LDADD  = $(opt_libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xlintstC_dd_LDFLAGS = $(test_ldflags) -Wl,-rpath,$(libdir)
+xlintstC_dd_opt_LDFLAGS = $(test_ldflags) -Wl,-rpath,$(libdir)
 xlintstC_dd_CXXFLAGS = $(cxxflags) $(DD_CXXFLAGS)
 xlintstC_dd_opt_CXXFLAGS = $(cxxflags) $(DD_CXXFLAGS)
 
 xlintstrfR_dd_SOURCES  = ../common/Rchkrfp.cpp $(TEST_OVERRIDE_SOURCES)
 xlintstrfR_dd_opt_SOURCES  = ../common/Rchkrfp.cpp $(TEST_OVERRIDE_SOURCES)
-xlintstrfR_dd_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
-xlintstrfR_dd_opt_LDFLAGS  = $(opt_libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
-xlintstrfR_dd_LDFLAGS += -Wl,-rpath,$(libdir)
-xlintstrfR_dd_opt_LDFLAGS += -Wl,-rpath,$(libdir)
+xlintstrfR_dd_LDADD  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xlintstrfR_dd_opt_LDADD  = $(opt_libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xlintstrfR_dd_LDFLAGS = $(test_ldflags) -Wl,-rpath,$(libdir)
+xlintstrfR_dd_opt_LDFLAGS = $(test_ldflags) -Wl,-rpath,$(libdir)
 xlintstrfR_dd_CXXFLAGS = $(cxxflags) $(DD_CXXFLAGS)
 xlintstrfR_dd_opt_CXXFLAGS = $(cxxflags) $(DD_CXXFLAGS)
 
 xlintstrfC_dd_SOURCES  = ../common/Cchkrfp.cpp $(TEST_OVERRIDE_SOURCES)
 xlintstrfC_dd_opt_SOURCES  = ../common/Cchkrfp.cpp $(TEST_OVERRIDE_SOURCES)
-xlintstrfC_dd_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
-xlintstrfC_dd_opt_LDFLAGS  = $(opt_libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
-xlintstrfC_dd_LDFLAGS += -Wl,-rpath,$(libdir)
-xlintstrfC_dd_opt_LDFLAGS += -Wl,-rpath,$(libdir)
+xlintstrfC_dd_LDADD  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xlintstrfC_dd_opt_LDADD  = $(opt_libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xlintstrfC_dd_LDFLAGS = $(test_ldflags) -Wl,-rpath,$(libdir)
+xlintstrfC_dd_opt_LDFLAGS = $(test_ldflags) -Wl,-rpath,$(libdir)
 xlintstrfC_dd_CXXFLAGS = $(cxxflags) $(DD_CXXFLAGS)
 xlintstrfC_dd_opt_CXXFLAGS = $(cxxflags) $(DD_CXXFLAGS)
 

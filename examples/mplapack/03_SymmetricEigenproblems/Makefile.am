@@ -196,6 +196,38 @@ Rsyevr_Frank_dd_LDFLAGS = $(dd_libdepends)
 
 endif
 
+if ENABLE_TD
+mplapackexamples_PROGRAMS += Cheev_test_td Rsyev_Frank_td Rsyev_test_td Rsyevd_DingDong_td Rsyevd_Frank_td Rsyevr_Frank_td
+
+td_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(QD_INCLUDEDIR)
+td_libdepends = -Wl,-rpath,$(libdir) -L$(top_builddir)/mplapack/reference -lmplapack_td -L$(QD_LIBDIR) -lqd
+
+Cheev_test_td_SOURCES = Cheev_test_td.cpp
+Cheev_test_td_CXXFLAGS = $(td_cxxflags)
+Cheev_test_td_LDFLAGS = $(td_libdepends)
+
+Rsyev_Frank_td_SOURCES = Rsyev_Frank_td.cpp
+Rsyev_Frank_td_CXXFLAGS = $(td_cxxflags)
+Rsyev_Frank_td_LDFLAGS = $(td_libdepends)
+
+Rsyev_test_td_SOURCES = Rsyev_test_td.cpp
+Rsyev_test_td_CXXFLAGS = $(td_cxxflags)
+Rsyev_test_td_LDFLAGS = $(td_libdepends)
+
+Rsyevd_DingDong_td_SOURCES = Rsyevd_DingDong_td.cpp
+Rsyevd_DingDong_td_CXXFLAGS = $(td_cxxflags)
+Rsyevd_DingDong_td_LDFLAGS = $(td_libdepends)
+
+Rsyevd_Frank_td_SOURCES = Rsyevd_Frank_td.cpp
+Rsyevd_Frank_td_CXXFLAGS = $(td_cxxflags)
+Rsyevd_Frank_td_LDFLAGS = $(td_libdepends)
+
+Rsyevr_Frank_td_SOURCES = Rsyevr_Frank_td.cpp
+Rsyevr_Frank_td_CXXFLAGS = $(td_cxxflags)
+Rsyevr_Frank_td_LDFLAGS = $(td_libdepends)
+
+endif
+
 if ENABLE_QD
 mplapackexamples_PROGRAMS += Cheev_test_qd Rsyev_Frank_qd Rsyev_test_qd Rsyevd_DingDong_qd Rsyevd_Frank_qd Rsyevr_Frank_qd
 
@@ -230,7 +262,7 @@ endif
 
 mplapackexamplesdir=$(prefix)/share/examples/mplapack/03_SymmetricEigenproblems
 
-mplapackexamples_DATA = Cheev_test_mpfr.cpp Cheev_test_gmp.cpp Cheev_test_binary128.cpp Cheev_test_binary80.cpp Cheev_test_double.cpp Cheev_test_dd.cpp Cheev_test_qd.cpp Rsyev_Frank_mpfr.cpp Rsyev_Frank_gmp.cpp Rsyev_Frank_binary128.cpp Rsyev_Frank_binary80.cpp Rsyev_Frank_double.cpp Rsyev_Frank_dd.cpp Rsyev_Frank_qd.cpp Rsyev_test_mpfr.cpp Rsyev_test_gmp.cpp Rsyev_test_binary128.cpp Rsyev_test_binary80.cpp Rsyev_test_double.cpp Rsyev_test_dd.cpp Rsyev_test_qd.cpp Rsyevd_DingDong_mpfr.cpp Rsyevd_DingDong_gmp.cpp Rsyevd_DingDong_binary128.cpp Rsyevd_DingDong_binary80.cpp Rsyevd_DingDong_double.cpp Rsyevd_DingDong_dd.cpp Rsyevd_DingDong_qd.cpp Rsyevd_Frank_mpfr.cpp Rsyevd_Frank_gmp.cpp Rsyevd_Frank_binary128.cpp Rsyevd_Frank_binary80.cpp Rsyevd_Frank_double.cpp Rsyevd_Frank_dd.cpp Rsyevd_Frank_qd.cpp Rsyevr_Frank_mpfr.cpp Rsyevr_Frank_gmp.cpp Rsyevr_Frank_binary128.cpp Rsyevr_Frank_binary80.cpp Rsyevr_Frank_double.cpp Rsyevr_Frank_dd.cpp Rsyevr_Frank_qd.cpp \
+mplapackexamples_DATA = Cheev_test_mpfr.cpp Cheev_test_gmp.cpp Cheev_test_binary128.cpp Cheev_test_binary80.cpp Cheev_test_double.cpp Cheev_test_dd.cpp Cheev_test_td.cpp Cheev_test_qd.cpp Rsyev_Frank_mpfr.cpp Rsyev_Frank_gmp.cpp Rsyev_Frank_binary128.cpp Rsyev_Frank_binary80.cpp Rsyev_Frank_double.cpp Rsyev_Frank_dd.cpp Rsyev_Frank_td.cpp Rsyev_Frank_qd.cpp Rsyev_test_mpfr.cpp Rsyev_test_gmp.cpp Rsyev_test_binary128.cpp Rsyev_test_binary80.cpp Rsyev_test_double.cpp Rsyev_test_dd.cpp Rsyev_test_td.cpp Rsyev_test_qd.cpp Rsyevd_DingDong_mpfr.cpp Rsyevd_DingDong_gmp.cpp Rsyevd_DingDong_binary128.cpp Rsyevd_DingDong_binary80.cpp Rsyevd_DingDong_double.cpp Rsyevd_DingDong_dd.cpp Rsyevd_DingDong_td.cpp Rsyevd_DingDong_qd.cpp Rsyevd_Frank_mpfr.cpp Rsyevd_Frank_gmp.cpp Rsyevd_Frank_binary128.cpp Rsyevd_Frank_binary80.cpp Rsyevd_Frank_double.cpp Rsyevd_Frank_dd.cpp Rsyevd_Frank_td.cpp Rsyevd_Frank_qd.cpp Rsyevr_Frank_mpfr.cpp Rsyevr_Frank_gmp.cpp Rsyevr_Frank_binary128.cpp Rsyevr_Frank_binary80.cpp Rsyevr_Frank_double.cpp Rsyevr_Frank_dd.cpp Rsyevr_Frank_td.cpp Rsyevr_Frank_qd.cpp \
  Makefile.freebsd Makefile.linux Makefile.linux.inteloneAPI Makefile.macos Makefile.mingw
 
 install-data-hook:
@@ -289,6 +321,10 @@ endif
 if ENABLE_DD
 else
 DISABLED_EXAMPLE_SUFFIXES += dd
+endif
+if ENABLE_TD
+else
+DISABLED_EXAMPLE_SUFFIXES += td
 endif
 if ENABLE_DOUBLE
 else

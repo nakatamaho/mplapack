@@ -312,6 +312,58 @@ Rgeev_test_dd_LDFLAGS = $(dd_libdepends)
 
 endif
 
+if ENABLE_TD
+mplapackexamples_PROGRAMS += Cgees_test_td Cgeev_NPR_td Cgeev_test2_td Cgeev_test_td Rgees_Grcar_td Rgees_readfromfile_td Rgees_test_td Rgeev_Frank_td Rgeev_random_highcond_td Rgeev_readfromfile_td Rgeev_test_td
+
+td_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(QD_INCLUDEDIR)
+td_libdepends = -Wl,-rpath,$(libdir) -L$(top_builddir)/mplapack/reference -lmplapack_td -L$(QD_LIBDIR) -lqd
+
+Cgees_test_td_SOURCES = Cgees_test_td.cpp
+Cgees_test_td_CXXFLAGS = $(td_cxxflags)
+Cgees_test_td_LDFLAGS = $(td_libdepends)
+
+Cgeev_NPR_td_SOURCES = Cgeev_NPR_td.cpp
+Cgeev_NPR_td_CXXFLAGS = $(td_cxxflags)
+Cgeev_NPR_td_LDFLAGS = $(td_libdepends)
+
+Cgeev_test2_td_SOURCES = Cgeev_test2_td.cpp
+Cgeev_test2_td_CXXFLAGS = $(td_cxxflags)
+Cgeev_test2_td_LDFLAGS = $(td_libdepends)
+
+Cgeev_test_td_SOURCES = Cgeev_test_td.cpp
+Cgeev_test_td_CXXFLAGS = $(td_cxxflags)
+Cgeev_test_td_LDFLAGS = $(td_libdepends)
+
+Rgees_Grcar_td_SOURCES = Rgees_Grcar_td.cpp
+Rgees_Grcar_td_CXXFLAGS = $(td_cxxflags)
+Rgees_Grcar_td_LDFLAGS = $(td_libdepends)
+
+Rgees_readfromfile_td_SOURCES = Rgees_readfromfile_td.cpp
+Rgees_readfromfile_td_CXXFLAGS = $(td_cxxflags)
+Rgees_readfromfile_td_LDFLAGS = $(td_libdepends)
+
+Rgees_test_td_SOURCES = Rgees_test_td.cpp
+Rgees_test_td_CXXFLAGS = $(td_cxxflags)
+Rgees_test_td_LDFLAGS = $(td_libdepends)
+
+Rgeev_Frank_td_SOURCES = Rgeev_Frank_td.cpp
+Rgeev_Frank_td_CXXFLAGS = $(td_cxxflags)
+Rgeev_Frank_td_LDFLAGS = $(td_libdepends)
+
+Rgeev_random_highcond_td_SOURCES = Rgeev_random_highcond_td.cpp
+Rgeev_random_highcond_td_CXXFLAGS = $(td_cxxflags)
+Rgeev_random_highcond_td_LDFLAGS = $(td_libdepends)
+
+Rgeev_readfromfile_td_SOURCES = Rgeev_readfromfile_td.cpp
+Rgeev_readfromfile_td_CXXFLAGS = $(td_cxxflags)
+Rgeev_readfromfile_td_LDFLAGS = $(td_libdepends)
+
+Rgeev_test_td_SOURCES = Rgeev_test_td.cpp
+Rgeev_test_td_CXXFLAGS = $(td_cxxflags)
+Rgeev_test_td_LDFLAGS = $(td_libdepends)
+
+endif
+
 if ENABLE_QD
 mplapackexamples_PROGRAMS += Cgees_test_qd Cgeev_NPR_qd Cgeev_test2_qd Cgeev_test_qd Rgees_Grcar_qd Rgees_readfromfile_qd Rgees_test_qd Rgeev_Frank_qd Rgeev_random_highcond_qd Rgeev_readfromfile_qd Rgeev_test_qd
 
@@ -366,7 +418,7 @@ endif
 
 mplapackexamplesdir=$(prefix)/share/examples/mplapack/04_NonsymmetricEigenproblems
 
-mplapackexamples_DATA = Cgees_test_mpfr.cpp Cgees_test_gmp.cpp Cgees_test_binary128.cpp Cgees_test_binary80.cpp Cgees_test_double.cpp Cgees_test_dd.cpp Cgees_test_qd.cpp Cgeev_NPR_mpfr.cpp Cgeev_NPR_binary128.cpp Cgeev_NPR_binary80.cpp Cgeev_NPR_double.cpp Cgeev_NPR_dd.cpp Cgeev_NPR_qd.cpp Cgeev_test2_mpfr.cpp Cgeev_test2_gmp.cpp Cgeev_test2_binary128.cpp Cgeev_test2_binary80.cpp Cgeev_test2_double.cpp Cgeev_test2_dd.cpp Cgeev_test2_qd.cpp Cgeev_test_mpfr.cpp Cgeev_test_gmp.cpp Cgeev_test_binary128.cpp Cgeev_test_binary80.cpp Cgeev_test_double.cpp Cgeev_test_dd.cpp Cgeev_test_qd.cpp Rgees_Grcar_mpfr.cpp Rgees_Grcar_gmp.cpp Rgees_Grcar_binary128.cpp Rgees_Grcar_binary80.cpp Rgees_Grcar_double.cpp Rgees_Grcar_dd.cpp Rgees_Grcar_qd.cpp Rgees_readfromfile_mpfr.cpp Rgees_readfromfile_gmp.cpp Rgees_readfromfile_binary128.cpp Rgees_readfromfile_binary80.cpp Rgees_readfromfile_double.cpp Rgees_readfromfile_dd.cpp Rgees_readfromfile_qd.cpp Rgees_test_mpfr.cpp Rgees_test_gmp.cpp Rgees_test_binary128.cpp Rgees_test_binary80.cpp Rgees_test_double.cpp Rgees_test_dd.cpp Rgees_test_qd.cpp Rgeev_Frank_mpfr.cpp Rgeev_Frank_gmp.cpp Rgeev_Frank_binary128.cpp Rgeev_Frank_binary80.cpp Rgeev_Frank_double.cpp Rgeev_Frank_dd.cpp Rgeev_Frank_qd.cpp Rgeev_random_highcond_mpfr.cpp Rgeev_random_highcond_gmp.cpp Rgeev_random_highcond_binary128.cpp Rgeev_random_highcond_binary80.cpp Rgeev_random_highcond_double.cpp Rgeev_random_highcond_dd.cpp Rgeev_random_highcond_qd.cpp Rgeev_readfromfile_mpfr.cpp Rgeev_readfromfile_gmp.cpp Rgeev_readfromfile_binary128.cpp Rgeev_readfromfile_binary80.cpp Rgeev_readfromfile_double.cpp Rgeev_readfromfile_dd.cpp Rgeev_readfromfile_qd.cpp Rgeev_test_mpfr.cpp Rgeev_test_gmp.cpp Rgeev_test_binary128.cpp Rgeev_test_binary80.cpp Rgeev_test_double.cpp Rgeev_test_dd.cpp Rgeev_test_qd.cpp \
+mplapackexamples_DATA = Cgees_test_mpfr.cpp Cgees_test_gmp.cpp Cgees_test_binary128.cpp Cgees_test_binary80.cpp Cgees_test_double.cpp Cgees_test_dd.cpp Cgees_test_td.cpp Cgees_test_qd.cpp Cgeev_NPR_mpfr.cpp Cgeev_NPR_binary128.cpp Cgeev_NPR_binary80.cpp Cgeev_NPR_double.cpp Cgeev_NPR_dd.cpp Cgeev_NPR_td.cpp Cgeev_NPR_qd.cpp Cgeev_test2_mpfr.cpp Cgeev_test2_gmp.cpp Cgeev_test2_binary128.cpp Cgeev_test2_binary80.cpp Cgeev_test2_double.cpp Cgeev_test2_dd.cpp Cgeev_test2_td.cpp Cgeev_test2_qd.cpp Cgeev_test_mpfr.cpp Cgeev_test_gmp.cpp Cgeev_test_binary128.cpp Cgeev_test_binary80.cpp Cgeev_test_double.cpp Cgeev_test_dd.cpp Cgeev_test_td.cpp Cgeev_test_qd.cpp Rgees_Grcar_mpfr.cpp Rgees_Grcar_gmp.cpp Rgees_Grcar_binary128.cpp Rgees_Grcar_binary80.cpp Rgees_Grcar_double.cpp Rgees_Grcar_dd.cpp Rgees_Grcar_td.cpp Rgees_Grcar_qd.cpp Rgees_readfromfile_mpfr.cpp Rgees_readfromfile_gmp.cpp Rgees_readfromfile_binary128.cpp Rgees_readfromfile_binary80.cpp Rgees_readfromfile_double.cpp Rgees_readfromfile_dd.cpp Rgees_readfromfile_td.cpp Rgees_readfromfile_qd.cpp Rgees_test_mpfr.cpp Rgees_test_gmp.cpp Rgees_test_binary128.cpp Rgees_test_binary80.cpp Rgees_test_double.cpp Rgees_test_dd.cpp Rgees_test_td.cpp Rgees_test_qd.cpp Rgeev_Frank_mpfr.cpp Rgeev_Frank_gmp.cpp Rgeev_Frank_binary128.cpp Rgeev_Frank_binary80.cpp Rgeev_Frank_double.cpp Rgeev_Frank_dd.cpp Rgeev_Frank_td.cpp Rgeev_Frank_qd.cpp Rgeev_random_highcond_mpfr.cpp Rgeev_random_highcond_gmp.cpp Rgeev_random_highcond_binary128.cpp Rgeev_random_highcond_binary80.cpp Rgeev_random_highcond_double.cpp Rgeev_random_highcond_dd.cpp Rgeev_random_highcond_td.cpp Rgeev_random_highcond_qd.cpp Rgeev_readfromfile_mpfr.cpp Rgeev_readfromfile_gmp.cpp Rgeev_readfromfile_binary128.cpp Rgeev_readfromfile_binary80.cpp Rgeev_readfromfile_double.cpp Rgeev_readfromfile_dd.cpp Rgeev_readfromfile_td.cpp Rgeev_readfromfile_qd.cpp Rgeev_test_mpfr.cpp Rgeev_test_gmp.cpp Rgeev_test_binary128.cpp Rgeev_test_binary80.cpp Rgeev_test_double.cpp Rgeev_test_dd.cpp Rgeev_test_td.cpp Rgeev_test_qd.cpp \
 Matrix_01.txt Matrix_02.txt Matrix_03.txt Matrix_04.txt Matrix_05.txt Matrix_06.txt Matrix_07.txt Makefile.freebsd Makefile.linux Makefile.linux.inteloneAPI Makefile.macos Makefile.mingw
 
 install-data-hook:
@@ -425,6 +477,10 @@ endif
 if ENABLE_DD
 else
 DISABLED_EXAMPLE_SUFFIXES += dd
+endif
+if ENABLE_TD
+else
+DISABLED_EXAMPLE_SUFFIXES += td
 endif
 if ENABLE_DOUBLE
 else

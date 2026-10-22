@@ -124,6 +124,26 @@ Rsysv_example_dd_LDFLAGS = $(dd_libdepends)
 
 endif
 
+if ENABLE_TD
+mplapackexamples_PROGRAMS += Chesv_example_td Csysv_example_td Rsysv_example_td
+
+td_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(QD_INCLUDEDIR)
+td_libdepends = -Wl,-rpath,$(libdir) -L$(top_builddir)/mplapack/reference -lmplapack_td -L$(QD_LIBDIR) -lqd
+
+Chesv_example_td_SOURCES = Chesv_example_td.cpp
+Chesv_example_td_CXXFLAGS = $(td_cxxflags)
+Chesv_example_td_LDFLAGS = $(td_libdepends)
+
+Csysv_example_td_SOURCES = Csysv_example_td.cpp
+Csysv_example_td_CXXFLAGS = $(td_cxxflags)
+Csysv_example_td_LDFLAGS = $(td_libdepends)
+
+Rsysv_example_td_SOURCES = Rsysv_example_td.cpp
+Rsysv_example_td_CXXFLAGS = $(td_cxxflags)
+Rsysv_example_td_LDFLAGS = $(td_libdepends)
+
+endif
+
 if ENABLE_QD
 mplapackexamples_PROGRAMS += Chesv_example_qd Csysv_example_qd Rsysv_example_qd
 
@@ -146,7 +166,7 @@ endif
 
 mplapackexamplesdir=$(prefix)/share/examples/mplapack/06_SymmetricIndefiniteLinearEquations
 
-mplapackexamples_DATA = Chesv_example_mpfr.cpp Chesv_example_gmp.cpp Chesv_example_binary128.cpp Chesv_example_binary80.cpp Chesv_example_double.cpp Chesv_example_dd.cpp Chesv_example_qd.cpp Csysv_example_mpfr.cpp Csysv_example_gmp.cpp Csysv_example_binary128.cpp Csysv_example_binary80.cpp Csysv_example_double.cpp Csysv_example_dd.cpp Csysv_example_qd.cpp Rsysv_example_mpfr.cpp Rsysv_example_gmp.cpp Rsysv_example_binary128.cpp Rsysv_example_binary80.cpp Rsysv_example_double.cpp Rsysv_example_dd.cpp Rsysv_example_qd.cpp \
+mplapackexamples_DATA = Chesv_example_mpfr.cpp Chesv_example_gmp.cpp Chesv_example_binary128.cpp Chesv_example_binary80.cpp Chesv_example_double.cpp Chesv_example_dd.cpp Chesv_example_td.cpp Chesv_example_qd.cpp Csysv_example_mpfr.cpp Csysv_example_gmp.cpp Csysv_example_binary128.cpp Csysv_example_binary80.cpp Csysv_example_double.cpp Csysv_example_dd.cpp Csysv_example_td.cpp Csysv_example_qd.cpp Rsysv_example_mpfr.cpp Rsysv_example_gmp.cpp Rsysv_example_binary128.cpp Rsysv_example_binary80.cpp Rsysv_example_double.cpp Rsysv_example_dd.cpp Rsysv_example_td.cpp Rsysv_example_qd.cpp \
  Makefile.freebsd Makefile.linux Makefile.linux.inteloneAPI Makefile.macos Makefile.mingw
 
 install-data-hook:
@@ -205,6 +225,10 @@ endif
 if ENABLE_DD
 else
 DISABLED_EXAMPLE_SUFFIXES += dd
+endif
+if ENABLE_TD
+else
+DISABLED_EXAMPLE_SUFFIXES += td
 endif
 if ENABLE_DOUBLE
 else

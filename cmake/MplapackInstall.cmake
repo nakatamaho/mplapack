@@ -43,17 +43,17 @@ export(EXPORT mplapackTargets
 
 # --- Package config --------------------------------------------------------
 # Which dependencies the consumer must re-find.
-if(MPLAPACK_ENABLE_GMP OR MPLAPACK_ENABLE_MPFR)
+if(MPLAPACK_USES_GMP OR MPLAPACK_USES_MPFR)
   set(MPLAPACK_NEEDS_GMP 1)
 else()
   set(MPLAPACK_NEEDS_GMP 0)
 endif()
-if(MPLAPACK_ENABLE_MPFR)
+if(MPLAPACK_USES_MPFR)
   set(MPLAPACK_NEEDS_MPFR 1)
 else()
   set(MPLAPACK_NEEDS_MPFR 0)
 endif()
-if(MPLAPACK_ENABLE_QD OR MPLAPACK_ENABLE_DD)
+if(MPLAPACK_USES_QD)
   set(MPLAPACK_NEEDS_QD 1)
 else()
   set(MPLAPACK_NEEDS_QD 0)
@@ -75,7 +75,7 @@ else()
 endif()
 
 set(MPLAPACK_ENABLED_BACKENDS "")
-foreach(b gmp mpfr qd dd double binary80 binary128)
+foreach(b IN LISTS MPLAPACK_BACKENDS)
   string(TOUPPER ${b} B)
   if(MPLAPACK_ENABLE_${B})
     list(APPEND MPLAPACK_ENABLED_BACKENDS ${b})
@@ -136,11 +136,11 @@ foreach(_target IN LISTS MPLAPACK_INSTALL_TARGETS)
   set(PC_CFLAGS_EXTRA "")
   set(PC_LIBS_EXTRA "")
   set(PC_LIBS_PRIVATE "")
-  if(_target STREQUAL "mplapack_mpfr" OR
-     _target STREQUAL "mplapack_mpfr_opt")
+  mplapack_target_backend(_pc_backend "${_target}")
+  set(_pc_traits ${MPLAPACK_BACKEND_${_pc_backend}_TRAITS})
+  if("mpfr" IN_LIST _pc_traits)
     set(PC_REQUIRES "mpc mpfr gmp")
-  elseif(_target STREQUAL "mplapack_gmp" OR
-         _target STREQUAL "mplapack_gmp_opt")
+  elseif("gmp" IN_LIST _pc_traits)
     if(GMP_PKGCONFIG_FOUND)
       set(PC_REQUIRES "gmp")
     else()
@@ -149,11 +149,7 @@ foreach(_target IN LISTS MPLAPACK_INSTALL_TARGETS)
       get_filename_component(_gmp_pc_libdir "${GMP_LIBRARY}" DIRECTORY)
       set(PC_LIBS_EXTRA "-L${_gmp_pc_libdir} -lgmp")
     endif()
-  elseif(_target STREQUAL "mplapack_qd" OR
-         _target STREQUAL "mplapack_qd_opt" OR
-         _target STREQUAL "mplapack_dd" OR
-         _target STREQUAL "mplapack_dd_opt" OR
-         _target STREQUAL "mplapack_dd_opt_cuda")
+  elseif("qd" IN_LIST _pc_traits)
     if(QD_PKGCONFIG_FOUND)
       set(PC_REQUIRES "qd")
     else()

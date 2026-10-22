@@ -268,6 +268,50 @@ Wilkinson_roots_dd_LDFLAGS = $(dd_libdepends)
 
 endif
 
+if ENABLE_TD
+mplapackexamples_PROGRAMS += Rlamch_dump_td Frank_eigenvalues_td Gejsv_vs_gesvd_td Hilbert_inverse_td Hilbert_linear_solve_td Kahan_rank_reveal_td Pascal_inverse_td Vandermonde_solve_td Wilkinson_roots_td
+
+td_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(QD_INCLUDEDIR)
+td_libdepends = -Wl,-rpath,$(libdir) -L$(top_builddir)/mplapack/reference -lmplapack_td -L$(QD_LIBDIR) -lqd
+
+Rlamch_dump_td_SOURCES = Rlamch_dump_td.cpp
+Rlamch_dump_td_CXXFLAGS = $(td_cxxflags)
+Rlamch_dump_td_LDFLAGS = $(td_libdepends)
+
+Frank_eigenvalues_td_SOURCES = Frank_eigenvalues_td.cpp
+Frank_eigenvalues_td_CXXFLAGS = $(td_cxxflags)
+Frank_eigenvalues_td_LDFLAGS = $(td_libdepends)
+
+Gejsv_vs_gesvd_td_SOURCES = Gejsv_vs_gesvd_td.cpp
+Gejsv_vs_gesvd_td_CXXFLAGS = $(td_cxxflags)
+Gejsv_vs_gesvd_td_LDFLAGS = $(td_libdepends)
+
+Hilbert_inverse_td_SOURCES = Hilbert_inverse_td.cpp
+Hilbert_inverse_td_CXXFLAGS = $(td_cxxflags)
+Hilbert_inverse_td_LDFLAGS = $(td_libdepends)
+
+Hilbert_linear_solve_td_SOURCES = Hilbert_linear_solve_td.cpp
+Hilbert_linear_solve_td_CXXFLAGS = $(td_cxxflags)
+Hilbert_linear_solve_td_LDFLAGS = $(td_libdepends)
+
+Kahan_rank_reveal_td_SOURCES = Kahan_rank_reveal_td.cpp
+Kahan_rank_reveal_td_CXXFLAGS = $(td_cxxflags)
+Kahan_rank_reveal_td_LDFLAGS = $(td_libdepends)
+
+Pascal_inverse_td_SOURCES = Pascal_inverse_td.cpp
+Pascal_inverse_td_CXXFLAGS = $(td_cxxflags)
+Pascal_inverse_td_LDFLAGS = $(td_libdepends)
+
+Vandermonde_solve_td_SOURCES = Vandermonde_solve_td.cpp
+Vandermonde_solve_td_CXXFLAGS = $(td_cxxflags)
+Vandermonde_solve_td_LDFLAGS = $(td_libdepends)
+
+Wilkinson_roots_td_SOURCES = Wilkinson_roots_td.cpp
+Wilkinson_roots_td_CXXFLAGS = $(td_cxxflags)
+Wilkinson_roots_td_LDFLAGS = $(td_libdepends)
+
+endif
+
 if ENABLE_QD
 mplapackexamples_PROGRAMS += Rlamch_dump_qd Frank_eigenvalues_qd Gejsv_vs_gesvd_qd Hilbert_inverse_qd Hilbert_linear_solve_qd Kahan_rank_reveal_qd Pascal_inverse_qd Vandermonde_solve_qd Wilkinson_roots_qd
 
@@ -314,7 +358,7 @@ endif
 
 mplapackexamplesdir=$(prefix)/share/examples/mplapack/90_PrecisionComparison
 
-mplapackexamples_DATA = Rlamch_dump_mpfr.cpp Rlamch_dump_gmp.cpp Rlamch_dump_binary128.cpp Rlamch_dump_binary80.cpp Rlamch_dump_double.cpp Rlamch_dump_dd.cpp Rlamch_dump_qd.cpp Frank_eigenvalues_mpfr.cpp Frank_eigenvalues_gmp.cpp Frank_eigenvalues_binary128.cpp Frank_eigenvalues_binary80.cpp Frank_eigenvalues_double.cpp Frank_eigenvalues_dd.cpp Frank_eigenvalues_qd.cpp Gejsv_vs_gesvd_mpfr.cpp Gejsv_vs_gesvd_gmp.cpp Gejsv_vs_gesvd_binary128.cpp Gejsv_vs_gesvd_binary80.cpp Gejsv_vs_gesvd_double.cpp Gejsv_vs_gesvd_dd.cpp Gejsv_vs_gesvd_qd.cpp Hilbert_inverse_mpfr.cpp Hilbert_inverse_gmp.cpp Hilbert_inverse_binary128.cpp Hilbert_inverse_binary80.cpp Hilbert_inverse_double.cpp Hilbert_inverse_dd.cpp Hilbert_inverse_qd.cpp Hilbert_linear_solve_mpfr.cpp Hilbert_linear_solve_gmp.cpp Hilbert_linear_solve_binary128.cpp Hilbert_linear_solve_binary80.cpp Hilbert_linear_solve_double.cpp Hilbert_linear_solve_dd.cpp Hilbert_linear_solve_qd.cpp Kahan_rank_reveal_mpfr.cpp Kahan_rank_reveal_gmp.cpp Kahan_rank_reveal_binary128.cpp Kahan_rank_reveal_binary80.cpp Kahan_rank_reveal_double.cpp Kahan_rank_reveal_dd.cpp Kahan_rank_reveal_qd.cpp Pascal_inverse_mpfr.cpp Pascal_inverse_gmp.cpp Pascal_inverse_binary128.cpp Pascal_inverse_binary80.cpp Pascal_inverse_double.cpp Pascal_inverse_dd.cpp Pascal_inverse_qd.cpp Vandermonde_solve_mpfr.cpp Vandermonde_solve_gmp.cpp Vandermonde_solve_binary128.cpp Vandermonde_solve_binary80.cpp Vandermonde_solve_double.cpp Vandermonde_solve_dd.cpp Vandermonde_solve_qd.cpp Wilkinson_roots_mpfr.cpp Wilkinson_roots_gmp.cpp Wilkinson_roots_binary128.cpp Wilkinson_roots_binary80.cpp Wilkinson_roots_double.cpp Wilkinson_roots_dd.cpp Wilkinson_roots_qd.cpp \
+mplapackexamples_DATA = Rlamch_dump_mpfr.cpp Rlamch_dump_gmp.cpp Rlamch_dump_binary128.cpp Rlamch_dump_binary80.cpp Rlamch_dump_double.cpp Rlamch_dump_dd.cpp Rlamch_dump_td.cpp Rlamch_dump_qd.cpp Frank_eigenvalues_mpfr.cpp Frank_eigenvalues_gmp.cpp Frank_eigenvalues_binary128.cpp Frank_eigenvalues_binary80.cpp Frank_eigenvalues_double.cpp Frank_eigenvalues_dd.cpp Frank_eigenvalues_td.cpp Frank_eigenvalues_qd.cpp Gejsv_vs_gesvd_mpfr.cpp Gejsv_vs_gesvd_gmp.cpp Gejsv_vs_gesvd_binary128.cpp Gejsv_vs_gesvd_binary80.cpp Gejsv_vs_gesvd_double.cpp Gejsv_vs_gesvd_dd.cpp Gejsv_vs_gesvd_td.cpp Gejsv_vs_gesvd_qd.cpp Hilbert_inverse_mpfr.cpp Hilbert_inverse_gmp.cpp Hilbert_inverse_binary128.cpp Hilbert_inverse_binary80.cpp Hilbert_inverse_double.cpp Hilbert_inverse_dd.cpp Hilbert_inverse_td.cpp Hilbert_inverse_qd.cpp Hilbert_linear_solve_mpfr.cpp Hilbert_linear_solve_gmp.cpp Hilbert_linear_solve_binary128.cpp Hilbert_linear_solve_binary80.cpp Hilbert_linear_solve_double.cpp Hilbert_linear_solve_dd.cpp Hilbert_linear_solve_td.cpp Hilbert_linear_solve_qd.cpp Kahan_rank_reveal_mpfr.cpp Kahan_rank_reveal_gmp.cpp Kahan_rank_reveal_binary128.cpp Kahan_rank_reveal_binary80.cpp Kahan_rank_reveal_double.cpp Kahan_rank_reveal_dd.cpp Kahan_rank_reveal_td.cpp Kahan_rank_reveal_qd.cpp Pascal_inverse_mpfr.cpp Pascal_inverse_gmp.cpp Pascal_inverse_binary128.cpp Pascal_inverse_binary80.cpp Pascal_inverse_double.cpp Pascal_inverse_dd.cpp Pascal_inverse_td.cpp Pascal_inverse_qd.cpp Vandermonde_solve_mpfr.cpp Vandermonde_solve_gmp.cpp Vandermonde_solve_binary128.cpp Vandermonde_solve_binary80.cpp Vandermonde_solve_double.cpp Vandermonde_solve_dd.cpp Vandermonde_solve_td.cpp Vandermonde_solve_qd.cpp Wilkinson_roots_mpfr.cpp Wilkinson_roots_gmp.cpp Wilkinson_roots_binary128.cpp Wilkinson_roots_binary80.cpp Wilkinson_roots_double.cpp Wilkinson_roots_dd.cpp Wilkinson_roots_td.cpp Wilkinson_roots_qd.cpp \
  Makefile.freebsd Makefile.linux Makefile.linux.inteloneAPI Makefile.macos Makefile.mingw
 
 install-data-hook:
@@ -373,6 +417,10 @@ endif
 if ENABLE_DD
 else
 DISABLED_EXAMPLE_SUFFIXES += dd
+endif
+if ENABLE_TD
+else
+DISABLED_EXAMPLE_SUFFIXES += td
 endif
 if ENABLE_DOUBLE
 else

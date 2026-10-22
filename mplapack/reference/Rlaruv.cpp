@@ -34,9 +34,9 @@
 #include <atomic>
 #include <random>
 
-// For DD, QD, binary128, binary80, and double backends:
+// For DD, TD, QD, binary128, binary80, and double backends:
 // Non-deterministic engine, seeded once via std::random_device.
-#if defined MPLAPACK_BUILD_WITH_DD || defined MPLAPACK_BUILD_WITH_QD || defined MPLAPACK_BUILD_WITH_BINARY128 || defined MPLAPACK_BUILD_WITH_BINARY80 || defined MPLAPACK_BUILD_WITH_DOUBLE
+#if defined MPLAPACK_BUILD_WITH_DD || defined MPLAPACK_BUILD_WITH_TD || defined MPLAPACK_BUILD_WITH_QD || defined MPLAPACK_BUILD_WITH_BINARY128 || defined MPLAPACK_BUILD_WITH_BINARY80 || defined MPLAPACK_BUILD_WITH_DOUBLE
 namespace {
 inline double nondeterministic_rand() {
     static std::mt19937_64 mt(std::random_device{}());
@@ -202,6 +202,25 @@ void Rlaruv(INTEGER *iseed, INTEGER const n, REAL *x) {
         for (int i = 0; i < n; i++) {
             x[i].x[0] = dist(mt);
             x[i].x[1] = dist(mt) * 0x1p-53;
+        }
+        advance_iseed(iseed, n);
+    }
+#endif
+
+#if defined MPLAPACK_BUILD_WITH_TD
+    if (nondet) {
+        for (int i = 0; i < n; i++) {
+            x[i].x[0] = nondeterministic_rand();
+            x[i].x[1] = nondeterministic_rand() * 0x1p-53;
+            x[i].x[2] = nondeterministic_rand() * 0x1p-106;
+        }
+    } else {
+        std::mt19937_64 mt(iseed_to_seed64(iseed));
+        std::uniform_real_distribution<double> dist(0.0, 1.0);
+        for (int i = 0; i < n; i++) {
+            x[i].x[0] = dist(mt);
+            x[i].x[1] = dist(mt) * 0x1p-53;
+            x[i].x[2] = dist(mt) * 0x1p-106;
         }
         advance_iseed(iseed, n);
     }

@@ -27,8 +27,8 @@ install_libraries() {
 # Stage prerequisites first, then exercise Automake's actual installation
 # order. DESTDIR isolates the test from the configured installation prefix.
 install_libraries "$builddir/mplapack/reference"
-for backend in gmp mpfr qd dd double binary80 binary128; do
-    directory="$builddir/mpblas/optimized/$backend"
+for directory in "$builddir"/mpblas/optimized/*; do
+    backend=${directory##*/}
     if test -f "$directory/libmplapack_${backend}_opt.la"; then
         install_libraries "$directory"
     fi

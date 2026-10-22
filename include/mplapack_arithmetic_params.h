@@ -364,5 +364,8 @@ template <class REAL> BlueScalingParams<REAL> get_blue_scaling_params();
 #if defined(MPLAPACK_BUILD_WITH_DD)
 #include "mplapack_arithmetic_params_dd.h"
 #endif
+#if defined(MPLAPACK_BUILD_WITH_TD)
+#include "mplapack_arithmetic_params_td.h"
+#endif
 
 #endif // MPLAPACK_ARITHMETIC_PARAMS_H

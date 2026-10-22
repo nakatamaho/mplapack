@@ -61,6 +61,11 @@ void Mxerbla_dd(const char *srname, int info) {
     return;
 }
 
+void Mxerbla_td(const char *srname, int info) {
+    mplapack_errno = info;
+    return;
+}
+
 void Mxerbla_qd(const char *srname, int info) {
     mplapack_errno = info;
     return;

@@ -100,6 +100,22 @@ Rsygv_example_dd_LDFLAGS = $(dd_libdepends)
 
 endif
 
+if ENABLE_TD
+mplapackexamples_PROGRAMS += Chegv_example_td Rsygv_example_td
+
+td_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(QD_INCLUDEDIR)
+td_libdepends = -Wl,-rpath,$(libdir) -L$(top_builddir)/mplapack/reference -lmplapack_td -L$(QD_LIBDIR) -lqd
+
+Chegv_example_td_SOURCES = Chegv_example_td.cpp
+Chegv_example_td_CXXFLAGS = $(td_cxxflags)
+Chegv_example_td_LDFLAGS = $(td_libdepends)
+
+Rsygv_example_td_SOURCES = Rsygv_example_td.cpp
+Rsygv_example_td_CXXFLAGS = $(td_cxxflags)
+Rsygv_example_td_LDFLAGS = $(td_libdepends)
+
+endif
+
 if ENABLE_QD
 mplapackexamples_PROGRAMS += Chegv_example_qd Rsygv_example_qd
 
@@ -118,7 +134,7 @@ endif
 
 mplapackexamplesdir=$(prefix)/share/examples/mplapack/07_GeneralizedSymmetricDefiniteEigenproblems
 
-mplapackexamples_DATA = Chegv_example_mpfr.cpp Chegv_example_gmp.cpp Chegv_example_binary128.cpp Chegv_example_binary80.cpp Chegv_example_double.cpp Chegv_example_dd.cpp Chegv_example_qd.cpp Rsygv_example_mpfr.cpp Rsygv_example_gmp.cpp Rsygv_example_binary128.cpp Rsygv_example_binary80.cpp Rsygv_example_double.cpp Rsygv_example_dd.cpp Rsygv_example_qd.cpp \
+mplapackexamples_DATA = Chegv_example_mpfr.cpp Chegv_example_gmp.cpp Chegv_example_binary128.cpp Chegv_example_binary80.cpp Chegv_example_double.cpp Chegv_example_dd.cpp Chegv_example_td.cpp Chegv_example_qd.cpp Rsygv_example_mpfr.cpp Rsygv_example_gmp.cpp Rsygv_example_binary128.cpp Rsygv_example_binary80.cpp Rsygv_example_double.cpp Rsygv_example_dd.cpp Rsygv_example_td.cpp Rsygv_example_qd.cpp \
  Makefile.freebsd Makefile.linux Makefile.linux.inteloneAPI Makefile.macos Makefile.mingw
 
 install-data-hook:
@@ -177,6 +193,10 @@ endif
 if ENABLE_DD
 else
 DISABLED_EXAMPLE_SUFFIXES += dd
+endif
+if ENABLE_TD
+else
+DISABLED_EXAMPLE_SUFFIXES += td
 endif
 if ENABLE_DOUBLE
 else

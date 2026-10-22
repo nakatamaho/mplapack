@@ -1,7 +1,7 @@
 # usage
 # cd /home/docker/mplapack/examples/mpblas/generic ; bash -x generate.sh
 FILES=`ls R*generic.cpp C*generic.cpp`
-MPLIBS="mpfr gmp binary128 binary80 double dd qd"
+MPLIBS="mpfr gmp binary128 binary80 double dd td qd"
 if [ `uname` = "Darwin" ]; then
     SED=gsed
 else
@@ -42,6 +42,9 @@ for _file in $FILES; do
         if [ x"$_mplib" = x"dd" ]; then
             $SED -i -e "s/REAL/dd_real/g" -e "s/COMPLEX/dd_complex/g" -e "s/INTEGER/mplapackint/g" -e "s/InTEGER/INTEGER_${_mplib}/g" -e "s/ReAL/REAL_${_mplib}/g" ../$resultfilename
         fi 
+        if [ x"$_mplib" = x"td" ]; then
+            $SED -i -e "s/REAL/td_real/g" -e "s/COMPLEX/td_complex/g" -e "s/INTEGER/mplapackint/g" -e "s/InTEGER/INTEGER_${_mplib}/g" -e "s/ReAL/REAL_${_mplib}/g" ../$resultfilename
+        fi
         if [ x"$_mplib" = x"qd" ]; then
             $SED -i -e "s/REAL/qd_real/g" -e "s/COMPLEX/qd_complex/g" -e "s/INTEGER/mplapackint/g" -e "s/InTEGER/INTEGER_${_mplib}/g" -e "s/ReAL/REAL_${_mplib}/g" ../$resultfilename
         fi
@@ -232,6 +235,34 @@ for _mplib in $MPLIBS; do
         echo "endif"             >> ../Makefile.am
     fi
 
+    if [ x"$_mplib" = x"td" ]; then
+        echo ""               >> ../Makefile.am
+        echo "if ENABLE_TD" >> ../Makefile.am
+        executefilenames=`echo $FILES | $SED 's/\.cpp//g' | $SED "s/generic/${_mplib}/g"`
+        executefilenames_opt=`echo $executefilenames | $SED "s/${_mplib}/${_mplib}_opt/g"`
+        echo "mpblasexamples_PROGRAMS += $executefilenames $executefilenames_opt" >> ../Makefile.am
+        echo ""               >> ../Makefile.am
+        echo "${_mplib}_cxxflags = \$(OPENMP_CXXFLAGS) -I\$(top_srcdir)/include -I\$(QD_INCLUDEDIR)" >> ../Makefile.am
+        echo "${_mplib}_libdepends = -L\$(top_builddir)/mplapack/reference -lmplapack_${_mplib} -L\$(QD_LIBDIR) -lqd"  >> ../Makefile.am
+        echo "${_mplib}_opt_libdepends = -L\$(top_builddir)/mpblas/optimized/${_mplib} -lmplapack_${_mplib}_opt -L\$(QD_LIBDIR) -lqd"  >> ../Makefile.am
+        echo ""               >> ../Makefile.am
+        for _file in $FILES; do
+            A=`echo $_file | $SED "s/generic\.cpp/${_mplib}/g"`
+            echo "${A}_SOURCES = ${A}.cpp" >> ../Makefile.am
+            echo "${A}_CXXFLAGS = \$(${_mplib}_cxxflags)" >> ../Makefile.am
+            echo "${A}_LDFLAGS = \$(${_mplib}_libdepends)" >> ../Makefile.am
+            echo ""               >> ../Makefile.am
+        done
+        for _file in $FILES; do
+            A=`echo $_file | $SED "s/generic\.cpp/${_mplib}/g"`
+            echo "${A}_opt_SOURCES = ${A}.cpp" >> ../Makefile.am
+            echo "${A}_opt_CXXFLAGS = \$(${_mplib}_cxxflags)" >> ../Makefile.am
+            echo "${A}_opt_LDFLAGS = \$(${_mplib}_opt_libdepends)" >> ../Makefile.am
+            echo ""               >> ../Makefile.am
+        done
+        echo "endif"             >> ../Makefile.am
+    fi
+
     if [ x"$_mplib" = x"qd" ]; then
         echo ""               >> ../Makefile.am
         echo "if ENABLE_QD" >> ../Makefile.am
@@ -330,6 +361,10 @@ endif
 if ENABLE_DD
 else
 DISABLED_EXAMPLE_SUFFIXES += dd
+endif
+if ENABLE_TD
+else
+DISABLED_EXAMPLE_SUFFIXES += td
 endif
 if ENABLE_DOUBLE
 else

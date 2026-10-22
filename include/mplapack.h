@@ -104,6 +104,24 @@ typedef dd_complex COMPLEX;
 #define iMparmq iMparmq_dd
 #define iMparam2stage iMparam2stage_dd
 #endif
+#if defined MPLAPACK_BUILD_WITH_TD
+#include <mplapack_td.h>
+typedef mplapackint INTEGER;
+typedef mplapacklogical LOGICAL;
+typedef td_real REAL;
+typedef td_complex COMPLEX;
+#define Mlsamen Mlsamen_td
+#define Mlsame Mlsame_td
+#define Mxerbla Mxerbla_td
+#define Rlamch Rlamch_td
+#define Rroundup_lwork Rroundup_lwork_td
+#define iMlaenv2stage iMlaenv2stage_td
+#define iMlaenv iMlaenv_td
+#define iMlaver iMlaver_td
+#define iMieeeck iMieeeck_td
+#define iMparmq iMparmq_td
+#define iMparam2stage iMparam2stage_td
+#endif
 
 #if defined MPLAPACK_BUILD_WITH_DOUBLE
 #include <mplapack_double.h>

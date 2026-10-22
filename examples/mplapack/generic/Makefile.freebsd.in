@@ -8,11 +8,12 @@ MPFRLIBS=-lmplapack_mpfr -lmpfr -lmpc -lgmp
 GMPLIBS=-lmplapack_gmp -lgmp
 QDLIBS=-lmplapack_qd -lqd
 DDLIBS=-lmplapack_dd -lqd
+TDLIBS=-lmplapack_td -lqd
 BINARY80LIBS=-lmplapack_binary80
 BINARY128LIBS=-lmplapack_binary128%%LIBQUADMATH%%
 DOUBLELIBS=-lmplapack_double
 
-programs=%%ROUTINE%%_mpfr %%ROUTINE%%_gmp %%ROUTINE%%_qd %%ROUTINE%%_dd %%ROUTINE%%_binary80 %%ROUTINE%%_binary128 %%ROUTINE%%_double
+programs=%%ROUTINE%%_mpfr %%ROUTINE%%_gmp %%ROUTINE%%_qd %%ROUTINE%%_dd %%ROUTINE%%_td %%ROUTINE%%_binary80 %%ROUTINE%%_binary128 %%ROUTINE%%_double
 
 all: $(programs)
 
@@ -30,6 +31,9 @@ all: $(programs)
 
 %%ROUTINE%%_dd: %%ROUTINE%%_dd.o
 	$(CXX) -o %%ROUTINE%%_dd %%ROUTINE%%_dd.o $(LIBFLAGS) $(DDLIBS)
+
+%%ROUTINE%%_td: %%ROUTINE%%_td.o
+	$(CXX) -o %%ROUTINE%%_td %%ROUTINE%%_td.o $(LIBFLAGS) $(TDLIBS)
 
 %%ROUTINE%%_binary80: %%ROUTINE%%_binary80.o
 	$(CXX) -o %%ROUTINE%%_binary80 %%ROUTINE%%_binary80.o $(LIBFLAGS) $(BINARY80LIBS)

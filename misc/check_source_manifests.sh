@@ -30,7 +30,8 @@ if ! cmp -s "$tmp/opt" "$tmp/dir"; then
   echo "MANIFEST DRIFT: sources.am vs mplapack/reference/*.cpp"
   diff "$tmp/opt" "$tmp/dir"; status=1
 fi
-for backend in gmp mpfr qd dd double binary80 binary128; do
+backends=`awk '!/^#/ && NF { print $1 }' "$top/backends.txt"`
+for backend in $backends; do
   extract "$compare/$backend/Makefile.am" | grep '\.test\.cpp$' > "$tmp/compare-$backend"
   if ! cmp -s "$tmp/compare-$backend" "$tmp/compare-dir"; then
     echo "MANIFEST DRIFT: $backend/Makefile.am vs mplapack/test/compare/common/*.test.cpp"

@@ -9,6 +9,7 @@ MPFRLIBS= -lmplapack_mpfr -lmpfr -lmpc -lgmp
 GMPLIBS=-lmplapack_gmp -lgmp
 QDLIBS=-lmplapack_qd -lqd
 DDLIBS=-lmplapack_dd -lqd
+TDLIBS=-lmplapack_td -lqd
 BINARY80LIBS=-lmplapack_binary80
 BINARY128LIBS=-lmplapack_binary128%%LIBQUADMATH%%
 DOUBLELIBS=-lmplapack_double
@@ -16,7 +17,7 @@ BLAS=
 LAPACK=
 FLIBS=
 
-programs=Chesv_example_mpfr.exe Chesv_example_gmp.exe Chesv_example_qd.exe Chesv_example_dd.exe Chesv_example_binary80.exe Chesv_example_binary128.exe Chesv_example_double.exe Csysv_example_mpfr.exe Csysv_example_gmp.exe Csysv_example_qd.exe Csysv_example_dd.exe Csysv_example_binary80.exe Csysv_example_binary128.exe Csysv_example_double.exe Rsysv_example_mpfr.exe Rsysv_example_gmp.exe Rsysv_example_qd.exe Rsysv_example_dd.exe Rsysv_example_binary80.exe Rsysv_example_binary128.exe Rsysv_example_double.exe
+programs=Chesv_example_mpfr.exe Chesv_example_gmp.exe Chesv_example_qd.exe Chesv_example_dd.exe Chesv_example_td.exe Chesv_example_binary80.exe Chesv_example_binary128.exe Chesv_example_double.exe Csysv_example_mpfr.exe Csysv_example_gmp.exe Csysv_example_qd.exe Csysv_example_dd.exe Csysv_example_td.exe Csysv_example_binary80.exe Csysv_example_binary128.exe Csysv_example_double.exe Rsysv_example_mpfr.exe Rsysv_example_gmp.exe Rsysv_example_qd.exe Rsysv_example_dd.exe Rsysv_example_td.exe Rsysv_example_binary80.exe Rsysv_example_binary128.exe Rsysv_example_double.exe
 
 all: $(programs)
 
@@ -34,6 +35,9 @@ Rsysv_example_qd.exe: Rsysv_example_qd.o
 
 Rsysv_example_dd.exe: Rsysv_example_dd.o
 	$(CXX) -o Rsysv_example_dd.exe Rsysv_example_dd.o $(LIBFLAGS) $(DDLIBS)
+
+Rsysv_example_td.exe: Rsysv_example_td.o
+	$(CXX) -o Rsysv_example_td.exe Rsysv_example_td.o $(LIBFLAGS) $(TDLIBS)
 
 Rsysv_example_binary80.exe: Rsysv_example_binary80.o
 	$(CXX) -o Rsysv_example_binary80 Rsysv_example_binary80.o $(LIBFLAGS) $(BINARY80LIBS)
@@ -59,6 +63,9 @@ Chesv_example_qd.exe: Chesv_example_qd.o
 Chesv_example_dd.exe: Chesv_example_dd.o
 	$(CXX) -o Chesv_example_dd.exe Chesv_example_dd.o $(LIBFLAGS) $(DDLIBS)
 
+Chesv_example_td.exe: Chesv_example_td.o
+	$(CXX) -o Chesv_example_td.exe Chesv_example_td.o $(LIBFLAGS) $(TDLIBS)
+
 Chesv_example_binary80.exe: Chesv_example_binary80.o
 	$(CXX) -o Chesv_example_binary80.exe Chesv_example_binary80.o $(LIBFLAGS) $(BINARY80LIBS)
 
@@ -79,6 +86,9 @@ Csysv_example_qd.exe: Csysv_example_qd.o
 
 Csysv_example_dd.exe: Csysv_example_dd.o
 	$(CXX) -o Csysv_example_dd.exe Csysv_example_dd.o $(LIBFLAGS) $(DDLIBS)
+
+Csysv_example_td.exe: Csysv_example_td.o
+	$(CXX) -o Csysv_example_td.exe Csysv_example_td.o $(LIBFLAGS) $(TDLIBS)
 
 Csysv_example_binary80.exe: Csysv_example_binary80.o
 	$(CXX) -o Csysv_example_binary80.exe Csysv_example_binary80.o $(LIBFLAGS) $(BINARY80LIBS)

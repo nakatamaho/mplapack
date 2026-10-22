@@ -48,6 +48,9 @@ function(mplapack_add_consume_tests flavor)
   elseif(flavor MATCHES "^dd")
     set(_consume_source
       "${PROJECT_SOURCE_DIR}/misc/backend_dd_pkgconfig_consumer.cpp")
+  elseif(flavor MATCHES "^td")
+    set(_consume_source
+      "${PROJECT_SOURCE_DIR}/misc/backend_td_pkgconfig_consumer.cpp")
   else()
     set(_consume_source "${CMAKE_CURRENT_SOURCE_DIR}/consume/main.cpp")
   endif()
@@ -152,6 +155,8 @@ mplapack_add_consume_tests(qd)
 mplapack_add_consume_tests(qd_opt)
 mplapack_add_consume_tests(dd)
 mplapack_add_consume_tests(dd_opt)
+mplapack_add_consume_tests(td)
+mplapack_add_consume_tests(td_opt)
 mplapack_add_consume_tests(mpfr)
 mplapack_add_consume_tests(mpfr_opt)
 
@@ -161,14 +166,29 @@ mplapack_add_backend_runtime_tests(qd qd)
 mplapack_add_backend_runtime_tests(qd_opt qd)
 mplapack_add_backend_runtime_tests(dd qd)
 mplapack_add_backend_runtime_tests(dd_opt qd)
+mplapack_add_backend_runtime_tests(td qd)
+mplapack_add_backend_runtime_tests(td_opt qd)
 
 # Exercise installed pkg-config metadata independently of the CMake export.
 # Dependency pkg-config directories are added only to this test process. If a
 # dependency has no .pc file, the MPLAPACK fallback fields are tested instead.
 find_package(PkgConfig QUIET)
 if(PkgConfig_FOUND)
-  set(_pkgconfig_test_path
-    "${_consume_install_prefix}/${CMAKE_INSTALL_LIBDIR}/pkgconfig")
+  # The installed .pc files name CMAKE_INSTALL_PREFIX, not the prefix the
+  # consume tests install into; test copies that point at the latter.
+  set(_pkgconfig_relocated "${_consume_root}/pkgconfig")
+  set(_pkgconfig_fixture mplapack_consume_pkgconfig)
+  add_test(NAME pkgconfig_relocate_installed
+    COMMAND "${CMAKE_COMMAND}"
+      "-DSRC=${_consume_install_prefix}/${CMAKE_INSTALL_LIBDIR}/pkgconfig"
+      "-DDST=${_pkgconfig_relocated}"
+      "-DFROM=${CMAKE_INSTALL_PREFIX}"
+      "-DTO=${_consume_install_prefix}"
+      -P "${CMAKE_CURRENT_SOURCE_DIR}/RelocatePkgConfig.cmake")
+  set_tests_properties(pkgconfig_relocate_installed PROPERTIES
+    FIXTURES_REQUIRED "${_consume_install_fixture}"
+    FIXTURES_SETUP "${_pkgconfig_fixture}")
+  set(_pkgconfig_test_path "${_pkgconfig_relocated}")
   foreach(_dependency_library GMP_LIBRARY QD_LIBRARY)
     if(DEFINED ${_dependency_library} AND
        NOT "${${_dependency_library}}" STREQUAL "")
@@ -183,18 +203,22 @@ if(PkgConfig_FOUND)
   set(_pkgconfig_flavors
     mplapack_gmp mplapack_gmp_opt
     mplapack_qd mplapack_qd_opt
-    mplapack_dd mplapack_dd_opt mplapack_dd_opt_cuda)
+    mplapack_dd mplapack_dd_opt mplapack_dd_opt_cuda
+    mplapack_td mplapack_td_opt)
   foreach(_flavor IN LISTS _pkgconfig_flavors)
     if(NOT TARGET ${_flavor})
       continue()
     endif()
-    if(_flavor MATCHES "^mplapack_(gmp|qd|dd)(_|$)")
+    if(_flavor MATCHES "^mplapack_(gmp|qd|dd|td)(_|$)")
       if(_flavor MATCHES "^mplapack_gmp")
         set(_pkgconfig_source
           "${PROJECT_SOURCE_DIR}/misc/backend_gmp_pkgconfig_consumer.cpp")
       elseif(_flavor MATCHES "^mplapack_qd")
         set(_pkgconfig_source
           "${PROJECT_SOURCE_DIR}/misc/backend_qd_pkgconfig_consumer.cpp")
+      elseif(_flavor MATCHES "^mplapack_td")
+        set(_pkgconfig_source
+          "${PROJECT_SOURCE_DIR}/misc/backend_td_pkgconfig_consumer.cpp")
       else()
         set(_pkgconfig_source
           "${PROJECT_SOURCE_DIR}/misc/backend_dd_pkgconfig_consumer.cpp")
@@ -205,7 +229,7 @@ if(PkgConfig_FOUND)
           "${PROJECT_SOURCE_DIR}/misc/check_backend_pkgconfig.sh"
           shared "${_flavor}" "${_pkgconfig_source}")
       set_tests_properties("pkgconfig_${_flavor}_shared_consumer" PROPERTIES
-        FIXTURES_REQUIRED "${_consume_install_fixture}")
+        FIXTURES_REQUIRED "${_pkgconfig_fixture}")
       if(NOT BUILD_SHARED_LIBS)
         add_test(NAME "pkgconfig_${_flavor}_static_consumer"
           COMMAND "${CMAKE_COMMAND}" -E env
@@ -213,7 +237,7 @@ if(PkgConfig_FOUND)
             "${PROJECT_SOURCE_DIR}/misc/check_backend_pkgconfig.sh"
             static "${_flavor}" "${_pkgconfig_source}")
         set_tests_properties("pkgconfig_${_flavor}_static_consumer" PROPERTIES
-          FIXTURES_REQUIRED "${_consume_install_fixture}")
+          FIXTURES_REQUIRED "${_pkgconfig_fixture}")
       endif()
     endif()
   endforeach()
