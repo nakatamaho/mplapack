@@ -251,14 +251,20 @@ accumulation:
 | `Rnrm2`, `RCnrm2` | class (big/small/medium) and term of every value | the three accumulations |
 | `iRamax`, `iCamax` | abs (`RCabs1`) of the elements | the first index of the maximum (NaN: the reference) |
 
-`Rdot` keeps the OpenMP version the libraries already had
-(`<type>/openmp/Rdot_omp.cpp`), which sums in another order.
+`Rdot` (`<type>/Rdot.cpp`) computes the sums of five of the unrolled
+reference loop in parallel and adds them in the reference order
+(`blas/Rdot_par.cpp`), so it is the reference result bit for bit; the
+OpenMP version the libraries had before (`<type>/openmp/Rdot_omp.cpp`, which
+sums in another order) is no longer called.
 
 dd, td and qd use AVX2 loops instead (`Cblas_simd_common.h`, libQD3's complex
-product and BF arithmetic on the words) for `Cgemm` with transa = N, `Csyrk`
-and `Cherk` with trans = N, `Ctrmm`/`Ctrsm` with side L and transa = N or with
-side R, `Cgemv` with trans = N, `Cgeru` and `Cgerc`; the alpha = 0 and quick
-return cases go to the reference code.
+product and BF arithmetic on the words) for `Cgemm`, `Csyrk`, `Cherk`,
+`Ctrmm`/`Ctrsm` (side L: all transa; side R), `Cgemv` with trans = N, `Cgeru`
+and `Cgerc`; the transposed forms (Cgemm transa = T/C, Csyrk T, Cherk C,
+Ctrmm/Ctrsm side L transa = T/C) run the reference loops over a transposed
+copy so that the vectorized loop has unit stride (the real Rsyrk/Rsyr2k
+trans = T and Rtrmm/Rtrsm side L transa = T likewise, `Rblas_simd_common.h`).
+The alpha = 0 and quick return cases go to the reference code.
 
 On the GPU (dd, td, qd), the complex routines above, `Rgemmtr`, `Cher` and
 `Cher2` run the text of the reference routines themselves: `blas_dev/<R>_dev.h`
