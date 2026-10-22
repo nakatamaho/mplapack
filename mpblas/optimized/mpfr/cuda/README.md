@@ -6,7 +6,10 @@ and 2 BLAS (`Rgemv`, `Rsymv`, `Rtrmv`, `Rger`, `Rsyr`, `Rsyr2`, `Rscal`,
 `Rswap`, `Rrot`) with `MPLAPACK_MPFR_CUDA_L12=1`; likewise the complex BLAS
 (`Cgemm`, `Csymm`, `Chemm`, `Ctrmm`, `Ctrsm`, `Csyrk`, `Cherk`, `Csyr2k`,
 `Cher2k`, `Cgemmtr`, `Rgemmtr`; Level 1 and 2: `Cgemv`, `Cgeru`, `Cgerc`,
-`Cher`, `Cher2`, `Caxpy`, `Ccopy`, `Cswap`, `Cscal`, `CRscal`, `CRrot`). Every
+`Cher`, `Cher2`, `Caxpy`, `Ccopy`, `Cswap`, `Cscal`, `CRscal`, `CRrot`) and the
+band/packed/Hermitian/triangular Level 2 routines (`Chemv`, `Chbmv`, `Chpmv`,
+`Rsbmv`, `Rspmv`, `Rgbmv`, `Cgbmv`, `Ctrmv`, `Rtbmv`, `Ctbmv`, `Rtpmv`,
+`Ctpmv`, `Rspr`, `Rspr2`, `Chpr`, `Chpr2`; Level 1 and 2 on request). Every
 other routine, and every call that is not eligible, uses the same code as
 `libmplapack_mpfr_opt`.
 
