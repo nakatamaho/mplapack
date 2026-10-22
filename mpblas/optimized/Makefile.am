@@ -39,6 +39,7 @@ common/Rblas_cuda_common.cuh common/Rblas_cuda_bridge_common.h common/Rblas_simd
 common/Rblas_split_common.h common/Cblas_simd_common.h \
 common/Rblas_dev_types.h common/Cblas_cuda_common.cuh common/Cblas_cuda_jobs_common.h \
 common/Rblas_dev_base.h common/Rblas_gpu_operand_common.h common/blas_cuda/Cblas_bridge_body.h \
+common/blas_dev/l2_rows_dev.h \
 common/blas_dev/CRrot_dev.h \
 common/blas_dev/CRscal_dev.h \
 common/blas_dev/Caxpy_dev.h \

@@ -47,7 +47,8 @@ BLAS_CUDA_SOURCES = ["Rblas_bridge_cuda", "Rsyrk", "Rsyr2k", "Rsymm", "Rtrmm", "
                      "Rsymv", "Rtrmv", "Rger", "Rsyr", "Rsyr2", "Rscal", "Rswap", "Rrot"]
 CBLAS_CUDA_SOURCES = ["Cblas_bridge_cuda", "Cgemm", "Csymm", "Chemm", "Ctrmm", "Ctrsm", "Cgemv", "Cgeru",
                       "Cgerc", "Caxpy", "Ccopy", "Cswap", "CRrot", "Cscal", "CRscal", "Csyrk", "Cherk",
-                      "Csyr2k", "Cher2k", "Cgemmtr", "Rgemmtr", "Cher", "Cher2"]
+                      "Csyr2k", "Cher2k", "Cgemmtr", "Rgemmtr", "Cher", "Cher2",
+                      "Chemv", "Chbmv", "Rsbmv", "Chpmv", "Rspmv", "Rgbmv", "Cgbmv", "Ctrmv", "Rtbmv", "Ctbmv", "Rtpmv", "Ctpmv", "Rspr", "Rspr2", "Chpr", "Chpr2"]
 
 # The MPFR backend is the test oracle; every other backend's tests link it.
 ORACLE = "mpfr"

@@ -435,7 +435,7 @@ if(MPLAPACK_ENABLE_MPFR_CUDA)
   # The complex BLAS (and Rgemmtr): the dispatchers of common/blas_cuda
   # (also those of dd/td/qd) on Cblas_mpfr_bridge_cuda.cpp.
   set(_mplapack_mpfr_cuda_cblas ${_mplapack_blas_cuda_sources})
-  list(FILTER _mplapack_mpfr_cuda_cblas INCLUDE REGEX "/(C[A-Za-z0-9]+|Rgemmtr)\\.cpp$")
+  list(FILTER _mplapack_mpfr_cuda_cblas INCLUDE REGEX "/(C[A-Za-z0-9]+|Rgemmtr|Rsbmv|Rspmv|Rgbmv|Rtbmv|Rtpmv|Rspr|Rspr2)\\.cpp$")
   list(FILTER _mplapack_mpfr_cuda_cblas EXCLUDE REGEX "/Cblas_bridge_cuda\\.cpp$")
   mplapack_add_accelerator_backend(mpfr cuda
     "${_mplapack_mpfr_cuda_dir}/Rgemm.cpp"

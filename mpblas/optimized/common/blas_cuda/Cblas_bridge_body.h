@@ -370,6 +370,232 @@ template <class Ops, class X> bool Cher2_gpu_t(X &ctx, const char *uplo, INTEGER
     return ctx.run(j, ops, 3);
 }
 
+// Level 2 range variants (Level 2: eligible(false, ...))
+
+template <class Ops, class X> bool Chemv_gpu_t(X &ctx, const char *uplo, INTEGER const n, COMPLEX const alpha, COMPLEX *a, INTEGER const lda, COMPLEX *x, INTEGER const incx, COMPLEX const beta, COMPLEX *y, INTEGER const incy)
+{
+    if ((!ls(uplo, "U") && !ls(uplo, "L")) || n <= 0 || incx != 1 || incy != 1 || alpha == COMPLEX(0.0, 0.0) || lda < std::max((INTEGER)1, n))
+        return false;
+    if (!ctx.eligible(false, 4.0 * n * n))
+        return false;
+    typedef job_Chemv<Ops> J;
+    typedef typename J::E E;
+    J j;
+    ch(j.uplo, uplo); j.n = n; j.lda = lda; ctx.sc(j.alpha, alpha); ctx.sc(j.beta, beta);
+    const gpu_operand<E> ops[] = {ctx.template op<E>(a, lda, n, n, false), ctx.template op<E>(x, 1, 1, n, false), ctx.template op<E>(y, 1, 1, n, true)};
+    return ctx.run(j, ops, 3);
+}
+
+template <class Ops, class X> bool Chbmv_gpu_t(X &ctx, const char *uplo, INTEGER const n, INTEGER const k, COMPLEX const alpha, COMPLEX *a, INTEGER const lda, COMPLEX *x, INTEGER const incx, COMPLEX const beta, COMPLEX *y, INTEGER const incy)
+{
+    if ((!ls(uplo, "U") && !ls(uplo, "L")) || n <= 0 || incx != 1 || incy != 1 || alpha == COMPLEX(0.0, 0.0) || k < 0 || lda < k + 1)
+        return false;
+    if (!ctx.eligible(false, 4.0 * n * (k + 1)))
+        return false;
+    typedef job_Chbmv<Ops> J;
+    typedef typename J::E E;
+    J j;
+    ch(j.uplo, uplo); j.n = n; j.k = k; j.lda = lda; ctx.sc(j.alpha, alpha); ctx.sc(j.beta, beta);
+    const gpu_operand<E> ops[] = {ctx.template op<E>(a, lda, k + 1, n, false), ctx.template op<E>(x, 1, 1, n, false), ctx.template op<E>(y, 1, 1, n, true)};
+    return ctx.run(j, ops, 3);
+}
+
+template <class Ops, class X> bool Rsbmv_gpu_t(X &ctx, const char *uplo, INTEGER const n, INTEGER const k, REAL const alpha, REAL *a, INTEGER const lda, REAL *x, INTEGER const incx, REAL const beta, REAL *y, INTEGER const incy)
+{
+    if ((!ls(uplo, "U") && !ls(uplo, "L")) || n <= 0 || incx != 1 || incy != 1 || alpha == REAL(0.0) || k < 0 || lda < k + 1)
+        return false;
+    if (!ctx.eligible(false, 4.0 * n * (k + 1)))
+        return false;
+    typedef job_Rsbmv<Ops> J;
+    typedef typename J::E E;
+    J j;
+    ch(j.uplo, uplo); j.n = n; j.k = k; j.lda = lda; ctx.sc(j.alpha, alpha); ctx.sc(j.beta, beta);
+    const gpu_operand<E> ops[] = {ctx.template op<E>(a, lda, k + 1, n, false), ctx.template op<E>(x, 1, 1, n, false), ctx.template op<E>(y, 1, 1, n, true)};
+    return ctx.run(j, ops, 3);
+}
+
+template <class Ops, class X> bool Chpmv_gpu_t(X &ctx, const char *uplo, INTEGER const n, COMPLEX const alpha, COMPLEX *ap, COMPLEX *x, INTEGER const incx, COMPLEX const beta, COMPLEX *y, INTEGER const incy)
+{
+    if ((!ls(uplo, "U") && !ls(uplo, "L")) || n <= 0 || incx != 1 || incy != 1 || alpha == COMPLEX(0.0, 0.0))
+        return false;
+    if (!ctx.eligible(false, 4.0 * n * n))
+        return false;
+    typedef job_Chpmv<Ops> J;
+    typedef typename J::E E;
+    J j;
+    ch(j.uplo, uplo); j.n = n; ctx.sc(j.alpha, alpha); ctx.sc(j.beta, beta);
+    const gpu_operand<E> ops[] = {ctx.template op<E>(ap, 1, 1, n * (n + 1) / 2, false), ctx.template op<E>(x, 1, 1, n, false), ctx.template op<E>(y, 1, 1, n, true)};
+    return ctx.run(j, ops, 3);
+}
+
+template <class Ops, class X> bool Rspmv_gpu_t(X &ctx, const char *uplo, INTEGER const n, REAL const alpha, REAL *ap, REAL *x, INTEGER const incx, REAL const beta, REAL *y, INTEGER const incy)
+{
+    if ((!ls(uplo, "U") && !ls(uplo, "L")) || n <= 0 || incx != 1 || incy != 1 || alpha == REAL(0.0))
+        return false;
+    if (!ctx.eligible(false, 4.0 * n * n))
+        return false;
+    typedef job_Rspmv<Ops> J;
+    typedef typename J::E E;
+    J j;
+    ch(j.uplo, uplo); j.n = n; ctx.sc(j.alpha, alpha); ctx.sc(j.beta, beta);
+    const gpu_operand<E> ops[] = {ctx.template op<E>(ap, 1, 1, n * (n + 1) / 2, false), ctx.template op<E>(x, 1, 1, n, false), ctx.template op<E>(y, 1, 1, n, true)};
+    return ctx.run(j, ops, 3);
+}
+
+template <class Ops, class X> bool Rgbmv_gpu_t(X &ctx, const char *trans, INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku, REAL const alpha, REAL *a, INTEGER const lda, REAL *x, INTEGER const incx, REAL const beta, REAL *y, INTEGER const incy)
+{
+    if ((!ls(trans, "N") && !ls(trans, "T") && !ls(trans, "C")) || m <= 0 || n <= 0 || kl < 0 || ku < 0 || lda < kl + ku + 1 || incx != 1 || incy != 1 || alpha == REAL(0.0))
+        return false;
+    if (!ctx.eligible(false, 4.0 * (ls(trans, "N") ? m : n) * (kl + ku + 1)))
+        return false;
+    typedef job_Rgbmv<Ops> J;
+    typedef typename J::E E;
+    J j;
+    ch(j.tr, trans); j.m = m; j.n = n; j.kl = kl; j.ku = ku; j.lda = lda; ctx.sc(j.alpha, alpha); ctx.sc(j.beta, beta);
+    const gpu_operand<E> ops[] = {ctx.template op<E>(a, lda, kl + ku + 1, n, false), ctx.template op<E>(x, 1, 1, ls(trans, "N") ? n : m, false), ctx.template op<E>(y, 1, 1, ls(trans, "N") ? m : n, true)};
+    return ctx.run(j, ops, 3);
+}
+
+template <class Ops, class X> bool Cgbmv_gpu_t(X &ctx, const char *trans, INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku, COMPLEX const alpha, COMPLEX *a, INTEGER const lda, COMPLEX *x, INTEGER const incx, COMPLEX const beta, COMPLEX *y, INTEGER const incy)
+{
+    if ((!ls(trans, "N") && !ls(trans, "T") && !ls(trans, "C")) || m <= 0 || n <= 0 || kl < 0 || ku < 0 || lda < kl + ku + 1 || incx != 1 || incy != 1 || alpha == COMPLEX(0.0, 0.0))
+        return false;
+    if (!ctx.eligible(false, 4.0 * (ls(trans, "N") ? m : n) * (kl + ku + 1)))
+        return false;
+    typedef job_Cgbmv<Ops> J;
+    typedef typename J::E E;
+    J j;
+    ch(j.tr, trans); j.m = m; j.n = n; j.kl = kl; j.ku = ku; j.lda = lda; ctx.sc(j.alpha, alpha); ctx.sc(j.beta, beta);
+    const gpu_operand<E> ops[] = {ctx.template op<E>(a, lda, kl + ku + 1, n, false), ctx.template op<E>(x, 1, 1, ls(trans, "N") ? n : m, false), ctx.template op<E>(y, 1, 1, ls(trans, "N") ? m : n, true)};
+    return ctx.run(j, ops, 3);
+}
+
+template <class Ops, class X> bool Ctrmv_gpu_t(X &ctx, const char *uplo, const char *trans, const char *diag, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *x, INTEGER const incx)
+{
+    if ((!ls(uplo, "U") && !ls(uplo, "L")) || (!ls(trans, "N") && !ls(trans, "T") && !ls(trans, "C")) || (!ls(diag, "U") && !ls(diag, "N")) || n <= 0 || incx != 1 || lda < std::max((INTEGER)1, n))
+        return false;
+    if (!ctx.eligible(false, 4.0 * n * n))
+        return false;
+    typedef job_Ctrmv<Ops> J;
+    typedef typename J::E E;
+    J j;
+    ch(j.uplo, uplo); ch(j.tr, trans); ch(j.diag, diag); j.n = n; j.lda = lda;
+    const gpu_operand<E> ops[] = {ctx.template op<E>(a, lda, n, n, false), ctx.template op<E>(x, 1, 1, n, false), ctx.template op<E>(x, 1, 1, n, true)};
+    return ctx.run(j, ops, 3);
+}
+
+template <class Ops, class X> bool Rtbmv_gpu_t(X &ctx, const char *uplo, const char *trans, const char *diag, INTEGER const n, INTEGER const k, REAL *a, INTEGER const lda, REAL *x, INTEGER const incx)
+{
+    if ((!ls(uplo, "U") && !ls(uplo, "L")) || (!ls(trans, "N") && !ls(trans, "T") && !ls(trans, "C")) || (!ls(diag, "U") && !ls(diag, "N")) || n <= 0 || incx != 1 || k < 0 || lda < k + 1)
+        return false;
+    if (!ctx.eligible(false, 4.0 * n * (k + 1)))
+        return false;
+    typedef job_Rtbmv<Ops> J;
+    typedef typename J::E E;
+    J j;
+    ch(j.uplo, uplo); ch(j.tr, trans); ch(j.diag, diag); j.n = n; j.k = k; j.lda = lda;
+    const gpu_operand<E> ops[] = {ctx.template op<E>(a, lda, k + 1, n, false), ctx.template op<E>(x, 1, 1, n, false), ctx.template op<E>(x, 1, 1, n, true)};
+    return ctx.run(j, ops, 3);
+}
+
+template <class Ops, class X> bool Ctbmv_gpu_t(X &ctx, const char *uplo, const char *trans, const char *diag, INTEGER const n, INTEGER const k, COMPLEX *a, INTEGER const lda, COMPLEX *x, INTEGER const incx)
+{
+    if ((!ls(uplo, "U") && !ls(uplo, "L")) || (!ls(trans, "N") && !ls(trans, "T") && !ls(trans, "C")) || (!ls(diag, "U") && !ls(diag, "N")) || n <= 0 || incx != 1 || k < 0 || lda < k + 1)
+        return false;
+    if (!ctx.eligible(false, 4.0 * n * (k + 1)))
+        return false;
+    typedef job_Ctbmv<Ops> J;
+    typedef typename J::E E;
+    J j;
+    ch(j.uplo, uplo); ch(j.tr, trans); ch(j.diag, diag); j.n = n; j.k = k; j.lda = lda;
+    const gpu_operand<E> ops[] = {ctx.template op<E>(a, lda, k + 1, n, false), ctx.template op<E>(x, 1, 1, n, false), ctx.template op<E>(x, 1, 1, n, true)};
+    return ctx.run(j, ops, 3);
+}
+
+template <class Ops, class X> bool Rtpmv_gpu_t(X &ctx, const char *uplo, const char *trans, const char *diag, INTEGER const n, REAL *ap, REAL *x, INTEGER const incx)
+{
+    if ((!ls(uplo, "U") && !ls(uplo, "L")) || (!ls(trans, "N") && !ls(trans, "T") && !ls(trans, "C")) || (!ls(diag, "U") && !ls(diag, "N")) || n <= 0 || incx != 1)
+        return false;
+    if (!ctx.eligible(false, 4.0 * n * n))
+        return false;
+    typedef job_Rtpmv<Ops> J;
+    typedef typename J::E E;
+    J j;
+    ch(j.uplo, uplo); ch(j.tr, trans); ch(j.diag, diag); j.n = n;
+    const gpu_operand<E> ops[] = {ctx.template op<E>(ap, 1, 1, n * (n + 1) / 2, false), ctx.template op<E>(x, 1, 1, n, false), ctx.template op<E>(x, 1, 1, n, true)};
+    return ctx.run(j, ops, 3);
+}
+
+template <class Ops, class X> bool Ctpmv_gpu_t(X &ctx, const char *uplo, const char *trans, const char *diag, INTEGER const n, COMPLEX *ap, COMPLEX *x, INTEGER const incx)
+{
+    if ((!ls(uplo, "U") && !ls(uplo, "L")) || (!ls(trans, "N") && !ls(trans, "T") && !ls(trans, "C")) || (!ls(diag, "U") && !ls(diag, "N")) || n <= 0 || incx != 1)
+        return false;
+    if (!ctx.eligible(false, 4.0 * n * n))
+        return false;
+    typedef job_Ctpmv<Ops> J;
+    typedef typename J::E E;
+    J j;
+    ch(j.uplo, uplo); ch(j.tr, trans); ch(j.diag, diag); j.n = n;
+    const gpu_operand<E> ops[] = {ctx.template op<E>(ap, 1, 1, n * (n + 1) / 2, false), ctx.template op<E>(x, 1, 1, n, false), ctx.template op<E>(x, 1, 1, n, true)};
+    return ctx.run(j, ops, 3);
+}
+
+template <class Ops, class X> bool Rspr_gpu_t(X &ctx, const char *uplo, INTEGER const n, REAL const alpha, REAL *x, INTEGER const incx, REAL *ap)
+{
+    if ((!ls(uplo, "U") && !ls(uplo, "L")) || n <= 0 || incx != 1 || alpha == REAL(0.0))
+        return false;
+    if (!ctx.eligible(false, 2.0 * n * n))
+        return false;
+    typedef job_Rspr<Ops> J;
+    typedef typename J::E E;
+    J j;
+    ch(j.uplo, uplo); j.n = n; ctx.sc(j.alpha, alpha);
+    const gpu_operand<E> ops[] = {ctx.template op<E>(x, 1, 1, n, false), ctx.template op<E>(ap, 1, 1, n * (n + 1) / 2, true)};
+    return ctx.run(j, ops, 2);
+}
+
+template <class Ops, class X> bool Rspr2_gpu_t(X &ctx, const char *uplo, INTEGER const n, REAL const alpha, REAL *x, INTEGER const incx, REAL *y, INTEGER const incy, REAL *ap)
+{
+    if ((!ls(uplo, "U") && !ls(uplo, "L")) || n <= 0 || incx != 1 || incy != 1 || alpha == REAL(0.0))
+        return false;
+    if (!ctx.eligible(false, 4.0 * n * n))
+        return false;
+    typedef job_Rspr2<Ops> J;
+    typedef typename J::E E;
+    J j;
+    ch(j.uplo, uplo); j.n = n; ctx.sc(j.alpha, alpha);
+    const gpu_operand<E> ops[] = {ctx.template op<E>(x, 1, 1, n, false), ctx.template op<E>(y, 1, 1, n, false), ctx.template op<E>(ap, 1, 1, n * (n + 1) / 2, true)};
+    return ctx.run(j, ops, 3);
+}
+
+template <class Ops, class X> bool Chpr_gpu_t(X &ctx, const char *uplo, INTEGER const n, REAL const alpha, COMPLEX *x, INTEGER const incx, COMPLEX *ap)
+{
+    if ((!ls(uplo, "U") && !ls(uplo, "L")) || n <= 0 || incx != 1 || alpha == REAL(0.0))
+        return false;
+    if (!ctx.eligible(false, 2.0 * n * n))
+        return false;
+    typedef job_Chpr<Ops> J;
+    typedef typename J::E E;
+    J j;
+    ch(j.uplo, uplo); j.n = n; ctx.sc(j.alpha, alpha);
+    const gpu_operand<E> ops[] = {ctx.template op<E>(x, 1, 1, n, false), ctx.template op<E>(ap, 1, 1, n * (n + 1) / 2, true)};
+    return ctx.run(j, ops, 2);
+}
+
+template <class Ops, class X> bool Chpr2_gpu_t(X &ctx, const char *uplo, INTEGER const n, COMPLEX const alpha, COMPLEX *x, INTEGER const incx, COMPLEX *y, INTEGER const incy, COMPLEX *ap)
+{
+    if ((!ls(uplo, "U") && !ls(uplo, "L")) || n <= 0 || incx != 1 || incy != 1 || alpha == COMPLEX(0.0, 0.0))
+        return false;
+    if (!ctx.eligible(false, 4.0 * n * n))
+        return false;
+    typedef job_Chpr2<Ops> J;
+    typedef typename J::E E;
+    J j;
+    ch(j.uplo, uplo); j.n = n; ctx.sc(j.alpha, alpha);
+    const gpu_operand<E> ops[] = {ctx.template op<E>(x, 1, 1, n, false), ctx.template op<E>(y, 1, 1, n, false), ctx.template op<E>(ap, 1, 1, n * (n + 1) / 2, true)};
+    return ctx.run(j, ops, 3);
+}
+
 } // namespace mplapack_cblas_gpu
 
 // The functions R_gpu(arguments) { return RUN(R_gpu_t, arguments); }, for a
@@ -420,6 +646,39 @@ template <class Ops, class X> bool Cher2_gpu_t(X &ctx, const char *uplo, INTEGER
 #define MPLAPACK_CBLAS_GPU_FUNCTION_Cher2(RUN) \
     bool Cher2_gpu(const char *uplo, INTEGER const n, COMPLEX const alpha, COMPLEX *x, INTEGER const incx, COMPLEX *y, INTEGER const incy, COMPLEX *a, INTEGER const lda) { return RUN(Cher2_gpu_t, uplo, n, alpha, x, incx, y, incy, a, lda); }
 
+#define MPLAPACK_CBLAS_GPU_FUNCTION_Chemv(RUN) \
+    bool Chemv_gpu(const char *uplo, INTEGER const n, COMPLEX const alpha, COMPLEX *a, INTEGER const lda, COMPLEX *x, INTEGER const incx, COMPLEX const beta, COMPLEX *y, INTEGER const incy) { return RUN(Chemv_gpu_t, uplo, n, alpha, a, lda, x, incx, beta, y, incy); }
+#define MPLAPACK_CBLAS_GPU_FUNCTION_Chbmv(RUN) \
+    bool Chbmv_gpu(const char *uplo, INTEGER const n, INTEGER const k, COMPLEX const alpha, COMPLEX *a, INTEGER const lda, COMPLEX *x, INTEGER const incx, COMPLEX const beta, COMPLEX *y, INTEGER const incy) { return RUN(Chbmv_gpu_t, uplo, n, k, alpha, a, lda, x, incx, beta, y, incy); }
+#define MPLAPACK_CBLAS_GPU_FUNCTION_Rsbmv(RUN) \
+    bool Rsbmv_gpu(const char *uplo, INTEGER const n, INTEGER const k, REAL const alpha, REAL *a, INTEGER const lda, REAL *x, INTEGER const incx, REAL const beta, REAL *y, INTEGER const incy) { return RUN(Rsbmv_gpu_t, uplo, n, k, alpha, a, lda, x, incx, beta, y, incy); }
+#define MPLAPACK_CBLAS_GPU_FUNCTION_Chpmv(RUN) \
+    bool Chpmv_gpu(const char *uplo, INTEGER const n, COMPLEX const alpha, COMPLEX *ap, COMPLEX *x, INTEGER const incx, COMPLEX const beta, COMPLEX *y, INTEGER const incy) { return RUN(Chpmv_gpu_t, uplo, n, alpha, ap, x, incx, beta, y, incy); }
+#define MPLAPACK_CBLAS_GPU_FUNCTION_Rspmv(RUN) \
+    bool Rspmv_gpu(const char *uplo, INTEGER const n, REAL const alpha, REAL *ap, REAL *x, INTEGER const incx, REAL const beta, REAL *y, INTEGER const incy) { return RUN(Rspmv_gpu_t, uplo, n, alpha, ap, x, incx, beta, y, incy); }
+#define MPLAPACK_CBLAS_GPU_FUNCTION_Rgbmv(RUN) \
+    bool Rgbmv_gpu(const char *trans, INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku, REAL const alpha, REAL *a, INTEGER const lda, REAL *x, INTEGER const incx, REAL const beta, REAL *y, INTEGER const incy) { return RUN(Rgbmv_gpu_t, trans, m, n, kl, ku, alpha, a, lda, x, incx, beta, y, incy); }
+#define MPLAPACK_CBLAS_GPU_FUNCTION_Cgbmv(RUN) \
+    bool Cgbmv_gpu(const char *trans, INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku, COMPLEX const alpha, COMPLEX *a, INTEGER const lda, COMPLEX *x, INTEGER const incx, COMPLEX const beta, COMPLEX *y, INTEGER const incy) { return RUN(Cgbmv_gpu_t, trans, m, n, kl, ku, alpha, a, lda, x, incx, beta, y, incy); }
+#define MPLAPACK_CBLAS_GPU_FUNCTION_Ctrmv(RUN) \
+    bool Ctrmv_gpu(const char *uplo, const char *trans, const char *diag, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *x, INTEGER const incx) { return RUN(Ctrmv_gpu_t, uplo, trans, diag, n, a, lda, x, incx); }
+#define MPLAPACK_CBLAS_GPU_FUNCTION_Rtbmv(RUN) \
+    bool Rtbmv_gpu(const char *uplo, const char *trans, const char *diag, INTEGER const n, INTEGER const k, REAL *a, INTEGER const lda, REAL *x, INTEGER const incx) { return RUN(Rtbmv_gpu_t, uplo, trans, diag, n, k, a, lda, x, incx); }
+#define MPLAPACK_CBLAS_GPU_FUNCTION_Ctbmv(RUN) \
+    bool Ctbmv_gpu(const char *uplo, const char *trans, const char *diag, INTEGER const n, INTEGER const k, COMPLEX *a, INTEGER const lda, COMPLEX *x, INTEGER const incx) { return RUN(Ctbmv_gpu_t, uplo, trans, diag, n, k, a, lda, x, incx); }
+#define MPLAPACK_CBLAS_GPU_FUNCTION_Rtpmv(RUN) \
+    bool Rtpmv_gpu(const char *uplo, const char *trans, const char *diag, INTEGER const n, REAL *ap, REAL *x, INTEGER const incx) { return RUN(Rtpmv_gpu_t, uplo, trans, diag, n, ap, x, incx); }
+#define MPLAPACK_CBLAS_GPU_FUNCTION_Ctpmv(RUN) \
+    bool Ctpmv_gpu(const char *uplo, const char *trans, const char *diag, INTEGER const n, COMPLEX *ap, COMPLEX *x, INTEGER const incx) { return RUN(Ctpmv_gpu_t, uplo, trans, diag, n, ap, x, incx); }
+#define MPLAPACK_CBLAS_GPU_FUNCTION_Rspr(RUN) \
+    bool Rspr_gpu(const char *uplo, INTEGER const n, REAL const alpha, REAL *x, INTEGER const incx, REAL *ap) { return RUN(Rspr_gpu_t, uplo, n, alpha, x, incx, ap); }
+#define MPLAPACK_CBLAS_GPU_FUNCTION_Rspr2(RUN) \
+    bool Rspr2_gpu(const char *uplo, INTEGER const n, REAL const alpha, REAL *x, INTEGER const incx, REAL *y, INTEGER const incy, REAL *ap) { return RUN(Rspr2_gpu_t, uplo, n, alpha, x, incx, y, incy, ap); }
+#define MPLAPACK_CBLAS_GPU_FUNCTION_Chpr(RUN) \
+    bool Chpr_gpu(const char *uplo, INTEGER const n, REAL const alpha, COMPLEX *x, INTEGER const incx, COMPLEX *ap) { return RUN(Chpr_gpu_t, uplo, n, alpha, x, incx, ap); }
+#define MPLAPACK_CBLAS_GPU_FUNCTION_Chpr2(RUN) \
+    bool Chpr2_gpu(const char *uplo, INTEGER const n, COMPLEX const alpha, COMPLEX *x, INTEGER const incx, COMPLEX *y, INTEGER const incy, COMPLEX *ap) { return RUN(Chpr2_gpu_t, uplo, n, alpha, x, incx, y, incy, ap); }
+
 #define MPLAPACK_CBLAS_GPU_FUNCTIONS(RUN) \
     MPLAPACK_CBLAS_GPU_FUNCTION_Cgemm(RUN) \
     MPLAPACK_CBLAS_GPU_FUNCTION_Csymm(RUN) \
@@ -442,6 +701,22 @@ template <class Ops, class X> bool Cher2_gpu_t(X &ctx, const char *uplo, INTEGER
     MPLAPACK_CBLAS_GPU_FUNCTION_Cgemmtr(RUN) \
     MPLAPACK_CBLAS_GPU_FUNCTION_Rgemmtr(RUN) \
     MPLAPACK_CBLAS_GPU_FUNCTION_Cher(RUN) \
-    MPLAPACK_CBLAS_GPU_FUNCTION_Cher2(RUN)
+    MPLAPACK_CBLAS_GPU_FUNCTION_Cher2(RUN) \
+    MPLAPACK_CBLAS_GPU_FUNCTION_Chemv(RUN) \
+    MPLAPACK_CBLAS_GPU_FUNCTION_Chbmv(RUN) \
+    MPLAPACK_CBLAS_GPU_FUNCTION_Rsbmv(RUN) \
+    MPLAPACK_CBLAS_GPU_FUNCTION_Chpmv(RUN) \
+    MPLAPACK_CBLAS_GPU_FUNCTION_Rspmv(RUN) \
+    MPLAPACK_CBLAS_GPU_FUNCTION_Rgbmv(RUN) \
+    MPLAPACK_CBLAS_GPU_FUNCTION_Cgbmv(RUN) \
+    MPLAPACK_CBLAS_GPU_FUNCTION_Ctrmv(RUN) \
+    MPLAPACK_CBLAS_GPU_FUNCTION_Rtbmv(RUN) \
+    MPLAPACK_CBLAS_GPU_FUNCTION_Ctbmv(RUN) \
+    MPLAPACK_CBLAS_GPU_FUNCTION_Rtpmv(RUN) \
+    MPLAPACK_CBLAS_GPU_FUNCTION_Ctpmv(RUN) \
+    MPLAPACK_CBLAS_GPU_FUNCTION_Rspr(RUN) \
+    MPLAPACK_CBLAS_GPU_FUNCTION_Rspr2(RUN) \
+    MPLAPACK_CBLAS_GPU_FUNCTION_Chpr(RUN) \
+    MPLAPACK_CBLAS_GPU_FUNCTION_Chpr2(RUN)
 
 #endif

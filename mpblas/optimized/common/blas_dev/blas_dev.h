@@ -29,5 +29,6 @@
 #include "Cgemmtr_columns_dev.h"
 #include "Cher_columns_dev.h"
 #include "Cher2_columns_dev.h"
+#include "l2_rows_dev.h"
 
 #endif

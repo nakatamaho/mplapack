@@ -70,4 +70,20 @@ template int cgpu_run<job_Cgemmtr<OPS> >(job_Cgemmtr<OPS>, const mplapack_blas::
 template int cgpu_run<job_Rgemmtr<OPS> >(job_Rgemmtr<OPS>, const mplapack_blas::gpu_operand<job_Rgemmtr<OPS>::E> *, int);
 template int cgpu_run<job_Cher<OPS> >(job_Cher<OPS>, const mplapack_blas::gpu_operand<job_Cher<OPS>::E> *, int);
 template int cgpu_run<job_Cher2<OPS> >(job_Cher2<OPS>, const mplapack_blas::gpu_operand<job_Cher2<OPS>::E> *, int);
+template int cgpu_run<job_Chemv<OPS> >(job_Chemv<OPS>, const mplapack_blas::gpu_operand<job_Chemv<OPS>::E> *, int);
+template int cgpu_run<job_Chbmv<OPS> >(job_Chbmv<OPS>, const mplapack_blas::gpu_operand<job_Chbmv<OPS>::E> *, int);
+template int cgpu_run<job_Rsbmv<OPS> >(job_Rsbmv<OPS>, const mplapack_blas::gpu_operand<job_Rsbmv<OPS>::E> *, int);
+template int cgpu_run<job_Chpmv<OPS> >(job_Chpmv<OPS>, const mplapack_blas::gpu_operand<job_Chpmv<OPS>::E> *, int);
+template int cgpu_run<job_Rspmv<OPS> >(job_Rspmv<OPS>, const mplapack_blas::gpu_operand<job_Rspmv<OPS>::E> *, int);
+template int cgpu_run<job_Rgbmv<OPS> >(job_Rgbmv<OPS>, const mplapack_blas::gpu_operand<job_Rgbmv<OPS>::E> *, int);
+template int cgpu_run<job_Cgbmv<OPS> >(job_Cgbmv<OPS>, const mplapack_blas::gpu_operand<job_Cgbmv<OPS>::E> *, int);
+template int cgpu_run<job_Ctrmv<OPS> >(job_Ctrmv<OPS>, const mplapack_blas::gpu_operand<job_Ctrmv<OPS>::E> *, int);
+template int cgpu_run<job_Rtbmv<OPS> >(job_Rtbmv<OPS>, const mplapack_blas::gpu_operand<job_Rtbmv<OPS>::E> *, int);
+template int cgpu_run<job_Ctbmv<OPS> >(job_Ctbmv<OPS>, const mplapack_blas::gpu_operand<job_Ctbmv<OPS>::E> *, int);
+template int cgpu_run<job_Rtpmv<OPS> >(job_Rtpmv<OPS>, const mplapack_blas::gpu_operand<job_Rtpmv<OPS>::E> *, int);
+template int cgpu_run<job_Ctpmv<OPS> >(job_Ctpmv<OPS>, const mplapack_blas::gpu_operand<job_Ctpmv<OPS>::E> *, int);
+template int cgpu_run<job_Rspr<OPS> >(job_Rspr<OPS>, const mplapack_blas::gpu_operand<job_Rspr<OPS>::E> *, int);
+template int cgpu_run<job_Rspr2<OPS> >(job_Rspr2<OPS>, const mplapack_blas::gpu_operand<job_Rspr2<OPS>::E> *, int);
+template int cgpu_run<job_Chpr<OPS> >(job_Chpr<OPS>, const mplapack_blas::gpu_operand<job_Chpr<OPS>::E> *, int);
+template int cgpu_run<job_Chpr2<OPS> >(job_Chpr2<OPS>, const mplapack_blas::gpu_operand<job_Chpr2<OPS>::E> *, int);
 } // namespace mplapack_blas_dev

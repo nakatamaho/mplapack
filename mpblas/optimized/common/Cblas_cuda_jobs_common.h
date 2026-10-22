@@ -281,6 +281,219 @@ template <class Ops> struct job_Cher2 {
     MPLAPACK_DEV_HD void operator()(long u) const { Cher2_columns_dev<DR, DC>(uplo, n, alpha, A, incx, B, incy, C, lda, u, u + 1); }
 };
 
+// Level 2 range variants (blas_dev/l2_rows_dev.h): one element of y or x,
+// or one column of AP, per thread.
+
+template <class Ops> struct job_Chemv {
+    typedef typename cgpu_types<Ops>::DR DR;
+    typedef typename cgpu_types<Ops>::DC DC;
+    typedef DC E;
+    char uplo[2];
+    long n, lda;
+    DC alpha;
+    DC beta;
+    E *A, *X, *Y;
+    MPLAPACK_DEV_HD long units() const { return n; }
+    MPLAPACK_DEV_HD void bind(E **d) { A = d[0]; X = d[1]; Y = d[2]; }
+    MPLAPACK_DEV_HD void operator()(long u) const { Chemv_rows_dev<DR, DC>(uplo, n, alpha, A, lda, X, 1, beta, Y, 1, u, u + 1); }
+};
+
+template <class Ops> struct job_Chbmv {
+    typedef typename cgpu_types<Ops>::DR DR;
+    typedef typename cgpu_types<Ops>::DC DC;
+    typedef DC E;
+    char uplo[2];
+    long n, k, lda;
+    DC alpha;
+    DC beta;
+    E *A, *X, *Y;
+    MPLAPACK_DEV_HD long units() const { return n; }
+    MPLAPACK_DEV_HD void bind(E **d) { A = d[0]; X = d[1]; Y = d[2]; }
+    MPLAPACK_DEV_HD void operator()(long u) const { Chbmv_rows_dev<DR, DC>(uplo, n, k, alpha, A, lda, X, 1, beta, Y, 1, u, u + 1); }
+};
+
+template <class Ops> struct job_Rsbmv {
+    typedef typename cgpu_types<Ops>::DR DR;
+    typedef typename cgpu_types<Ops>::DC DC;
+    typedef DR E;
+    char uplo[2];
+    long n, k, lda;
+    DR alpha;
+    DR beta;
+    E *A, *X, *Y;
+    MPLAPACK_DEV_HD long units() const { return n; }
+    MPLAPACK_DEV_HD void bind(E **d) { A = d[0]; X = d[1]; Y = d[2]; }
+    MPLAPACK_DEV_HD void operator()(long u) const { Rsbmv_rows_dev<DR, DC>(uplo, n, k, alpha, A, lda, X, 1, beta, Y, 1, u, u + 1); }
+};
+
+template <class Ops> struct job_Chpmv {
+    typedef typename cgpu_types<Ops>::DR DR;
+    typedef typename cgpu_types<Ops>::DC DC;
+    typedef DC E;
+    char uplo[2];
+    long n;
+    DC alpha;
+    DC beta;
+    E *A, *X, *Y;
+    MPLAPACK_DEV_HD long units() const { return n; }
+    MPLAPACK_DEV_HD void bind(E **d) { A = d[0]; X = d[1]; Y = d[2]; }
+    MPLAPACK_DEV_HD void operator()(long u) const { Chpmv_rows_dev<DR, DC>(uplo, n, alpha, A, X, 1, beta, Y, 1, u, u + 1); }
+};
+
+template <class Ops> struct job_Rspmv {
+    typedef typename cgpu_types<Ops>::DR DR;
+    typedef typename cgpu_types<Ops>::DC DC;
+    typedef DR E;
+    char uplo[2];
+    long n;
+    DR alpha;
+    DR beta;
+    E *A, *X, *Y;
+    MPLAPACK_DEV_HD long units() const { return n; }
+    MPLAPACK_DEV_HD void bind(E **d) { A = d[0]; X = d[1]; Y = d[2]; }
+    MPLAPACK_DEV_HD void operator()(long u) const { Rspmv_rows_dev<DR, DC>(uplo, n, alpha, A, X, 1, beta, Y, 1, u, u + 1); }
+};
+
+template <class Ops> struct job_Rgbmv {
+    typedef typename cgpu_types<Ops>::DR DR;
+    typedef typename cgpu_types<Ops>::DC DC;
+    typedef DR E;
+    char tr[2];
+    long m, n, kl, ku, lda;
+    DR alpha;
+    DR beta;
+    E *A, *X, *Y;
+    MPLAPACK_DEV_HD long units() const { return lsame(tr, "N") ? m : n; }
+    MPLAPACK_DEV_HD void bind(E **d) { A = d[0]; X = d[1]; Y = d[2]; }
+    MPLAPACK_DEV_HD void operator()(long u) const { Rgbmv_rows_dev<DR, DC>(tr, m, n, kl, ku, alpha, A, lda, X, 1, beta, Y, 1, u, u + 1); }
+};
+
+template <class Ops> struct job_Cgbmv {
+    typedef typename cgpu_types<Ops>::DR DR;
+    typedef typename cgpu_types<Ops>::DC DC;
+    typedef DC E;
+    char tr[2];
+    long m, n, kl, ku, lda;
+    DC alpha;
+    DC beta;
+    E *A, *X, *Y;
+    MPLAPACK_DEV_HD long units() const { return lsame(tr, "N") ? m : n; }
+    MPLAPACK_DEV_HD void bind(E **d) { A = d[0]; X = d[1]; Y = d[2]; }
+    MPLAPACK_DEV_HD void operator()(long u) const { Cgbmv_rows_dev<DR, DC>(tr, m, n, kl, ku, alpha, A, lda, X, 1, beta, Y, 1, u, u + 1); }
+};
+
+template <class Ops> struct job_Ctrmv {
+    typedef typename cgpu_types<Ops>::DR DR;
+    typedef typename cgpu_types<Ops>::DC DC;
+    typedef DC E;
+    char uplo[2], tr[2], diag[2];
+    long n, lda;
+    E *A, *X0, *X;
+    MPLAPACK_DEV_HD long units() const { return n; }
+    MPLAPACK_DEV_HD void bind(E **d) { A = d[0]; X0 = d[1]; X = d[2]; }
+    MPLAPACK_DEV_HD void operator()(long u) const { Ctrmv_rows_dev<DR, DC>(uplo, tr, diag, n, A, lda, X, 1, X0, u, u + 1); }
+};
+
+template <class Ops> struct job_Rtbmv {
+    typedef typename cgpu_types<Ops>::DR DR;
+    typedef typename cgpu_types<Ops>::DC DC;
+    typedef DR E;
+    char uplo[2], tr[2], diag[2];
+    long n, k, lda;
+    E *A, *X0, *X;
+    MPLAPACK_DEV_HD long units() const { return n; }
+    MPLAPACK_DEV_HD void bind(E **d) { A = d[0]; X0 = d[1]; X = d[2]; }
+    MPLAPACK_DEV_HD void operator()(long u) const { Rtbmv_rows_dev<DR, DC>(uplo, tr, diag, n, k, A, lda, X, 1, X0, u, u + 1); }
+};
+
+template <class Ops> struct job_Ctbmv {
+    typedef typename cgpu_types<Ops>::DR DR;
+    typedef typename cgpu_types<Ops>::DC DC;
+    typedef DC E;
+    char uplo[2], tr[2], diag[2];
+    long n, k, lda;
+    E *A, *X0, *X;
+    MPLAPACK_DEV_HD long units() const { return n; }
+    MPLAPACK_DEV_HD void bind(E **d) { A = d[0]; X0 = d[1]; X = d[2]; }
+    MPLAPACK_DEV_HD void operator()(long u) const { Ctbmv_rows_dev<DR, DC>(uplo, tr, diag, n, k, A, lda, X, 1, X0, u, u + 1); }
+};
+
+template <class Ops> struct job_Rtpmv {
+    typedef typename cgpu_types<Ops>::DR DR;
+    typedef typename cgpu_types<Ops>::DC DC;
+    typedef DR E;
+    char uplo[2], tr[2], diag[2];
+    long n;
+    E *A, *X0, *X;
+    MPLAPACK_DEV_HD long units() const { return n; }
+    MPLAPACK_DEV_HD void bind(E **d) { A = d[0]; X0 = d[1]; X = d[2]; }
+    MPLAPACK_DEV_HD void operator()(long u) const { Rtpmv_rows_dev<DR, DC>(uplo, tr, diag, n, A, X, 1, X0, u, u + 1); }
+};
+
+template <class Ops> struct job_Ctpmv {
+    typedef typename cgpu_types<Ops>::DR DR;
+    typedef typename cgpu_types<Ops>::DC DC;
+    typedef DC E;
+    char uplo[2], tr[2], diag[2];
+    long n;
+    E *A, *X0, *X;
+    MPLAPACK_DEV_HD long units() const { return n; }
+    MPLAPACK_DEV_HD void bind(E **d) { A = d[0]; X0 = d[1]; X = d[2]; }
+    MPLAPACK_DEV_HD void operator()(long u) const { Ctpmv_rows_dev<DR, DC>(uplo, tr, diag, n, A, X, 1, X0, u, u + 1); }
+};
+
+template <class Ops> struct job_Rspr {
+    typedef typename cgpu_types<Ops>::DR DR;
+    typedef typename cgpu_types<Ops>::DC DC;
+    typedef DR E;
+    char uplo[2];
+    long n;
+    DR alpha;
+    E *X, *P;
+    MPLAPACK_DEV_HD long units() const { return n; }
+    MPLAPACK_DEV_HD void bind(E **d) { X = d[0]; P = d[1]; }
+    MPLAPACK_DEV_HD void operator()(long u) const { Rspr_rows_dev<DR, DC>(uplo, n, alpha, X, 1, P, u, u + 1); }
+};
+
+template <class Ops> struct job_Rspr2 {
+    typedef typename cgpu_types<Ops>::DR DR;
+    typedef typename cgpu_types<Ops>::DC DC;
+    typedef DR E;
+    char uplo[2];
+    long n;
+    DR alpha;
+    E *X, *Y, *P;
+    MPLAPACK_DEV_HD long units() const { return n; }
+    MPLAPACK_DEV_HD void bind(E **d) { X = d[0]; Y = d[1]; P = d[2]; }
+    MPLAPACK_DEV_HD void operator()(long u) const { Rspr2_rows_dev<DR, DC>(uplo, n, alpha, X, 1, Y, 1, P, u, u + 1); }
+};
+
+template <class Ops> struct job_Chpr {
+    typedef typename cgpu_types<Ops>::DR DR;
+    typedef typename cgpu_types<Ops>::DC DC;
+    typedef DC E;
+    char uplo[2];
+    long n;
+    DR alpha;
+    E *X, *P;
+    MPLAPACK_DEV_HD long units() const { return n; }
+    MPLAPACK_DEV_HD void bind(E **d) { X = d[0]; P = d[1]; }
+    MPLAPACK_DEV_HD void operator()(long u) const { Chpr_rows_dev<DR, DC>(uplo, n, alpha, X, 1, P, u, u + 1); }
+};
+
+template <class Ops> struct job_Chpr2 {
+    typedef typename cgpu_types<Ops>::DR DR;
+    typedef typename cgpu_types<Ops>::DC DC;
+    typedef DC E;
+    char uplo[2];
+    long n;
+    DC alpha;
+    E *X, *Y, *P;
+    MPLAPACK_DEV_HD long units() const { return n; }
+    MPLAPACK_DEV_HD void bind(E **d) { X = d[0]; Y = d[1]; P = d[2]; }
+    MPLAPACK_DEV_HD void operator()(long u) const { Chpr2_rows_dev<DR, DC>(uplo, n, alpha, X, 1, Y, 1, P, u, u + 1); }
+};
+
 // Runs the job on the GPU: 0, or a CUDA error (the call is then left to the CPU).
 template <class Job> int cgpu_run(Job job, const mplapack_blas::gpu_operand<typename Job::E> *ops, int nops);
 

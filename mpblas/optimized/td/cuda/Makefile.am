@@ -74,36 +74,36 @@ libmplapack_td_opt_cuda_la_SOURCES = \
 ../../common/blas/Cher2_omp.cpp ../../common/blas_cuda/Cher2.cpp \
 ../../../reference/Cdotc.cpp \
 ../../../reference/Cdotu.cpp \
-../../common/blas/Cgbmv.cpp ../../common/blas/Cgbmv_omp.cpp \
-../../common/blas/Chbmv.cpp ../../common/blas/Chbmv_omp.cpp \
-../../common/blas/Chemv.cpp ../../common/blas/Chemv_omp.cpp \
-../../common/blas/Chpmv.cpp ../../common/blas/Chpmv_omp.cpp \
-../../common/blas/Chpr.cpp ../../common/blas/Chpr_omp.cpp \
-../../common/blas/Chpr2.cpp ../../common/blas/Chpr2_omp.cpp \
+../../common/blas_cuda/Cgbmv.cpp ../../common/blas/Cgbmv_omp.cpp \
+../../common/blas_cuda/Chbmv.cpp ../../common/blas/Chbmv_omp.cpp \
+../../common/blas_cuda/Chemv.cpp ../../common/blas/Chemv_omp.cpp \
+../../common/blas_cuda/Chpmv.cpp ../../common/blas/Chpmv_omp.cpp \
+../../common/blas_cuda/Chpr.cpp ../../common/blas/Chpr_omp.cpp \
+../../common/blas_cuda/Chpr2.cpp ../../common/blas/Chpr2_omp.cpp \
 ../../../reference/Crotg.cpp \
-../../common/blas/Ctbmv.cpp ../../common/blas/Ctbmv_omp.cpp \
+../../common/blas_cuda/Ctbmv.cpp ../../common/blas/Ctbmv_omp.cpp \
 ../../../reference/Ctbsv.cpp \
-../../common/blas/Ctpmv.cpp ../../common/blas/Ctpmv_omp.cpp \
+../../common/blas_cuda/Ctpmv.cpp ../../common/blas/Ctpmv_omp.cpp \
 ../../../reference/Ctpsv.cpp \
-../../common/blas/Ctrmv.cpp ../../common/blas/Ctrmv_omp.cpp \
+../../common/blas_cuda/Ctrmv.cpp ../../common/blas/Ctrmv_omp.cpp \
 ../../../reference/Mlsame.cpp \
 ../../../reference/Mxerbla.cpp \
 ../../../reference/RCabs1.cpp \
 ../../../reference/RCasum.cpp \
 ../../../reference/RCnrm2.cpp \
 ../../../reference/Rasum.cpp \
-../../common/blas/Rgbmv.cpp ../../common/blas/Rgbmv_omp.cpp \
+../../common/blas_cuda/Rgbmv.cpp ../../common/blas/Rgbmv_omp.cpp \
 ../../../reference/Rnrm2.cpp \
 ../../../reference/Rrotg.cpp \
 ../../../reference/Rrotm.cpp \
 ../../../reference/Rrotmg.cpp \
-../../common/blas/Rsbmv.cpp ../../common/blas/Rsbmv_omp.cpp \
-../../common/blas/Rspmv.cpp ../../common/blas/Rspmv_omp.cpp \
-../../common/blas/Rspr.cpp ../../common/blas/Rspr_omp.cpp \
-../../common/blas/Rspr2.cpp ../../common/blas/Rspr2_omp.cpp \
-../../common/blas/Rtbmv.cpp ../../common/blas/Rtbmv_omp.cpp \
+../../common/blas_cuda/Rsbmv.cpp ../../common/blas/Rsbmv_omp.cpp \
+../../common/blas_cuda/Rspmv.cpp ../../common/blas/Rspmv_omp.cpp \
+../../common/blas_cuda/Rspr.cpp ../../common/blas/Rspr_omp.cpp \
+../../common/blas_cuda/Rspr2.cpp ../../common/blas/Rspr2_omp.cpp \
+../../common/blas_cuda/Rtbmv.cpp ../../common/blas/Rtbmv_omp.cpp \
 ../../../reference/Rtbsv.cpp \
-../../common/blas/Rtpmv.cpp ../../common/blas/Rtpmv_omp.cpp \
+../../common/blas_cuda/Rtpmv.cpp ../../common/blas/Rtpmv_omp.cpp \
 ../../../reference/Rtpsv.cpp \
 ../../../reference/iCamax.cpp \
 ../../../reference/iRamax.cpp \
