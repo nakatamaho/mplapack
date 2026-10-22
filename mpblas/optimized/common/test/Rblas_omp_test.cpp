@@ -36,6 +36,7 @@
  */
 
 #include <mpblas.h>
+#include <mplapack_arithmetic_params.h>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -73,6 +74,10 @@ void Rlaswp(INTEGER const n, REAL *a, INTEGER const lda, INTEGER const k1, INTEG
 void Rlaswp_reference_cpu(INTEGER const n, REAL *a, INTEGER const lda, INTEGER const k1, INTEGER const k2, INTEGER *ipiv, INTEGER const incx);
 
 void Rtrsv_reference_cpu(const char *uplo, const char *trans, const char *diag, INTEGER const n, REAL *a, INTEGER const lda, REAL *x, INTEGER const incx);
+
+REAL Rasum_reference_cpu(INTEGER const n, REAL *dx, INTEGER const incx);
+REAL Rnrm2_reference_cpu(INTEGER const n, REAL *x, INTEGER const incx);
+INTEGER iRamax_reference_cpu(INTEGER const n, REAL *dx, INTEGER const incx);
 
 namespace {
 
@@ -377,6 +382,33 @@ int main()
             Rlaswp(n + 33, G.data(), rows + 1, k1, k2, ipiv.data(), incx);
             compare(tag("Rlaswp", {}, {m, n, incx}), R, G);
         }
+    }
+    // Level 1 reductions (Rasum, Rnrm2, iRamax): also with values beyond the
+    // scaling thresholds of Rnrm2 and with ties of the largest |x(i)|
+    {
+        const auto &ap = mplapack::get_arithmetic_params<REAL>();
+        const auto bp = mplapack::make_blue_scaling_params(ap);
+        for (long len : {1L, 5L, 12L, 23L, 97L, 1000L})
+            for (int kind = 0; kind < 3; kind++) {
+                std::vector<REAL> X((size_t)len);
+                fill(X);
+                if (kind == 1)
+                    for (long i = 0; i < len; i += 7)
+                        X[(size_t)i] = (i % 2 ? bp.tbig * REAL(4.0) : bp.tsml * REAL(0.25)) * X[(size_t)i];
+                if (kind == 2)
+                    for (long i = 1; i < len; i += 3)
+                        X[(size_t)i] = REAL(i % 2 ? 2.0 : -2.0);
+                std::vector<REAL> R(1), G(1);
+                R[0] = Rasum_reference_cpu(len, X.data(), 1), G[0] = Rasum(len, X.data(), 1);
+                compare(tag("Rasum", {}, {len, kind}), R, G);
+                R[0] = Rnrm2_reference_cpu(len, X.data(), 1), G[0] = Rnrm2(len, X.data(), 1);
+                compare(tag("Rnrm2", {}, {len, kind}), R, G);
+                checks++;
+                if (iRamax_reference_cpu(len, X.data(), 1) != iRamax(len, X.data(), 1)) {
+                    failures++;
+                    std::printf("FAIL iRamax %ld %d\n", len, kind);
+                }
+            }
     }
 #ifdef RBLAS_TEST_GPU
     std::printf("lane BLAS (GPU): %ld checks, %ld failures\n", checks, failures);

@@ -53,8 +53,8 @@ libmplapack_binary128_opt_opencl_la_SOURCES = \
 ../../common/blas/Ctrsv.cpp ../../common/blas/Ctrsv_omp.cpp \
 ../../common/blas/Cher.cpp ../../common/blas/Cher_omp.cpp \
 ../../common/blas/Cher2.cpp ../../common/blas/Cher2_omp.cpp \
-../../../reference/Cdotc.cpp \
-../../../reference/Cdotu.cpp \
+../../common/blas/Cdotc.cpp ../../common/blas/Cdotc_omp.cpp \
+../../common/blas/Cdotu.cpp ../../common/blas/Cdotu_omp.cpp \
 ../../common/blas/Cgbmv.cpp ../../common/blas/Cgbmv_omp.cpp \
 ../../common/blas/Chbmv.cpp ../../common/blas/Chbmv_omp.cpp \
 ../../common/blas/Chemv.cpp ../../common/blas/Chemv_omp.cpp \
@@ -70,11 +70,11 @@ libmplapack_binary128_opt_opencl_la_SOURCES = \
 ../../../reference/Mlsame.cpp \
 ../../../reference/Mxerbla.cpp \
 ../../../reference/RCabs1.cpp \
-../../../reference/RCasum.cpp \
-../../../reference/RCnrm2.cpp \
-../../../reference/Rasum.cpp \
+../../common/blas/RCasum.cpp ../../common/blas/RCasum_omp.cpp \
+../../common/blas/RCnrm2.cpp ../../common/blas/RCnrm2_omp.cpp \
+../../common/blas/Rasum.cpp ../../common/blas/Rasum_omp.cpp \
 ../../common/blas/Rgbmv.cpp ../../common/blas/Rgbmv_omp.cpp \
-../../../reference/Rnrm2.cpp \
+../../common/blas/Rnrm2.cpp ../../common/blas/Rnrm2_omp.cpp \
 ../../../reference/Rrotg.cpp \
 ../../../reference/Rrotm.cpp \
 ../../../reference/Rrotmg.cpp \
@@ -86,8 +86,8 @@ libmplapack_binary128_opt_opencl_la_SOURCES = \
 ../../common/blas/Rtbsv.cpp ../../common/blas/Rtbsv_omp.cpp \
 ../../common/blas/Rtpmv.cpp ../../common/blas/Rtpmv_omp.cpp \
 ../../common/blas/Rtpsv.cpp ../../common/blas/Rtpsv_omp.cpp \
-../../../reference/iCamax.cpp \
-../../../reference/iRamax.cpp \
+../../common/blas/iCamax.cpp ../../common/blas/iCamax_omp.cpp \
+../../common/blas/iRamax.cpp ../../common/blas/iRamax_omp.cpp \
 ../../../reference/mplapackinit.cpp \
 $(MPLAPACK_ACCEL_REFERENCE_SOURCES) \
 ../../../../mplapack/optimized/common/Rlaswp.cpp \

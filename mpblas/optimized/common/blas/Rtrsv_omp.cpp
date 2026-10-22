@@ -27,14 +27,18 @@
  */
 
 // The reference Rtrsv (mpblas/reference/Rtrsv.cpp, unchanged) under the name
-// Rtrsv_reference_cpu, and Rtrsv_omp: for dd/td/qd, trans = N and incx = 1, the
-// loops of the reference with the updates of x vectorized; the columns are
-// solved one after the other, as in the reference.
+// Rtrsv_reference_cpu, and Rtrsv_omp: for dd/td/qd and incx = 1 the loops of the
+// reference with AVX2 (misc/gen_blas_tri_solves.py): trans = N, the updates
+// of x in a column; trans = T, C, the products of a column, then
+// subtracted in the reference order.  The columns are solved one after the
+// other, as in the reference.
 
 #define Rtrsv Rtrsv_reference_cpu
 #include "../../../reference/Rtrsv.cpp"
 #undef Rtrsv
 
+#include <algorithm>
+#include <vector>
 #if defined(MPLAPACK_BUILD_WITH_DD) || defined(MPLAPACK_BUILD_WITH_TD) || defined(MPLAPACK_BUILD_WITH_QD)
 #include "../Rblas_simd_common.h"
 #endif
@@ -43,21 +47,50 @@ bool Rtrsv_omp(const char *uplo, const char *trans, const char *diag, INTEGER co
 {
 #ifdef MPLAPACK_BLAS_SIMD_AVAILABLE
     using namespace mplapack_blas;
-    const bool upper = Mlsame(uplo, "U"), nounit = Mlsame(diag, "N");
-    if (!Mlsame(trans, "N") || (!upper && !Mlsame(uplo, "L")) || (!nounit && !Mlsame(diag, "U")) || n <= 0 || lda < std::max((INTEGER)1, n) || incx != 1)
+    const bool upper = Mlsame(uplo, "U"), nounit = Mlsame(diag, "N"), notr = Mlsame(trans, "N");
+    if (!notr && !Mlsame(trans, "T") && !Mlsame(trans, "C"))
+        return false;
+    if ((!upper && !Mlsame(uplo, "L")) || (!nounit && !Mlsame(diag, "U")) || n <= 0 || lda < std::max((INTEGER)1, n) || incx != 1)
         return false;
     if (blas_env_long("MPLAPACK_BLAS_SIMD", 1) == 0 || (double)n * n < (double)blas_env_long("MPLAPACK_BLAS_OMP_MIN", 32768))
         return false;
     const REAL zero = 0.0;
-    for (long jj = 0; jj < n; jj++) {
-        const long j = upper ? n - 1 - jj : jj;
-        if (x[j] != zero) {
-            if (nounit)
-                x[j] = x[j] / a[j + j * lda];
-            const REAL temp = x[j];
-            const long r0 = upper ? 0 : j + 1, cnt = upper ? j : n - j - 1;
-            bk_axpy(cnt, x + r0, 1, temp, a + r0 + j * lda, 1, true); // x(i) = x(i) - temp*a(i,j)
+    if (notr) {
+        for (long jj = 0; jj < n; jj++) {
+            const long j = upper ? n - 1 - jj : jj;
+            const REAL *d = a + j + j * lda; // a(j, j)
+            const long r0 = upper ? 0 : j + 1;
+            const long cnt = upper ? j : (long)n - j - 1;
+            const REAL *col = a + r0 + j * lda; // a(r0, j)
+            if (x[j] != zero) {
+                if (nounit)
+                    x[j] = x[j] / *d;
+                const REAL temp = x[j];
+                bk_axpy(cnt, x + r0, 1, temp, col, 1, true); // x(i) = x(i) - temp*a(i,j)
+            }
         }
+        return true;
+    }
+    // x(j) = (x(j) - a(r0, j)*x(r0) - ...) / a(j, j): upper i ascending, lower
+    // i descending, as the reference
+    std::vector<REAL> p((size_t)n);
+    for (long jj = 0; jj < n; jj++) {
+        const long j = upper ? jj : n - 1 - jj;
+        const REAL *d = a + j + j * lda; // a(j, j)
+        const long r0 = upper ? 0 : j + 1;
+        const long cnt = upper ? j : (long)n - j - 1;
+        const REAL *col = a + r0 + j * lda; // a(r0, j)
+        bk_vmul(cnt, p.data(), col, x + r0);
+        REAL temp = x[j];
+        if (upper)
+            for (long t = 0; t < cnt; t++)
+                temp = temp - p[(size_t)t];
+        else
+            for (long t = cnt - 1; t >= 0; t--)
+                temp = temp - p[(size_t)t];
+        if (nounit)
+            temp = temp / *d;
+        x[j] = temp;
     }
     return true;
 #else

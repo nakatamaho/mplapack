@@ -26,8 +26,8 @@
  *
  */
 
-// Rtbsv of the optimized libraries: dd/td/qd solve with AVX2 loops for
-// trans = N and unit increment (Rtbsv_omp.cpp), with the reference result bit
+// Rtbsv of the optimized libraries: dd/td/qd solve with AVX2 loops for every
+// trans and unit increment (Rtbsv_omp.cpp), with the reference result bit
 // for bit; the others run the reference code.
 
 #include <mpblas.h>

@@ -117,6 +117,20 @@ namespace mplapack_blas {
             }                                                                                                              \
         }                                                                                                                  \
     }                                                                                                                      \
+    /* p(k) = a(k)*x(k) */                                                                                                             \
+    MPLAPACK_GEMM_CLONES static void bk_vmul_##T(long n, double *__restrict p, const double *__restrict a, const double *__restrict x) \
+    {                                                                                                                                  \
+        MPLAPACK_GEMM_SIMD                                                                                                             \
+        for (long k = 0; k < n; k++) {                                                                                                 \
+            MPLAPACK_BK_##T##_DECL(av);                                                                                                \
+            MPLAPACK_BK_##T##_DECL(xv);                                                                                                \
+            MPLAPACK_BK_##T##_DECL(r);                                                                                                 \
+            MPLAPACK_BK_##T##_LOAD(av, a + W * k);                                                                                     \
+            MPLAPACK_BK_##T##_LOAD(xv, x + W * k);                                                                                     \
+            MPLAPACK_BK_##T##_MUL(r, av, xv);                                                                                          \
+            MPLAPACK_BK_##T##_STORE(p + W * k, r);                                                                                     \
+        }                                                                                                                              \
+    }                                                                                                                                  \
     /* y = y + ((x1*t1) + (x2*t2)) */                                                                                      \
     MPLAPACK_GEMM_CLONES static void bk_axpy2_##T(long n, double *__restrict y, const double *__restrict x1, const double *t1, const double *__restrict x2, const double *t2) \
     {                                                                                                                      \
@@ -266,6 +280,13 @@ template <class T> void bk_axpy2(long n, T *y, long sy, const T *x1, long s1, co
         const T r = p + q;
         y[k * sy] = y[k * sy] + r;
     }
+}
+
+// p(k) = a(k)*x(k), unit strides
+template <class T> void bk_vmul(long n, T *p, const T *a, const T *x)
+{
+    if (n > 0)
+        MPLAPACK_BK_FN(bk_vmul_)(n, bk_w(p), bk_w(a), bk_w(x));
 }
 
 // y(k) = t*y(k)

@@ -36,6 +36,7 @@
  */
 
 #include <mpblas.h>
+#include <mplapack_arithmetic_params.h>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -85,6 +86,12 @@ void Chpr_reference_cpu(const char *uplo, INTEGER const n, REAL const alpha, COM
 void Chpr2_reference_cpu(const char *uplo, INTEGER const n, COMPLEX const alpha, COMPLEX *x, INTEGER const incx, COMPLEX *y, INTEGER const incy, COMPLEX *ap);
 void Ctbsv_reference_cpu(const char *uplo, const char *trans, const char *diag, INTEGER const n, INTEGER const k, COMPLEX *a, INTEGER const lda, COMPLEX *x, INTEGER const incx);
 void Ctpsv_reference_cpu(const char *uplo, const char *trans, const char *diag, INTEGER const n, COMPLEX *ap, COMPLEX *x, INTEGER const incx);
+
+COMPLEX Cdotu_reference_cpu(INTEGER const n, COMPLEX *zx, INTEGER const incx, COMPLEX *zy, INTEGER const incy);
+COMPLEX Cdotc_reference_cpu(INTEGER const n, COMPLEX *zx, INTEGER const incx, COMPLEX *zy, INTEGER const incy);
+REAL RCasum_reference_cpu(INTEGER const n, COMPLEX *zx, INTEGER const incx);
+REAL RCnrm2_reference_cpu(INTEGER const n, COMPLEX *x, INTEGER const incx);
+INTEGER iCamax_reference_cpu(INTEGER const n, COMPLEX *zx, INTEGER const incx);
 
 namespace {
 
@@ -424,6 +431,36 @@ int main()
             Claswp(n + 33, G.data(), rows + 1, k1, k2, ipiv.data(), incx);
             compare(tag("Claswp", {}, {m, n, incx}), R, G);
         }
+    }
+    // Level 1 reductions (Cdotu, Cdotc, RCasum, RCnrm2, iCamax)
+    {
+        const auto &ap = mplapack::get_arithmetic_params<REAL>();
+        const auto bp = mplapack::make_blue_scaling_params(ap);
+        for (long len : {1L, 5L, 12L, 23L, 97L, 1000L})
+            for (int kind = 0; kind < 3; kind++) {
+                std::vector<COMPLEX> X((size_t)len), Y((size_t)len);
+                fill(X), fill(Y);
+                if (kind == 1)
+                    for (long i = 0; i < len; i += 7)
+                        X[(size_t)i] = COMPLEX((i % 2 ? bp.tbig * REAL(4.0) : bp.tsml * REAL(0.25)) * X[(size_t)i].real(), X[(size_t)i].imag());
+                if (kind == 2)
+                    for (long i = 1; i < len; i += 3)
+                        X[(size_t)i] = COMPLEX(REAL(i % 2 ? 2.0 : -2.0), REAL(1.0));
+                std::vector<COMPLEX> R(1), G(1);
+                R[0] = Cdotu_reference_cpu(len, X.data(), 1, Y.data(), 1), G[0] = Cdotu(len, X.data(), 1, Y.data(), 1);
+                compare(tag("Cdotu", {}, {len, kind}), R, G);
+                R[0] = Cdotc_reference_cpu(len, X.data(), 1, Y.data(), 1), G[0] = Cdotc(len, X.data(), 1, Y.data(), 1);
+                compare(tag("Cdotc", {}, {len, kind}), R, G);
+                R[0] = COMPLEX(RCasum_reference_cpu(len, X.data(), 1), REAL(0.0)), G[0] = COMPLEX(RCasum(len, X.data(), 1), REAL(0.0));
+                compare(tag("RCasum", {}, {len, kind}), R, G);
+                R[0] = COMPLEX(RCnrm2_reference_cpu(len, X.data(), 1), REAL(0.0)), G[0] = COMPLEX(RCnrm2(len, X.data(), 1), REAL(0.0));
+                compare(tag("RCnrm2", {}, {len, kind}), R, G);
+                checks++;
+                if (iCamax_reference_cpu(len, X.data(), 1) != iCamax(len, X.data(), 1)) {
+                    failures++;
+                    std::printf("FAIL iCamax %ld %d\n", len, kind);
+                }
+            }
     }
 #ifdef RBLAS_TEST_GPU
     std::printf("complex BLAS (GPU): %ld checks, %ld failures, %ld zeros differing only in sign\n", checks, failures, zero_signs);

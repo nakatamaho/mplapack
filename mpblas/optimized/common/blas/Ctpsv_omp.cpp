@@ -27,17 +27,18 @@
  */
 
 // The reference Ctpsv (mpblas/reference/Ctpsv.cpp, unchanged) under the name
-// Ctpsv_reference_cpu, and Ctpsv_omp: for dd/td/qd, trans = N and incx = 1, the
-// loops of the reference with the updates of x vectorized (they touch
-// contiguous elements of the packed column); the columns are solved one after
-// the other, as in the reference, so the result is the reference one bit for
-// bit.
+// Ctpsv_reference_cpu, and Ctpsv_omp: for dd/td/qd and incx = 1 the loops of the
+// reference with AVX2 (misc/gen_blas_tri_solves.py): trans = N, the updates
+// of x in a packed column; trans = T, C, the products of a packed column, then
+// subtracted in the reference order.  The columns are solved one after the
+// other, as in the reference.
 
 #define Ctpsv Ctpsv_reference_cpu
 #include "../../../reference/Ctpsv.cpp"
 #undef Ctpsv
 
 #include <algorithm>
+#include <vector>
 #if defined(MPLAPACK_BUILD_WITH_DD) || defined(MPLAPACK_BUILD_WITH_TD) || defined(MPLAPACK_BUILD_WITH_QD)
 #include "../Cblas_simd_common.h"
 #endif
@@ -46,26 +47,55 @@ bool Ctpsv_omp(const char *uplo, const char *trans, const char *diag, INTEGER co
 {
 #ifdef MPLAPACK_CBLAS_SIMD_AVAILABLE
     using namespace mplapack_blas;
-    const bool upper = Mlsame(uplo, "U"), nounit = Mlsame(diag, "N");
-    if (!Mlsame(trans, "N") || (!upper && !Mlsame(uplo, "L")) || (!nounit && !Mlsame(diag, "U")) || n <= 0 || incx != 1)
+    const bool upper = Mlsame(uplo, "U"), nounit = Mlsame(diag, "N"), notr = Mlsame(trans, "N");
+    if (!notr && !Mlsame(trans, "T") && !Mlsame(trans, "C"))
+        return false;
+    if ((!upper && !Mlsame(uplo, "L")) || (!nounit && !Mlsame(diag, "U")) || n <= 0 || incx != 1)
         return false;
     if (blas_env_long("MPLAPACK_BLAS_SIMD", 1) == 0 || (double)n * n / 2 < (double)blas_env_long("MPLAPACK_BLAS_OMP_MIN", 32768))
         return false;
     const COMPLEX zero = COMPLEX(0.0, 0.0);
+    const bool noconj = Mlsame(trans, "T");
+    if (notr) {
+        for (long jj = 0; jj < n; jj++) {
+            const long j = upper ? n - 1 - jj : jj;
+        // column j of the packed triangle: upper from a(0, j), lower from a(j, j)
+                const long s = upper ? j * (j + 1) / 2 : j * (long)n - j * (j - 1) / 2;
+            const COMPLEX *d = upper ? ap + s + j : ap + s;
+            const long r0 = upper ? 0 : j + 1;
+            const long cnt = upper ? j : (long)n - j - 1;
+            const COMPLEX *col = upper ? ap + s : ap + s + 1;
+            if (x[j] != zero) {
+                if (nounit)
+                    x[j] = x[j] / *d;
+                const COMPLEX temp = x[j];
+                cbk_axpy(cnt, x + r0, 1, temp, col, 1, true); // x(i) = x(i) - temp*a(i,j)
+            }
+        }
+        return true;
+    }
+    // x(j) = (x(j) - a(r0, j)*x(r0) - ...) / a(j, j): upper i ascending, lower
+    // i descending, as the reference
+    std::vector<COMPLEX> p((size_t)n);
     for (long jj = 0; jj < n; jj++) {
-        const long j = upper ? n - 1 - jj : jj;
+        const long j = upper ? jj : n - 1 - jj;
         // column j of the packed triangle: upper from a(0, j), lower from a(j, j)
         const long s = upper ? j * (j + 1) / 2 : j * (long)n - j * (j - 1) / 2;
         const COMPLEX *d = upper ? ap + s + j : ap + s;
         const long r0 = upper ? 0 : j + 1;
         const long cnt = upper ? j : (long)n - j - 1;
         const COMPLEX *col = upper ? ap + s : ap + s + 1;
-        if (x[j] != zero) {
-            if (nounit)
-                x[j] = x[j] / *d;
-            const COMPLEX temp = x[j];
-            cbk_axpy(cnt, x + r0, 1, temp, col, 1, true); // x(i) = x(i) - temp*a(i,j)
-        }
+        cbk_vmul(cnt, p.data(), col, x + r0, !noconj);
+        COMPLEX temp = x[j];
+        if (upper)
+            for (long t = 0; t < cnt; t++)
+                temp = temp - p[(size_t)t];
+        else
+            for (long t = cnt - 1; t >= 0; t--)
+                temp = temp - p[(size_t)t];
+        if (nounit)
+            temp = noconj ? temp / *d : temp / conj(*d);
+        x[j] = temp;
     }
     return true;
 #else

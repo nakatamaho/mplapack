@@ -84,6 +84,34 @@ namespace mplapack_blas {
             MPLAPACK_BK_##T##_STORE(y + 2 * W * k + W, yi);                                                                \
         }                                                                                                                  \
     }                                                                                                                      \
+    /* p(k) = a(k)*x(k) (cj: conj(a(k))*x(k)), the product of qd3_complex */                                                                    \
+    MPLAPACK_GEMM_CLONES static void cbk_vmul_##T(long n, double *__restrict p, const double *__restrict a, const double *__restrict x, int cj) \
+    {                                                                                                                                           \
+        MPLAPACK_GEMM_SIMD                                                                                                                      \
+        for (long k = 0; k < n; k++) {                                                                                                          \
+            MPLAPACK_BK_##T##_DECL(ar);                                                                                                         \
+            MPLAPACK_BK_##T##_DECL(ai);                                                                                                         \
+            MPLAPACK_BK_##T##_DECL(xr);                                                                                                         \
+            MPLAPACK_BK_##T##_DECL(xi);                                                                                                         \
+            MPLAPACK_BK_##T##_DECL(u);                                                                                                          \
+            MPLAPACK_BK_##T##_DECL(v);                                                                                                          \
+            MPLAPACK_BK_##T##_LOAD(ar, a + 2 * W * k);                                                                                          \
+            MPLAPACK_BK_##T##_LOAD(ai, a + 2 * W * k + W);                                                                                      \
+            if (cj)                                                                                                                             \
+                MPLAPACK_BK_##T##_NEG(ai);                                                                                                      \
+            MPLAPACK_BK_##T##_LOAD(xr, x + 2 * W * k);                                                                                          \
+            MPLAPACK_BK_##T##_LOAD(xi, x + 2 * W * k + W);                                                                                      \
+            MPLAPACK_BK_##T##_MUL(u, ar, xr); /* re = ar*xr - ai*xi */                                                                          \
+            MPLAPACK_BK_##T##_MUL(v, ai, xi);                                                                                                   \
+            MPLAPACK_BK_##T##_NEG(v);                                                                                                           \
+            MPLAPACK_BK_##T##_ADD(u, u, v);                                                                                                     \
+            MPLAPACK_BK_##T##_STORE(p + 2 * W * k, u);                                                                                          \
+            MPLAPACK_BK_##T##_MUL(u, ar, xi); /* im = ar*xi + ai*xr */                                                                          \
+            MPLAPACK_BK_##T##_MUL(v, ai, xr);                                                                                                   \
+            MPLAPACK_BK_##T##_ADD(u, u, v);                                                                                                     \
+            MPLAPACK_BK_##T##_STORE(p + 2 * W * k + W, u);                                                                                      \
+        }                                                                                                                                       \
+    }                                                                                                                                           \
     /* y = t*y; complex t */                                                                                               \
     MPLAPACK_GEMM_CLONES static void cbk_scale_##T(long n, double *__restrict y, const double *t)                          \
     {                                                                                                                      \
@@ -150,6 +178,13 @@ template <class C> void cbk_axpy(long n, C *y, long sy, const C &t, const C *x, 
         else
             y[k * sy] += t * x[k * sx];
     }
+}
+
+// p(k) = a(k)*x(k) (cj: conj(a(k))*x(k)), unit strides
+template <class C> void cbk_vmul(long n, C *p, const C *a, const C *x, bool cj)
+{
+    if (n > 0)
+        MPLAPACK_BK_FN(cbk_vmul_)(n, bk_w(p), bk_w(a), bk_w(x), cj ? 1 : 0);
 }
 
 template <class C> void cbk_scale(long n, C *y, long sy, const C &t)

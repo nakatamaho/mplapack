@@ -27,14 +27,18 @@
  */
 
 // The reference Ctrsv (mpblas/reference/Ctrsv.cpp, unchanged) under the name
-// Ctrsv_reference_cpu, and Ctrsv_omp: for dd/td/qd, trans = N and incx = 1, the
-// loops of the reference with the updates of x vectorized; the columns are
-// solved one after the other, as in the reference.
+// Ctrsv_reference_cpu, and Ctrsv_omp: for dd/td/qd and incx = 1 the loops of the
+// reference with AVX2 (misc/gen_blas_tri_solves.py): trans = N, the updates
+// of x in a column; trans = T, C, the products of a column, then
+// subtracted in the reference order.  The columns are solved one after the
+// other, as in the reference.
 
 #define Ctrsv Ctrsv_reference_cpu
 #include "../../../reference/Ctrsv.cpp"
 #undef Ctrsv
 
+#include <algorithm>
+#include <vector>
 #if defined(MPLAPACK_BUILD_WITH_DD) || defined(MPLAPACK_BUILD_WITH_TD) || defined(MPLAPACK_BUILD_WITH_QD)
 #include "../Cblas_simd_common.h"
 #endif
@@ -43,21 +47,51 @@ bool Ctrsv_omp(const char *uplo, const char *trans, const char *diag, INTEGER co
 {
 #ifdef MPLAPACK_CBLAS_SIMD_AVAILABLE
     using namespace mplapack_blas;
-    const bool upper = Mlsame(uplo, "U"), nounit = Mlsame(diag, "N");
-    if (!Mlsame(trans, "N") || (!upper && !Mlsame(uplo, "L")) || (!nounit && !Mlsame(diag, "U")) || n <= 0 || lda < std::max((INTEGER)1, n) || incx != 1)
+    const bool upper = Mlsame(uplo, "U"), nounit = Mlsame(diag, "N"), notr = Mlsame(trans, "N");
+    if (!notr && !Mlsame(trans, "T") && !Mlsame(trans, "C"))
+        return false;
+    if ((!upper && !Mlsame(uplo, "L")) || (!nounit && !Mlsame(diag, "U")) || n <= 0 || lda < std::max((INTEGER)1, n) || incx != 1)
         return false;
     if (blas_env_long("MPLAPACK_BLAS_SIMD", 1) == 0 || (double)n * n < (double)blas_env_long("MPLAPACK_BLAS_OMP_MIN", 32768))
         return false;
     const COMPLEX zero = COMPLEX(0.0, 0.0);
-    for (long jj = 0; jj < n; jj++) {
-        const long j = upper ? n - 1 - jj : jj;
-        if (x[j] != zero) {
-            if (nounit)
-                x[j] = x[j] / a[j + j * lda];
-            const COMPLEX temp = x[j];
-            const long r0 = upper ? 0 : j + 1, cnt = upper ? j : n - j - 1;
-            cbk_axpy(cnt, x + r0, 1, temp, a + r0 + j * lda, 1, true); // x(i) = x(i) - temp*a(i,j)
+    const bool noconj = Mlsame(trans, "T");
+    if (notr) {
+        for (long jj = 0; jj < n; jj++) {
+            const long j = upper ? n - 1 - jj : jj;
+            const COMPLEX *d = a + j + j * lda; // a(j, j)
+            const long r0 = upper ? 0 : j + 1;
+            const long cnt = upper ? j : (long)n - j - 1;
+            const COMPLEX *col = a + r0 + j * lda; // a(r0, j)
+            if (x[j] != zero) {
+                if (nounit)
+                    x[j] = x[j] / *d;
+                const COMPLEX temp = x[j];
+                cbk_axpy(cnt, x + r0, 1, temp, col, 1, true); // x(i) = x(i) - temp*a(i,j)
+            }
         }
+        return true;
+    }
+    // x(j) = (x(j) - a(r0, j)*x(r0) - ...) / a(j, j): upper i ascending, lower
+    // i descending, as the reference
+    std::vector<COMPLEX> p((size_t)n);
+    for (long jj = 0; jj < n; jj++) {
+        const long j = upper ? jj : n - 1 - jj;
+        const COMPLEX *d = a + j + j * lda; // a(j, j)
+        const long r0 = upper ? 0 : j + 1;
+        const long cnt = upper ? j : (long)n - j - 1;
+        const COMPLEX *col = a + r0 + j * lda; // a(r0, j)
+        cbk_vmul(cnt, p.data(), col, x + r0, !noconj);
+        COMPLEX temp = x[j];
+        if (upper)
+            for (long t = 0; t < cnt; t++)
+                temp = temp - p[(size_t)t];
+        else
+            for (long t = cnt - 1; t >= 0; t--)
+                temp = temp - p[(size_t)t];
+        if (nounit)
+            temp = noconj ? temp / *d : temp / conj(*d);
+        x[j] = temp;
     }
     return true;
 #else
