@@ -76,6 +76,7 @@ void Rlaswp_reference_cpu(INTEGER const n, REAL *a, INTEGER const lda, INTEGER c
 void Rtrsv_reference_cpu(const char *uplo, const char *trans, const char *diag, INTEGER const n, REAL *a, INTEGER const lda, REAL *x, INTEGER const incx);
 
 REAL Rasum_reference_cpu(INTEGER const n, REAL *dx, INTEGER const incx);
+REAL Rdot_reference_cpu(INTEGER const n, REAL *dx, INTEGER const incx, REAL *dy, INTEGER const incy);
 REAL Rnrm2_reference_cpu(INTEGER const n, REAL *x, INTEGER const incx);
 INTEGER iRamax_reference_cpu(INTEGER const n, REAL *dx, INTEGER const incx);
 
@@ -383,7 +384,7 @@ int main()
             compare(tag("Rlaswp", {}, {m, n, incx}), R, G);
         }
     }
-    // Level 1 reductions (Rasum, Rnrm2, iRamax): also with values beyond the
+    // Level 1 reductions (Rdot, Rasum, Rnrm2, iRamax): also with values beyond the
     // scaling thresholds of Rnrm2 and with ties of the largest |x(i)|
     {
         const auto &ap = mplapack::get_arithmetic_params<REAL>();
@@ -399,6 +400,10 @@ int main()
                     for (long i = 1; i < len; i += 3)
                         X[(size_t)i] = REAL(i % 2 ? 2.0 : -2.0);
                 std::vector<REAL> R(1), G(1);
+                std::vector<REAL> Y2((size_t)len);
+                fill(Y2);
+                R[0] = Rdot_reference_cpu(len, X.data(), 1, Y2.data(), 1), G[0] = Rdot(len, X.data(), 1, Y2.data(), 1);
+                compare(tag("Rdot", {}, {len, kind}), R, G);
                 R[0] = Rasum_reference_cpu(len, X.data(), 1), G[0] = Rasum(len, X.data(), 1);
                 compare(tag("Rasum", {}, {len, kind}), R, G);
                 R[0] = Rnrm2_reference_cpu(len, X.data(), 1), G[0] = Rnrm2(len, X.data(), 1);

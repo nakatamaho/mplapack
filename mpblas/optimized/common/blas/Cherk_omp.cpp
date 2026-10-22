@@ -54,7 +54,7 @@ bool Cherk_omp(const char *uplo, const char *trans, INTEGER const n, INTEGER con
     if ((!ls(uplo, "U") && !ls(uplo, "L")) || (!notr && !ls(trans, "C")) || n <= 0 || k < 0 || lda < std::max((INTEGER)1, notr ? n : k) || ldc < std::max((INTEGER)1, n))
         return false;
 #ifdef MPLAPACK_CBLAS_SIMD_AVAILABLE
-    if (notr && cherk_simd<COMPLEX, REAL>(ls(uplo, "U"), n, k, alpha, a, lda, beta, c, ldc))
+    if (notr ? cherk_simd<COMPLEX, REAL>(ls(uplo, "U"), n, k, alpha, a, lda, beta, c, ldc) : cherk_c_simd<COMPLEX, REAL>(ls(uplo, "U"), n, k, alpha, a, lda, beta, c, ldc))
         return true;
 #endif
     return blas_split(2.0 * n * n * k, n, [&](long p0, long p1) { Cherk_columns(uplo, trans, n, k, alpha, a, lda, beta, c, ldc, p0, p1); });

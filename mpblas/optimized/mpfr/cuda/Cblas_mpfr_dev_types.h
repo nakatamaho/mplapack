@@ -237,8 +237,9 @@ template <int PB> MPLAPACK_DEV_HD mreal<PB> RCabs1(const mcomplex<PB> &z)
 
 template <int NL> struct mpfr_rt {}; // the tag of cgpu_types
 
-// the limb counts of the runtime-precision types (p <= 64 NL bits)
-#define MPLAPACK_MPFR_CUDA_RT_TIERS(X) X(2) X(4) X(8) X(16) X(32) X(64)
+// the limb counts of the runtime-precision types (p <= 64 NL bits, so up to
+// 16384 bits)
+#define MPLAPACK_MPFR_CUDA_RT_TIERS(X) X(2) X(4) X(8) X(16) X(32) X(64) X(128) X(256)
 
 // Defined in Cblas_mpfr_device_cuda.cu: sets the precision, then cgpu_run.
 template <class Job> int cgpu_run_rt(Job job, const mplapack_blas::gpu_operand<typename Job::E> *ops, int nops, long prec);

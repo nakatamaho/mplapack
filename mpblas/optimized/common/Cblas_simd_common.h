@@ -31,8 +31,11 @@
  * row-block forms of Rblas_simd_common.h for COMPLEX = qd3_complex<REAL>
  * (real part, then imaginary part; libQD3's complex multiplication
  * (ar*br - ai*bi, ar*bi + ai*br) and componentwise addition, on the words
- * of the branch-free arithmetic).  Covered: Cgemm with transa = N, Csyrk and
- * Cherk with trans = N, Ctrmm and Ctrsm with side L and transa = N or with
+ * of the branch-free arithmetic).  Covered: Cgemm (transa = T, C: over a
+ * transposed copy), Csyrk and
+ * Cherk (trans = N: columns; trans = T, C: over a transposed copy), Ctrmm and
+ * Ctrsm with side L (transa = N: columns; T, C: blocks of columns of a
+ * transposed copy) or with
  * side R, Cgemv with trans = N, Cgeru, Cgerc.  The loops are those of the
  * reference routines, so the results are the reference results bit for bit;
  * the other cases run the reference code in parallel (Rblas_split_common.h).
@@ -41,6 +44,7 @@
 #ifndef _MPLAPACK_CBLAS_SIMD_COMMON_H_
 #define _MPLAPACK_CBLAS_SIMD_COMMON_H_
 
+#include <vector>
 #include "Rblas_simd_common.h"
 
 #ifdef MPLAPACK_BK_TYPE
@@ -251,6 +255,35 @@ template <class C> bool cgemm_simd(bool notb, bool conjb, long m, long n, long k
     });
 }
 
+// ---- Cgemm, transa = T or C: column j of C, the dot products of the rows
+// accumulated at once over a transposed copy At of op(A) (m x k) ----
+template <class C> bool cgemm_t_simd(bool conja, bool notb, bool conjb, long m, long n, long k, const C &alpha, const C *a, long lda, const C *b, long ldb, const C &beta, C *c, long ldc)
+{
+    const C zero(0.0, 0.0);
+    if (alpha == zero) // the reference only scales
+        return false;
+    std::vector<C> At((size_t)(m * k));
+    for (long l = 0; l < k; l++)
+        for (long i = 0; i < m; i++)
+            At[(size_t)(i + l * m)] = conja ? conj(a[l + i * lda]) : a[l + i * lda];
+    return cbk_run(4.0 * m * n * k, n, [&](long u) {
+        const long j = u;
+        std::vector<C> tv((size_t)m, zero); // temp = zero
+        for (long l = 0; l < k; l++) {
+            // temp += op(a)(l,i)*op(b)(l,j)
+            const C t = notb ? b[l + j * ldb] : (conjb ? conj(b[j + l * ldb]) : b[j + l * ldb]);
+            cbk_axpy(m, tv.data(), 1, t, At.data() + l * m, 1, false);
+        }
+        for (long i = 0; i < m; i++) {
+            C &cij = c[i + j * ldc];
+            if (beta == zero)
+                cij = alpha * tv[(size_t)i];
+            else
+                cij = alpha * tv[(size_t)i] + beta * cij;
+        }
+    });
+}
+
 // ---- Csyrk / Cherk, trans = N: column j of the triangle of C ----
 template <class C> bool csyrk_simd(bool upper, long n, long k, const C &alpha, const C *a, long lda, const C &beta, C *c, long ldc)
 {
@@ -300,6 +333,105 @@ template <class C, class R> bool cherk_simd(bool upper, long n, long k, const R 
     });
 }
 
+// ---- Csyrk trans = T / Cherk trans = C: column j, the dot products of the
+// rows accumulated at once over a transposed copy At of A (Cherk: of
+// conj(A)), n x k with leading dimension n ----
+template <class C> bool csyrk_t_simd(bool upper, long n, long k, const C &alpha, const C *a, long lda, const C &beta, C *c, long ldc)
+{
+    const C zero(0.0, 0.0);
+    if (alpha == zero) // the reference only scales
+        return false;
+    std::vector<C> At((size_t)(n * k));
+    for (long l = 0; l < k; l++)
+        for (long i = 0; i < n; i++)
+            At[(size_t)(i + l * n)] = a[l + i * lda];
+    return cbk_run(4.0 * n * n * k, n, [&](long u) {
+        const long j = u, r0 = upper ? 0 : j, cnt = upper ? j + 1 : n - j;
+        std::vector<C> tv((size_t)cnt, zero); // temp = zero
+        for (long l = 0; l < k; l++)
+            cbk_axpy(cnt, tv.data(), 1, a[l + j * lda], At.data() + r0 + l * n, 1, false); // temp += a(l,i)*a(l,j)
+        for (long t = 0; t < cnt; t++) {
+            C &cij = c[(r0 + t) + j * ldc];
+            if (beta == zero)
+                cij = alpha * tv[(size_t)t];
+            else
+                cij = alpha * tv[(size_t)t] + beta * cij;
+        }
+    });
+}
+
+template <class C, class R> bool cherk_c_simd(bool upper, long n, long k, const R &alpha, const C *a, long lda, const R &beta, C *c, long ldc)
+{
+    const R zero = 0.0, one = 1.0;
+    if (alpha == zero || (k == 0 && beta == one)) // the reference only scales, or returns
+        return false;
+    std::vector<C> At((size_t)(n * k));
+    for (long l = 0; l < k; l++)
+        for (long i = 0; i < n; i++)
+            At[(size_t)(i + l * n)] = conj(a[l + i * lda]);
+    return cbk_run(4.0 * n * n * k, n, [&](long u) {
+        const long j = u, r0 = upper ? 0 : j + 1, cnt = upper ? j : n - j - 1; // off-diagonal rows
+        std::vector<C> tv((size_t)cnt, C(zero)); // temp = zero
+        for (long l = 0; l < k; l++)
+            cbk_axpy(cnt, tv.data(), 1, a[l + j * lda], At.data() + r0 + l * n, 1, false); // temp += conj(a(l,i))*a(l,j)
+        for (long t = 0; t < cnt; t++) {
+            C &cij = c[(r0 + t) + j * ldc];
+            if (beta == zero)
+                cij = alpha * tv[(size_t)t];
+            else
+                cij = alpha * tv[(size_t)t] + beta * cij;
+        }
+        R rtemp = zero;
+        for (long l = 0; l < k; l++)
+            rtemp += (conj(a[l + j * lda]) * a[l + j * lda]).real();
+        C &d = c[j + j * ldc];
+        if (beta == zero)
+            d = alpha * rtemp;
+        else
+            d = alpha * rtemp + beta * d.real();
+    });
+}
+
+// ---- Ctrmm / Ctrsm, side = L, transa = T or C: blocks of columns of B, the
+// rows processed one after the other as in the reference, each over the
+// columns of the block at once (Bt: the block transposed) ----
+template <class C> void ctrxm_lt_unit(bool solve, bool upper, bool noconj, bool nounit, long m, long n, const C &alpha, const C *a, long lda, C *b, long ldb, long u)
+{
+    const long j0 = u * cbk_rows, w = std::min(cbk_rows, n - j0);
+    std::vector<C> Bt((size_t)(w * m)), tv((size_t)w);
+    for (long i = 0; i < m; i++)
+        for (long t = 0; t < w; t++)
+            Bt[(size_t)(t + i * w)] = b[i + (j0 + t) * ldb];
+    for (long ii = 0; ii < m; ii++) {
+        const long i = (solve == upper) ? ii : m - 1 - ii;
+        C *row = Bt.data() + i * w;
+        for (long t = 0; t < w; t++)
+            tv[(size_t)t] = row[t];
+        const long k0 = upper ? 0 : i + 1, k1 = upper ? i : m;
+        if (solve) {
+            // temp = alpha*b(i,j); temp = temp - a(k,i)*b(k,j); temp = temp/a(i,i)
+            cbk_scale(w, tv.data(), 1, alpha);
+            for (long k = k0; k < k1; k++)
+                cbk_axpy(w, tv.data(), 1, noconj ? a[k + i * lda] : conj(a[k + i * lda]), Bt.data() + k * w, 1, true);
+            if (nounit)
+                for (long t = 0; t < w; t++)
+                    tv[(size_t)t] = noconj ? tv[(size_t)t] / a[i + i * lda] : tv[(size_t)t] / conj(a[i + i * lda]);
+        } else {
+            // temp = b(i,j); temp = temp*a(i,i); temp += a(k,i)*b(k,j); b(i,j) = alpha*temp
+            if (nounit)
+                cbk_scale(w, tv.data(), 1, noconj ? a[i + i * lda] : conj(a[i + i * lda]));
+            for (long k = k0; k < k1; k++)
+                cbk_axpy(w, tv.data(), 1, noconj ? a[k + i * lda] : conj(a[k + i * lda]), Bt.data() + k * w, 1, false);
+            cbk_scale(w, tv.data(), 1, alpha);
+        }
+        for (long t = 0; t < w; t++)
+            row[t] = tv[(size_t)t];
+    }
+    for (long i = 0; i < m; i++)
+        for (long t = 0; t < w; t++)
+            b[i + (j0 + t) * ldb] = Bt[(size_t)(t + i * w)];
+}
+
 // ---- Ctrmm / Ctrsm (B is b) ----
 template <class C> bool ctrxm_simd(bool solve, bool left, bool upper, bool notr, bool noconj, bool nounit, long m, long n, const C &alpha, const C *a, long lda, C *b, long ldb)
 {
@@ -308,7 +440,7 @@ template <class C> bool ctrxm_simd(bool solve, bool left, bool upper, bool notr,
         return false;
     if (left) {
         if (!notr)
-            return false;
+            return cbk_run(4.0 * m * m * n, (n + cbk_rows - 1) / cbk_rows, [&](long u) { ctrxm_lt_unit(solve, upper, noconj, nounit, m, n, alpha, a, lda, b, ldb, u); });
         return cbk_run(4.0 * m * m * n, n, [&](long u) { // column j
             const long j = u;
             C *bj = b + j * ldb;

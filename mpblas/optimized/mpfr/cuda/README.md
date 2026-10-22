@@ -104,7 +104,7 @@ nearest, never fused, and the device types perform the same call:
 - 256, 512, 768, 1024 and 2048 bits: `cu_freal<PB>` (`mpc_mul` is correctly
   rounded per component, as `cu_cmul`; divisions are `cu_mpc_div`); zeros
   the GPU computes are `+0`;
-- other precisions up to 4096 bits (or `MPLAPACK_MPFR_CUDA_FORCE_RUNTIME=1`):
+- other precisions up to 16384 bits (or `MPLAPACK_MPFR_CUDA_FORCE_RUNTIME=1`):
   `rreal`/`rcomplex`, the MPFR/MPC functions of libmpc_cuda themselves
   (`cu_mpfr_add`, `cu_mpc_mul`, `cu_mpc_div`, ...), signed zeros included.
 
@@ -117,7 +117,7 @@ Calls stay on the CPU (`../../common/blas/C*_omp.cpp`, then the reference)
 when:
 
 - the default precision (`mpfr_class`, both components of `mpc_class`) is
-  above 4096 bits, or not one of the fixed precisions with
+  above 16384 bits, or not one of the fixed precisions with
   `MPLAPACK_MPFR_CUDA_RUNTIME=0`;
 - an element of an operand or a scalar has another precision, is not finite,
   or has an exponent outside the bound that keeps every intermediate inside

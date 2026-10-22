@@ -15,6 +15,7 @@ Rcopy.cpp Rcopy_ref.cpp openmp/Rcopy_omp.cpp \
 Rdot.cpp  Rdot_ref.cpp  openmp/Rdot_omp.cpp \
 Rgemm.cpp Rgemm_ref.cpp openmp/Rgemm_NN_omp.cpp openmp/Rgemm_NT_omp.cpp openmp/Rgemm_TN_omp.cpp openmp/Rgemm_TT_omp.cpp \
 Raxpy.cpp Raxpy_ref.cpp openmp/Raxpy_omp.cpp \
+../common/blas/Rdot_par.cpp \
 ../common/blas/Rsyrk.cpp ../common/blas/Rsyrk_omp.cpp \
 ../common/blas/Rsyr2k.cpp ../common/blas/Rsyr2k_omp.cpp \
 ../common/blas/Rsymm.cpp ../common/blas/Rsymm_omp.cpp \

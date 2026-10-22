@@ -35,12 +35,16 @@ mpfr_class Rdot_omp(mplapackint n, mpfr_class * dx, mplapackint incx, mpfr_class
 
 #define SINGLEOROMP 1000
 
+
+// The reference result bit for bit: Rdot_par (../common/blas/Rdot_par.cpp,
+// the reference loop with its sums of five in parallel), else the reference.
+bool Rdot_par(mplapackint const n, mpfr_class *dx, mplapackint const incx, mpfr_class *dy, mplapackint const incy, mpfr_class &result);
+mpfr_class Rdot_reference_cpu(mplapackint const n, mpfr_class *dx, mplapackint const incx, mpfr_class *dy, mplapackint const incy);
+
 mpfr_class Rdot(mplapackint const n, mpfr_class *dx, mplapackint const incx, mpfr_class *dy, mplapackint const incy)
 {
-    mplapackint ix = 0;
-    mplapackint iy = 0;
-    mplapackint i;
-
-    if (0) { return Rdot_ref(n, dx, incx, dy, incy); }
-    else { return Rdot_omp(n, dx, incx, dy, incy); }
+    mpfr_class result;
+    if (Rdot_par(n, dx, incx, dy, incy, result))
+        return result;
+    return Rdot_reference_cpu(n, dx, incx, dy, incy);
 }

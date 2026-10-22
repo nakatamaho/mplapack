@@ -53,7 +53,7 @@ bool Cgemm_omp(const char *transa, const char *transb, INTEGER const m, INTEGER 
     if (lda < std::max((INTEGER)1, nota ? m : k) || ldb < std::max((INTEGER)1, notb ? k : n) || ldc < std::max((INTEGER)1, m))
         return false;
 #ifdef MPLAPACK_CBLAS_SIMD_AVAILABLE
-    if (nota && cgemm_simd<COMPLEX>(notb, ls(transb, "C"), m, n, k, alpha, a, lda, b, ldb, beta, c, ldc))
+    if (nota ? cgemm_simd<COMPLEX>(notb, ls(transb, "C"), m, n, k, alpha, a, lda, b, ldb, beta, c, ldc) : cgemm_t_simd<COMPLEX>(ls(transa, "C"), notb, ls(transb, "C"), m, n, k, alpha, a, lda, b, ldb, beta, c, ldc))
         return true;
 #endif
     const double work = 4.0 * m * n * k;

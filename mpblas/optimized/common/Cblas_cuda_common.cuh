@@ -63,11 +63,13 @@ namespace mplapack_blas_dev {
 using mplapack_blas::gpu_operand;
 
 #if MPLAPACK_CBLAS_CUDA_DEVICE
-template <class Job> __global__ void k_job(Job job, long units)
+// The job is read from device memory: its scalars may exceed the size of the
+// kernel parameters (MPFR runtime precision).
+template <class Job> __global__ void k_job(const Job *job, long units)
 {
     const long u = (long)blockIdx.x * blockDim.x + threadIdx.x;
     if (u < units)
-        job(u);
+        (*job)(u);
 }
 #endif
 
@@ -87,14 +89,21 @@ template <class E, class Job> int run_job(Job job, long units, const gpu_operand
             e = cudaMemcpy(buf[q], ops[q].host + ops[q].lo, ops[q].count * sizeof(E), cudaMemcpyHostToDevice);
         dev[q] = buf[q] - ops[q].lo;
     }
+    Job *djob = 0;
     if (e == cudaSuccess && units > 0) {
         job.bind(dev);
+        e = cudaMalloc(&djob, sizeof(Job));
+        if (e == cudaSuccess)
+            e = cudaMemcpy(djob, &job, sizeof(Job), cudaMemcpyHostToDevice);
         const int threads = 64;
-        k_job<Job><<<(unsigned)((units + threads - 1) / threads), threads>>>(job, units);
-        e = cudaGetLastError();
+        if (e == cudaSuccess)
+            k_job<Job><<<(unsigned)((units + threads - 1) / threads), threads>>>(djob, units);
+        if (e == cudaSuccess)
+            e = cudaGetLastError();
         if (e == cudaSuccess)
             e = cudaDeviceSynchronize();
     }
+    cudaFree(djob);
     for (int q = 0; q < nops && e == cudaSuccess; q++)
         if (ops[q].download && ops[q].count)
             e = cudaMemcpy(const_cast<E *>(ops[q].host) + ops[q].lo, buf[q], ops[q].count * sizeof(E), cudaMemcpyDeviceToHost);
