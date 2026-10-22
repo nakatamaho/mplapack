@@ -99,10 +99,17 @@ types on `cu_freal<PB>`, and every GPU thread runs the reference routine on
 one column, row or element of the output (the jobs of
 `../../common/Cblas_cuda_jobs_common.h`, shared with dd/td/qd). gmpfrxx_mkII
 evaluates each operator of the reference text as one MPFR/MPC call rounded to
-nearest (`mpc_mul` is correctly rounded per component, as `cu_cmul`), never
-fused, so the results are the reference ones bit for bit; zeros the GPU
-computes are `+0`, and elements the routine leaves unchanged keep their
-sign. The host side is `Cblas_mpfr_bridge_cuda.cpp` on
+nearest, never fused, and the device types perform the same call:
+
+- 256, 512, 768, 1024 and 2048 bits: `cu_freal<PB>` (`mpc_mul` is correctly
+  rounded per component, as `cu_cmul`; divisions are `cu_mpc_div`); zeros
+  the GPU computes are `+0`;
+- other precisions up to 4096 bits (or `MPLAPACK_MPFR_CUDA_FORCE_RUNTIME=1`):
+  `rreal`/`rcomplex`, the MPFR/MPC functions of libmpc_cuda themselves
+  (`cu_mpfr_add`, `cu_mpc_mul`, `cu_mpc_div`, ...), signed zeros included.
+
+So the results are the reference ones bit for bit, and elements the routine
+leaves unchanged keep their sign. The host side is `Cblas_mpfr_bridge_cuda.cpp` on
 `../../common/blas_cuda/Cblas_bridge_body.h`, with the dispatchers of
 `../../common/blas_cuda/C*.cpp`.
 
@@ -110,12 +117,14 @@ Calls stay on the CPU (`../../common/blas/C*_omp.cpp`, then the reference)
 when:
 
 - the default precision (`mpfr_class`, both components of `mpc_class`) is
-  not 256, 512, 768, 1024 or 2048 bits: there is no `cu_mpfr` engine for them;
+  above 4096 bits, or not one of the fixed precisions with
+  `MPLAPACK_MPFR_CUDA_RUNTIME=0`;
 - an element of an operand or a scalar has another precision, is not finite,
   or has an exponent outside the bound that keeps every intermediate inside
   the exponent range; a result is outside the range (`Ctrsm`: outside the
   bound, since its results are factors of later operations);
-- `Ctrsm` has diag = N: complex division is not computed on the GPU;
+- `Ctrsm` has diag = N and a zero diagonal element (the divisions of
+  `Ctrsm` are `mpc_div`, on the device libmpc_cuda's `cu_mpc_div`);
 - the same settings as for the real routines (`MPLAPACK_MPFR_CUDA`,
   `MPLAPACK_MPFR_CUDA_L3`, `MPLAPACK_MPFR_CUDA_L12`,
   `MPLAPACK_MPFR_CUDA_MIN_MNK`, rounding mode) exclude them.
@@ -204,9 +213,11 @@ through the dispatchers with every call, Level 1 and 2 included, on the GPU
 (`cu_mpfr` engine), and compare with the reference routines bit for bit.
 
 `mpfr_cuda_Cblas_{host,device}` run `../../common/test/Cblas_omp_test.cpp`
-the same way for the complex routines (`cu_freal` engine at the default
-precision, 512 bits; `MPFRXX_DEFAULT_PRECISION_BITS` selects another) and
-report the zeros that differ only in sign.
+the same way for the complex routines with the MPFR/MPC engine, and
+`mpfr_cuda_Cblas_{host,device}_fixed` with the `cu_freal` engine
+(`MPLAPACK_MPFR_CUDA_FORCE_RUNTIME=0`), counting the zeros that differ only
+in sign; the default precision is 512 bits (`MPFRXX_DEFAULT_PRECISION_BITS`
+selects another).
 
 `mpfr_cuda_Rgemm_winograd_{host,device}` check the Winograd path at
 256/512/768/1024/2048 bits with cutoffs 1, 2, 3 and 8: integer matrices (no rounding) must
@@ -223,7 +234,6 @@ default precision, which is not the caller's precision.
 
 - Accelerated: `Rgemm`, `Rsyrk`, `Rsyr2k`, `Rsymm`, `Rtrmm`, `Rtrsm`, the
   complex Level 3 routines and `Rgemmtr` (Level 1 and 2 on request).
-- Complex: fixed precisions only, no non-unit `Ctrsm`.
 - One thread per element of `C`, no shared-memory tiling yet.
 - The Winograd variant exists for the fixed precisions only (not for the
   `cu_mpfr` kernels) and allocates its temporaries with `cudaMalloc` at every level.

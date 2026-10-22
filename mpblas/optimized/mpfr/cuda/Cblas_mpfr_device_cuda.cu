@@ -30,7 +30,9 @@
  * Device code of the MPFR complex Level 1/2/3 BLAS (and Rgemmtr): the jobs
  * of ../../common/Cblas_cuda_jobs_common.h with the cu_freal device types of
  * Cblas_mpfr_dev_types.h, for the precisions of
- * MPLAPACK_MPFR_CUDA_FIXED_PRECISIONS.  Compile with -fmad=false.  With
+ * MPLAPACK_MPFR_CUDA_FIXED_PRECISIONS, and with the runtime-precision types
+ * (MPFR/MPC functions) for the limb counts of MPLAPACK_MPFR_CUDA_RT_TIERS.
+ * Compile with -fmad=false.  With
  * MPLAPACK_MPFR_CUDA_HOST_EMULATION the jobs run on the host.
  */
 
@@ -82,6 +84,68 @@ namespace mplapack_blas_dev {
     MPLAPACK_MPFR_CBLAS_JOB(Chpr2, PB)
 MPLAPACK_MPFR_CUDA_FIXED_PRECISIONS(MPLAPACK_MPFR_CBLAS_INSTANTIATE)
 #undef MPLAPACK_MPFR_CBLAS_INSTANTIATE
+
+// Runtime precision (mpfr_rt<NL>): the precision of the call is set before
+// the launch.
+long mplapack_mpfr_rt_prec_h = 0;
+#if MPLAPACK_CBLAS_CUDA_DEVICE
+__device__ long mplapack_mpfr_rt_prec_d = 0;
+#endif
+
+template <class Job> int cgpu_run_rt(Job job, const mplapack_blas::gpu_operand<typename Job::E> *ops, int nops, long prec)
+{
+    mplapack_mpfr_rt_prec_h = prec;
+#if MPLAPACK_CBLAS_CUDA_DEVICE
+    const cudaError_t e = cudaMemcpyToSymbol(mplapack_mpfr_rt_prec_d, &prec, sizeof prec);
+    if (e != cudaSuccess)
+        return (int)e;
+#endif
+    return cgpu_run(job, ops, nops);
+}
+
+#define MPLAPACK_MPFR_CBLAS_RT_JOB(R, NL) template int cgpu_run_rt<job_##R<mpfr_rt<NL> > >(job_##R<mpfr_rt<NL> >, const mplapack_blas::gpu_operand<job_##R<mpfr_rt<NL> >::E> *, int, long);
+#define MPLAPACK_MPFR_CBLAS_RT_INSTANTIATE(NL) \
+    MPLAPACK_MPFR_CBLAS_RT_JOB(Cgemm, NL) \
+    MPLAPACK_MPFR_CBLAS_RT_JOB(Csymm, NL) \
+    MPLAPACK_MPFR_CBLAS_RT_JOB(Chemm, NL) \
+    MPLAPACK_MPFR_CBLAS_RT_JOB(Ctrmm, NL) \
+    MPLAPACK_MPFR_CBLAS_RT_JOB(Ctrsm, NL) \
+    MPLAPACK_MPFR_CBLAS_RT_JOB(Cgemv, NL) \
+    MPLAPACK_MPFR_CBLAS_RT_JOB(Cgeru, NL) \
+    MPLAPACK_MPFR_CBLAS_RT_JOB(Cgerc, NL) \
+    MPLAPACK_MPFR_CBLAS_RT_JOB(Caxpy, NL) \
+    MPLAPACK_MPFR_CBLAS_RT_JOB(Ccopy, NL) \
+    MPLAPACK_MPFR_CBLAS_RT_JOB(Cswap, NL) \
+    MPLAPACK_MPFR_CBLAS_RT_JOB(CRrot, NL) \
+    MPLAPACK_MPFR_CBLAS_RT_JOB(Cscal, NL) \
+    MPLAPACK_MPFR_CBLAS_RT_JOB(CRscal, NL) \
+    MPLAPACK_MPFR_CBLAS_RT_JOB(Csyrk, NL) \
+    MPLAPACK_MPFR_CBLAS_RT_JOB(Cherk, NL) \
+    MPLAPACK_MPFR_CBLAS_RT_JOB(Csyr2k, NL) \
+    MPLAPACK_MPFR_CBLAS_RT_JOB(Cher2k, NL) \
+    MPLAPACK_MPFR_CBLAS_RT_JOB(Cgemmtr, NL) \
+    MPLAPACK_MPFR_CBLAS_RT_JOB(Rgemmtr, NL) \
+    MPLAPACK_MPFR_CBLAS_RT_JOB(Cher, NL) \
+    MPLAPACK_MPFR_CBLAS_RT_JOB(Cher2, NL) \
+    MPLAPACK_MPFR_CBLAS_RT_JOB(Chemv, NL) \
+    MPLAPACK_MPFR_CBLAS_RT_JOB(Chbmv, NL) \
+    MPLAPACK_MPFR_CBLAS_RT_JOB(Rsbmv, NL) \
+    MPLAPACK_MPFR_CBLAS_RT_JOB(Chpmv, NL) \
+    MPLAPACK_MPFR_CBLAS_RT_JOB(Rspmv, NL) \
+    MPLAPACK_MPFR_CBLAS_RT_JOB(Rgbmv, NL) \
+    MPLAPACK_MPFR_CBLAS_RT_JOB(Cgbmv, NL) \
+    MPLAPACK_MPFR_CBLAS_RT_JOB(Ctrmv, NL) \
+    MPLAPACK_MPFR_CBLAS_RT_JOB(Rtbmv, NL) \
+    MPLAPACK_MPFR_CBLAS_RT_JOB(Ctbmv, NL) \
+    MPLAPACK_MPFR_CBLAS_RT_JOB(Rtpmv, NL) \
+    MPLAPACK_MPFR_CBLAS_RT_JOB(Ctpmv, NL) \
+    MPLAPACK_MPFR_CBLAS_RT_JOB(Rspr, NL) \
+    MPLAPACK_MPFR_CBLAS_RT_JOB(Rspr2, NL) \
+    MPLAPACK_MPFR_CBLAS_RT_JOB(Chpr, NL) \
+    MPLAPACK_MPFR_CBLAS_RT_JOB(Chpr2, NL)
+MPLAPACK_MPFR_CUDA_RT_TIERS(MPLAPACK_MPFR_CBLAS_RT_INSTANTIATE)
+#undef MPLAPACK_MPFR_CBLAS_RT_INSTANTIATE
+#undef MPLAPACK_MPFR_CBLAS_RT_JOB
 #undef MPLAPACK_MPFR_CBLAS_JOB
 
 } // namespace mplapack_blas_dev

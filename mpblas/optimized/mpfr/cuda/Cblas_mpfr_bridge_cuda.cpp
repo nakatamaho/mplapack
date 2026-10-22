@@ -38,19 +38,21 @@
  *   - MPLAPACK_MPFR_CUDA=0 or MPLAPACK_MPFR_CUDA_L3=0; Level 1 and 2 unless
  *     MPLAPACK_MPFR_CUDA_L12=1; rounding mode other than MPFR_RNDN; fewer
  *     multiply-adds than MPLAPACK_MPFR_CUDA_MIN_MNK;
- *   - a default precision (mpfr_class, both components of mpc_class) other
- *     than one of 256/512/768/1024/2048 bits (cu_freal; there is no runtime
- *     precision engine for the complex routines);
+ *   - a default precision p (mpfr_class, both components of mpc_class) above
+ *     4096 bits.  p = 256/512/768/1024/2048 uses cu_freal (zeros are +0),
+ *     other precisions (or MPLAPACK_MPFR_CUDA_FORCE_RUNTIME=1) the MPFR/MPC
+ *     functions themselves (libmpc_cuda; MPLAPACK_MPFR_CUDA_RUNTIME=0 turns
+ *     them off), whose results are the reference ones signed zeros included;
  *   - an element of an operand (the whole rectangle the routine may read)
  *     or a scalar of another precision, not finite, or with an exponent
  *     outside the bound of mpfr_pack_cuda.h, in which no intermediate
  *     overflows or underflows; a result outside the exponent range (Ctrsm:
  *     outside the bound, as its results are factors of later operations);
- *   - Ctrsm with diag = "N" (complex division is not computed on the GPU).
+ *   - Ctrsm with diag = "N" and a zero diagonal element of A.
  *
- * The results equal the reference ones bit for bit, except that zeros the
- * GPU computes are +0.  Elements the routine does not change keep their
- * value and sign.
+ * The results equal the reference ones bit for bit (cu_freal: up to the
+ * sign of zeros).  Elements the routine does not change keep their value and
+ * sign.
  */
 
 #include <mpblas.h>
@@ -91,32 +93,100 @@ template <int PB> bool same(const real_t<PB> &a, const real_t<PB> &b)
     return true;
 }
 
-// The element-type side of Cblas_bridge_body.h for precision PB: operands
-// are packed into device elements with the layout (leading dimension) of
-// the host ones; the written ones are unpacked after the run.
-template <int PB> struct pack_ctx {
+// The two engines: cu_freal<PB> (fixed precision PB; zeros are +0) and the
+// MPFR/MPC functions at the runtime precision p (mpfr_rt<NL>, p <= 64 NL).
+template <int PB> struct fixed_engine {
+    typedef mpfr_fixed<PB> Tag;
     typedef mreal<PB> DR;
     typedef mcomplex<PB> DC;
+    long p;
+    explicit fixed_engine(long) : p(PB) {}
+    bool pack1(mpfr_srcptr x, DR &d, mpfr_exp_t bound) const { return pack<PB>(x, d.v, bound); }
+    void unpack1(const DR &d, mpfr_ptr x) const { unpack<PB>(d.v, x); }
+    bool same1(const DR &a, const DR &b) const { return same<PB>(a.v, b.v); }
+    bool zero1(const DR &d) const { return d.v.is_zero(); }
+    long exp1(const DR &d) const { return d.v.exp; }
+    template <class J> int run(const J &j, const gpu_operand<typename J::E> *ops, int nops) const { return mplapack_blas_dev::cgpu_run(j, ops, nops); }
+};
+
+template <int NL> struct rt_engine {
+    typedef mplapack_blas_dev::mpfr_rt<NL> Tag;
+    typedef mplapack_blas_dev::rreal<NL> DR;
+    typedef mplapack_blas_dev::rcomplex<NL> DC;
+    long p;
+    int nl;
+    explicit rt_engine(long prec) : p(prec), nl((int)((prec + 63) / 64)) {}
+    bool pack1(mpfr_srcptr x, DR &d, mpfr_exp_t bound) const
+    {
+        if (mpfr_get_prec(x) != p)
+            return false;
+        const int kind = mpfr_custom_get_kind(x);
+        d.kind = kind;
+        d.exp = 0;
+        if (kind == MPFR_ZERO_KIND || kind == -MPFR_ZERO_KIND)
+            return true;
+        if (kind != MPFR_REGULAR_KIND && kind != -MPFR_REGULAR_KIND)
+            return false;
+        const mpfr_exp_t e = mpfr_get_exp(x);
+        if (e > bound || e < -bound)
+            return false;
+        d.exp = (long)e;
+        const mp_limb_t *s = static_cast<const mp_limb_t *>(mpfr_custom_get_significand(x));
+        for (int t = 0; t < nl; t++)
+            d.m[t] = s[t];
+        return true;
+    }
+    void unpack1(const DR &d, mpfr_ptr x) const
+    {
+        mpfr_t v;
+        mpfr_custom_init_set(v, d.kind, (mpfr_exp_t)d.exp, (mpfr_prec_t)p, const_cast<mp_limb_t *>(reinterpret_cast<const mp_limb_t *>(d.m)));
+        mpfr_set(x, v, MPFR_RNDN); // exact: x has precision p
+    }
+    bool zero1(const DR &d) const { return d.kind == MPFR_ZERO_KIND || d.kind == -MPFR_ZERO_KIND; }
+    bool same1(const DR &a, const DR &b) const
+    {
+        if (a.kind != b.kind)
+            return false;
+        if (zero1(a))
+            return true;
+        if (a.exp != b.exp)
+            return false;
+        for (int t = 0; t < nl; t++)
+            if (a.m[t] != b.m[t])
+                return false;
+        return true;
+    }
+    long exp1(const DR &d) const { return d.exp; }
+    template <class J> int run(const J &j, const gpu_operand<typename J::E> *ops, int nops) const { return mplapack_blas_dev::cgpu_run_rt(j, ops, nops, p); }
+};
+
+// The element-type side of Cblas_bridge_body.h: operands are packed into
+// device elements with the layout (leading dimension) of the host ones; the
+// written ones are unpacked after the run.
+template <class Eng> struct pack_ctx {
+    typedef typename Eng::DR DR;
+    typedef typename Eng::DC DC;
     template <class E> struct held {
         std::vector<E> buf, orig;
         void *host;
         long ld, rows, cols;
         bool download;
     };
+    const Eng eng;
     std::deque<held<DC> > hc;
     std::deque<held<DR> > hr;
     bool ok;
     const mpfr_exp_t bound;
 
-    pack_ctx() : ok(true), bound(input_exponent_bound()) {}
+    explicit pack_ctx(long prec) : eng(prec), ok(true), bound(input_exponent_bound()) {}
 
     bool eligible(bool level3, double work) const
     {
-        return level_enabled(level3) && work >= (double)min_mnk() && mpfr_get_default_rounding_mode() == MPFR_RNDN && mpfrxx::default_mpc_real_precision_bits() == PB && mpfrxx::default_mpc_imag_precision_bits() == PB;
+        return level_enabled(level3) && work >= (double)min_mnk() && mpfr_get_default_rounding_mode() == MPFR_RNDN && mpfrxx::default_mpc_real_precision_bits() == eng.p && mpfrxx::default_mpc_imag_precision_bits() == eng.p;
     }
 
-    bool pk(const mpfr_class &s, DR &d) const { return pack<PB>(s.get_mpfr_t(), d.v, bound); }
-    bool pk(const mpc_class &s, DC &d) const { return pack<PB>(mpc_realref(s.mpc_data()), d.re_.v, bound) && pack<PB>(mpc_imagref(s.mpc_data()), d.im_.v, bound); }
+    bool pk(const mpfr_class &s, DR &d) const { return eng.pack1(s.get_mpfr_t(), d, bound); }
+    bool pk(const mpc_class &s, DC &d) const { return eng.pack1(mpc_realref(s.mpc_data()), d.re_, bound) && eng.pack1(mpc_imagref(s.mpc_data()), d.im_, bound); }
     void sc(DR &d, const mpfr_class &s) { ok = ok && pk(s, d); }
     void sc(DC &d, const mpc_class &s) { ok = ok && pk(s, d); }
 
@@ -147,23 +217,24 @@ template <int PB> struct pack_ctx {
     }
 
     // The result r of an element may be written back.
-    bool fits(const real_t<PB> &r, bool factor) const
+    bool fits1(const DR &r, bool factor) const
     {
-        if (r.is_zero())
+        if (eng.zero1(r))
             return true;
+        const long e = eng.exp1(r);
         if (factor)
-            return r.exp >= -bound && r.exp <= bound;
-        return r.exp >= mpfr_get_emin() && r.exp <= mpfr_get_emax();
+            return e >= -bound && e <= bound;
+        return e >= mpfr_get_emin() && e <= mpfr_get_emax();
     }
-    bool fits(const DR &r, bool factor) const { return fits(r.v, factor); }
-    bool fits(const DC &r, bool factor) const { return fits(r.re_.v, factor) && fits(r.im_.v, factor); }
-    static bool same_e(const DR &a, const DR &b) { return same<PB>(a.v, b.v); }
-    static bool same_e(const DC &a, const DC &b) { return same<PB>(a.re_.v, b.re_.v) && same<PB>(a.im_.v, b.im_.v); }
-    static void put(const DR &r, mpfr_class &x) { unpack<PB>(r.v, x.get_mpfr_t()); }
-    static void put(const DC &r, mpc_class &x)
+    bool fits(const DR &r, bool factor) const { return fits1(r, factor); }
+    bool fits(const DC &r, bool factor) const { return fits1(r.re_, factor) && fits1(r.im_, factor); }
+    bool same_e(const DR &a, const DR &b) const { return eng.same1(a, b); }
+    bool same_e(const DC &a, const DC &b) const { return eng.same1(a.re_, b.re_) && eng.same1(a.im_, b.im_); }
+    void put(const DR &r, mpfr_class &x) const { eng.unpack1(r, x.get_mpfr_t()); }
+    void put(const DC &r, mpc_class &x) const
     {
-        unpack<PB>(r.re_.v, mpc_realref(x.mpc_data()));
-        unpack<PB>(r.im_.v, mpc_imagref(x.mpc_data()));
+        eng.unpack1(r.re_, mpc_realref(x.mpc_data()));
+        eng.unpack1(r.im_, mpc_imagref(x.mpc_data()));
     }
 
     template <class E, class T> bool check(const std::deque<held<E> > &s, bool factor) const
@@ -202,7 +273,7 @@ template <int PB> struct pack_ctx {
     {
         if (!ok)
             return false;
-        const int rc = mplapack_blas_dev::cgpu_run(j, ops, nops);
+        const int rc = eng.run(j, ops, nops);
         if (rc != 0) {
             if (verbose())
                 std::fprintf(stderr, "mplapack mpfr cuda (complex BLAS): GPU error %d, computing on the CPU\n", rc);
@@ -215,31 +286,56 @@ template <int PB> struct pack_ctx {
         return true;
     }
     template <class J> bool run(const J &j, const gpu_operand<typename J::E> *ops, int nops) { return run_checked(j, ops, nops, false); }
-    bool run(const mplapack_blas_dev::job_Ctrsm<mpfr_fixed<PB> > &j, const gpu_operand<DC> *ops, int nops)
+    bool run(const mplapack_blas_dev::job_Ctrsm<typename Eng::Tag> &j, const gpu_operand<DC> *ops, int nops)
     {
-        if (mplapack_blas_dev::lsame(j.diag, "N"))
-            return false;
+        if (mplapack_blas_dev::lsame(j.diag, "N") && !hc.empty()) {
+            // the divisors a(k, k): a zero one gives Inf/NaN
+            const held<DC> &A = hc[0];
+            for (long k = 0; k < A.cols && k < A.rows; k++)
+                if (eng.zero1(A.buf[(size_t)(k + k * A.ld)].re_) && eng.zero1(A.buf[(size_t)(k + k * A.ld)].im_))
+                    return false;
+        }
         return run_checked(j, ops, nops, true);
     }
 };
 
 } // namespace
 
-#define MPLAPACK_MPFR_CBLAS_CASE(PB, F, ...) \
-    case PB: {                               \
-        pack_ctx<PB> ctx;                    \
-        return mplapack_cblas_gpu::F<mpfr_fixed<PB> >(ctx, __VA_ARGS__); \
+// The engine for the default precision p: cu_freal for the precisions of
+// MPLAPACK_MPFR_CUDA_FIXED_PRECISIONS (unless MPLAPACK_MPFR_CUDA_FORCE_RUNTIME=1),
+// otherwise the MPFR/MPC functions with the smallest limb count >= p/64
+// (p <= 4096; larger precisions stay on the CPU).
+#define MPLAPACK_MPFR_CBLAS_FIXED(PB, F, ...)                                     \
+    case PB: {                                                                    \
+        pack_ctx<fixed_engine<PB> > ctx(PB);                                      \
+        return mplapack_cblas_gpu::F<mpfr_fixed<PB> >(ctx, __VA_ARGS__);          \
     }
-#define MPLAPACK_MPFR_CBLAS_RUN(F, ...)                         \
-    ([&]() -> bool {                                            \
-        switch (mpfrxx::default_precision_bits()) {             \
-            MPLAPACK_MPFR_CBLAS_CASE(256, F, __VA_ARGS__)       \
-            MPLAPACK_MPFR_CBLAS_CASE(512, F, __VA_ARGS__)       \
-            MPLAPACK_MPFR_CBLAS_CASE(768, F, __VA_ARGS__)       \
-            MPLAPACK_MPFR_CBLAS_CASE(1024, F, __VA_ARGS__)      \
-            MPLAPACK_MPFR_CBLAS_CASE(2048, F, __VA_ARGS__)      \
-        default:                                                \
-            return false;                                       \
-        }                                                       \
+#define MPLAPACK_MPFR_CBLAS_RT(NL, F, ...)                                        \
+    if (p <= 64 * NL) {                                                           \
+        pack_ctx<rt_engine<NL> > ctx(p);                                          \
+        return mplapack_cblas_gpu::F<mplapack_blas_dev::mpfr_rt<NL> >(ctx, __VA_ARGS__); \
+    }
+#define MPLAPACK_MPFR_CBLAS_RUN(F, ...)                                           \
+    ([&]() -> bool {                                                              \
+        const long p = (long)mpfrxx::default_precision_bits();                    \
+        if (!force_runtime())                                                     \
+            switch (p) {                                                          \
+                MPLAPACK_MPFR_CBLAS_FIXED(256, F, __VA_ARGS__)                    \
+                MPLAPACK_MPFR_CBLAS_FIXED(512, F, __VA_ARGS__)                    \
+                MPLAPACK_MPFR_CBLAS_FIXED(768, F, __VA_ARGS__)                    \
+                MPLAPACK_MPFR_CBLAS_FIXED(1024, F, __VA_ARGS__)                   \
+                MPLAPACK_MPFR_CBLAS_FIXED(2048, F, __VA_ARGS__)                   \
+            default:                                                              \
+                break;                                                            \
+            }                                                                     \
+        if (!runtime_enabled())                                                   \
+            return false;                                                         \
+        MPLAPACK_MPFR_CBLAS_RT(2, F, __VA_ARGS__)                                 \
+        MPLAPACK_MPFR_CBLAS_RT(4, F, __VA_ARGS__)                                 \
+        MPLAPACK_MPFR_CBLAS_RT(8, F, __VA_ARGS__)                                 \
+        MPLAPACK_MPFR_CBLAS_RT(16, F, __VA_ARGS__)                                \
+        MPLAPACK_MPFR_CBLAS_RT(32, F, __VA_ARGS__)                                \
+        MPLAPACK_MPFR_CBLAS_RT(64, F, __VA_ARGS__)                                \
+        return false;                                                             \
     }())
 MPLAPACK_CBLAS_GPU_FUNCTIONS(MPLAPACK_MPFR_CBLAS_RUN)

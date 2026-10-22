@@ -46,7 +46,8 @@ static void rblas_test_gpu_setup()
 {
     setenv("MPLAPACK_MPFR_CUDA_MIN_MNK", "0", 1);
     setenv("MPLAPACK_MPFR_CUDA_L12", "1", 1);
-    setenv("MPLAPACK_MPFR_CUDA_FORCE_RUNTIME", "1", 1); // signed zeros as the reference
+    // signed zeros as the reference (the cu_freal engine: =0 in the environment)
+    setenv("MPLAPACK_MPFR_CUDA_FORCE_RUNTIME", "1", 0);
 }
 static bool rblas_test_have_gpu() { return mplapack_mpfr_cuda::device_count() > 0; }
 #else

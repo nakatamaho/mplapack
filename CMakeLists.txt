@@ -804,6 +804,10 @@ if(MPLAPACK_BUILD_TESTS)
       endif()
       add_test(NAME mpfr_cuda_Cblas_${_variant} COMMAND ${_cexe})
       set_tests_properties(mpfr_cuda_Cblas_${_variant} PROPERTIES SKIP_RETURN_CODE 77)
+      # the cu_freal engine (the test forces the runtime one otherwise)
+      add_test(NAME mpfr_cuda_Cblas_${_variant}_fixed COMMAND ${_cexe})
+      set_tests_properties(mpfr_cuda_Cblas_${_variant}_fixed PROPERTIES
+        SKIP_RETURN_CODE 77 ENVIRONMENT "MPLAPACK_MPFR_CUDA_FORCE_RUNTIME=0")
 
       add_test(NAME mpfr_cuda_blas3_${_variant} COMMAND ${_l3exe})
       add_test(NAME mpfr_cuda_blas3_${_variant}_runtime COMMAND ${_l3exe})
