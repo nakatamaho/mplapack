@@ -43,10 +43,19 @@
 #define _MPLAPACK_RBLAS_CALLS_COMMON_H_
 
 #include <algorithm>
+#include <cstdlib>
 #include <new>
 #include "Rblas_lanes_common.h"
 
 namespace mplapack_blas {
+
+inline long blas_env_long(const char *name, long dflt)
+{
+    const char *v = std::getenv(name);
+    if (v == NULL || *v == '\0')
+        return dflt;
+    return std::strtol(v, NULL, 10);
+}
 
 enum { REGION_ALL = 0, REGION_UPPER = 1, REGION_LOWER = 2, REGION_NODIAG = 4 };
 

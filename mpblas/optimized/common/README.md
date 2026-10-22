@@ -46,6 +46,7 @@ not elementwise.
 | `Rblas_lanes_common.h` | Level 1/2/3 BLAS as independent lanes (host and device) |
 | `Rblas_calls_common.h` | BLAS arguments to lane descriptions |
 | `Rblas_cpu_common.h` | OpenMP over the lanes, for every type |
+| `Rblas_simd_common.h` | dd/td/qd columns and row blocks with AVX2 loops (BF) |
 | `Rblas_cuda_common.cuh`, `Rblas_cuda_bridge_common.h` | the lanes on the GPU (dd, td, qd), host emulation, transfers |
 | `blas/R*.cpp`, `blas/R*_omp.cpp` | CPU dispatchers; the reference code renamed `R*_reference_cpu` and `R*_omp` |
 | `blas_cuda/R*.cpp`, `blas_cuda/Rblas_bridge_cuda.cpp` | dd/td/qd CUDA dispatchers and `R*_gpu` |
@@ -151,6 +152,16 @@ the result is the reference result bit for bit whatever the engine:
   arithmetic is that of the C++ type. For MPFR and GMP, the precision,
   rounding mode and exponent range of the calling thread are installed in
   every worker.
+- **CPU SIMD (dd, td, qd):** `Rblas_simd_common.h` runs a column of the
+  result (`Rsyrk`/`Rsyr2k` with trans = N, `Rsymm`/`Rtrmm`/`Rtrsm` with
+  side L, `Rger`, `Rsyr`, `Rsyr2`) or a block of 64 rows (`Rsymm`/`Rtrmm`/
+  `Rtrsm` with side R, `Rgemv` with trans = N, `Rscal`, `Rswap`, `Rrot`) per
+  unit of work, in the loop order of the reference, with the loops over the
+  rows vectorized (AVX2 + FMA and baseline variants, BF arithmetic on the
+  words), also on one thread. The other cases keep the lanes.
+  `MPLAPACK_BLAS_SIMD=0` turns this off. On 4 cores, dd `Rsyrk` and `Rtrsm`
+  with n = 400 run about 10 times faster than the reference (2.7 to 3.3
+  times on one core).
 - **GPU (dd, td, qd):** `blas_cuda/R*.cpp` sends eligible calls to the GPU
   (`R*_gpu`, one thread per lane) with the BF arithmetic of
   `Rgemm_qd_ops_common.h`, including libQD3's division (`accurate_div`), and
@@ -164,6 +175,7 @@ increments always run the reference code.
 | Variable | Meaning |
 |---|---|
 | `MPLAPACK_BLAS_OMP=0` | no OpenMP lanes |
+| `MPLAPACK_BLAS_SIMD=0` | dd/td/qd: lanes instead of the AVX2 columns/row blocks |
 | `MPLAPACK_BLAS_OMP_MIN=N` | smallest number of multiply-adds for OpenMP (32768; Level 1 needs 4N) |
 | `<P>_BLAS_CUDA=0` | dd/td/qd: no GPU |
 | `<P>_BLAS_CUDA_MIN=N` | smallest number of multiply-adds sent to the GPU (32768) |

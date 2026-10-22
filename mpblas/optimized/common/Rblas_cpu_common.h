@@ -37,6 +37,9 @@
  *   MPLAPACK_BLAS_OMP_MIN=N     smallest work (multiply-adds) run in parallel
  *                               (default 32768; Level 1: 4 * N)
  *
+ * dd/td/qd run the routines of Rblas_simd_common.h instead where it has
+ * them (AVX2, branch-free arithmetic; also on a single thread).
+ *
  * blas_cpu() returns false, and the caller then runs the reference code, for
  * small calls, OpenMP disabled or a single thread.
  */
@@ -51,19 +54,14 @@
 #endif
 #include "Rblas_lanes_common.h"
 #include "Rblas_calls_common.h"
+#if defined(MPLAPACK_BUILD_WITH_DD) || defined(MPLAPACK_BUILD_WITH_TD) || defined(MPLAPACK_BUILD_WITH_QD)
+#include "Rblas_simd_common.h"
+#endif
 #if defined(MPLAPACK_BUILD_WITH_MPFR)
 #include <mplapack_mpfr_precision.h>
 #endif
 
 namespace mplapack_blas {
-
-inline long blas_env_long(const char *name, long dflt)
-{
-    const char *v = std::getenv(name);
-    if (v == NULL || *v == '\0')
-        return dflt;
-    return std::strtol(v, NULL, 10);
-}
 
 template <class T> struct op_engine {
     typedef T V;
@@ -134,15 +132,25 @@ template <class T> typename op_engine<T>::M blas_cpu_mat(const blas_operand<T> &
 
 template <class T> bool blas_cpu(blas_call<T> &c)
 {
-#ifndef _OPENMP
-    (void)c;
-    return false;
-#else
-    if (blas_env_long("MPLAPACK_BLAS_OMP", 1) == 0 || omp_get_max_threads() < 2)
-        return false;
     const bool level1 = c.s.op >= L1_SCAL;
     const double min_work = (double)blas_env_long("MPLAPACK_BLAS_OMP_MIN", 32768) * (level1 ? 4 : 1);
     if (c.work < min_work)
+        return false;
+#ifdef _OPENMP
+    const bool omp = blas_env_long("MPLAPACK_BLAS_OMP", 1) != 0 && omp_get_max_threads() >= 2;
+#else
+    const bool omp = false;
+#endif
+#ifdef MPLAPACK_BLAS_SIMD_AVAILABLE
+    // dd/td/qd: columns and row blocks with AVX2 loops (also on one thread)
+    if (blas_simd_cpu(c, omp))
+        return true;
+#endif
+#ifndef _OPENMP
+    (void)omp;
+    return false;
+#else
+    if (!omp)
         return false;
     typedef op_engine<T> E;
     const long lanes = blas_lanes(c.s);
