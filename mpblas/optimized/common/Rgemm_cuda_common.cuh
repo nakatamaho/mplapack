@@ -27,8 +27,8 @@
  */
 
 /*
- * Rgemm on an NVIDIA GPU for double-double and quad-double, shared by
- * libmplapack_dd_opt_cuda and libmplapack_qd_opt_cuda.
+ * Rgemm on an NVIDIA GPU for double-double, triple-double and quad-double,
+ * shared by libmplapack_{dd,td,qd}_opt_cuda.
  *
  * Algorithms (gemm_cuda's `algo`):
  *   GPU_NAIVE     one thread per element of C, operands read from global memory

@@ -1,5 +1,5 @@
 #!/bin/sh
-# go.Rgemm_cuda.sh — CUDA benchmark runner for Rgemm (dd, qd, MPFR)
+# go.Rgemm_cuda.sh — CUDA benchmark runner for Rgemm (dd, td, qd, MPFR)
 # %%CPU_OS_DETECTION_SH%% and %%CC_TAG%% are replaced:
 #   - at "make" time   : builddir paths
 #   - at "make install": installed paths
@@ -90,6 +90,11 @@ run_variant winograd "MPLAPACK_DD_CUDA_WINOGRAD_CUTOFF=256"  Rgemm.dd_cuda_total
 run_variant ozaki    "MPLAPACK_DD_CUDA_OZAKI=1"              Rgemm.dd_cuda_total ${SIZES}
 run_variant legacy   "MPLAPACK_DD_CUDA_LEGACY=1"             Rgemm.dd_cuda_total ${SIZES}
 run_bench Rgemm.dd_cuda_kernel -NOCHECK -LOOPS 3
+
+run_variant tiled    ""                                     Rgemm.td_cuda_total ${QDSIZES}
+run_variant naive    "MPLAPACK_TD_CUDA_KERNEL=naive"         Rgemm.td_cuda_total ${QDSIZES}
+run_variant winograd "MPLAPACK_TD_CUDA_WINOGRAD_CUTOFF=128"  Rgemm.td_cuda_total ${QDSIZES}
+run_variant ozaki    "MPLAPACK_TD_CUDA_OZAKI=1"              Rgemm.td_cuda_total ${QDSIZES}
 
 run_variant tiled    ""                                     Rgemm.qd_cuda_total ${QDSIZES}
 run_variant naive    "MPLAPACK_QD_CUDA_KERNEL=naive"         Rgemm.qd_cuda_total ${QDSIZES}

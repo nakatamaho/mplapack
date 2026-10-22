@@ -111,6 +111,9 @@ endif
 if ENABLE_QD_CUDA
 include Makefile.qd_cuda.am
 endif
+if ENABLE_TD_CUDA
+include Makefile.td_cuda.am
+endif
 if ENABLE_MPFR_CUDA
 include Makefile.mpfr_cuda.am
 endif

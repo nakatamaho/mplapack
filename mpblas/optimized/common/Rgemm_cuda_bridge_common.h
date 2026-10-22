@@ -27,9 +27,9 @@
  */
 
 /*
- * Host side of the dd/qd CUDA Rgemm: decides whether a call runs on the GPU
+ * Host side of the dd/td/qd CUDA Rgemm: decides whether a call runs on the GPU
  * and with which algorithm, from environment variables read at every call
- * (<P> is MPLAPACK_DD or MPLAPACK_QD):
+ * (<P> is MPLAPACK_DD, MPLAPACK_TD or MPLAPACK_QD):
  *
  *   <P>_CUDA=0                    never use the GPU
  *   <P>_CUDA_MIN_MNK=N            smallest m*n*k sent to the GPU (32768)

@@ -37,6 +37,7 @@
  *   way.  libqd's default qd_real arithmetic (IEEE add) branches on the data
  *   and is not vectorized; this kernel is therefore an opt-in alternative
  *   whose result differs from the default one in the last bits.
+ * td_bf_kernel: the same for triple-double (td_real::bf_add, td_real::bf_mul).
  *
  * The block functions are compiled for several instruction sets
  * (Rgemm_simd_common.h); the operations, and hence the results, are the same
@@ -109,6 +110,35 @@ MPLAPACK_GEMM_CLONES static void qd_bf_block(bool axpy, long mc, long nc, long k
     }
 }
 
+MPLAPACK_GEMM_CLONES static void td_bf_block(bool axpy, long mc, long nc, long kc, double *acc, long as, const double *a, long ps, const double *b, long bs) {
+    for (long j = 0; j < nc; j++) {
+        double *__restrict c0 = acc + j * mc;
+        double *__restrict c1 = c0 + as;
+        double *__restrict c2 = c1 + as;
+        for (long l = 0; l < kc; l++) {
+            const double *__restrict a0 = a + l * mc;
+            const double *__restrict a1 = a0 + ps;
+            const double *__restrict a2 = a1 + ps;
+            const double b0 = b[l + j * kc], b1 = b[bs + l + j * kc], b2 = b[2 * bs + l + j * kc];
+            if (axpy) {
+                MPLAPACK_GEMM_SIMD
+                for (long i = 0; i < mc; i++) {
+                    double p0, p1, p2;
+                    td_bf_mul_w(b0, b1, b2, a0[i], a1[i], a2[i], p0, p1, p2);
+                    td_bf_add_w(c0[i], c1[i], c2[i], p0, p1, p2, c0[i], c1[i], c2[i]);
+                }
+            } else {
+                MPLAPACK_GEMM_SIMD
+                for (long i = 0; i < mc; i++) {
+                    double p0, p1, p2;
+                    td_bf_mul_w(a0[i], a1[i], a2[i], b0, b1, b2, p0, p1, p2);
+                    td_bf_add_w(c0[i], c1[i], c2[i], p0, p1, p2, c0[i], c1[i], c2[i]);
+                }
+            }
+        }
+    }
+}
+
 // T is dd_real (two doubles x[0], x[1]).
 template <class T> struct dd_simd_kernel {
     typedef T value_type;
@@ -133,6 +163,19 @@ template <class T> struct qd_bf_kernel {
     }
     static T unpack(const double *p, long stride, long e) { return T(p[e], p[stride + e], p[2 * stride + e], p[3 * stride + e]); }
     static void block(bool axpy, long mc, long nc, long kc, double *acc, long as, const double *a, long ps, const double *b, long bs) { qd_bf_block(axpy, mc, nc, kc, acc, as, a, ps, b, bs); }
+};
+
+// T is td_real (three doubles x[0..2]).
+template <class T> struct td_bf_kernel {
+    typedef T value_type;
+    static const int planes = 3;
+    static const long MC = 64, NC = 32, KC = 128;
+    static void pack(double *p, long stride, long e, const T &v) {
+        for (int q = 0; q < 3; q++)
+            p[q * stride + e] = v.x[q];
+    }
+    static T unpack(const double *p, long stride, long e) { return T(p[e], p[stride + e], p[2 * stride + e]); }
+    static void block(bool axpy, long mc, long nc, long kc, double *acc, long as, const double *a, long ps, const double *b, long bs) { td_bf_block(axpy, mc, nc, kc, acc, as, a, ps, b, bs); }
 };
 
 } // namespace mplapack_gemm

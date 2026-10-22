@@ -27,11 +27,11 @@
  */
 
 /*
- * CPU Rgemm driver shared by the dd, qd and binary128 optimized libraries:
+ * CPU Rgemm driver shared by the dd, td, qd and binary128 optimized libraries:
  * chooses between the conventional blocked engine (bit-identical to
  * openmp/Rgemm_*_omp.cpp), the Winograd variant of Strassen's algorithm and
  * the Ozaki scheme, from environment variables read at every call
- * (<P> is MPLAPACK_DD, MPLAPACK_QD or MPLAPACK_BINARY128):
+ * (<P> is MPLAPACK_DD, MPLAPACK_TD, MPLAPACK_QD or MPLAPACK_BINARY128):
  *
  *   <P>_GEMM_BLOCKED=0            use the plain OpenMP loops (Rgemm_*_omp)
  *   <P>_GEMM_MIN_MNK=N            smallest m*n*k for the blocked engine (32768)

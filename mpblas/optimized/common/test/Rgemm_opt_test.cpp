@@ -28,14 +28,15 @@
 
 /*
  * Test of the optimized CPU Rgemm of the dd, qd and binary128 libraries
- * (compile with -DRGEMM_TEST_DD, -DRGEMM_TEST_QD or -DRGEMM_TEST_BINARY128
- * and link with the corresponding libmplapack_<type>_opt):
+ * (compile with -DRGEMM_TEST_DD, -DRGEMM_TEST_TD, -DRGEMM_TEST_QD or
+ * -DRGEMM_TEST_BINARY128 and link with the corresponding
+ * libmplapack_<type>_opt):
  *
  *  - the blocked engine (and, for dd, its SIMD kernel) is bit-identical to
  *    the plain OpenMP loops openmp/Rgemm_{NN,NT,TN,TT}_omp.cpp, for all
  *    transpose combinations, odd sizes, leading dimensions larger than
  *    needed, alpha/beta in {general, 0, 1};
- *  - Winograd (cutoffs 1, 2, 3, 8), Ozaki and (qd) the branch-free kernel are
+ *  - Winograd (cutoffs 1, 2, 3, 8), Ozaki and (td, qd) the branch-free kernel are
  *    exact on small integer matrices and agree with the conventional result
  *    within 2^(20-p) (k |alpha| max|A| max|B| + |beta| max|C|) on random
  *    real matrices (p: precision in bits).
@@ -55,6 +56,13 @@ static const char *PREFIX = "MPLAPACK_DD";
 static const int PREC = 106;
 static double todbl(const T &x) { return x.x[0]; }
 static T absT(const T &x) { return abs(x); }
+#elif defined(RGEMM_TEST_TD)
+#include <mpblas_td.h>
+typedef td_real T;
+static const char *PREFIX = "MPLAPACK_TD";
+static const int PREC = 159;
+static double todbl(const T &x) { return x.x[0]; }
+static T absT(const T &x) { return abs(x); }
 #elif defined(RGEMM_TEST_QD)
 #include <mpblas_qd.h>
 typedef qd_real T;
@@ -70,7 +78,7 @@ static const int PREC = 113;
 static double todbl(const T &x) { return (double)x; }
 static T absT(const T &x) { return x < 0 ? -x : x; }
 #else
-#error "define RGEMM_TEST_DD, RGEMM_TEST_QD or RGEMM_TEST_BINARY128"
+#error "define RGEMM_TEST_DD, RGEMM_TEST_TD, RGEMM_TEST_QD or RGEMM_TEST_BINARY128"
 #endif
 
 void Rgemm_NN_omp(mplapackint m, mplapackint n, mplapackint k, T alpha, T *A, mplapackint lda, T *B, mplapackint ldb, T beta, T *C, mplapackint ldc);
@@ -107,7 +115,7 @@ static void reset_env() {
     setenv_s("_GEMM_WINOGRAD_CUTOFF", NULL);
     setenv_s("_GEMM_OZAKI", NULL);
     setenv_s("_GEMM_OZAKI_SLICES", NULL);
-    unsetenv("MPLAPACK_QD_GEMM_BF");
+    setenv_s("_GEMM_BF", NULL);
 }
 
 struct problem {
@@ -238,9 +246,9 @@ int main() {
         case 4: name = "ozaki"; setenv_s("_GEMM_OZAKI", "1"); break;
         case 5: name = "ozaki + winograd"; setenv_s("_GEMM_OZAKI", "1"); setenv_s("_GEMM_WINOGRAD_CUTOFF", "4"); break;
         case 6:
-#if defined(RGEMM_TEST_QD)
-            name = "qd branch-free";
-            setenv("MPLAPACK_QD_GEMM_BF", "1", 1);
+#if defined(RGEMM_TEST_QD) || defined(RGEMM_TEST_TD)
+            name = "branch-free";
+            setenv_s("_GEMM_BF", "1");
             break;
 #else
             continue;

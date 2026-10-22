@@ -27,7 +27,7 @@
  */
 
 /*
- * Element types, arithmetic and entry points of the dd/qd CUDA Rgemm
+ * Element types, arithmetic and entry points of the dd/td/qd CUDA Rgemm
  * (Rgemm_cuda_common.cuh), usable from host C++ code that does not include
  * the CUDA headers.
  */
@@ -81,6 +81,16 @@ struct qd_ops {
         r.x[1] = r.x[2] = r.x[3] = 0.0;
         return r;
     }
+};
+
+struct td_ops {
+    typedef td3 F;
+    static MPLAPACK_GEMM_HD F add(const F &a, const F &b) { return td_add(a, b); }
+    static MPLAPACK_GEMM_HD F mul(const F &a, const F &b) { return td_mul(a, b); }
+    // libqd's IEEE td subtraction is its own algorithm, not a + (-b)
+    static MPLAPACK_GEMM_HD F sub(const F &a, const F &b) { return td_sub(a, b); }
+    static MPLAPACK_GEMM_HD F add_d(const F &a, double b) { return td_add_d(a, b); }
+    static MPLAPACK_GEMM_HD F from_d(double d) { return td_make(d, 0.0, 0.0); }
 };
 
 // Scalars of a call; beta_zero / beta_one are computed on the host with the

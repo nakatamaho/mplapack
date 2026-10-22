@@ -27,8 +27,8 @@
  */
 
 /*
- * Test of the dd/qd CUDA Rgemm (compile with -DRGEMM_TEST_DD or
- * -DRGEMM_TEST_QD, together with <type>/cuda/Rgemm_bridge_cuda.cpp and
+ * Test of the dd/td/qd CUDA Rgemm (compile with -DRGEMM_TEST_DD,
+ * -DRGEMM_TEST_TD or -DRGEMM_TEST_QD, together with <type>/cuda/Rgemm_bridge_cuda.cpp and
  * <type>/cuda/Rgemm_gpu_cuda.cu, and link with libmplapack_<type>_opt).
  * Rgemm_gpu() is compared with the CPU Rgemm of libmplapack_<type>_opt:
  *
@@ -56,13 +56,18 @@
 typedef dd_real T;
 static const char *PREFIX = "MPLAPACK_DD";
 static const int PREC = 106;
+#elif defined(RGEMM_TEST_TD)
+#include <mpblas_td.h>
+typedef td_real T;
+static const char *PREFIX = "MPLAPACK_TD";
+static const int PREC = 159;
 #elif defined(RGEMM_TEST_QD)
 #include <mpblas_qd.h>
 typedef qd_real T;
 static const char *PREFIX = "MPLAPACK_QD";
 static const int PREC = 212;
 #else
-#error "define RGEMM_TEST_DD or RGEMM_TEST_QD"
+#error "define RGEMM_TEST_DD, RGEMM_TEST_TD or RGEMM_TEST_QD"
 #endif
 
 bool Rgemm_gpu(bool nota, bool notb, mplapackint m, mplapackint n, mplapackint k, T alpha, T *A, mplapackint lda, T *B, mplapackint ldb, T beta, T *C, mplapackint ldc);
@@ -263,6 +268,8 @@ int main() {
 // the GPU code of the library, run on the host
 #if defined(RGEMM_TEST_DD)
 #include "../../dd/cuda/Rgemm_gpu_cuda.cu"
+#elif defined(RGEMM_TEST_TD)
+#include "../../td/cuda/Rgemm_gpu_cuda.cu"
 #else
 #include "../../qd/cuda/Rgemm_gpu_cuda.cu"
 #endif

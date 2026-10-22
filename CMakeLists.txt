@@ -93,6 +93,7 @@ option(MPLAPACK_ENABLE_OPT       "Build optimized libraries"                ON)
 option(MPLAPACK_ENABLE_CUDA      "Build the DD CUDA accelerator library"    OFF)
 option(MPLAPACK_ENABLE_MPFR_CUDA "Build the MPFR CUDA accelerator library (Rgemm on the GPU)" OFF)
 option(MPLAPACK_ENABLE_QD_CUDA   "Build the QD CUDA accelerator library (Rgemm on the GPU)" OFF)
+option(MPLAPACK_ENABLE_TD_CUDA   "Build the TD CUDA accelerator library (Rgemm on the GPU)" OFF)
 set(MPLAPACK_MPC_CUDA_INCLUDE_DIR "" CACHE PATH
     "Include directory of an installed mpc_cuda (contains mpc_cuda.cuh); empty: build external/mpc_cuda")
 set(MPLAPACK_MPC_CUDA_LIBRARY "" CACHE FILEPATH
@@ -183,6 +184,9 @@ endif()
 if(MPLAPACK_ENABLE_QD_CUDA AND NOT MPLAPACK_ENABLE_QD)
   message(FATAL_ERROR "MPLAPACK_ENABLE_QD_CUDA requires MPLAPACK_ENABLE_QD=ON")
 endif()
+if(MPLAPACK_ENABLE_TD_CUDA AND NOT MPLAPACK_ENABLE_TD)
+  message(FATAL_ERROR "MPLAPACK_ENABLE_TD_CUDA requires MPLAPACK_ENABLE_TD=ON")
+endif()
 if(MPLAPACK_ENABLE_MPFR_CUDA AND NOT (MPLAPACK_ENABLE_MPFR AND MPLAPACK_ENABLE_OPT))
   message(FATAL_ERROR
     "MPLAPACK_ENABLE_MPFR_CUDA requires MPLAPACK_ENABLE_MPFR=ON and MPLAPACK_ENABLE_OPT=ON")
@@ -218,7 +222,7 @@ if(MPLAPACK_ENABLE_MPFR_CUDA)
     file(MAKE_DIRECTORY "${MPLAPACK_MPC_CUDA_INCLUDE_DIR}")
   endif()
 endif()
-if(MPLAPACK_ENABLE_CUDA OR MPLAPACK_ENABLE_QD_CUDA OR MPLAPACK_ENABLE_MPFR_CUDA)
+if(MPLAPACK_ENABLE_CUDA OR MPLAPACK_ENABLE_QD_CUDA OR MPLAPACK_ENABLE_TD_CUDA OR MPLAPACK_ENABLE_MPFR_CUDA)
   find_package(CUDAToolkit REQUIRED)
   set(CMAKE_CUDA_ARCHITECTURES "${MPLAPACK_CUDA_ARCHITECTURES}")
   if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
@@ -345,23 +349,26 @@ if(MPLAPACK_ENABLE_CUDA)
   list(APPEND MPLAPACK_INSTALL_TARGETS mplapack_dd_opt_cuda)
 endif()
 
-if(MPLAPACK_ENABLE_QD_CUDA)
-  # cuda/Rgemm.cpp shadows optimized/qd/Rgemm.cpp; the *_cuda files are helpers.
-  set(_mplapack_qd_cuda_dir "${CMAKE_CURRENT_SOURCE_DIR}/mpblas/optimized/qd/cuda")
-  mplapack_add_accelerator_backend(qd cuda
-    "${_mplapack_qd_cuda_dir}/Rgemm.cpp"
-    "${_mplapack_qd_cuda_dir}/Rgemm_bridge_cuda.cpp"
-    "${_mplapack_qd_cuda_dir}/Rgemm_gpu_cuda.cu")
-  target_link_libraries(mplapack_qd_opt_cuda PUBLIC QD::QD CUDA::cudart CUDA::cublas)
-  mplapack_configure_dd_arithmetic(mplapack_qd_opt_cuda)
-  target_compile_options(mplapack_qd_opt_cuda PRIVATE "$<$<COMPILE_LANGUAGE:CUDA>:-fmad=false>")
-  set_target_properties(mplapack_qd_opt_cuda PROPERTIES
+# qd and td CUDA libraries: Rgemm of mpblas/optimized/common on the GPU.
+foreach(_b qd td)
+  string(TOUPPER "${_b}" _B)
+  if(NOT MPLAPACK_ENABLE_${_B}_CUDA)
+    continue()
+  endif()
+  # cuda/Rgemm.cpp shadows optimized/<b>/Rgemm.cpp; the *_cuda files are helpers.
+  set(_dir "${CMAKE_CURRENT_SOURCE_DIR}/mpblas/optimized/${_b}/cuda")
+  mplapack_add_accelerator_backend(${_b} cuda
+    "${_dir}/Rgemm.cpp" "${_dir}/Rgemm_bridge_cuda.cpp" "${_dir}/Rgemm_gpu_cuda.cu")
+  target_link_libraries(mplapack_${_b}_opt_cuda PUBLIC QD::QD CUDA::cudart CUDA::cublas)
+  mplapack_configure_dd_arithmetic(mplapack_${_b}_opt_cuda)
+  target_compile_options(mplapack_${_b}_opt_cuda PRIVATE "$<$<COMPILE_LANGUAGE:CUDA>:-fmad=false>")
+  set_target_properties(mplapack_${_b}_opt_cuda PROPERTIES
     CUDA_ARCHITECTURES "${MPLAPACK_CUDA_ARCHITECTURES}"
     CUDA_STANDARD 17
     CUDA_STANDARD_REQUIRED ON)
-  mplapack_add_unique_symbol_post_build(mplapack_qd_opt_cuda)
-  list(APPEND MPLAPACK_INSTALL_TARGETS mplapack_qd_opt_cuda)
-endif()
+  mplapack_add_unique_symbol_post_build(mplapack_${_b}_opt_cuda)
+  list(APPEND MPLAPACK_INSTALL_TARGETS mplapack_${_b}_opt_cuda)
+endforeach()
 
 if(_mplapack_mpc_cuda_bundled)
   include(ExternalProject)
@@ -470,7 +477,7 @@ if(MPLAPACK_BUILD_TESTS)
                 "$<TARGET_FILE:mplapack_${b}_opt>")
     endif()
   endforeach()
-  foreach(accelerator dd_opt_cuda qd_opt_cuda mpfr_opt_cuda binary128_opt_opencl)
+  foreach(accelerator dd_opt_cuda qd_opt_cuda td_opt_cuda mpfr_opt_cuda binary128_opt_opencl)
     if(TARGET mplapack_${accelerator})
       add_test(NAME unique_symbols_${accelerator}
         COMMAND ${MPLAPACK_CHECK_UNIQUE_SYMBOLS_ENV}
@@ -487,11 +494,11 @@ if(MPLAPACK_BUILD_TESTS)
   include(MplapackReferenceLapack)
   find_library(MPLAPACK_GFORTRAN_LIBRARY NAMES gfortran)
   add_subdirectory(mpblas/test)
-  # Optimized CPU Rgemm of dd/qd/binary128: the blocked engine bit-identical
-  # to the OpenMP loops; Winograd, Ozaki (and the branch-free qd kernel)
+  # Optimized CPU Rgemm of dd/td/qd/binary128: the blocked engine bit-identical
+  # to the OpenMP loops; Winograd, Ozaki (and the branch-free td/qd kernels)
   # exact on integers and bounded on reals.
   set(_mplapack_opt_common "${CMAKE_CURRENT_SOURCE_DIR}/mpblas/optimized/common")
-  foreach(b dd qd binary128)
+  foreach(b dd td qd binary128)
     if(TARGET mplapack_${b}_opt)
       string(TOUPPER "${b}" _B)
       add_executable(${b}_opt_Rgemm_test "${_mplapack_opt_common}/test/Rgemm_opt_test.cpp")
@@ -500,10 +507,10 @@ if(MPLAPACK_BUILD_TESTS)
       add_test(NAME ${b}_opt_Rgemm COMMAND ${b}_opt_Rgemm_test)
     endif()
   endforeach()
-  # dd/qd CUDA Rgemm.  The host variant runs the GPU code on the host and
+  # dd/td/qd CUDA Rgemm.  The host variant runs the GPU code on the host and
   # needs neither CUDA nor a GPU; the device variant is skipped (77) without
   # a device.
-  foreach(b dd qd)
+  foreach(b dd td qd)
     if(TARGET mplapack_${b}_opt)
       string(TOUPPER "${b}" _B)
       set(_exe ${b}_cuda_Rgemm_host_test)

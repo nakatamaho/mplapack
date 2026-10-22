@@ -27,8 +27,8 @@
  */
 
 /*
- * Ozaki scheme for Rgemm (dd, qd and binary128 on the CPU; the splitting is
- * shared with the CUDA dd/qd implementation).
+ * Ozaki scheme for Rgemm (dd, td, qd and binary128 on the CPU; the splitting is
+ * shared with the CUDA dd/td/qd implementation).
  *
  * Every row i of op(A) is scaled by 2^-e_i and every column j of op(B) by
  * 2^-f_j so that all scaled entries are below 1 in magnitude; the scaled

@@ -481,6 +481,8 @@ AM_CONDITIONAL(ENABLE_CUDA, test x$enable_cuda = xyes)
 
 AC_ARG_ENABLE(qd-cuda,
 AS_HELP_STRING([--enable-qd-cuda], [Build libmplapack_qd_opt_cuda: QD Rgemm on CUDA]))
+AC_ARG_ENABLE(td-cuda,
+AS_HELP_STRING([--enable-td-cuda], [Build libmplapack_td_opt_cuda: TD Rgemm on CUDA]))
 
 AC_ARG_ENABLE(mpfr-cuda,
 AS_HELP_STRING([--enable-mpfr-cuda], [Build libmplapack_mpfr_opt_cuda: MPFR Rgemm on CUDA (needs mpc_cuda)]))
@@ -520,7 +522,7 @@ NVCC="$CUDATOOLKITHOME/bin/nvcc"
 
 IS_CUDA_VERSION_MAJOR_3="FALSE"
 dnl we should write check part for CUDA toolkit
-if test x$enable_cuda = x"yes" || test x$enable_qd_cuda = x"yes"; then
+if test x$enable_cuda = x"yes" || test x$enable_qd_cuda = x"yes" || test x$enable_td_cuda = x"yes"; then
 CUDA_VERSION=`"$NVCC" --version | grep "Cuda compilation tools"  | awk '{print $5}' | sed 's/,//g'`
 CUDA_VERSION_MAJOR=`"$NVCC" --version | grep "Cuda compilation tools"  | awk '{print $5}' | sed 's/,//g' | sed 's/\..$//g'`
 AC_MSG_RESULT([CUDA version is $CUDA_VERSION])
@@ -806,6 +808,10 @@ AS_HELP_STRING([--enable-td], [Enable TD (triple-double) version]),
     *) AC_MSG_ERROR(bad value ${enableval} for --enable-td) ;;
         esac],[enable_td=no])
 AM_CONDITIONAL(ENABLE_TD, test x$enable_td = xyes)
+if test x$enable_td_cuda = xyes && test x$enable_td != xyes; then
+  AC_MSG_ERROR([--enable-td-cuda requires --enable-td])
+fi
+AM_CONDITIONAL(ENABLE_TD_CUDA, test x$enable_td_cuda = xyes)
 
 dnl enable double
 AC_ARG_ENABLE(double,
@@ -3163,6 +3169,7 @@ mpblas/optimized/qd/Makefile
 mpblas/optimized/dd/Makefile
 mpblas/optimized/dd/cuda/Makefile
 mpblas/optimized/qd/cuda/Makefile
+mpblas/optimized/td/cuda/Makefile
 mpblas/optimized/mpfr/cuda/Makefile
 external/mpc_cuda/Makefile
 mpblas/optimized/td/Makefile

@@ -53,7 +53,7 @@ endforeach()
 
 # CUDA libraries: <op>.<backend>_cuda_total (host-to-host timings, Rgemm on
 # the GPU; algorithms chosen at run time, see go.Rgemm_cuda.sh.in).
-foreach(_b dd qd mpfr)
+foreach(_b dd td qd mpfr)
   if(NOT TARGET mplapack_${_b}_opt_cuda)
     continue()
   endif()

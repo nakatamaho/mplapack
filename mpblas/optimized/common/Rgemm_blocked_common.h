@@ -27,7 +27,7 @@
  */
 
 /*
- * Cache-blocked, OpenMP-parallel Rgemm engine shared by the dd, qd and
+ * Cache-blocked, OpenMP-parallel Rgemm engine shared by the dd, td, qd and
  * binary128 optimized libraries.
  *
  * The engine performs, for every element of C, exactly the operations of
