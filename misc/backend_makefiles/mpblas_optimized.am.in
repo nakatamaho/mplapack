@@ -65,9 +65,9 @@ Raxpy.cpp Raxpy_ref.cpp openmp/Raxpy_omp.cpp \
 ../common/blas/Chpr2.cpp ../common/blas/Chpr2_omp.cpp \
 ../../reference/Crotg.cpp \
 ../common/blas/Ctbmv.cpp ../common/blas/Ctbmv_omp.cpp \
-../../reference/Ctbsv.cpp \
+../common/blas/Ctbsv.cpp ../common/blas/Ctbsv_omp.cpp \
 ../common/blas/Ctpmv.cpp ../common/blas/Ctpmv_omp.cpp \
-../../reference/Ctpsv.cpp \
+../common/blas/Ctpsv.cpp ../common/blas/Ctpsv_omp.cpp \
 ../common/blas/Ctrmv.cpp ../common/blas/Ctrmv_omp.cpp \
 ../../reference/Mlsame.cpp \
 ../../reference/Mxerbla.cpp \
@@ -85,9 +85,9 @@ Raxpy.cpp Raxpy_ref.cpp openmp/Raxpy_omp.cpp \
 ../common/blas/Rspr.cpp ../common/blas/Rspr_omp.cpp \
 ../common/blas/Rspr2.cpp ../common/blas/Rspr2_omp.cpp \
 ../common/blas/Rtbmv.cpp ../common/blas/Rtbmv_omp.cpp \
-../../reference/Rtbsv.cpp \
+../common/blas/Rtbsv.cpp ../common/blas/Rtbsv_omp.cpp \
 ../common/blas/Rtpmv.cpp ../common/blas/Rtpmv_omp.cpp \
-../../reference/Rtpsv.cpp \
+../common/blas/Rtpsv.cpp ../common/blas/Rtpsv_omp.cpp \
 ../../reference/iCamax.cpp \
 ../../reference/iRamax.cpp \
 ../../reference/mplapackinit.cpp \

@@ -83,6 +83,8 @@ void Ctbmv_reference_cpu(const char *uplo, const char *trans, const char *diag, 
 void Ctpmv_reference_cpu(const char *uplo, const char *trans, const char *diag, INTEGER const n, COMPLEX *ap, COMPLEX *x, INTEGER const incx);
 void Chpr_reference_cpu(const char *uplo, INTEGER const n, REAL const alpha, COMPLEX *x, INTEGER const incx, COMPLEX *ap);
 void Chpr2_reference_cpu(const char *uplo, INTEGER const n, COMPLEX const alpha, COMPLEX *x, INTEGER const incx, COMPLEX *y, INTEGER const incy, COMPLEX *ap);
+void Ctbsv_reference_cpu(const char *uplo, const char *trans, const char *diag, INTEGER const n, INTEGER const k, COMPLEX *a, INTEGER const lda, COMPLEX *x, INTEGER const incx);
+void Ctpsv_reference_cpu(const char *uplo, const char *trans, const char *diag, INTEGER const n, COMPLEX *ap, COMPLEX *x, INTEGER const incx);
 
 namespace {
 
@@ -326,6 +328,13 @@ int main()
                                         Ctbmv_reference_cpu(u, t, d, nn, kb, AB.data(), kb + 2, RX.data(), ix);
                                         Ctbmv(u, t, d, nn, kb, AB.data(), kb + 2, GX.data(), ix);
                                         compare(tag("Ctbmv", {u, t, d}, {nn, kb, ix}), RX, GX);
+                                        std::vector<COMPLEX> TB(AB);
+                                        for (long q = 0; q < nn; q++)
+                                            TB[(u[0] == 'U' ? kb : 0) + q * (kb + 2)] = TB[(u[0] == 'U' ? kb : 0) + q * (kb + 2)] + COMPLEX(REAL(2.0 + kb), REAL(0.0));
+                                        RX = X, GX = X;
+                                        Ctbsv_reference_cpu(u, t, d, nn, kb, TB.data(), kb + 2, RX.data(), ix);
+                                        Ctbsv(u, t, d, nn, kb, TB.data(), kb + 2, GX.data(), ix);
+                                        compare(tag("Ctbsv", {u, t, d}, {nn, kb, ix}), RX, GX);
                                     }
                             }
                             for (const char *t : tr)
@@ -338,6 +347,15 @@ int main()
                                     Ctpmv_reference_cpu(u, t, d, nn, AP.data(), RX.data(), ix);
                                     Ctpmv(u, t, d, nn, AP.data(), GX.data(), ix);
                                     compare(tag("Ctpmv", {u, t, d}, {nn, ix}), RX, GX);
+                                    std::vector<COMPLEX> TP(AP);
+                                    for (long q = 0; q < nn; q++) {
+                                        const long s = u[0] == 'U' ? q * (q + 1) / 2 + q : q * nn - q * (q - 1) / 2;
+                                        TP[s] = TP[s] + COMPLEX(REAL(2.0 + nn), REAL(0.0));
+                                    }
+                                    RX = X, GX = X;
+                                    Ctpsv_reference_cpu(u, t, d, nn, TP.data(), RX.data(), ix);
+                                    Ctpsv(u, t, d, nn, TP.data(), GX.data(), ix);
+                                    compare(tag("Ctpsv", {u, t, d}, {nn, ix}), RX, GX);
                                 }
                         }
                         for (long kl : {0L, 2L})

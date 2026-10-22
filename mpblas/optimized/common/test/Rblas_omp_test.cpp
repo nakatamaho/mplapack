@@ -62,6 +62,8 @@ void Rtbmv_reference_cpu(const char *uplo, const char *trans, const char *diag, 
 void Rtpmv_reference_cpu(const char *uplo, const char *trans, const char *diag, INTEGER const n, REAL *ap, REAL *x, INTEGER const incx);
 void Rspr_reference_cpu(const char *uplo, INTEGER const n, REAL const alpha, REAL *x, INTEGER const incx, REAL *ap);
 void Rspr2_reference_cpu(const char *uplo, INTEGER const n, REAL const alpha, REAL *x, INTEGER const incx, REAL *y, INTEGER const incy, REAL *ap);
+void Rtbsv_reference_cpu(const char *uplo, const char *trans, const char *diag, INTEGER const n, INTEGER const k, REAL *a, INTEGER const lda, REAL *x, INTEGER const incx);
+void Rtpsv_reference_cpu(const char *uplo, const char *trans, const char *diag, INTEGER const n, REAL *ap, REAL *x, INTEGER const incx);
 void Rscal_reference_cpu(INTEGER const n, REAL const da, REAL *dx, INTEGER const incx);
 void Rswap_reference_cpu(INTEGER const n, REAL *dx, INTEGER const incx, REAL *dy, INTEGER const incy);
 void Rgemmtr_reference_cpu(const char *uplo, const char *transa, const char *transb, INTEGER const n, INTEGER const k, REAL const alpha, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL const beta, REAL *c, INTEGER const ldc);
@@ -291,6 +293,15 @@ int main()
                                     Rtpmv_reference_cpu(u, t, d, nn, AP.data(), R.data(), ix);
                                     Rtpmv(u, t, d, nn, AP.data(), G.data(), ix);
                                     compare(tag("Rtpmv", {u, t, d}, {nn, ix}), R, G);
+                                    std::vector<REAL> TP(AP);
+                                    for (long q = 0; q < nn; q++) {
+                                        const long s = u[0] == 'U' ? q * (q + 1) / 2 + q : q * nn - q * (q - 1) / 2;
+                                        TP[s] = TP[s] + REAL(2.0 + nn);
+                                    }
+                                    R = X, G = X;
+                                    Rtpsv_reference_cpu(u, t, d, nn, TP.data(), R.data(), ix);
+                                    Rtpsv(u, t, d, nn, TP.data(), G.data(), ix);
+                                    compare(tag("Rtpsv", {u, t, d}, {nn, ix}), R, G);
                                 }
                             for (long kb : {0L, 1L, 3L}) {
                                 std::vector<REAL> AB((size_t)((kb + 2) * mx));
@@ -305,6 +316,14 @@ int main()
                                         Rtbmv_reference_cpu(u, t, d, nn, kb, AB.data(), kb + 2, R.data(), ix);
                                         Rtbmv(u, t, d, nn, kb, AB.data(), kb + 2, G.data(), ix);
                                         compare(tag("Rtbmv", {u, t, d}, {nn, kb, ix}), R, G);
+                                        // solves: the diagonal made dominant
+                                        std::vector<REAL> TB(AB);
+                                        for (long q = 0; q < nn; q++)
+                                            TB[(u[0] == 'U' ? kb : 0) + q * (kb + 2)] = TB[(u[0] == 'U' ? kb : 0) + q * (kb + 2)] + REAL(2.0 + kb);
+                                        R = X, G = X;
+                                        Rtbsv_reference_cpu(u, t, d, nn, kb, TB.data(), kb + 2, R.data(), ix);
+                                        Rtbsv(u, t, d, nn, kb, TB.data(), kb + 2, G.data(), ix);
+                                        compare(tag("Rtbsv", {u, t, d}, {nn, kb, ix}), R, G);
                                     }
                             }
                         }

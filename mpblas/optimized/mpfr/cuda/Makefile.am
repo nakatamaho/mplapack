@@ -87,9 +87,9 @@ libmplapack_mpfr_opt_cuda_la_SOURCES = \
 ../../common/blas_cuda/Chpr2.cpp ../../common/blas/Chpr2_omp.cpp \
 ../../../reference/Crotg.cpp \
 ../../common/blas_cuda/Ctbmv.cpp ../../common/blas/Ctbmv_omp.cpp \
-../../../reference/Ctbsv.cpp \
+../../common/blas/Ctbsv.cpp ../../common/blas/Ctbsv_omp.cpp \
 ../../common/blas_cuda/Ctpmv.cpp ../../common/blas/Ctpmv_omp.cpp \
-../../../reference/Ctpsv.cpp \
+../../common/blas/Ctpsv.cpp ../../common/blas/Ctpsv_omp.cpp \
 ../../common/blas_cuda/Ctrmv.cpp ../../common/blas/Ctrmv_omp.cpp \
 ../../../reference/Mlsame.cpp \
 ../../../reference/Mxerbla.cpp \
@@ -107,9 +107,9 @@ libmplapack_mpfr_opt_cuda_la_SOURCES = \
 ../../common/blas_cuda/Rspr.cpp ../../common/blas/Rspr_omp.cpp \
 ../../common/blas_cuda/Rspr2.cpp ../../common/blas/Rspr2_omp.cpp \
 ../../common/blas_cuda/Rtbmv.cpp ../../common/blas/Rtbmv_omp.cpp \
-../../../reference/Rtbsv.cpp \
+../../common/blas/Rtbsv.cpp ../../common/blas/Rtbsv_omp.cpp \
 ../../common/blas_cuda/Rtpmv.cpp ../../common/blas/Rtpmv_omp.cpp \
-../../../reference/Rtpsv.cpp \
+../../common/blas/Rtpsv.cpp ../../common/blas/Rtpsv_omp.cpp \
 ../../../reference/iCamax.cpp \
 ../../../reference/iRamax.cpp \
 ../../../reference/mplapackinit.cpp \
