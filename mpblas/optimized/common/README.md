@@ -227,9 +227,13 @@ an element (`Cgemm`, `Cgeru`, `Cgerc`, Level 1), a column or row (`Csymm`,
 `Chemm`, `Ctrmm`, `Ctrsm`, `Cgemv`) or a column of the triangle (`Csyrk`,
 `Cherk`, `Csyr2k`, `Cher2k`, `Cgemmtr`, `Rgemmtr`, `Cher`, `Cher2`) with the
 reference code (`Cblas_cuda_common.cuh`, `Cblas_cuda_jobs_common.h`,
-`blas_cuda/Cblas_bridge_cuda.cpp`), so the results are the reference
-results bit for bit. The environment variables are those of the real
-routines (`<P>_BLAS_CUDA`, `<P>_BLAS_CUDA_MIN`, `<P>_BLAS_CUDA_L12`).
+`blas_cuda/Cblas_bridge_body.h`, `blas_cuda/Cblas_bridge_cuda.cpp`), so the
+results are the reference results bit for bit. The environment variables are
+those of the real routines (`<P>_BLAS_CUDA`, `<P>_BLAS_CUDA_MIN`,
+`<P>_BLAS_CUDA_L12`). The MPFR CUDA library runs the same jobs with
+`cu_freal` device types (`../mpfr/cuda/Cblas_mpfr_dev_types.h`,
+`../mpfr/cuda/README.md`); `Rblas_dev_base.h` and `Rblas_gpu_operand_common.h`
+are the parts shared by both.
 
 The reference LAPACK routines (`Rgetrf`, `Rpotrf`, `Rgetrs`, `Rtrtri`,
 `Rlauum`, `Rsygst`, `Rsytrf`, ...) call these BLAS routines, so they run
@@ -265,6 +269,8 @@ Both build systems build the programs and generate the scripts:
 | `{dd,td,qd}_cuda_Rblas_device` | | the same on the GPU; skipped without a device |
 | `{dd,td,qd}_cuda_Cblas_host` | `mpblas/optimized/{dd,td,qd}` (`Cblas_gpu_host_test_<type>`) | the complex test with every call on the GPU, run on the host |
 | `{dd,td,qd}_cuda_Cblas_device` | | the same on the GPU; skipped without a device |
+| `mpfr_cuda_Cblas_host` | | the complex test with every call on the MPFR GPU code, run on the host (zeros differing only in sign are counted, not failures) |
+| `mpfr_cuda_Cblas_device` | | the same on the GPU; skipped without a device |
 | `qd_ops` | `mpblas/optimized/dd` (`Rqd_ops_test`) | `Rgemm_qd_ops_common.h` = libQD3 operators (`+ - * /`, mixed double forms) bit for bit, NaNs aside, including special values and rescaled division |
 
 autotools builds the tests from `<type>/test/*.cpp`, which include the files

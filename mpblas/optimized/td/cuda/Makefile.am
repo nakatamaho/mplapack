@@ -11,7 +11,7 @@ include $(top_srcdir)/mplapack/reference/accelerator-sources.am
 MPLAPACK_TD_CUDA_LAPACK_OPTIMIZED_SOURCES =
 
 # -fmad=false: the triple-double device arithmetic must not be contracted.
-NVCC_TD_CUDA_FLAGS = -std=c++17 -fmad=false -I$(srcdir) -I$(QD_INCLUDEDIR)
+NVCC_TD_CUDA_FLAGS = -std=c++17 -fmad=false -I$(srcdir) -I$(top_builddir)/include -I$(top_srcdir)/include -I$(QD_INCLUDEDIR)
 
 .cu.o:
 	$(NVCC) $(NVCC_GLIBC_FEATURE_FLAGS) $(NVCC_TD_CUDA_FLAGS) $(HOPPER_FLAGS) -o $@ -c $< $(CUDA_CFLAGS)

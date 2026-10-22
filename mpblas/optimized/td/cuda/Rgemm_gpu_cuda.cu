@@ -34,6 +34,7 @@
 
 #include "../../common/Rgemm_cuda_common.cuh"
 #include "../../common/Rblas_cuda_common.cuh"
+#include "../../common/Rblas_dev_types.h"
 #include "../../common/Cblas_cuda_common.cuh"
 
 namespace mplapack_gemm {

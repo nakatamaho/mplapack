@@ -51,22 +51,9 @@
 #include <string>
 #include "Rgemm_cuda_ops_common.h"
 #include "Rblas_calls_common.h"
+#include "Rblas_gpu_operand_common.h"
 
 namespace mplapack_blas {
-
-// The span host[lo .. lo + count - 1] of an operand of leading dimension ld
-// (vectors: the increment); host points at its logical element (0, 0).
-template <class F> struct gpu_operand {
-    const F *host;
-    long ld, lo, count;
-    bool download;
-};
-
-template <class F> inline gpu_operand<F> gpu_scalar_operand(const F *x)
-{
-    gpu_operand<F> o = {x, 1, 0, 1, false};
-    return o;
-}
 
 template <class F, class T> inline gpu_operand<F> gpu_operand_of(const blas_operand<T> &op, bool download)
 {

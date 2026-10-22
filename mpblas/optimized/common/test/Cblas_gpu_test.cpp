@@ -26,8 +26,8 @@
  *
  */
 
-// Cblas_omp_test.cpp for the CUDA complex Level 1/2/3 BLAS (dd/td/qd:
-// ../blas_cuda): every call is sent to the GPU and compared bit for bit with
+// Cblas_omp_test.cpp for the CUDA complex Level 1/2/3 BLAS (dd/td/qd and
+// MPFR: ../blas_cuda): every call is sent to the GPU and compared bit for bit with
 // the reference routines.  With
 // MPLAPACK_GEMM_CUDA_HOST_EMULATION (dd/td/qd) or
 // MPLAPACK_MPFR_CUDA_HOST_EMULATION (MPFR) the GPU code runs on the host;

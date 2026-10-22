@@ -3,8 +3,12 @@
 MPFR flavor of MPLAPACK whose `Rgemm` and Level 3 BLAS (`Rsyrk`, `Rsyr2k`,
 `Rsymm`, `Rtrmm`, `Rtrsm`) run on an NVIDIA GPU, and, for debugging, Level 1
 and 2 BLAS (`Rgemv`, `Rsymv`, `Rtrmv`, `Rger`, `Rsyr`, `Rsyr2`, `Rscal`,
-`Rswap`, `Rrot`) with `MPLAPACK_MPFR_CUDA_L12=1`. Every other routine, and
-every call that is not eligible, uses the same code as `libmplapack_mpfr_opt`.
+`Rswap`, `Rrot`) with `MPLAPACK_MPFR_CUDA_L12=1`; likewise the complex BLAS
+(`Cgemm`, `Csymm`, `Chemm`, `Ctrmm`, `Ctrsm`, `Csyrk`, `Cherk`, `Csyr2k`,
+`Cher2k`, `Cgemmtr`, `Rgemmtr`; Level 1 and 2: `Cgemv`, `Cgeru`, `Cgerc`,
+`Cher`, `Cher2`, `Caxpy`, `Ccopy`, `Cswap`, `Cscal`, `CRscal`, `CRrot`). Every
+other routine, and every call that is not eligible, uses the same code as
+`libmplapack_mpfr_opt`.
 
 The GPU arithmetic comes from [mpc_cuda](https://github.com/tkouya/mpc_cuda)
 (bundled as `external/mpc_cuda`):
@@ -82,6 +86,36 @@ Limitations:
 - with side L or side R the parallelism is the number of columns or rows only;
 - a call copies its operands to the GPU and back;
 - the routines are not yet measured on a GPU.
+
+## Complex BLAS
+
+The complex routines (and `Rgemmtr`) run the text of the reference routines
+on the GPU: `../../common/blas_dev/` holds it as templates
+(`misc/gen_blas_device_reference.py`), `Cblas_mpfr_dev_types.h` the device
+types on `cu_freal<PB>`, and every GPU thread runs the reference routine on
+one column, row or element of the output (the jobs of
+`../../common/Cblas_cuda_jobs_common.h`, shared with dd/td/qd). gmpfrxx_mkII
+evaluates each operator of the reference text as one MPFR/MPC call rounded to
+nearest (`mpc_mul` is correctly rounded per component, as `cu_cmul`), never
+fused, so the results are the reference ones bit for bit; zeros the GPU
+computes are `+0`, and elements the routine leaves unchanged keep their
+sign. The host side is `Cblas_mpfr_bridge_cuda.cpp` on
+`../../common/blas_cuda/Cblas_bridge_body.h`, with the dispatchers of
+`../../common/blas_cuda/C*.cpp`.
+
+Calls stay on the CPU (`../../common/blas/C*_omp.cpp`, then the reference)
+when:
+
+- the default precision (`mpfr_class`, both components of `mpc_class`) is
+  not 256, 512, 768, 1024 or 2048 bits: there is no `cu_mpfr` engine for them;
+- an element of an operand or a scalar has another precision, is not finite,
+  or has an exponent outside the bound that keeps every intermediate inside
+  the exponent range; a result is outside the range (`Ctrsm`: outside the
+  bound, since its results are factors of later operations);
+- `Ctrsm` has diag = N: complex division is not computed on the GPU;
+- the same settings as for the real routines (`MPLAPACK_MPFR_CUDA`,
+  `MPLAPACK_MPFR_CUDA_L3`, `MPLAPACK_MPFR_CUDA_L12`,
+  `MPLAPACK_MPFR_CUDA_MIN_MNK`, rounding mode) exclude them.
 
 ## Building
 
@@ -166,6 +200,11 @@ Elements outside the referenced part must be left untouched.
 through the dispatchers with every call, Level 1 and 2 included, on the GPU
 (`cu_mpfr` engine), and compare with the reference routines bit for bit.
 
+`mpfr_cuda_Cblas_{host,device}` run `../../common/test/Cblas_omp_test.cpp`
+the same way for the complex routines (`cu_freal` engine at the default
+precision, 512 bits; `MPFRXX_DEFAULT_PRECISION_BITS` selects another) and
+report the zeros that differ only in sign.
+
 `mpfr_cuda_Rgemm_winograd_{host,device}` check the Winograd path at
 256/512/768/1024/2048 bits with cutoffs 1, 2, 3 and 8: integer matrices (no rounding) must
 equal the CPU `Rgemm` exactly for odd/even sizes, all transpose combinations
@@ -179,7 +218,9 @@ default precision, which is not the caller's precision.
 
 ## Limitations
 
-- Accelerated: `Rgemm`, `Rsyrk`, `Rsyr2k`, `Rsymm`, `Rtrmm`, `Rtrsm`.
+- Accelerated: `Rgemm`, `Rsyrk`, `Rsyr2k`, `Rsymm`, `Rtrmm`, `Rtrsm`, the
+  complex Level 3 routines and `Rgemmtr` (Level 1 and 2 on request).
+- Complex: fixed precisions only, no non-unit `Ctrsm`.
 - One thread per element of `C`, no shared-memory tiling yet.
 - The Winograd variant exists for the fixed precisions only (not for the
   `cu_mpfr` kernels) and allocates its temporaries with `cudaMalloc` at every level.

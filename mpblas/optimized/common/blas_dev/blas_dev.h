@@ -5,7 +5,7 @@
 #define _MPLAPACK_BLAS_DEV_H_
 
 #include <mplapack_config.h>
-#include "../Rblas_dev_types.h"
+#include "../Rblas_dev_base.h"
 
 #include "Cgemm_dev.h"
 #include "Csymm_dev.h"

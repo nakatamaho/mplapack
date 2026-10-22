@@ -79,7 +79,7 @@ namespace {
 
 std::mt19937_64 rng(20261023);
 double u11() { return std::uniform_real_distribution<double>(-1.0, 1.0)(rng); }
-long failures = 0, checks = 0;
+long failures = 0, checks = 0, zero_signs = 0;
 
 REAL rnd()
 {
@@ -104,6 +104,14 @@ bool same(const REAL &a, const REAL &b)
 #if defined(MPLAPACK_BUILD_WITH_MPFR)
     if (mpfr_nan_p(a.get_mpfr_t()) || mpfr_nan_p(b.get_mpfr_t()))
         return mpfr_nan_p(a.get_mpfr_t()) && mpfr_nan_p(b.get_mpfr_t());
+#ifdef RBLAS_TEST_GPU
+    // The MPFR complex GPU routines compute +0 for every zero
+    // (mpfr/cuda/Cblas_mpfr_bridge_cuda.cpp): counted, not failures.
+    if (mpfr_zero_p(a.get_mpfr_t()) && mpfr_zero_p(b.get_mpfr_t()) && mpfr_signbit(a.get_mpfr_t()) != mpfr_signbit(b.get_mpfr_t())) {
+        zero_signs++;
+        return mpfr_get_prec(a.get_mpfr_t()) == mpfr_get_prec(b.get_mpfr_t());
+    }
+#endif
     return mpfr_equal_p(a.get_mpfr_t(), b.get_mpfr_t()) && mpfr_signbit(a.get_mpfr_t()) == mpfr_signbit(b.get_mpfr_t()) && mpfr_get_prec(a.get_mpfr_t()) == mpfr_get_prec(b.get_mpfr_t());
 #elif defined(MPLAPACK_BUILD_WITH_GMP)
     return mpf_cmp(a.get_mpf_t(), b.get_mpf_t()) == 0;
@@ -333,7 +341,7 @@ int main()
         }
     }
 #ifdef RBLAS_TEST_GPU
-    std::printf("complex BLAS (GPU): %ld checks, %ld failures\n", checks, failures);
+    std::printf("complex BLAS (GPU): %ld checks, %ld failures, %ld zeros differing only in sign\n", checks, failures, zero_signs);
 #else
     std::printf("complex BLAS (OpenMP): %ld checks, %ld failures\n", checks, failures);
 #endif

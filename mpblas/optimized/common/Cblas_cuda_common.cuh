@@ -43,11 +43,16 @@
 
 #include <vector>
 #include "blas_dev/blas_dev.h"
-#include "Rblas_cuda_bridge_common.h"
+#include "Rblas_gpu_operand_common.h"
 
-#if defined(__CUDACC__)
+// MPLAPACK_GEMM_CUDA_HOST_EMULATION (dd/td/qd) or
+// MPLAPACK_MPFR_CUDA_HOST_EMULATION (MPFR): the jobs run on the host.
+#if defined(MPLAPACK_GEMM_CUDA_HOST_EMULATION) || defined(MPLAPACK_MPFR_CUDA_HOST_EMULATION)
+#define MPLAPACK_CBLAS_CUDA_DEVICE 0
+#elif defined(__CUDACC__)
+#define MPLAPACK_CBLAS_CUDA_DEVICE 1
 #include <cuda_runtime.h>
-#elif !defined(MPLAPACK_GEMM_CUDA_HOST_EMULATION)
+#else
 #error "Cblas_cuda_common.cuh: compile with nvcc, or define MPLAPACK_GEMM_CUDA_HOST_EMULATION"
 #endif
 
@@ -57,7 +62,7 @@ namespace mplapack_blas_dev {
 
 using mplapack_blas::gpu_operand;
 
-#if defined(__CUDACC__)
+#if MPLAPACK_CBLAS_CUDA_DEVICE
 template <class Job> __global__ void k_job(Job job, long units)
 {
     const long u = (long)blockIdx.x * blockDim.x + threadIdx.x;
@@ -72,7 +77,7 @@ template <class Job> __global__ void k_job(Job job, long units)
 template <class E, class Job> int run_job(Job job, long units, const gpu_operand<E> *ops, int nops)
 {
     E *dev[4] = {0, 0, 0, 0};
-#if defined(__CUDACC__)
+#if MPLAPACK_CBLAS_CUDA_DEVICE
     E *buf[4] = {0, 0, 0, 0};
     cudaError_t e = cudaSuccess;
     for (int q = 0; q < nops && e == cudaSuccess; q++) {

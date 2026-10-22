@@ -35,14 +35,9 @@
 #define _MPLAPACK_CBLAS_CUDA_JOBS_COMMON_H_
 
 #include "blas_dev/blas_dev.h"
-#include "Rblas_cuda_bridge_common.h"
+#include "Rblas_gpu_operand_common.h"
 
 namespace mplapack_blas_dev {
-
-template <class Ops> struct cgpu_types {
-    typedef dreal<Ops> DR;
-    typedef dcomplex<DR> DC;
-};
 
 template <class Ops> struct job_Cgemm {
     typedef typename cgpu_types<Ops>::DR DR;

@@ -40,10 +40,9 @@
 #define _MPLAPACK_RBLAS_DEV_TYPES_H_
 
 #include "Rgemm_cuda_ops_common.h"
+#include "Rblas_dev_base.h"
 
 namespace mplapack_blas_dev {
-
-#define MPLAPACK_DEV_HD MPLAPACK_GEMM_HD
 
 template <class Ops> struct dreal {
     typedef typename Ops::F F;
@@ -158,19 +157,10 @@ template <class R> MPLAPACK_DEV_HD R RCabs1(const dcomplex<R> &z)
     return return_value;
 }
 
-// The functions the reference text calls (Mlsame, Mxerbla, max, min).
-MPLAPACK_DEV_HD bool lsame(const char *a, const char *b)
-{
-    char x = a[0], y = b[0];
-    if (x >= 'a' && x <= 'z')
-        x = (char)(x - 'a' + 'A');
-    if (y >= 'a' && y <= 'z')
-        y = (char)(y - 'a' + 'A');
-    return x == y;
-}
-MPLAPACK_DEV_HD void xerbla(const char *, int) {} // the host checks the arguments
-template <class T> MPLAPACK_DEV_HD T max(T a, T b) { return a > b ? a : b; }
-template <class T> MPLAPACK_DEV_HD T min(T a, T b) { return a < b ? a : b; }
+template <class Ops> struct cgpu_types {
+    typedef dreal<Ops> DR;
+    typedef dcomplex<DR> DC;
+};
 
 } // namespace mplapack_blas_dev
 
