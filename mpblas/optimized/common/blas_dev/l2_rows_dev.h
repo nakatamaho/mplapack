@@ -30,7 +30,7 @@ template <class REAL, class COMPLEX> MPLAPACK_DEV_HD void Chemv_rows_dev(const c
         // row i: column i (with the whole column above i), then columns j > i
         for (j = r0 + 1; j <= n; j = j + 1) {
             temp1 = alpha * x[j - 1];
-            for (i = max(1, r0 + 1); i <= min(j - 1, r1); i = i + 1) {
+            for (i = max<mplapackint>(1, r0 + 1); i <= min<mplapackint>(j - 1, r1); i = i + 1) {
                 y[i - 1] += temp1 * a[(i - 1) + (j - 1) * lda];
             }
             if (j <= r1) {
@@ -48,7 +48,7 @@ template <class REAL, class COMPLEX> MPLAPACK_DEV_HD void Chemv_rows_dev(const c
             if (j > r0) {
                 y[j - 1] += temp1 * a[(j - 1) + (j - 1) * lda].real();
             }
-            for (i = max(j + 1, r0 + 1); i <= min(n, r1); i = i + 1) {
+            for (i = max<mplapackint>(j + 1, r0 + 1); i <= min<mplapackint>(n, r1); i = i + 1) {
                 y[i - 1] += temp1 * a[(i - 1) + (j - 1) * lda];
             }
             if (j > r0) {
@@ -85,15 +85,15 @@ template <class REAL, class COMPLEX> MPLAPACK_DEV_HD void Chbmv_rows_dev(const c
     mplapackint l = 0;
     if (lsame(uplo, "U")) {
         // row i: column i (with the whole column above i), then columns j > i
-        for (j = r0 + 1; j <= min(n, r1 + k); j = j + 1) {
+        for (j = r0 + 1; j <= min<mplapackint>(n, r1 + k); j = j + 1) {
             temp1 = alpha * x[j - 1];
             l = kplus1 - j;
-            for (i = max(max((mplapackint)1, j - k), r0 + 1); i <= min(j - 1, r1); i = i + 1) {
+            for (i = max<mplapackint>(max<mplapackint>((mplapackint)1, j - k), r0 + 1); i <= min<mplapackint>(j - 1, r1); i = i + 1) {
                 y[i - 1] += temp1 * a[((l + i) - 1) + (j - 1) * lda];
             }
             if (j <= r1) {
                 temp2 = zero;
-                for (i = max((mplapackint)1, j - k); i <= j - 1; i = i + 1) {
+                for (i = max<mplapackint>((mplapackint)1, j - k); i <= j - 1; i = i + 1) {
                     temp2 += conj(a[((l + i) - 1) + (j - 1) * lda]) * x[i - 1];
                 }
                 y[j - 1] += temp1 * a[(kplus1 - 1) + (j - 1) * lda].real() + alpha * temp2;
@@ -101,18 +101,18 @@ template <class REAL, class COMPLEX> MPLAPACK_DEV_HD void Chbmv_rows_dev(const c
         }
     } else {
         // row i: columns j < i, then column i (with the whole column below i)
-        for (j = max((mplapackint)1, r0 + 1 - k); j <= r1; j = j + 1) {
+        for (j = max<mplapackint>((mplapackint)1, r0 + 1 - k); j <= r1; j = j + 1) {
             temp1 = alpha * x[j - 1];
             l = 1 - j;
             if (j > r0) {
                 y[j - 1] += temp1 * a[(j - 1) * lda].real();
             }
-            for (i = max(j + 1, r0 + 1); i <= min(min(n, j + k), r1); i = i + 1) {
+            for (i = max<mplapackint>(j + 1, r0 + 1); i <= min<mplapackint>(min<mplapackint>(n, j + k), r1); i = i + 1) {
                 y[i - 1] += temp1 * a[((l + i) - 1) + (j - 1) * lda];
             }
             if (j > r0) {
                 temp2 = zero;
-                for (i = j + 1; i <= min(n, j + k); i = i + 1) {
+                for (i = j + 1; i <= min<mplapackint>(n, j + k); i = i + 1) {
                     temp2 += conj(a[((l + i) - 1) + (j - 1) * lda]) * x[i - 1];
                 }
                 y[j - 1] += alpha * temp2;
@@ -144,15 +144,15 @@ template <class REAL, class COMPLEX> MPLAPACK_DEV_HD void Rsbmv_rows_dev(const c
     mplapackint l = 0;
     if (lsame(uplo, "U")) {
         // row i: column i (with the whole column above i), then columns j > i
-        for (j = r0 + 1; j <= min(n, r1 + k); j = j + 1) {
+        for (j = r0 + 1; j <= min<mplapackint>(n, r1 + k); j = j + 1) {
             temp1 = alpha * x[j - 1];
             l = kplus1 - j;
-            for (i = max(max((mplapackint)1, j - k), r0 + 1); i <= min(j - 1, r1); i = i + 1) {
+            for (i = max<mplapackint>(max<mplapackint>((mplapackint)1, j - k), r0 + 1); i <= min<mplapackint>(j - 1, r1); i = i + 1) {
                 y[i - 1] += temp1 * a[((l + i) - 1) + (j - 1) * lda];
             }
             if (j <= r1) {
                 temp2 = zero;
-                for (i = max((mplapackint)1, j - k); i <= j - 1; i = i + 1) {
+                for (i = max<mplapackint>((mplapackint)1, j - k); i <= j - 1; i = i + 1) {
                     temp2 += a[((l + i) - 1) + (j - 1) * lda] * x[i - 1];
                 }
                 y[j - 1] += temp1 * a[(kplus1 - 1) + (j - 1) * lda] + alpha * temp2;
@@ -160,18 +160,18 @@ template <class REAL, class COMPLEX> MPLAPACK_DEV_HD void Rsbmv_rows_dev(const c
         }
     } else {
         // row i: columns j < i, then column i (with the whole column below i)
-        for (j = max((mplapackint)1, r0 + 1 - k); j <= r1; j = j + 1) {
+        for (j = max<mplapackint>((mplapackint)1, r0 + 1 - k); j <= r1; j = j + 1) {
             temp1 = alpha * x[j - 1];
             l = 1 - j;
             if (j > r0) {
                 y[j - 1] += temp1 * a[(j - 1) * lda];
             }
-            for (i = max(j + 1, r0 + 1); i <= min(min(n, j + k), r1); i = i + 1) {
+            for (i = max<mplapackint>(j + 1, r0 + 1); i <= min<mplapackint>(min<mplapackint>(n, j + k), r1); i = i + 1) {
                 y[i - 1] += temp1 * a[((l + i) - 1) + (j - 1) * lda];
             }
             if (j > r0) {
                 temp2 = zero;
-                for (i = j + 1; i <= min(n, j + k); i = i + 1) {
+                for (i = j + 1; i <= min<mplapackint>(n, j + k); i = i + 1) {
                     temp2 += a[((l + i) - 1) + (j - 1) * lda] * x[i - 1];
                 }
                 y[j - 1] += alpha * temp2;
@@ -203,7 +203,7 @@ template <class REAL, class COMPLEX> MPLAPACK_DEV_HD void Chpmv_rows_dev(const c
         // row i: column i (with the whole column above i), then columns j > i
         for (j = r0 + 1; j <= n; j = j + 1) {
             temp1 = alpha * x[j - 1];
-            for (i = max(1, r0 + 1); i <= min(j - 1, r1); i = i + 1) {
+            for (i = max<mplapackint>(1, r0 + 1); i <= min<mplapackint>(j - 1, r1); i = i + 1) {
                 y[i - 1] += temp1 * ap[(j * (j - 1) / 2 + i) - 1];
             }
             if (j <= r1) {
@@ -221,7 +221,7 @@ template <class REAL, class COMPLEX> MPLAPACK_DEV_HD void Chpmv_rows_dev(const c
             if (j > r0) {
                 y[j - 1] += temp1 * ap[((j - 1) * n - (j - 1) * (j - 2) / 2 + j - j + 1) - 1].real();
             }
-            for (i = max(j + 1, r0 + 1); i <= min(n, r1); i = i + 1) {
+            for (i = max<mplapackint>(j + 1, r0 + 1); i <= min<mplapackint>(n, r1); i = i + 1) {
                 y[i - 1] += temp1 * ap[((j - 1) * n - (j - 1) * (j - 2) / 2 + i - j + 1) - 1];
             }
             if (j > r0) {
@@ -258,7 +258,7 @@ template <class REAL, class COMPLEX> MPLAPACK_DEV_HD void Rspmv_rows_dev(const c
         // row i: column i (with the whole column above i), then columns j > i
         for (j = r0 + 1; j <= n; j = j + 1) {
             temp1 = alpha * x[j - 1];
-            for (i = max(1, r0 + 1); i <= min(j - 1, r1); i = i + 1) {
+            for (i = max<mplapackint>(1, r0 + 1); i <= min<mplapackint>(j - 1, r1); i = i + 1) {
                 y[i - 1] += temp1 * ap[(j * (j - 1) / 2 + i) - 1];
             }
             if (j <= r1) {
@@ -276,7 +276,7 @@ template <class REAL, class COMPLEX> MPLAPACK_DEV_HD void Rspmv_rows_dev(const c
             if (j > r0) {
                 y[j - 1] += temp1 * ap[((j - 1) * n - (j - 1) * (j - 2) / 2 + j - j + 1) - 1];
             }
-            for (i = max(j + 1, r0 + 1); i <= min(n, r1); i = i + 1) {
+            for (i = max<mplapackint>(j + 1, r0 + 1); i <= min<mplapackint>(n, r1); i = i + 1) {
                 y[i - 1] += temp1 * ap[((j - 1) * n - (j - 1) * (j - 2) / 2 + i - j + 1) - 1];
             }
             if (j > r0) {
@@ -312,10 +312,10 @@ template <class REAL, class COMPLEX> MPLAPACK_DEV_HD void Rgbmv_rows_dev(const c
     mplapackint k = 0;
     if (lsame(trans, "N")) {
         // row i: the columns j of its band, in order
-        for (j = max((mplapackint)1, r0 + 1 - kl); j <= min(n, r1 + ku); j = j + 1) {
+        for (j = max<mplapackint>((mplapackint)1, r0 + 1 - kl); j <= min<mplapackint>(n, r1 + ku); j = j + 1) {
             temp = alpha * x[j - 1];
             k = kup1 - j;
-            for (i = max(max((mplapackint)1, j - ku), r0 + 1); i <= min(min(m, j + kl), r1); i = i + 1) {
+            for (i = max<mplapackint>(max<mplapackint>((mplapackint)1, j - ku), r0 + 1); i <= min<mplapackint>(min<mplapackint>(m, j + kl), r1); i = i + 1) {
                 y[i - 1] += temp * a[((k + i) - 1) + (j - 1) * lda];
             }
         }
@@ -324,7 +324,7 @@ template <class REAL, class COMPLEX> MPLAPACK_DEV_HD void Rgbmv_rows_dev(const c
         for (j = r0 + 1; j <= r1; j = j + 1) {
             temp = zero;
             k = kup1 - j;
-            for (i = max((mplapackint)1, j - ku); i <= min(m, j + kl); i = i + 1) {
+            for (i = max<mplapackint>((mplapackint)1, j - ku); i <= min<mplapackint>(m, j + kl); i = i + 1) {
                 temp += a[((k + i) - 1) + (j - 1) * lda] * x[i - 1];
             }
             y[j - 1] += alpha * temp;
@@ -355,10 +355,10 @@ template <class REAL, class COMPLEX> MPLAPACK_DEV_HD void Cgbmv_rows_dev(const c
     mplapackint k = 0;
     if (lsame(trans, "N")) {
         // row i: the columns j of its band, in order
-        for (j = max((mplapackint)1, r0 + 1 - kl); j <= min(n, r1 + ku); j = j + 1) {
+        for (j = max<mplapackint>((mplapackint)1, r0 + 1 - kl); j <= min<mplapackint>(n, r1 + ku); j = j + 1) {
             temp = alpha * x[j - 1];
             k = kup1 - j;
-            for (i = max(max((mplapackint)1, j - ku), r0 + 1); i <= min(min(m, j + kl), r1); i = i + 1) {
+            for (i = max<mplapackint>(max<mplapackint>((mplapackint)1, j - ku), r0 + 1); i <= min<mplapackint>(min<mplapackint>(m, j + kl), r1); i = i + 1) {
                 y[i - 1] += temp * a[((k + i) - 1) + (j - 1) * lda];
             }
         }
@@ -368,11 +368,11 @@ template <class REAL, class COMPLEX> MPLAPACK_DEV_HD void Cgbmv_rows_dev(const c
             temp = zero;
             k = kup1 - j;
             if (noconj) {
-                for (i = max((mplapackint)1, j - ku); i <= min(m, j + kl); i = i + 1) {
+                for (i = max<mplapackint>((mplapackint)1, j - ku); i <= min<mplapackint>(m, j + kl); i = i + 1) {
                     temp += a[((k + i) - 1) + (j - 1) * lda] * x[i - 1];
                 }
             } else {
-                for (i = max((mplapackint)1, j - ku); i <= min(m, j + kl); i = i + 1) {
+                for (i = max<mplapackint>((mplapackint)1, j - ku); i <= min<mplapackint>(m, j + kl); i = i + 1) {
                     temp += conj(a[((k + i) - 1) + (j - 1) * lda]) * x[i - 1];
                 }
             }
@@ -394,7 +394,7 @@ template <class REAL, class COMPLEX> MPLAPACK_DEV_HD void Ctrmv_rows_dev(const c
             for (j = r0 + 1; j <= n; j = j + 1) {
                 if (x0[j - 1] != zero) {
                     temp = x0[j - 1];
-                    for (i = max(1, r0 + 1); i <= min(j - 1, r1); i = i + 1) {
+                    for (i = max<mplapackint>(1, r0 + 1); i <= min<mplapackint>(j - 1, r1); i = i + 1) {
                         x[i - 1] += temp * a[(i - 1) + (j - 1) * lda];
                     }
                     if (nounit && j <= r1) {
@@ -406,7 +406,7 @@ template <class REAL, class COMPLEX> MPLAPACK_DEV_HD void Ctrmv_rows_dev(const c
             for (j = r1; j >= 1; j = j - 1) {
                 if (x0[j - 1] != zero) {
                     temp = x0[j - 1];
-                    for (i = min(n, r1); i >= max(j + 1, r0 + 1); i = i - 1) {
+                    for (i = min<mplapackint>(n, r1); i >= max<mplapackint>(j + 1, r0 + 1); i = i - 1) {
                         x[i - 1] += temp * a[(i - 1) + (j - 1) * lda];
                     }
                     if (nounit && j > r0) {
@@ -472,11 +472,11 @@ template <class REAL, class COMPLEX> MPLAPACK_DEV_HD void Rtbmv_rows_dev(const c
     mplapackint l = 0;
     if (lsame(trans, "N")) {
         if (lsame(uplo, "U")) {
-            for (j = r0 + 1; j <= min(n, r1 + k); j = j + 1) {
+            for (j = r0 + 1; j <= min<mplapackint>(n, r1 + k); j = j + 1) {
                 l = kplus1 - j;
                 if (x0[j - 1] != zero) {
                     temp = x0[j - 1];
-                    for (i = max(max((mplapackint)1, j - k), r0 + 1); i <= min(j - 1, r1); i = i + 1) {
+                    for (i = max<mplapackint>(max<mplapackint>((mplapackint)1, j - k), r0 + 1); i <= min<mplapackint>(j - 1, r1); i = i + 1) {
                         x[i - 1] += temp * a[((l + i) - 1) + (j - 1) * lda];
                     }
                     if (nounit && j <= r1) {
@@ -485,11 +485,11 @@ template <class REAL, class COMPLEX> MPLAPACK_DEV_HD void Rtbmv_rows_dev(const c
                 }
             }
         } else {
-            for (j = r1; j >= max((mplapackint)1, r0 + 1 - k); j = j - 1) {
+            for (j = r1; j >= max<mplapackint>((mplapackint)1, r0 + 1 - k); j = j - 1) {
                 l = 1 - j;
                 if (x0[j - 1] != zero) {
                     temp = x0[j - 1];
-                    for (i = min(min(n, j + k), r1); i >= max(j + 1, r0 + 1); i = i - 1) {
+                    for (i = min<mplapackint>(min<mplapackint>(n, j + k), r1); i >= max<mplapackint>(j + 1, r0 + 1); i = i - 1) {
                         x[i - 1] += temp * a[((l + i) - 1) + (j - 1) * lda];
                     }
                     if (nounit && j > r0) {
@@ -507,7 +507,7 @@ template <class REAL, class COMPLEX> MPLAPACK_DEV_HD void Rtbmv_rows_dev(const c
                 if (nounit) {
                     temp = temp * a[(kplus1 - 1) + (j - 1) * lda];
                 }
-                for (i = j - 1; i >= max((mplapackint)1, j - k); i = i - 1) {
+                for (i = j - 1; i >= max<mplapackint>((mplapackint)1, j - k); i = i - 1) {
                     temp += a[((l + i) - 1) + (j - 1) * lda] * x0[i - 1];
                 }
                 x[j - 1] = temp;
@@ -519,7 +519,7 @@ template <class REAL, class COMPLEX> MPLAPACK_DEV_HD void Rtbmv_rows_dev(const c
                 if (nounit) {
                     temp = temp * a[(j - 1) * lda];
                 }
-                for (i = j + 1; i <= min(n, j + k); i = i + 1) {
+                for (i = j + 1; i <= min<mplapackint>(n, j + k); i = i + 1) {
                     temp += a[((l + i) - 1) + (j - 1) * lda] * x0[i - 1];
                 }
                 x[j - 1] = temp;
@@ -540,11 +540,11 @@ template <class REAL, class COMPLEX> MPLAPACK_DEV_HD void Ctbmv_rows_dev(const c
     mplapackint l = 0;
     if (lsame(trans, "N")) {
         if (lsame(uplo, "U")) {
-            for (j = r0 + 1; j <= min(n, r1 + k); j = j + 1) {
+            for (j = r0 + 1; j <= min<mplapackint>(n, r1 + k); j = j + 1) {
                 l = kplus1 - j;
                 if (x0[j - 1] != zero) {
                     temp = x0[j - 1];
-                    for (i = max(max((mplapackint)1, j - k), r0 + 1); i <= min(j - 1, r1); i = i + 1) {
+                    for (i = max<mplapackint>(max<mplapackint>((mplapackint)1, j - k), r0 + 1); i <= min<mplapackint>(j - 1, r1); i = i + 1) {
                         x[i - 1] += temp * a[((l + i) - 1) + (j - 1) * lda];
                     }
                     if (nounit && j <= r1) {
@@ -553,11 +553,11 @@ template <class REAL, class COMPLEX> MPLAPACK_DEV_HD void Ctbmv_rows_dev(const c
                 }
             }
         } else {
-            for (j = r1; j >= max((mplapackint)1, r0 + 1 - k); j = j - 1) {
+            for (j = r1; j >= max<mplapackint>((mplapackint)1, r0 + 1 - k); j = j - 1) {
                 l = 1 - j;
                 if (x0[j - 1] != zero) {
                     temp = x0[j - 1];
-                    for (i = min(min(n, j + k), r1); i >= max(j + 1, r0 + 1); i = i - 1) {
+                    for (i = min<mplapackint>(min<mplapackint>(n, j + k), r1); i >= max<mplapackint>(j + 1, r0 + 1); i = i - 1) {
                         x[i - 1] += temp * a[((l + i) - 1) + (j - 1) * lda];
                     }
                     if (nounit && j > r0) {
@@ -576,14 +576,14 @@ template <class REAL, class COMPLEX> MPLAPACK_DEV_HD void Ctbmv_rows_dev(const c
                     if (nounit) {
                         temp = temp * a[(kplus1 - 1) + (j - 1) * lda];
                     }
-                    for (i = j - 1; i >= max((mplapackint)1, j - k); i = i - 1) {
+                    for (i = j - 1; i >= max<mplapackint>((mplapackint)1, j - k); i = i - 1) {
                         temp += a[((l + i) - 1) + (j - 1) * lda] * x0[i - 1];
                     }
                 } else {
                     if (nounit) {
                         temp = temp * conj(a[(kplus1 - 1) + (j - 1) * lda]);
                     }
-                    for (i = j - 1; i >= max((mplapackint)1, j - k); i = i - 1) {
+                    for (i = j - 1; i >= max<mplapackint>((mplapackint)1, j - k); i = i - 1) {
                         temp += conj(a[((l + i) - 1) + (j - 1) * lda]) * x0[i - 1];
                     }
                 }
@@ -597,14 +597,14 @@ template <class REAL, class COMPLEX> MPLAPACK_DEV_HD void Ctbmv_rows_dev(const c
                     if (nounit) {
                         temp = temp * a[(j - 1) * lda];
                     }
-                    for (i = j + 1; i <= min(n, j + k); i = i + 1) {
+                    for (i = j + 1; i <= min<mplapackint>(n, j + k); i = i + 1) {
                         temp += a[((l + i) - 1) + (j - 1) * lda] * x0[i - 1];
                     }
                 } else {
                     if (nounit) {
                         temp = temp * conj(a[(j - 1) * lda]);
                     }
-                    for (i = j + 1; i <= min(n, j + k); i = i + 1) {
+                    for (i = j + 1; i <= min<mplapackint>(n, j + k); i = i + 1) {
                         temp += conj(a[((l + i) - 1) + (j - 1) * lda]) * x0[i - 1];
                     }
                 }
@@ -626,7 +626,7 @@ template <class REAL, class COMPLEX> MPLAPACK_DEV_HD void Rtpmv_rows_dev(const c
             for (j = r0 + 1; j <= n; j = j + 1) {
                 if (x0[j - 1] != zero) {
                     temp = x0[j - 1];
-                    for (i = max(1, r0 + 1); i <= min(j - 1, r1); i = i + 1) {
+                    for (i = max<mplapackint>(1, r0 + 1); i <= min<mplapackint>(j - 1, r1); i = i + 1) {
                         x[i - 1] += temp * ap[(j * (j - 1) / 2 + i) - 1];
                     }
                     if (nounit && j <= r1) {
@@ -638,7 +638,7 @@ template <class REAL, class COMPLEX> MPLAPACK_DEV_HD void Rtpmv_rows_dev(const c
             for (j = r1; j >= 1; j = j - 1) {
                 if (x0[j - 1] != zero) {
                     temp = x0[j - 1];
-                    for (i = min(n, r1); i >= max(j + 1, r0 + 1); i = i - 1) {
+                    for (i = min<mplapackint>(n, r1); i >= max<mplapackint>(j + 1, r0 + 1); i = i - 1) {
                         x[i - 1] += temp * ap[((j - 1) * n - (j - 1) * (j - 2) / 2 + i - j + 1) - 1];
                     }
                     if (nounit && j > r0) {
@@ -688,7 +688,7 @@ template <class REAL, class COMPLEX> MPLAPACK_DEV_HD void Ctpmv_rows_dev(const c
             for (j = r0 + 1; j <= n; j = j + 1) {
                 if (x0[j - 1] != zero) {
                     temp = x0[j - 1];
-                    for (i = max(1, r0 + 1); i <= min(j - 1, r1); i = i + 1) {
+                    for (i = max<mplapackint>(1, r0 + 1); i <= min<mplapackint>(j - 1, r1); i = i + 1) {
                         x[i - 1] += temp * ap[(j * (j - 1) / 2 + i) - 1];
                     }
                     if (nounit && j <= r1) {
@@ -700,7 +700,7 @@ template <class REAL, class COMPLEX> MPLAPACK_DEV_HD void Ctpmv_rows_dev(const c
             for (j = r1; j >= 1; j = j - 1) {
                 if (x0[j - 1] != zero) {
                     temp = x0[j - 1];
-                    for (i = min(n, r1); i >= max(j + 1, r0 + 1); i = i - 1) {
+                    for (i = min<mplapackint>(n, r1); i >= max<mplapackint>(j + 1, r0 + 1); i = i - 1) {
                         x[i - 1] += temp * ap[((j - 1) * n - (j - 1) * (j - 2) / 2 + i - j + 1) - 1];
                     }
                     if (nounit && j > r0) {

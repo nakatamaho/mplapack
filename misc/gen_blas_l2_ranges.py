@@ -550,8 +550,8 @@ for r in "Chemv Chbmv Rsbmv Chpmv Rspmv Rgbmv Cgbmv Ctrmv Rtbmv Ctbmv Rtpmv Ctpm
     f = f.replace("void %s_rows(" % r, "template <class REAL, class COMPLEX> MPLAPACK_DEV_HD void %s_rows_dev(" % r, 1)
     f = re.sub(r"\bINTEGER\b", "mplapackint", f)
     f = re.sub(r"\bMlsame\(", "lsame(", f)
-    f = re.sub(r"\bimax\(", "max(", f)
-    f = re.sub(r"\bimin\(", "min(", f)
+    f = re.sub(r"\bimax\(", "max<mplapackint>(", f)
+    f = re.sub(r"\bimin\(", "min<mplapackint>(", f)
     dev.append(f)
 dev += ["} // namespace mplapack_blas_dev", "", "#endif", ""]
 open("mpblas/optimized/common/blas_dev/l2_rows_dev.h", "w").write("\n".join(dev))
