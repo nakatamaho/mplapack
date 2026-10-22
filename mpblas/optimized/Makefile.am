@@ -36,6 +36,8 @@ endif
 EXTRA_DIST = common/README.md \
 common/Rblas_lanes_common.h common/Rblas_calls_common.h common/Rblas_cpu_common.h \
 common/Rblas_cuda_common.cuh common/Rblas_cuda_bridge_common.h common/Rblas_simd_common.h \
+common/Rblas_split_common.h common/Cblas_simd_common.h \
+common/blas/Rgemmtr_columns.h common/blas/Csyrk_columns.h common/blas/Cherk_columns.h common/blas/Csyr2k_columns.h common/blas/Cher2k_columns.h common/blas/Cgemmtr_columns.h \
 common/Rgemm_blocked_common.h common/Rgemm_cpu_common.h \
 common/Rgemm_cuda_bridge_common.h common/Rgemm_cuda_common.cuh \
 common/Rgemm_cuda_ops_common.h common/Rgemm_ozaki_common.h \

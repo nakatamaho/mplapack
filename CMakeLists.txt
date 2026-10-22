@@ -535,14 +535,19 @@ if(MPLAPACK_BUILD_TESTS)
   # to the OpenMP loops; Winograd, Ozaki (and the branch-free td/qd kernels)
   # exact on integers and bounded on reals.
   set(_mplapack_opt_common "${CMAKE_CURRENT_SOURCE_DIR}/mpblas/optimized/common")
-  # Lane-parallel Level 1/2/3 BLAS of every optimized library (common/blas):
-  # bit-identical to the reference routines.
+  # Parallel Level 1/2/3 BLAS (real: Rblas_omp_test, complex: Cblas_omp_test)
+  # of every optimized library (common/blas): bit-identical to the reference
+  # routines.
   foreach(b IN LISTS MPLAPACK_BACKENDS)
     if(TARGET mplapack_${b}_opt)
       add_executable(${b}_opt_Rblas_omp_test "${_mplapack_opt_common}/test/Rblas_omp_test.cpp")
       target_link_libraries(${b}_opt_Rblas_omp_test PRIVATE mplapack_${b}_opt)
       add_test(NAME ${b}_opt_Rblas_omp COMMAND ${b}_opt_Rblas_omp_test)
       set_tests_properties(${b}_opt_Rblas_omp PROPERTIES ENVIRONMENT "OMP_NUM_THREADS=4")
+      add_executable(${b}_opt_Cblas_omp_test "${_mplapack_opt_common}/test/Cblas_omp_test.cpp")
+      target_link_libraries(${b}_opt_Cblas_omp_test PRIVATE mplapack_${b}_opt)
+      add_test(NAME ${b}_opt_Cblas_omp COMMAND ${b}_opt_Cblas_omp_test)
+      set_tests_properties(${b}_opt_Cblas_omp PROPERTIES ENVIRONMENT "OMP_NUM_THREADS=4")
     endif()
   endforeach()
   foreach(b dd td qd binary128)

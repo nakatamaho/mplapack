@@ -127,7 +127,9 @@ function(mplapack_collect_opt_backend_sources
   # again. The explicit autotools source lists intentionally exclude it.
   list(FILTER _mpblas_opt_sources EXCLUDE REGEX "/openmp/Rgemm_omp\\.cpp$")
   file(GLOB _mplapack_opt_sources CONFIGURE_DEPENDS
-    "${CMAKE_CURRENT_SOURCE_DIR}/mplapack/optimized/${backend}/*.cpp")
+    "${CMAKE_CURRENT_SOURCE_DIR}/mplapack/optimized/${backend}/*.cpp"
+    # LAPACK routines shared by every backend (parallel, bit-identical).
+    "${CMAKE_CURRENT_SOURCE_DIR}/mplapack/optimized/common/*.cpp")
 
   mplapack_shadow_sources(
     _mpblas_reference_sources MPBLAS_SOURCES _mpblas_opt_sources)

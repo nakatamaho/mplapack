@@ -57,7 +57,11 @@ void Rsyr_reference_cpu(const char *uplo, INTEGER const n, REAL const alpha, REA
 void Rsyr2_reference_cpu(const char *uplo, INTEGER const n, REAL const alpha, REAL *x, INTEGER const incx, REAL *y, INTEGER const incy, REAL *a, INTEGER const lda);
 void Rscal_reference_cpu(INTEGER const n, REAL const da, REAL *dx, INTEGER const incx);
 void Rswap_reference_cpu(INTEGER const n, REAL *dx, INTEGER const incx, REAL *dy, INTEGER const incy);
+void Rgemmtr_reference_cpu(const char *uplo, const char *transa, const char *transb, INTEGER const n, INTEGER const k, REAL const alpha, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL const beta, REAL *c, INTEGER const ldc);
 void Rrot_reference_cpu(INTEGER const n, REAL *dx, INTEGER const incx, REAL *dy, INTEGER const incy, REAL const c, REAL const s);
+
+void Rlaswp(INTEGER const n, REAL *a, INTEGER const lda, INTEGER const k1, INTEGER const k2, INTEGER *ipiv, INTEGER const incx);
+void Rlaswp_reference_cpu(INTEGER const n, REAL *a, INTEGER const lda, INTEGER const k1, INTEGER const k2, INTEGER *ipiv, INTEGER const incx);
 
 namespace {
 
@@ -179,6 +183,15 @@ int main()
                         Rsyr2k_reference_cpu(u, t, n, m, alpha, A.data(), lda, B.data(), lda, beta, R.data(), n + 1);
                         Rsyr2k(u, t, n, m, alpha, A.data(), lda, B.data(), lda, beta, G.data(), n + 1);
                         compare(tag("Rsyr2k", {u, t}, {n, m, ak, bk}), R, G);
+                        for (const char *t2 : tr) {
+                            const long rb = t2[0] == 'N' ? m : n, cb = t2[0] == 'N' ? n : m;
+                            std::vector<REAL> B2((rb + 1) * cb);
+                            fill(B2);
+                            R = C, G = C;
+                            Rgemmtr_reference_cpu(u, t, t2, n, m, alpha, A.data(), lda, B2.data(), rb + 1, beta, R.data(), n + 1);
+                            Rgemmtr(u, t, t2, n, m, alpha, A.data(), lda, B2.data(), rb + 1, beta, G.data(), n + 1);
+                            compare(tag("Rgemmtr", {u, t, t2}, {n, m, ak, bk}), R, G);
+                        }
                     }
                 for (const char *s : sd)
                     for (const char *u : ul) {
@@ -265,6 +278,19 @@ int main()
                         }
                     }
             }
+        // Rlaswp (LAPACK): row interchanges of every column
+        for (long incx : {1L, -1L, 2L}) {
+            const long rows = m + 5, k1 = 2, k2 = std::min(rows, k1 + m);
+            std::vector<REAL> A((rows + 1) * (n + 33));
+            fill(A);
+            std::vector<INTEGER> ipiv((size_t)(std::labs(incx) * (k2 + 1)));
+            for (auto &v : ipiv)
+                v = (INTEGER)(k1 + rng() % (rows - k1 + 1));
+            std::vector<REAL> R(A), G(A);
+            Rlaswp_reference_cpu(n + 33, R.data(), rows + 1, k1, k2, ipiv.data(), incx);
+            Rlaswp(n + 33, G.data(), rows + 1, k1, k2, ipiv.data(), incx);
+            compare(tag("Rlaswp", {}, {m, n, incx}), R, G);
+        }
     }
 #ifdef RBLAS_TEST_GPU
     std::printf("lane BLAS (GPU): %ld checks, %ld failures\n", checks, failures);

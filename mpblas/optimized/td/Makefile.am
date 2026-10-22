@@ -35,41 +35,42 @@ Raxpy.cpp Raxpy_ref.cpp openmp/Raxpy_omp.cpp \
 ../common/blas/Rscal.cpp ../common/blas/Rscal_omp.cpp \
 ../common/blas/Rswap.cpp ../common/blas/Rswap_omp.cpp \
 ../common/blas/Rrot.cpp ../common/blas/Rrot_omp.cpp \
-../../reference/CRrot.cpp \
-../../reference/CRscal.cpp \
-../../reference/Caxpy.cpp \
-../../reference/Ccopy.cpp \
+../common/blas/Rgemmtr.cpp ../common/blas/Rgemmtr_omp.cpp \
+../common/blas/Cgemm.cpp ../common/blas/Cgemm_omp.cpp \
+../common/blas/Csymm.cpp ../common/blas/Csymm_omp.cpp \
+../common/blas/Chemm.cpp ../common/blas/Chemm_omp.cpp \
+../common/blas/Ctrmm.cpp ../common/blas/Ctrmm_omp.cpp \
+../common/blas/Ctrsm.cpp ../common/blas/Ctrsm_omp.cpp \
+../common/blas/Cgemv.cpp ../common/blas/Cgemv_omp.cpp \
+../common/blas/Cgeru.cpp ../common/blas/Cgeru_omp.cpp \
+../common/blas/Cgerc.cpp ../common/blas/Cgerc_omp.cpp \
+../common/blas/Caxpy.cpp ../common/blas/Caxpy_omp.cpp \
+../common/blas/Ccopy.cpp ../common/blas/Ccopy_omp.cpp \
+../common/blas/Cscal.cpp ../common/blas/Cscal_omp.cpp \
+../common/blas/CRscal.cpp ../common/blas/CRscal_omp.cpp \
+../common/blas/Cswap.cpp ../common/blas/Cswap_omp.cpp \
+../common/blas/CRrot.cpp ../common/blas/CRrot_omp.cpp \
+../common/blas/Csyrk.cpp ../common/blas/Csyrk_omp.cpp \
+../common/blas/Cherk.cpp ../common/blas/Cherk_omp.cpp \
+../common/blas/Csyr2k.cpp ../common/blas/Csyr2k_omp.cpp \
+../common/blas/Cher2k.cpp ../common/blas/Cher2k_omp.cpp \
+../common/blas/Cgemmtr.cpp ../common/blas/Cgemmtr_omp.cpp \
 ../../reference/Cdotc.cpp \
 ../../reference/Cdotu.cpp \
 ../../reference/Cgbmv.cpp \
-../../reference/Cgemm.cpp \
-../../reference/Cgemmtr.cpp \
-../../reference/Cgemv.cpp \
-../../reference/Cgerc.cpp \
-../../reference/Cgeru.cpp \
 ../../reference/Chbmv.cpp \
-../../reference/Chemm.cpp \
 ../../reference/Chemv.cpp \
 ../../reference/Cher.cpp \
 ../../reference/Cher2.cpp \
-../../reference/Cher2k.cpp \
-../../reference/Cherk.cpp \
 ../../reference/Chpmv.cpp \
 ../../reference/Chpr.cpp \
 ../../reference/Chpr2.cpp \
 ../../reference/Crotg.cpp \
-../../reference/Cscal.cpp \
-../../reference/Cswap.cpp \
-../../reference/Csymm.cpp \
-../../reference/Csyr2k.cpp \
-../../reference/Csyrk.cpp \
 ../../reference/Ctbmv.cpp \
 ../../reference/Ctbsv.cpp \
 ../../reference/Ctpmv.cpp \
 ../../reference/Ctpsv.cpp \
-../../reference/Ctrmm.cpp \
 ../../reference/Ctrmv.cpp \
-../../reference/Ctrsm.cpp \
 ../../reference/Ctrsv.cpp \
 ../../reference/Mlsame.cpp \
 ../../reference/Mxerbla.cpp \
@@ -78,7 +79,6 @@ Raxpy.cpp Raxpy_ref.cpp openmp/Raxpy_omp.cpp \
 ../../reference/RCnrm2.cpp \
 ../../reference/Rasum.cpp \
 ../../reference/Rgbmv.cpp \
-../../reference/Rgemmtr.cpp \
 ../../reference/Rnrm2.cpp \
 ../../reference/Rrotg.cpp \
 ../../reference/Rrotm.cpp \
@@ -96,6 +96,8 @@ Raxpy.cpp Raxpy_ref.cpp openmp/Raxpy_omp.cpp \
 ../../reference/iRamax.cpp \
 ../../reference/mplapackinit.cpp \
 $(MPLAPACK_OPT_REFERENCE_SOURCES) \
+../../../mplapack/optimized/common/Rlaswp.cpp \
+../../../mplapack/optimized/common/Claswp.cpp \
 $(MPLAPACK_TD_OPTIMIZED_SOURCES)
 
 libmplapack_td_opt_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO) -Wl,-rpath,$(libdir)
@@ -107,13 +109,17 @@ if IS_MINGW
 libmplapack_td_opt_la_LDFLAGS += -no-undefined
 endif
 
-# Lane-parallel Level 1/2/3 BLAS (../common/blas): bit-identical to the
-# reference routines.
-check_PROGRAMS = Rblas_omp_test_td Rgemm_opt_test Rgemm_gpu_host_test Rblas_gpu_host_test_td
+# Parallel Level 1/2/3 BLAS (../common/blas), real and complex:
+# bit-identical to the reference routines.
+check_PROGRAMS = Rblas_omp_test_td Cblas_omp_test_td Rgemm_opt_test Rgemm_gpu_host_test Rblas_gpu_host_test_td
 Rblas_omp_test_td_SOURCES = ../common/test/Rblas_omp_test.cpp
 Rblas_omp_test_td_CPPFLAGS = $(libmplapack_td_opt_la_CPPFLAGS)
 Rblas_omp_test_td_LDFLAGS = -static $(QD_RPATH_LDFLAGS)
 Rblas_omp_test_td_LDADD = libmplapack_td_opt.la $(libmplapack_td_opt_la_LIBADD)
+Cblas_omp_test_td_SOURCES = ../common/test/Cblas_omp_test.cpp
+Cblas_omp_test_td_CPPFLAGS = $(libmplapack_td_opt_la_CPPFLAGS)
+Cblas_omp_test_td_LDFLAGS = -static $(QD_RPATH_LDFLAGS)
+Cblas_omp_test_td_LDADD = libmplapack_td_opt.la $(libmplapack_td_opt_la_LIBADD)
 # Optimized Rgemm (../common/Rgemm_*_common.h): the blocked engine is
 # bit-identical to openmp/Rgemm_*_omp.cpp; Winograd and Ozaki are bounded.
 Rgemm_opt_test_SOURCES = test/Rgemm_opt_test.cpp
@@ -133,4 +139,4 @@ Rgemm_gpu_host_test_CPPFLAGS = $(libmplapack_td_opt_la_CPPFLAGS) -DRGEMM_TEST_TD
 Rgemm_gpu_host_test_CXXFLAGS = $(DD_CXXFLAGS)
 Rgemm_gpu_host_test_LDFLAGS = -static $(QD_RPATH_LDFLAGS)
 Rgemm_gpu_host_test_LDADD = libmplapack_td_opt.la $(libmplapack_td_opt_la_LIBADD)
-TESTS = Rblas_omp_test_td Rgemm_opt_test Rgemm_gpu_host_test Rblas_gpu_host_test_td
+TESTS = Rblas_omp_test_td Cblas_omp_test_td Rgemm_opt_test Rgemm_gpu_host_test Rblas_gpu_host_test_td

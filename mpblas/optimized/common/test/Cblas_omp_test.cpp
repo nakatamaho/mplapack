@@ -1,0 +1,304 @@
+/*
+ * Copyright (c) 2026
+ *      Nakata, Maho
+ *      All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+ * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+ * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGE.
+ *
+ */
+
+/*
+ * Test of the OpenMP lane BLAS of the optimized libraries (common/blas/*):
+ * every routine must give the result of the reference implementation
+ * (R*_reference_cpu, the unchanged reference code) bit for bit, for every
+ * option, alpha/beta in {1, 0, general}, odd sizes, leading dimensions
+ * larger than needed and increments 1, 2 and -2.  Compiled once per type
+ * with -DMPLAPACK_BUILD_WITH_<TYPE> and linked with libmplapack_<type>_opt.
+ */
+
+#include <mpblas.h>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <cmath>
+#include <random>
+#include <string>
+#include <vector>
+
+// The complex BLAS of the optimized libraries (../blas/C*.cpp) against the
+// reference routines, bit for bit, with every call run in parallel.
+
+void Cgemm_reference_cpu(const char *transa, const char *transb, INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX const alpha, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, COMPLEX const beta, COMPLEX *c, INTEGER const ldc);
+void Csymm_reference_cpu(const char *side, const char *uplo, INTEGER const m, INTEGER const n, COMPLEX const alpha, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, COMPLEX const beta, COMPLEX *c, INTEGER const ldc);
+void Chemm_reference_cpu(const char *side, const char *uplo, INTEGER const m, INTEGER const n, COMPLEX const alpha, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, COMPLEX const beta, COMPLEX *c, INTEGER const ldc);
+void Ctrmm_reference_cpu(const char *side, const char *uplo, const char *transa, const char *diag, INTEGER const m, INTEGER const n, COMPLEX const alpha, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb);
+void Ctrsm_reference_cpu(const char *side, const char *uplo, const char *transa, const char *diag, INTEGER const m, INTEGER const n, COMPLEX const alpha, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb);
+void Cgemv_reference_cpu(const char *trans, INTEGER const m, INTEGER const n, COMPLEX const alpha, COMPLEX *a, INTEGER const lda, COMPLEX *x, INTEGER const incx, COMPLEX const beta, COMPLEX *y, INTEGER const incy);
+void Cgeru_reference_cpu(INTEGER const m, INTEGER const n, COMPLEX const alpha, COMPLEX *x, INTEGER const incx, COMPLEX *y, INTEGER const incy, COMPLEX *a, INTEGER const lda);
+void Cgerc_reference_cpu(INTEGER const m, INTEGER const n, COMPLEX const alpha, COMPLEX *x, INTEGER const incx, COMPLEX *y, INTEGER const incy, COMPLEX *a, INTEGER const lda);
+void Caxpy_reference_cpu(INTEGER const n, COMPLEX const za, COMPLEX *zx, INTEGER const incx, COMPLEX *zy, INTEGER const incy);
+void Ccopy_reference_cpu(INTEGER const n, COMPLEX *zx, INTEGER const incx, COMPLEX *zy, INTEGER const incy);
+void Cscal_reference_cpu(INTEGER const n, COMPLEX const za, COMPLEX *zx, INTEGER const incx);
+void CRscal_reference_cpu(INTEGER const n, REAL const da, COMPLEX *zx, INTEGER const incx);
+void Cswap_reference_cpu(INTEGER const n, COMPLEX *zx, INTEGER const incx, COMPLEX *zy, INTEGER const incy);
+void CRrot_reference_cpu(INTEGER const n, COMPLEX *zx, INTEGER const incx, COMPLEX *zy, INTEGER const incy, REAL const c, REAL const s);
+
+void Csyrk_reference_cpu(const char *uplo, const char *trans, INTEGER const n, INTEGER const k, COMPLEX const alpha, COMPLEX *a, INTEGER const lda, COMPLEX const beta, COMPLEX *c, INTEGER const ldc);
+void Cherk_reference_cpu(const char *uplo, const char *trans, INTEGER const n, INTEGER const k, REAL const alpha, COMPLEX *a, INTEGER const lda, REAL const beta, COMPLEX *c, INTEGER const ldc);
+void Csyr2k_reference_cpu(const char *uplo, const char *trans, INTEGER const n, INTEGER const k, COMPLEX const alpha, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, COMPLEX const beta, COMPLEX *c, INTEGER const ldc);
+void Cher2k_reference_cpu(const char *uplo, const char *trans, INTEGER const n, INTEGER const k, COMPLEX const alpha, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, REAL const beta, COMPLEX *c, INTEGER const ldc);
+void Cgemmtr_reference_cpu(const char *uplo, const char *transa, const char *transb, INTEGER const n, INTEGER const k, COMPLEX const alpha, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, COMPLEX const beta, COMPLEX *c, INTEGER const ldc);
+
+void Claswp(INTEGER const n, COMPLEX *a, INTEGER const lda, INTEGER const k1, INTEGER const k2, INTEGER *ipiv, INTEGER const incx);
+void Claswp_reference_cpu(INTEGER const n, COMPLEX *a, INTEGER const lda, INTEGER const k1, INTEGER const k2, INTEGER *ipiv, INTEGER const incx);
+
+namespace {
+
+std::mt19937_64 rng(20261023);
+double u11() { return std::uniform_real_distribution<double>(-1.0, 1.0)(rng); }
+long failures = 0, checks = 0;
+
+REAL rnd()
+{
+    if (rng() % 9 == 0)
+        return REAL(0.0);
+    REAL x = REAL(u11());
+    for (int t = 1; t < 12; t++)
+        x += REAL(u11() * std::ldexp(1.0, -53 * t));
+    return x;
+}
+
+COMPLEX crnd() { return COMPLEX(rnd(), rnd()); }
+
+void fill(std::vector<COMPLEX> &v)
+{
+    for (auto &x : v)
+        x = crnd();
+}
+
+bool same(const REAL &a, const REAL &b)
+{
+#if defined(MPLAPACK_BUILD_WITH_MPFR)
+    if (mpfr_nan_p(a.get_mpfr_t()) || mpfr_nan_p(b.get_mpfr_t()))
+        return mpfr_nan_p(a.get_mpfr_t()) && mpfr_nan_p(b.get_mpfr_t());
+    return mpfr_equal_p(a.get_mpfr_t(), b.get_mpfr_t()) && mpfr_signbit(a.get_mpfr_t()) == mpfr_signbit(b.get_mpfr_t()) && mpfr_get_prec(a.get_mpfr_t()) == mpfr_get_prec(b.get_mpfr_t());
+#elif defined(MPLAPACK_BUILD_WITH_GMP)
+    return mpf_cmp(a.get_mpf_t(), b.get_mpf_t()) == 0;
+#elif defined(MPLAPACK_BUILD_WITH_BINARY80)
+    return (a == b && std::signbit((long double)a) == std::signbit((long double)b)) || (a != a && b != b);
+#else
+    return std::memcmp(&a, &b, sizeof(REAL)) == 0;
+#endif
+}
+
+bool csame(const COMPLEX &a, const COMPLEX &b) { return same(a.real(), b.real()) && same(a.imag(), b.imag()); }
+
+void compare(const std::string &what, const std::vector<COMPLEX> &ref, const std::vector<COMPLEX> &got)
+{
+    checks++;
+    for (size_t t = 0; t < ref.size(); t++)
+        if (!csame(ref[t], got[t])) {
+            failures++;
+            std::printf("FAIL %s: element %ld differs\n", what.c_str(), (long)t);
+            return;
+        }
+}
+
+COMPLEX scalar(int kind)
+{
+    if (kind == 0)
+        return COMPLEX(REAL(1.0), REAL(0.0));
+    if (kind == 1)
+        return COMPLEX(REAL(0.0), REAL(0.0));
+    return COMPLEX(rnd() + REAL(0.5), rnd());
+}
+
+std::string tag(const char *r, std::initializer_list<const char *> opts, std::initializer_list<long> nums)
+{
+    std::string s = r;
+    for (const char *o : opts)
+        s += std::string(" ") + o;
+    for (long v : nums)
+        s += " " + std::to_string(v);
+    return s;
+}
+
+} // namespace
+
+int main()
+{
+    setenv("MPLAPACK_BLAS_OMP_MIN", "1", 1);
+    const char *ul[] = {"U", "L"}, *tr[] = {"N", "T", "C"}, *sd[] = {"L", "R"}, *dg[] = {"N", "U"};
+    const long sizes[][3] = {{1, 1, 1}, {7, 5, 3}, {19, 23, 6}};
+    const long incs[] = {1, 2, -2};
+    for (auto &z : sizes) {
+        const long m = z[0], n = z[1], k = z[2];
+        for (int ak = 0; ak < 3; ak++)
+            for (int bk = 0; bk < 3; bk++) {
+                const COMPLEX alpha = scalar(ak), beta = scalar(bk);
+                for (const char *ta : tr)
+                    for (const char *tb : tr) {
+                        const long ra = ta[0] == 'N' ? m : k, ca = ta[0] == 'N' ? k : m;
+                        const long rb = tb[0] == 'N' ? k : n, cb = tb[0] == 'N' ? n : k;
+                        std::vector<COMPLEX> A((ra + 1) * ca), B((rb + 2) * cb), C((m + 3) * n);
+                        fill(A), fill(B), fill(C);
+                        std::vector<COMPLEX> R(C), G(C);
+                        Cgemm_reference_cpu(ta, tb, m, n, k, alpha, A.data(), ra + 1, B.data(), rb + 2, beta, R.data(), m + 3);
+                        Cgemm(ta, tb, m, n, k, alpha, A.data(), ra + 1, B.data(), rb + 2, beta, G.data(), m + 3);
+                        compare(tag("Cgemm", {ta, tb}, {m, n, k, ak, bk}), R, G);
+                    }
+                for (const char *u : ul)
+                    for (const char *t : tr) {
+                        const bool nt = t[0] == 'N';
+                        const long lda = (nt ? n : k) + 2, ca = nt ? k : n;
+                        std::vector<COMPLEX> A(lda * ca), B(lda * ca), C((n + 1) * n);
+                        fill(A), fill(B), fill(C);
+                        std::vector<COMPLEX> R(C), G(C);
+                        if (t[0] != 'C') {
+                            Csyrk_reference_cpu(u, t, n, k, alpha, A.data(), lda, beta, R.data(), n + 1);
+                            Csyrk(u, t, n, k, alpha, A.data(), lda, beta, G.data(), n + 1);
+                            compare(tag("Csyrk", {u, t}, {n, k, ak, bk}), R, G);
+                            R = C, G = C;
+                            Csyr2k_reference_cpu(u, t, n, k, alpha, A.data(), lda, B.data(), lda, beta, R.data(), n + 1);
+                            Csyr2k(u, t, n, k, alpha, A.data(), lda, B.data(), lda, beta, G.data(), n + 1);
+                            compare(tag("Csyr2k", {u, t}, {n, k, ak, bk}), R, G);
+                        }
+                        if (t[0] != 'T') {
+                            R = C, G = C;
+                            Cherk_reference_cpu(u, t, n, k, alpha.real(), A.data(), lda, beta.real(), R.data(), n + 1);
+                            Cherk(u, t, n, k, alpha.real(), A.data(), lda, beta.real(), G.data(), n + 1);
+                            compare(tag("Cherk", {u, t}, {n, k, ak, bk}), R, G);
+                            R = C, G = C;
+                            Cher2k_reference_cpu(u, t, n, k, alpha, A.data(), lda, B.data(), lda, beta.real(), R.data(), n + 1);
+                            Cher2k(u, t, n, k, alpha, A.data(), lda, B.data(), lda, beta.real(), G.data(), n + 1);
+                            compare(tag("Cher2k", {u, t}, {n, k, ak, bk}), R, G);
+                        }
+                        for (const char *t2 : tr) {
+                            const long rb = t2[0] == 'N' ? k : n, cb = t2[0] == 'N' ? n : k;
+                            std::vector<COMPLEX> B2((rb + 1) * cb);
+                            fill(B2);
+                            R = C, G = C;
+                            Cgemmtr_reference_cpu(u, t, t2, n, k, alpha, A.data(), lda, B2.data(), rb + 1, beta, R.data(), n + 1);
+                            Cgemmtr(u, t, t2, n, k, alpha, A.data(), lda, B2.data(), rb + 1, beta, G.data(), n + 1);
+                            compare(tag("Cgemmtr", {u, t, t2}, {n, k, ak, bk}), R, G);
+                        }
+                    }
+                for (const char *s : sd)
+                    for (const char *u : ul) {
+                        const long na = s[0] == 'L' ? m : n, lda = na + 1;
+                        std::vector<COMPLEX> A(lda * na), B((m + 2) * n), C((m + 3) * n);
+                        fill(A), fill(B), fill(C);
+                        std::vector<COMPLEX> R(C), G(C);
+                        Csymm_reference_cpu(s, u, m, n, alpha, A.data(), lda, B.data(), m + 2, beta, R.data(), m + 3);
+                        Csymm(s, u, m, n, alpha, A.data(), lda, B.data(), m + 2, beta, G.data(), m + 3);
+                        compare(tag("Csymm", {s, u}, {m, n, ak, bk}), R, G);
+                        R = C, G = C;
+                        Chemm_reference_cpu(s, u, m, n, alpha, A.data(), lda, B.data(), m + 2, beta, R.data(), m + 3);
+                        Chemm(s, u, m, n, alpha, A.data(), lda, B.data(), m + 2, beta, G.data(), m + 3);
+                        compare(tag("Chemm", {s, u}, {m, n, ak, bk}), R, G);
+                        if (bk != 0)
+                            continue;
+                        for (const char *t : tr)
+                            for (const char *d : dg) {
+                                std::vector<COMPLEX> T(A);
+                                for (long i = 0; i < na; i++)
+                                    T[i + i * lda] = T[i + i * lda] + COMPLEX(REAL(2.0 + na), REAL(0.0));
+                                R = B, G = B;
+                                Ctrmm_reference_cpu(s, u, t, d, m, n, alpha, T.data(), lda, R.data(), m + 2);
+                                Ctrmm(s, u, t, d, m, n, alpha, T.data(), lda, G.data(), m + 2);
+                                compare(tag("Ctrmm", {s, u, t, d}, {m, n, ak}), R, G);
+                                R = B, G = B;
+                                Ctrsm_reference_cpu(s, u, t, d, m, n, alpha, T.data(), lda, R.data(), m + 2);
+                                Ctrsm(s, u, t, d, m, n, alpha, T.data(), lda, G.data(), m + 2);
+                                compare(tag("Ctrsm", {s, u, t, d}, {m, n, ak}), R, G);
+                            }
+                    }
+                for (long ix : incs)
+                    for (long iy : incs) {
+                        const long lx = std::labs(ix), ly = std::labs(iy), mx = std::max(m, n);
+                        std::vector<COMPLEX> A((m + 2) * mx), X(lx * mx + 1), Y(ly * mx + 1);
+                        fill(A), fill(X), fill(Y);
+                        for (const char *t : tr) {
+                            std::vector<COMPLEX> R(Y), G(Y);
+                            Cgemv_reference_cpu(t, m, n, alpha, A.data(), m + 2, X.data(), ix, beta, R.data(), iy);
+                            Cgemv(t, m, n, alpha, A.data(), m + 2, X.data(), ix, beta, G.data(), iy);
+                            compare(tag("Cgemv", {t}, {m, n, ix, iy, ak, bk}), R, G);
+                        }
+                        {
+                            std::vector<COMPLEX> R(A), G(A);
+                            Cgeru_reference_cpu(m, n, alpha, X.data(), ix, Y.data(), iy, R.data(), m + 2);
+                            Cgeru(m, n, alpha, X.data(), ix, Y.data(), iy, G.data(), m + 2);
+                            compare(tag("Cgeru", {}, {m, n, ix, iy, ak}), R, G);
+                            R = A, G = A;
+                            Cgerc_reference_cpu(m, n, alpha, X.data(), ix, Y.data(), iy, R.data(), m + 2);
+                            Cgerc(m, n, alpha, X.data(), ix, Y.data(), iy, G.data(), m + 2);
+                            compare(tag("Cgerc", {}, {m, n, ix, iy, ak}), R, G);
+                        }
+                        {
+                            std::vector<COMPLEX> RX(X), RY(Y), GX(X), GY(Y);
+                            Caxpy_reference_cpu(n, alpha, RX.data(), ix, RY.data(), iy);
+                            Caxpy(n, alpha, GX.data(), ix, GY.data(), iy);
+                            compare(tag("Caxpy", {}, {n, ix, iy, ak}), RY, GY);
+                            RX = X, RY = Y, GX = X, GY = Y;
+                            Ccopy_reference_cpu(n, RX.data(), ix, RY.data(), iy);
+                            Ccopy(n, GX.data(), ix, GY.data(), iy);
+                            compare(tag("Ccopy", {}, {n, ix, iy}), RY, GY);
+                            RX = X, RY = Y, GX = X, GY = Y;
+                            Cswap_reference_cpu(n, RX.data(), ix, RY.data(), iy);
+                            Cswap(n, GX.data(), ix, GY.data(), iy);
+                            compare(tag("Cswap x", {}, {n, ix, iy}), RX, GX);
+                            compare(tag("Cswap y", {}, {n, ix, iy}), RY, GY);
+                            RX = X, RY = Y, GX = X, GY = Y;
+                            CRrot_reference_cpu(n, RX.data(), ix, RY.data(), iy, alpha.real(), beta.real());
+                            CRrot(n, GX.data(), ix, GY.data(), iy, alpha.real(), beta.real());
+                            compare(tag("CRrot x", {}, {n, ix, iy, ak, bk}), RX, GX);
+                            compare(tag("CRrot y", {}, {n, ix, iy, ak, bk}), RY, GY);
+                            if (ix > 0) {
+                                RX = X, GX = X;
+                                Cscal_reference_cpu(n, alpha, RX.data(), ix);
+                                Cscal(n, alpha, GX.data(), ix);
+                                compare(tag("Cscal", {}, {n, ix, ak}), RX, GX);
+                                RX = X, GX = X;
+                                CRscal_reference_cpu(n, alpha.real(), RX.data(), ix);
+                                CRscal(n, alpha.real(), GX.data(), ix);
+                                compare(tag("CRscal", {}, {n, ix, ak}), RX, GX);
+                            }
+                        }
+                    }
+            }
+        // Claswp (LAPACK): row interchanges of every column
+        for (long incx : {1L, -1L, 2L}) {
+            const long rows = m + 5, k1 = 2, k2 = std::min(rows, k1 + m);
+            std::vector<COMPLEX> A((rows + 1) * (n + 33));
+            fill(A);
+            std::vector<INTEGER> ipiv((size_t)(std::labs(incx) * (k2 + 1)));
+            for (auto &v : ipiv)
+                v = (INTEGER)(k1 + rng() % (rows - k1 + 1));
+            std::vector<COMPLEX> R(A), G(A);
+            Claswp_reference_cpu(n + 33, R.data(), rows + 1, k1, k2, ipiv.data(), incx);
+            Claswp(n + 33, G.data(), rows + 1, k1, k2, ipiv.data(), incx);
+            compare(tag("Claswp", {}, {m, n, incx}), R, G);
+        }
+    }
+    std::printf("complex BLAS (OpenMP): %ld checks, %ld failures\n", checks, failures);
+    return failures == 0 ? 0 : 1;
+}

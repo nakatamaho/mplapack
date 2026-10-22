@@ -110,14 +110,18 @@ def values(name, traits, conf):
     v["opt_rgemm_sources"] = " openmp/Rgemm_blocked_omp.cpp" if rgemm_opt else ""
     # Program names carry the backend: their objects of ../common/test/*.cpp
     # are built in that shared directory.
-    programs = ["Rblas_omp_test_%%b%%"]
+    programs = ["Rblas_omp_test_%%b%%", "Cblas_omp_test_%%b%%"]
     tests = ["",
-             "# Lane-parallel Level 1/2/3 BLAS (../common/blas): bit-identical to the",
-             "# reference routines.",
+             "# Parallel Level 1/2/3 BLAS (../common/blas), real and complex:",
+             "# bit-identical to the reference routines.",
              "Rblas_omp_test_%%b%%_SOURCES = ../common/test/Rblas_omp_test.cpp",
              "Rblas_omp_test_%%b%%_CPPFLAGS = $(libmplapack_%%b%%_opt_la_CPPFLAGS)",
              "Rblas_omp_test_%%b%%_LDFLAGS = -static" + (" $(QD_RPATH_LDFLAGS)" if qd else ""),
-             "Rblas_omp_test_%%b%%_LDADD = libmplapack_%%b%%_opt.la $(libmplapack_%%b%%_opt_la_LIBADD)"]
+             "Rblas_omp_test_%%b%%_LDADD = libmplapack_%%b%%_opt.la $(libmplapack_%%b%%_opt_la_LIBADD)",
+             "Cblas_omp_test_%%b%%_SOURCES = ../common/test/Cblas_omp_test.cpp",
+             "Cblas_omp_test_%%b%%_CPPFLAGS = $(libmplapack_%%b%%_opt_la_CPPFLAGS)",
+             "Cblas_omp_test_%%b%%_LDFLAGS = -static" + (" $(QD_RPATH_LDFLAGS)" if qd else ""),
+             "Cblas_omp_test_%%b%%_LDADD = libmplapack_%%b%%_opt.la $(libmplapack_%%b%%_opt_la_LIBADD)"]
     if c.get("qd_ops_test", "no") == "yes":
         programs.append("Rqd_ops_test")
         tests += ["# The dd/td/qd arithmetic of the SIMD and GPU kernels against libQD3's",

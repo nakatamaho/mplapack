@@ -277,7 +277,6 @@ MPLAPACK_ACCEL_REFERENCE_SOURCES = \
 ../../../../mplapack/reference/Clasr.cpp \
 ../../../../mplapack/reference/Classq.cpp \
 ../../../../mplapack/reference/Claswlq.cpp \
-../../../../mplapack/reference/Claswp.cpp \
 ../../../../mplapack/reference/Clasyf.cpp \
 ../../../../mplapack/reference/Clasyf_aa.cpp \
 ../../../../mplapack/reference/Clasyf_rk.cpp \
@@ -723,7 +722,6 @@ MPLAPACK_ACCEL_REFERENCE_SOURCES = \
 ../../../../mplapack/reference/Rlassq.cpp \
 ../../../../mplapack/reference/Rlasv2.cpp \
 ../../../../mplapack/reference/Rlaswlq.cpp \
-../../../../mplapack/reference/Rlaswp.cpp \
 ../../../../mplapack/reference/Rlasy2.cpp \
 ../../../../mplapack/reference/Rlasyf.cpp \
 ../../../../mplapack/reference/Rlasyf_aa.cpp \
@@ -972,3 +970,9 @@ MPLAPACK_ACCEL_REFERENCE_SOURCES = \
 ../../../../mplapack/reference/iMlazlr.cpp \
 ../../../../mplapack/reference/iMparam2stage.cpp \
 ../../../../mplapack/reference/iMparmq.cpp
+
+# Replaced in the optimized libraries by mplapack/optimized/common (same
+# basenames); listed here so that the manifest names every reference file.
+MPLAPACK_ACCEL_REFERENCE_SOURCES_SHADOWED = \
+../../../../mplapack/reference/Claswp.cpp \
+../../../../mplapack/reference/Rlaswp.cpp
