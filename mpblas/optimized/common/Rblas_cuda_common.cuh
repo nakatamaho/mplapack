@@ -97,6 +97,128 @@ template <class Ops> MPLAPACK_BLAS_HD void gpu_lane(const gpu_lane_args<Ops> &g,
     blas_lane(e, g.s, x, lane);
 }
 
+// ---- Rsyrk / Rsyr2k tiled: a TILE x TILE block of threads computes a tile
+// of C, the columns l of A (B) in chunks of TILE held in shared memory.  Every
+// thread performs the operations of l3_syrk / l3_syr2k (Rblas_lanes_common.h)
+// on its element in the same order, so the result is the same bit for bit.
+// The phases (load a chunk, use it) are separate functions so that the host
+// emulation runs them for all the threads of a block in turn.
+
+static const int BLAS_TILE = 16;
+
+template <class Ops> struct syrk_shared {
+    typedef typename Ops::F F;
+    // N: x(i, l) and x(j, l) of the chunk; T: x(l, i) and x(l, j)
+    F ai[BLAS_TILE][BLAS_TILE + 1], aj[BLAS_TILE][BLAS_TILE + 1]; // [l][t]
+    F bi[BLAS_TILE][BLAS_TILE + 1], bj[BLAS_TILE][BLAS_TILE + 1];
+};
+
+template <class Ops> struct syrk_state {
+    typename Ops::F c, t1, t2;
+};
+
+template <class Ops> MPLAPACK_BLAS_HD bool syrk_mine(const blas_shape &s, long i, long j) { return i < s.n && j < s.n && (s.upper ? i <= j : i >= j); }
+
+template <class Ops> MPLAPACK_BLAS_HD void syrk_init(const gpu_lane_args<Ops> &g, syrk_state<Ops> &st, long i, long j)
+{
+    const blas_shape &s = g.s;
+    if (!syrk_mine<Ops>(s, i, j))
+        return;
+    if (!s.trans) {
+        if (s.beta_zero)
+            st.c = Ops::from_d(0.0);
+        else if (!s.beta_one)
+            st.c = Ops::mul(g.be[0], g.c[i + j * g.ldc]);
+        else
+            st.c = g.c[i + j * g.ldc];
+    } else {
+        st.t1 = Ops::from_d(0.0);
+        st.t2 = Ops::from_d(0.0);
+    }
+}
+
+// thread (ti, tj) of block (bi, bj) loads element (ti, tj) of each chunk array
+template <class Ops> MPLAPACK_BLAS_HD void syrk_load(const gpu_lane_args<Ops> &g, syrk_shared<Ops> &sh, long i0, long j0, long p0, int ti, int tj)
+{
+    const blas_shape &s = g.s;
+    const bool two = s.op == L3_SYR2K;
+    const long l = p0 + tj; // the chunk column (N) or row (T) tj
+    if (l < s.k) {
+        const long ri = i0 + ti, rj = j0 + ti;
+        if (ri < s.n) {
+            sh.ai[tj][ti] = s.trans ? g.a[l + ri * g.lda] : g.a[ri + l * g.lda];
+            if (two)
+                sh.bi[tj][ti] = s.trans ? g.b[l + ri * g.ldb] : g.b[ri + l * g.ldb];
+        }
+        if (rj < s.n) {
+            sh.aj[tj][ti] = s.trans ? g.a[l + rj * g.lda] : g.a[rj + l * g.lda];
+            if (two)
+                sh.bj[tj][ti] = s.trans ? g.b[l + rj * g.ldb] : g.b[rj + l * g.ldb];
+        }
+    }
+}
+
+template <class Ops> MPLAPACK_BLAS_HD void syrk_step(const gpu_lane_args<Ops> &g, const syrk_shared<Ops> &sh, syrk_state<Ops> &st, long i, long j, long kc, int ti, int tj)
+{
+    typedef typename Ops::F F;
+    const blas_shape &s = g.s;
+    if (!syrk_mine<Ops>(s, i, j))
+        return;
+    const F al = g.al[0];
+    const F zero = Ops::from_d(0.0);
+    for (long l = 0; l < kc; l++) {
+        const F &ail = sh.ai[l][ti], &ajl = sh.aj[l][tj];
+        if (s.op == L3_SYRK) {
+            if (!s.trans) {
+                if (!Ops::eq(ajl, zero)) {
+                    const F t = Ops::mul(al, ajl);         // temp = alpha * a(j,l)
+                    st.c = Ops::add(st.c, Ops::mul(t, ail)); // c(i,j) += temp * a(i,l)
+                }
+            } else {
+                st.t1 = Ops::add(st.t1, Ops::mul(ail, ajl)); // temp += a(l,i) * a(l,j)
+            }
+        } else {
+            const F &bil = sh.bi[l][ti], &bjl = sh.bj[l][tj];
+            if (!s.trans) {
+                if (!Ops::eq(ajl, zero) || !Ops::eq(bjl, zero)) {
+                    const F t1 = Ops::mul(al, bjl), t2 = Ops::mul(al, ajl);
+                    st.c = Ops::add(st.c, Ops::add(Ops::mul(ail, t1), Ops::mul(bil, t2)));
+                }
+            } else {
+                st.t1 = Ops::add(st.t1, Ops::mul(ail, bjl)); // temp1 += a(l,i) * b(l,j)
+                st.t2 = Ops::add(st.t2, Ops::mul(bil, ajl)); // temp2 += b(l,i) * a(l,j)
+            }
+        }
+    }
+}
+
+template <class Ops> MPLAPACK_BLAS_HD void syrk_finish(const gpu_lane_args<Ops> &g, syrk_state<Ops> &st, long i, long j)
+{
+    typedef typename Ops::F F;
+    const blas_shape &s = g.s;
+    if (!syrk_mine<Ops>(s, i, j))
+        return;
+    F c = st.c;
+    if (s.trans) {
+        const F al = g.al[0], be = g.be[0];
+        if (s.op == L3_SYRK) {
+            c = Ops::mul(al, st.t1); // c = alpha*temp [+ beta*c]
+            if (!s.beta_zero)
+                c = Ops::add(c, Ops::mul(be, g.c[i + j * g.ldc]));
+        } else if (s.beta_zero) {
+            c = Ops::add(Ops::mul(al, st.t1), Ops::mul(al, st.t2));
+        } else {
+            c = Ops::mul(be, g.c[i + j * g.ldc]);
+            c = Ops::add(c, Ops::mul(al, st.t1));
+            c = Ops::add(c, Ops::mul(al, st.t2));
+        }
+    }
+    g.c[i + j * g.ldc] = c;
+}
+
+// the tiled form is used for Rsyrk and Rsyr2k
+template <class Ops> inline bool syrk_tiled(const blas_shape &s) { return s.op == L3_SYRK || s.op == L3_SYR2K; }
+
 #if defined(__CUDACC__)
 
 template <class Ops> __global__ void k_blas_lanes(gpu_lane_args<Ops> g, long lanes)
@@ -104,6 +226,27 @@ template <class Ops> __global__ void k_blas_lanes(gpu_lane_args<Ops> g, long lan
     const long lane = (long)blockIdx.x * blockDim.x + threadIdx.x;
     if (lane < lanes)
         gpu_lane<Ops>(g, lane);
+}
+
+template <class Ops> __global__ void k_syrk_tiled(gpu_lane_args<Ops> g)
+{
+    __shared__ syrk_shared<Ops> sh;
+    const int ti = threadIdx.x, tj = threadIdx.y;
+    const long i0 = (long)blockIdx.x * BLAS_TILE, j0 = (long)blockIdx.y * BLAS_TILE;
+    // blocks entirely outside the referenced triangle have nothing to do
+    if (g.s.upper ? i0 > j0 + BLAS_TILE - 1 : j0 > i0 + BLAS_TILE - 1)
+        return;
+    const long i = i0 + ti, j = j0 + tj;
+    syrk_state<Ops> st;
+    syrk_init<Ops>(g, st, i, j);
+    for (long p0 = 0; p0 < g.s.k; p0 += BLAS_TILE) {
+        syrk_load<Ops>(g, sh, i0, j0, p0, ti, tj);
+        __syncthreads();
+        const long kc = g.s.k - p0 < BLAS_TILE ? g.s.k - p0 : BLAS_TILE;
+        syrk_step<Ops>(g, sh, st, i, j, kc, ti, tj);
+        __syncthreads();
+    }
+    syrk_finish<Ops>(g, st, i, j);
 }
 
 // Device copy of the span of an operand.
@@ -153,7 +296,13 @@ template <class Ops> int blas_gpu(const blas_shape &s, const typename Ops::F &al
     g.lda = a.ld, g.ldb = b.ld, g.ldc = c.ld;
     const long lanes = blas_lanes(s);
     const int threads = 64;
-    if (lanes > 0) {
+    if (syrk_tiled<Ops>(s)) {
+        const unsigned nb = (unsigned)((s.n + BLAS_TILE - 1) / BLAS_TILE);
+        k_syrk_tiled<Ops><<<dim3(nb, nb), dim3(BLAS_TILE, BLAS_TILE)>>>(g);
+        e = cudaGetLastError();
+        if (e == cudaSuccess)
+            e = cudaDeviceSynchronize();
+    } else if (lanes > 0) {
         k_blas_lanes<Ops><<<(unsigned)((lanes + threads - 1) / threads), threads>>>(g, lanes);
         e = cudaGetLastError();
         if (e == cudaSuccess)
@@ -201,11 +350,42 @@ template <class Ops> int blas_gpu(const blas_shape &s, const typename Ops::F &al
     g.al = dal.at0(), g.be = dbe.at0(), g.a = da.at0(), g.b = db.at0(), g.c = dc.at0();
     g.lda = a.ld, g.ldb = b.ld, g.ldc = c.ld;
     const long lanes = blas_lanes(s);
+    if (syrk_tiled<Ops>(s)) {
+        // the tiled kernel, the threads of a block phase by phase
+        const long nb = (s.n + BLAS_TILE - 1) / BLAS_TILE;
 #ifdef _OPENMP
 #pragma omp parallel for schedule(dynamic, 1)
 #endif
-    for (long lane = 0; lane < lanes; lane++)
-        gpu_lane<Ops>(g, lane);
+        for (long b = 0; b < nb * nb; b++) {
+            const long i0 = (b % nb) * BLAS_TILE, j0 = (b / nb) * BLAS_TILE;
+            if (s.upper ? i0 > j0 + BLAS_TILE - 1 : j0 > i0 + BLAS_TILE - 1)
+                continue;
+            std::vector<syrk_shared<Ops> > shv(1);
+            syrk_shared<Ops> &sh = shv[0];
+            std::vector<syrk_state<Ops> > st((size_t)(BLAS_TILE * BLAS_TILE));
+            for (int tj = 0; tj < BLAS_TILE; tj++)
+                for (int ti = 0; ti < BLAS_TILE; ti++)
+                    syrk_init<Ops>(g, st[(size_t)(ti + tj * BLAS_TILE)], i0 + ti, j0 + tj);
+            for (long p0 = 0; p0 < s.k; p0 += BLAS_TILE) {
+                for (int tj = 0; tj < BLAS_TILE; tj++)
+                    for (int ti = 0; ti < BLAS_TILE; ti++)
+                        syrk_load<Ops>(g, sh, i0, j0, p0, ti, tj);
+                const long kc = s.k - p0 < BLAS_TILE ? s.k - p0 : BLAS_TILE;
+                for (int tj = 0; tj < BLAS_TILE; tj++)
+                    for (int ti = 0; ti < BLAS_TILE; ti++)
+                        syrk_step<Ops>(g, sh, st[(size_t)(ti + tj * BLAS_TILE)], i0 + ti, j0 + tj, kc, ti, tj);
+            }
+            for (int tj = 0; tj < BLAS_TILE; tj++)
+                for (int ti = 0; ti < BLAS_TILE; ti++)
+                    syrk_finish<Ops>(g, st[(size_t)(ti + tj * BLAS_TILE)], i0 + ti, j0 + tj);
+        }
+    } else {
+#ifdef _OPENMP
+#pragma omp parallel for schedule(dynamic, 1)
+#endif
+        for (long lane = 0; lane < lanes; lane++)
+            gpu_lane<Ops>(g, lane);
+    }
     dc.down();
     da.down();
     return 0;
