@@ -55,6 +55,13 @@ void Rtrmv_reference_cpu(const char *uplo, const char *trans, const char *diag, 
 void Rger_reference_cpu(INTEGER const m, INTEGER const n, REAL const alpha, REAL *x, INTEGER const incx, REAL *y, INTEGER const incy, REAL *a, INTEGER const lda);
 void Rsyr_reference_cpu(const char *uplo, INTEGER const n, REAL const alpha, REAL *x, INTEGER const incx, REAL *a, INTEGER const lda);
 void Rsyr2_reference_cpu(const char *uplo, INTEGER const n, REAL const alpha, REAL *x, INTEGER const incx, REAL *y, INTEGER const incy, REAL *a, INTEGER const lda);
+void Rsbmv_reference_cpu(const char *uplo, INTEGER const n, INTEGER const k, REAL const alpha, REAL *a, INTEGER const lda, REAL *x, INTEGER const incx, REAL const beta, REAL *y, INTEGER const incy);
+void Rspmv_reference_cpu(const char *uplo, INTEGER const n, REAL const alpha, REAL *ap, REAL *x, INTEGER const incx, REAL const beta, REAL *y, INTEGER const incy);
+void Rgbmv_reference_cpu(const char *trans, INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku, REAL const alpha, REAL *a, INTEGER const lda, REAL *x, INTEGER const incx, REAL const beta, REAL *y, INTEGER const incy);
+void Rtbmv_reference_cpu(const char *uplo, const char *trans, const char *diag, INTEGER const n, INTEGER const k, REAL *a, INTEGER const lda, REAL *x, INTEGER const incx);
+void Rtpmv_reference_cpu(const char *uplo, const char *trans, const char *diag, INTEGER const n, REAL *ap, REAL *x, INTEGER const incx);
+void Rspr_reference_cpu(const char *uplo, INTEGER const n, REAL const alpha, REAL *x, INTEGER const incx, REAL *ap);
+void Rspr2_reference_cpu(const char *uplo, INTEGER const n, REAL const alpha, REAL *x, INTEGER const incx, REAL *y, INTEGER const incy, REAL *ap);
 void Rscal_reference_cpu(INTEGER const n, REAL const da, REAL *dx, INTEGER const incx);
 void Rswap_reference_cpu(INTEGER const n, REAL *dx, INTEGER const incx, REAL *dy, INTEGER const incy);
 void Rgemmtr_reference_cpu(const char *uplo, const char *transa, const char *transb, INTEGER const n, INTEGER const k, REAL const alpha, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL const beta, REAL *c, INTEGER const ldc);
@@ -261,6 +268,57 @@ int main()
                             Rsyr2(u, nn, alpha, X.data(), ix, Y.data(), iy, G.data(), m + 2);
                             compare(tag("Rsyr2", {u}, {nn, ix, iy, ak}), R, G);
                         }
+                        // band and packed Level 2 (Rsbmv ... Rspr2)
+                        const long mx = std::max(m, n);
+                        for (const char *u : ul) {
+                            std::vector<REAL> AP((size_t)(nn * (nn + 1) / 2 + 1));
+                            fill(AP);
+                            std::vector<REAL> R(Y), G(Y);
+                            Rspmv_reference_cpu(u, nn, alpha, AP.data(), X.data(), ix, beta, R.data(), iy);
+                            Rspmv(u, nn, alpha, AP.data(), X.data(), ix, beta, G.data(), iy);
+                            compare(tag("Rspmv", {u}, {nn, ix, iy, ak, bk}), R, G);
+                            R = AP, G = AP;
+                            Rspr_reference_cpu(u, nn, alpha, X.data(), ix, R.data());
+                            Rspr(u, nn, alpha, X.data(), ix, G.data());
+                            compare(tag("Rspr", {u}, {nn, ix, ak}), R, G);
+                            R = AP, G = AP;
+                            Rspr2_reference_cpu(u, nn, alpha, X.data(), ix, Y.data(), iy, R.data());
+                            Rspr2(u, nn, alpha, X.data(), ix, Y.data(), iy, G.data());
+                            compare(tag("Rspr2", {u}, {nn, ix, iy, ak}), R, G);
+                            for (const char *t : tr)
+                                for (const char *d : dg) {
+                                    R = X, G = X;
+                                    Rtpmv_reference_cpu(u, t, d, nn, AP.data(), R.data(), ix);
+                                    Rtpmv(u, t, d, nn, AP.data(), G.data(), ix);
+                                    compare(tag("Rtpmv", {u, t, d}, {nn, ix}), R, G);
+                                }
+                            for (long kb : {0L, 1L, 3L}) {
+                                std::vector<REAL> AB((size_t)((kb + 2) * mx));
+                                fill(AB);
+                                R = Y, G = Y;
+                                Rsbmv_reference_cpu(u, nn, kb, alpha, AB.data(), kb + 2, X.data(), ix, beta, R.data(), iy);
+                                Rsbmv(u, nn, kb, alpha, AB.data(), kb + 2, X.data(), ix, beta, G.data(), iy);
+                                compare(tag("Rsbmv", {u}, {nn, kb, ix, iy, ak, bk}), R, G);
+                                for (const char *t : tr)
+                                    for (const char *d : dg) {
+                                        R = X, G = X;
+                                        Rtbmv_reference_cpu(u, t, d, nn, kb, AB.data(), kb + 2, R.data(), ix);
+                                        Rtbmv(u, t, d, nn, kb, AB.data(), kb + 2, G.data(), ix);
+                                        compare(tag("Rtbmv", {u, t, d}, {nn, kb, ix}), R, G);
+                                    }
+                            }
+                        }
+                        for (long kl : {0L, 2L})
+                            for (long ku : {0L, 1L, 4L}) {
+                                std::vector<REAL> AB((size_t)((kl + ku + 2) * mx));
+                                fill(AB);
+                                for (const char *t : tr) {
+                                    std::vector<REAL> R(Y), G(Y);
+                                    Rgbmv_reference_cpu(t, m, n, kl, ku, alpha, AB.data(), kl + ku + 2, X.data(), ix, beta, R.data(), iy);
+                                    Rgbmv(t, m, n, kl, ku, alpha, AB.data(), kl + ku + 2, X.data(), ix, beta, G.data(), iy);
+                                    compare(tag("Rgbmv", {t}, {m, n, kl, ku, ix, iy, ak, bk}), R, G);
+                                }
+                            }
                         {
                             std::vector<REAL> R(A), G(A);
                             Rger_reference_cpu(m, n, alpha, X.data(), ix, Y.data(), iy, R.data(), m + 2);

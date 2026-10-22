@@ -17,6 +17,7 @@ misc/cpu_os_detection.sh \
 misc/check_unique_symbols.sh \
 misc/check_source_manifests.sh \
 misc/gen_blas_column_variants.py \
+misc/gen_blas_l2_ranges.py \
 misc/gen_blas_device_reference.py \
 misc/check_mpfr_shared_load.py \
 misc/check_mpfr_elf_dependencies.sh \

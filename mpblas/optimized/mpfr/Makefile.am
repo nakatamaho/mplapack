@@ -60,36 +60,36 @@ Raxpy.cpp Raxpy_ref.cpp openmp/Raxpy_omp.cpp \
 ../common/blas/Cher2.cpp ../common/blas/Cher2_omp.cpp \
 ../../reference/Cdotc.cpp \
 ../../reference/Cdotu.cpp \
-../../reference/Cgbmv.cpp \
-../../reference/Chbmv.cpp \
-../../reference/Chemv.cpp \
-../../reference/Chpmv.cpp \
-../../reference/Chpr.cpp \
-../../reference/Chpr2.cpp \
+../common/blas/Cgbmv.cpp ../common/blas/Cgbmv_omp.cpp \
+../common/blas/Chbmv.cpp ../common/blas/Chbmv_omp.cpp \
+../common/blas/Chemv.cpp ../common/blas/Chemv_omp.cpp \
+../common/blas/Chpmv.cpp ../common/blas/Chpmv_omp.cpp \
+../common/blas/Chpr.cpp ../common/blas/Chpr_omp.cpp \
+../common/blas/Chpr2.cpp ../common/blas/Chpr2_omp.cpp \
 ../../reference/Crotg.cpp \
-../../reference/Ctbmv.cpp \
+../common/blas/Ctbmv.cpp ../common/blas/Ctbmv_omp.cpp \
 ../../reference/Ctbsv.cpp \
-../../reference/Ctpmv.cpp \
+../common/blas/Ctpmv.cpp ../common/blas/Ctpmv_omp.cpp \
 ../../reference/Ctpsv.cpp \
-../../reference/Ctrmv.cpp \
+../common/blas/Ctrmv.cpp ../common/blas/Ctrmv_omp.cpp \
 ../../reference/Mlsame.cpp \
 ../../reference/Mxerbla.cpp \
 ../../reference/RCabs1.cpp \
 ../../reference/RCasum.cpp \
 ../../reference/RCnrm2.cpp \
 ../../reference/Rasum.cpp \
-../../reference/Rgbmv.cpp \
+../common/blas/Rgbmv.cpp ../common/blas/Rgbmv_omp.cpp \
 ../../reference/Rnrm2.cpp \
 ../../reference/Rrotg.cpp \
 ../../reference/Rrotm.cpp \
 ../../reference/Rrotmg.cpp \
-../../reference/Rsbmv.cpp \
-../../reference/Rspmv.cpp \
-../../reference/Rspr.cpp \
-../../reference/Rspr2.cpp \
-../../reference/Rtbmv.cpp \
+../common/blas/Rsbmv.cpp ../common/blas/Rsbmv_omp.cpp \
+../common/blas/Rspmv.cpp ../common/blas/Rspmv_omp.cpp \
+../common/blas/Rspr.cpp ../common/blas/Rspr_omp.cpp \
+../common/blas/Rspr2.cpp ../common/blas/Rspr2_omp.cpp \
+../common/blas/Rtbmv.cpp ../common/blas/Rtbmv_omp.cpp \
 ../../reference/Rtbsv.cpp \
-../../reference/Rtpmv.cpp \
+../common/blas/Rtpmv.cpp ../common/blas/Rtpmv_omp.cpp \
 ../../reference/Rtpsv.cpp \
 ../../reference/iCamax.cpp \
 ../../reference/iRamax.cpp \

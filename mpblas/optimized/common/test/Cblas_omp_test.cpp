@@ -74,6 +74,15 @@ void Claswp_reference_cpu(INTEGER const n, COMPLEX *a, INTEGER const lda, INTEGE
 void Ctrsv_reference_cpu(const char *uplo, const char *trans, const char *diag, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *x, INTEGER const incx);
 void Cher_reference_cpu(const char *uplo, INTEGER const n, REAL const alpha, COMPLEX *x, INTEGER const incx, COMPLEX *a, INTEGER const lda);
 void Cher2_reference_cpu(const char *uplo, INTEGER const n, COMPLEX const alpha, COMPLEX *x, INTEGER const incx, COMPLEX *y, INTEGER const incy, COMPLEX *a, INTEGER const lda);
+void Chemv_reference_cpu(const char *uplo, INTEGER const n, COMPLEX const alpha, COMPLEX *a, INTEGER const lda, COMPLEX *x, INTEGER const incx, COMPLEX const beta, COMPLEX *y, INTEGER const incy);
+void Chbmv_reference_cpu(const char *uplo, INTEGER const n, INTEGER const k, COMPLEX const alpha, COMPLEX *a, INTEGER const lda, COMPLEX *x, INTEGER const incx, COMPLEX const beta, COMPLEX *y, INTEGER const incy);
+void Chpmv_reference_cpu(const char *uplo, INTEGER const n, COMPLEX const alpha, COMPLEX *ap, COMPLEX *x, INTEGER const incx, COMPLEX const beta, COMPLEX *y, INTEGER const incy);
+void Cgbmv_reference_cpu(const char *trans, INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku, COMPLEX const alpha, COMPLEX *a, INTEGER const lda, COMPLEX *x, INTEGER const incx, COMPLEX const beta, COMPLEX *y, INTEGER const incy);
+void Ctrmv_reference_cpu(const char *uplo, const char *trans, const char *diag, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *x, INTEGER const incx);
+void Ctbmv_reference_cpu(const char *uplo, const char *trans, const char *diag, INTEGER const n, INTEGER const k, COMPLEX *a, INTEGER const lda, COMPLEX *x, INTEGER const incx);
+void Ctpmv_reference_cpu(const char *uplo, const char *trans, const char *diag, INTEGER const n, COMPLEX *ap, COMPLEX *x, INTEGER const incx);
+void Chpr_reference_cpu(const char *uplo, INTEGER const n, REAL const alpha, COMPLEX *x, INTEGER const incx, COMPLEX *ap);
+void Chpr2_reference_cpu(const char *uplo, INTEGER const n, COMPLEX const alpha, COMPLEX *x, INTEGER const incx, COMPLEX *y, INTEGER const incy, COMPLEX *ap);
 
 namespace {
 
@@ -284,6 +293,64 @@ int main()
                                     compare(tag("Ctrsv", {u, t, d}, {nn, ix}), RX, GX);
                                 }
                         }
+                        // Hermitian, band and packed Level 2 (Chemv ... Chpr2)
+                        for (const char *u : ul) {
+                            std::vector<COMPLEX> RY(Y), GY(Y);
+                            Chemv_reference_cpu(u, nn, alpha, A.data(), m + 2, X.data(), ix, beta, RY.data(), iy);
+                            Chemv(u, nn, alpha, A.data(), m + 2, X.data(), ix, beta, GY.data(), iy);
+                            compare(tag("Chemv", {u}, {nn, ix, iy, ak, bk}), RY, GY);
+                            std::vector<COMPLEX> AP((size_t)(nn * (nn + 1) / 2 + 1));
+                            fill(AP);
+                            RY = Y, GY = Y;
+                            Chpmv_reference_cpu(u, nn, alpha, AP.data(), X.data(), ix, beta, RY.data(), iy);
+                            Chpmv(u, nn, alpha, AP.data(), X.data(), ix, beta, GY.data(), iy);
+                            compare(tag("Chpmv", {u}, {nn, ix, iy, ak, bk}), RY, GY);
+                            std::vector<COMPLEX> RP(AP), GP(AP);
+                            Chpr_reference_cpu(u, nn, alpha.real(), X.data(), ix, RP.data());
+                            Chpr(u, nn, alpha.real(), X.data(), ix, GP.data());
+                            compare(tag("Chpr", {u}, {nn, ix, ak}), RP, GP);
+                            RP = AP, GP = AP;
+                            Chpr2_reference_cpu(u, nn, alpha, X.data(), ix, Y.data(), iy, RP.data());
+                            Chpr2(u, nn, alpha, X.data(), ix, Y.data(), iy, GP.data());
+                            compare(tag("Chpr2", {u}, {nn, ix, iy, ak}), RP, GP);
+                            for (long kb : {0L, 1L, 3L}) {
+                                std::vector<COMPLEX> AB((size_t)((kb + 2) * mx));
+                                fill(AB);
+                                RY = Y, GY = Y;
+                                Chbmv_reference_cpu(u, nn, kb, alpha, AB.data(), kb + 2, X.data(), ix, beta, RY.data(), iy);
+                                Chbmv(u, nn, kb, alpha, AB.data(), kb + 2, X.data(), ix, beta, GY.data(), iy);
+                                compare(tag("Chbmv", {u}, {nn, kb, ix, iy, ak, bk}), RY, GY);
+                                for (const char *t : tr)
+                                    for (const char *d : dg) {
+                                        std::vector<COMPLEX> RX(X), GX(X);
+                                        Ctbmv_reference_cpu(u, t, d, nn, kb, AB.data(), kb + 2, RX.data(), ix);
+                                        Ctbmv(u, t, d, nn, kb, AB.data(), kb + 2, GX.data(), ix);
+                                        compare(tag("Ctbmv", {u, t, d}, {nn, kb, ix}), RX, GX);
+                                    }
+                            }
+                            for (const char *t : tr)
+                                for (const char *d : dg) {
+                                    std::vector<COMPLEX> RX(X), GX(X);
+                                    Ctrmv_reference_cpu(u, t, d, nn, A.data(), m + 2, RX.data(), ix);
+                                    Ctrmv(u, t, d, nn, A.data(), m + 2, GX.data(), ix);
+                                    compare(tag("Ctrmv", {u, t, d}, {nn, ix}), RX, GX);
+                                    RX = X, GX = X;
+                                    Ctpmv_reference_cpu(u, t, d, nn, AP.data(), RX.data(), ix);
+                                    Ctpmv(u, t, d, nn, AP.data(), GX.data(), ix);
+                                    compare(tag("Ctpmv", {u, t, d}, {nn, ix}), RX, GX);
+                                }
+                        }
+                        for (long kl : {0L, 2L})
+                            for (long ku : {0L, 1L, 4L}) {
+                                std::vector<COMPLEX> AB((size_t)((kl + ku + 2) * mx));
+                                fill(AB);
+                                for (const char *t : tr) {
+                                    std::vector<COMPLEX> RY(Y), GY(Y);
+                                    Cgbmv_reference_cpu(t, m, n, kl, ku, alpha, AB.data(), kl + ku + 2, X.data(), ix, beta, RY.data(), iy);
+                                    Cgbmv(t, m, n, kl, ku, alpha, AB.data(), kl + ku + 2, X.data(), ix, beta, GY.data(), iy);
+                                    compare(tag("Cgbmv", {t}, {m, n, kl, ku, ix, iy, ak, bk}), RY, GY);
+                                }
+                            }
                         {
                             std::vector<COMPLEX> R(A), G(A);
                             Cgeru_reference_cpu(m, n, alpha, X.data(), ix, Y.data(), iy, R.data(), m + 2);
