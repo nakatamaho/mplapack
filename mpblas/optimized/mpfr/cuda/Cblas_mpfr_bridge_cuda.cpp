@@ -39,7 +39,7 @@
  *     MPLAPACK_MPFR_CUDA_L12=1; rounding mode other than MPFR_RNDN; fewer
  *     multiply-adds than MPLAPACK_MPFR_CUDA_MIN_MNK;
  *   - a default precision p (mpfr_class, both components of mpc_class) above
- *     16384 bits.  p = 256/512/768/1024/2048 uses cu_freal (zeros are +0),
+ *     4096 bits (16384 with MPLAPACK_MPFR_CUDA_RT_LARGE).  p = 256/512/768/1024/2048 uses cu_freal (zeros are +0),
  *     other precisions (or MPLAPACK_MPFR_CUDA_FORCE_RUNTIME=1) the MPFR/MPC
  *     functions themselves (libmpc_cuda; MPLAPACK_MPFR_CUDA_RUNTIME=0 turns
  *     them off), whose results are the reference ones signed zeros included;
@@ -304,7 +304,8 @@ template <class Eng> struct pack_ctx {
 // The engine for the default precision p: cu_freal for the precisions of
 // MPLAPACK_MPFR_CUDA_FIXED_PRECISIONS (unless MPLAPACK_MPFR_CUDA_FORCE_RUNTIME=1),
 // otherwise the MPFR/MPC functions with the smallest limb count >= p/64
-// (p <= 16384; larger precisions stay on the CPU).
+// (p <= 4096, with MPLAPACK_MPFR_CUDA_RT_LARGE p <= 16384; larger precisions
+// stay on the CPU).
 #define MPLAPACK_MPFR_CBLAS_FIXED(PB, F, ...)                                     \
     case PB: {                                                                    \
         pack_ctx<fixed_engine<PB> > ctx(PB);                                      \
@@ -315,6 +316,11 @@ template <class Eng> struct pack_ctx {
         pack_ctx<rt_engine<NL> > ctx(p);                                          \
         return mplapack_cblas_gpu::F<mplapack_blas_dev::mpfr_rt<NL> >(ctx, __VA_ARGS__); \
     }
+#ifdef MPLAPACK_MPFR_CUDA_RT_LARGE
+#define MPLAPACK_MPFR_CBLAS_RT_LARGE(F, ...) MPLAPACK_MPFR_CBLAS_RT(128, F, __VA_ARGS__) MPLAPACK_MPFR_CBLAS_RT(256, F, __VA_ARGS__)
+#else
+#define MPLAPACK_MPFR_CBLAS_RT_LARGE(F, ...)
+#endif
 #define MPLAPACK_MPFR_CBLAS_RUN(F, ...)                                           \
     ([&]() -> bool {                                                              \
         const long p = (long)mpfrxx::default_precision_bits();                    \
@@ -336,8 +342,7 @@ template <class Eng> struct pack_ctx {
         MPLAPACK_MPFR_CBLAS_RT(16, F, __VA_ARGS__)                                \
         MPLAPACK_MPFR_CBLAS_RT(32, F, __VA_ARGS__)                                \
         MPLAPACK_MPFR_CBLAS_RT(64, F, __VA_ARGS__)                                \
-        MPLAPACK_MPFR_CBLAS_RT(128, F, __VA_ARGS__)                               \
-        MPLAPACK_MPFR_CBLAS_RT(256, F, __VA_ARGS__)                               \
+        MPLAPACK_MPFR_CBLAS_RT_LARGE(F, __VA_ARGS__)                              \
         return false;                                                             \
     }())
 MPLAPACK_CBLAS_GPU_FUNCTIONS(MPLAPACK_MPFR_CBLAS_RUN)

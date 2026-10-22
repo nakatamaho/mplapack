@@ -92,6 +92,7 @@ endforeach()
 option(MPLAPACK_ENABLE_OPT       "Build optimized libraries"                ON)
 option(MPLAPACK_ENABLE_CUDA      "Build the DD CUDA accelerator library"    OFF)
 option(MPLAPACK_ENABLE_MPFR_CUDA "Build the MPFR CUDA accelerator library (Rgemm on the GPU)" OFF)
+option(MPLAPACK_MPFR_CUDA_RT_LARGE "MPFR CUDA: also the 8192/16384-bit runtime-precision complex BLAS (long device compilation)" OFF)
 option(MPLAPACK_ENABLE_QD_CUDA   "Build the QD CUDA accelerator library (Rgemm on the GPU)" OFF)
 option(MPLAPACK_ENABLE_TD_CUDA   "Build the TD CUDA accelerator library (Rgemm on the GPU)" OFF)
 set(MPLAPACK_MPC_CUDA_INCLUDE_DIR "" CACHE PATH
@@ -434,6 +435,14 @@ if(MPLAPACK_ENABLE_MPFR_CUDA)
   endforeach()
   # The complex BLAS (and Rgemmtr): the dispatchers of common/blas_cuda
   # (also those of dd/td/qd) on Cblas_mpfr_bridge_cuda.cpp.
+  # The device code of the complex BLAS, split for parallel compilation;
+  # MPLAPACK_MPFR_CUDA_RT_LARGE adds the 8192/16384-bit runtime-precision
+  # types (their device code takes long to compile).
+  set(_mplapack_mpfr_cuda_cblas_device "")
+  foreach(_f Cblas_mpfr_device_cuda Cblas_mpfr_device_rt_cuda Cblas_mpfr_device_rt64_cuda
+             Cblas_mpfr_device_rt128_cuda Cblas_mpfr_device_rt256_cuda)
+    list(APPEND _mplapack_mpfr_cuda_cblas_device "${_mplapack_mpfr_cuda_dir}/${_f}.cu")
+  endforeach()
   set(_mplapack_mpfr_cuda_cblas ${_mplapack_blas_cuda_sources})
   list(FILTER _mplapack_mpfr_cuda_cblas INCLUDE REGEX "/(C[A-Za-z0-9]+|Rgemmtr|Rsbmv|Rspmv|Rgbmv|Rtbmv|Rtpmv|Rspr|Rspr2)\\.cpp$")
   list(FILTER _mplapack_mpfr_cuda_cblas EXCLUDE REGEX "/Cblas_bridge_cuda\\.cpp$")
@@ -447,7 +456,10 @@ if(MPLAPACK_ENABLE_MPFR_CUDA)
     "${_mplapack_mpfr_cuda_dir}/blas3_device_cuda.cu"
     ${_mplapack_mpfr_cuda_cblas}
     "${_mplapack_mpfr_cuda_dir}/Cblas_mpfr_bridge_cuda.cpp"
-    "${_mplapack_mpfr_cuda_dir}/Cblas_mpfr_device_cuda.cu")
+    ${_mplapack_mpfr_cuda_cblas_device})
+  if(MPLAPACK_MPFR_CUDA_RT_LARGE)
+    target_compile_definitions(mplapack_mpfr_opt_cuda PRIVATE MPLAPACK_MPFR_CUDA_RT_LARGE)
+  endif()
   target_sources(mplapack_mpfr_opt_cuda PRIVATE
     "${_mplapack_mpfr_cuda_dir}/Rgemm_kernel_cuda.h"
     "${_mplapack_mpfr_cuda_dir}/Rgemm_rt_cuda.h")
@@ -781,7 +793,7 @@ if(MPLAPACK_BUILD_TESTS)
         "${_mplapack_opt_common}/test/Cblas_gpu_test.cpp"
         ${_mplapack_mpfr_cuda_cblas}
         "${_mplapack_mpfr_cuda_dir}/Cblas_mpfr_bridge_cuda.cpp"
-        "${_mplapack_mpfr_cuda_dir}/Cblas_mpfr_device_cuda.cu"
+        ${_mplapack_mpfr_cuda_cblas_device}
         "${_fixed}"
         "${_mplapack_mpfr_cuda_dir}/Rgemm_rt_cuda.cu")
       if(_variant STREQUAL "host")
@@ -789,6 +801,9 @@ if(MPLAPACK_BUILD_TESTS)
         target_link_libraries(${_cexe} PRIVATE mplapack_mpfr_opt CUDA::cudart)
       else()
         target_link_libraries(${_cexe} PRIVATE mplapack_mpfr_opt "${MPLAPACK_MPC_CUDA_LIBRARY}" CUDA::cudart)
+      endif()
+      if(MPLAPACK_MPFR_CUDA_RT_LARGE)
+        target_compile_definitions(${_cexe} PRIVATE MPLAPACK_MPFR_CUDA_RT_LARGE)
       endif()
       target_include_directories(${_cexe} PRIVATE
         "${MPLAPACK_MPC_CUDA_INCLUDE_DIR}" "${_mplapack_mpfr_cuda_dir}")

@@ -22,8 +22,9 @@ NVCC_MPFR_CUDA_FLAGS = $(NVCC_GLIBC_FEATURE_FLAGS) -std=c++17 -rdc=true -fmad=fa
 .cu.lo:
 	$(top_srcdir)/misc/cudalt.py $@ $(NVCC) $(NVCC_MPFR_CUDA_FLAGS) --compiler-options=\"$(CFLAGS) $(DEFAULT_INCLUDES) $(CPPFLAGS) \" -c $<
 
-Rgemm_dlink_cuda.lo: Rgemm_device_cuda.lo Rgemm_rt_cuda.lo blas3_device_cuda.lo Cblas_mpfr_device_cuda.lo
-	$(top_srcdir)/misc/cudalt.py $@ $(NVCC) $(MPFR_CUDA_GENCODE) -dlink .libs/Rgemm_device_cuda.o .libs/Rgemm_rt_cuda.o .libs/blas3_device_cuda.o .libs/Cblas_mpfr_device_cuda.o $(MPC_CUDA_LIBRARY)
+MPFR_CBLAS_DEVICE_LO = Cblas_mpfr_device_cuda.lo Cblas_mpfr_device_rt_cuda.lo Cblas_mpfr_device_rt64_cuda.lo Cblas_mpfr_device_rt128_cuda.lo Cblas_mpfr_device_rt256_cuda.lo
+Rgemm_dlink_cuda.lo: Rgemm_device_cuda.lo Rgemm_rt_cuda.lo blas3_device_cuda.lo $(MPFR_CBLAS_DEVICE_LO)
+	$(top_srcdir)/misc/cudalt.py $@ $(NVCC) $(MPFR_CUDA_GENCODE) -dlink .libs/Rgemm_device_cuda.o .libs/Rgemm_rt_cuda.o .libs/blas3_device_cuda.o $(MPFR_CBLAS_DEVICE_LO:%.lo=.libs/%.o) $(MPC_CUDA_LIBRARY)
 
 # Must match the architecture libmpc_cuda.a was built for (--with-mpfr-cuda-arch).
 MPFR_CUDA_GENCODE = -gencode arch=compute_$(MPFR_CUDA_ARCH),code=sm_$(MPFR_CUDA_ARCH) -m64 -O3
@@ -122,7 +123,8 @@ Rgemm.cpp Rgemm_bridge_cuda.cpp Rgemm_device_cuda.cu Rgemm_kernel_cuda.h \
 Rgemm_rt_cuda.cu Rgemm_rt_cuda.h Rgemm_winograd_cuda.h mpfr_pack_cuda.h \
 Rsyrk.cpp Rsyr2k.cpp Rsymm.cpp Rtrmm.cpp Rtrsm.cpp \
 blas3_bridge_cuda.cpp blas3_device_cuda.cu blas3_kernel_cuda.h \
-Cblas_mpfr_bridge_cuda.cpp Cblas_mpfr_device_cuda.cu Cblas_mpfr_dev_types.h
+Cblas_mpfr_bridge_cuda.cpp Cblas_mpfr_device_cuda.cu Cblas_mpfr_dev_types.h Cblas_mpfr_device_cuda.h \
+Cblas_mpfr_device_rt_cuda.cu Cblas_mpfr_device_rt64_cuda.cu Cblas_mpfr_device_rt128_cuda.cu Cblas_mpfr_device_rt256_cuda.cu
 
 libmplapack_mpfr_opt_cuda_la_LDFLAGS = $(AM_LDFLAGS) $(CUDA_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO) -Wl,-rpath,$(libdir)
 libmplapack_mpfr_opt_cuda_la_LIBADD = Rgemm_dlink_cuda.lo $(MPC_CUDA_LIBRARY) $(CUDA_LIBS) -lcudart $(MPLAPACK_MPFR_LIBS) $(OPENMP_LIBS)
