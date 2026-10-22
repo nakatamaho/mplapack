@@ -67,6 +67,11 @@ const long RT_DEVICE_EMAX = (1L << 30) - 1;
 // computed and the caller falls back to the CPU.
 int gemm_rt(const gemm_shape &s, long prec, const rt_pack &alpha, const rt_pack &beta, const rt_pack &A, size_t countA, const rt_pack &B, size_t countB, rt_pack &C);
 
+struct l3_shape;
+// Level 3 call (blas3_kernel_cuda.h) with the cu_mpfr engine; C (Rtrmm/Rtrsm:
+// B) is updated in place.  Returns 0 on success.
+int blas3_rt(const l3_shape &s, long prec, const rt_pack &alpha, const rt_pack &beta, const rt_pack &A, size_t countA, const rt_pack &B, size_t countB, rt_pack &C, size_t countC);
+
 } // namespace mplapack_mpfr_cuda
 
 #endif

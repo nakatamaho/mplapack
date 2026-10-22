@@ -1,8 +1,8 @@
 # libmplapack_mpfr_opt_cuda
 
-MPFR flavor of MPLAPACK whose `Rgemm` runs on an NVIDIA GPU. Every other
-routine, and every `Rgemm` call that is not eligible, uses the same code as
-`libmplapack_mpfr_opt`.
+MPFR flavor of MPLAPACK whose `Rgemm` and Level 3 BLAS (`Rsyrk`, `Rsyr2k`,
+`Rsymm`, `Rtrmm`, `Rtrsm`) run on an NVIDIA GPU. Every other routine, and
+every call that is not eligible, uses the same code as `libmplapack_mpfr_opt`.
 
 The GPU arithmetic comes from [mpc_cuda](https://github.com/tkouya/mpc_cuda)
 (bundled as `external/mpc_cuda`):
@@ -30,6 +30,46 @@ column at that level. The schedule follows `mul_mpfmatrix_winograd_even()` of
 [BNCmatmul](https://github.com/tkouya/bncmatmul). It is off by default: the
 result differs from the conventional `Rgemm` in rounding, and its error is
 bounded normwise rather than elementwise. All temporaries stay on the GPU.
+
+## Level 3: Rsyrk, Rsyr2k, Rsymm, Rtrmm, Rtrsm
+
+The kernels are in `blas3_kernel_cuda.h`, the host side in
+`blas3_bridge_cuda.cpp`. They perform, for every element of the result, the
+operations of the reference BLAS (`mpblas/reference/R*.cpp`, which the MPFR
+libraries use for these routines) in the same order. Each operation is
+correctly rounded to the working precision, so the result is the reference
+result bit for bit. Zeros are always `+0` on the `cu_freal` engine.
+
+The work is split into independent lanes:
+
+| Routine | Lane |
+|---|---|
+| `Rsyrk`, `Rsyr2k` | one element of the referenced triangle of C |
+| `Rsymm`, `Rtrmm`, `Rtrsm` with side L | one column |
+| `Rsymm`, `Rtrmm`, `Rtrsm` with side R | one row |
+
+Each routine is written once against an arithmetic engine:
+
+- 256, 512, 768, 1024 and 2048 bits use `cu_freal`;
+- other precisions (or `MPLAPACK_MPFR_CUDA_FORCE_RUNTIME=1`) use `cu_mpfr`;
+- `Rtrsm` always uses `cu_mpfr`, because `cu_freal` has no correctly rounded
+  division. It runs only when the host MPFR exponent range is the device
+  default `[1-2^30, 2^30-1]`, so that overflow and underflow happen as on the
+  host.
+
+`cuda/R*.cpp` replaces the reference file. Calls that do not run on the GPU
+go to the reference code, compiled unchanged under another name by
+`R*_ref_cuda.cpp`. This includes invalid arguments, quick returns,
+`alpha == 0` and the cases listed for `Rgemm` below. The size threshold is
+`MPLAPACK_MPFR_CUDA_MIN_MNK`, compared with `n*n*k` for `Rsyrk`/`Rsyr2k` and
+with `m*m*n` or `m*n*n` for the others. `MPLAPACK_MPFR_CUDA_L3=0` disables
+these routines on the GPU.
+
+Limitations:
+
+- with side L or side R the parallelism is the number of columns or rows only;
+- a call copies its operands to the GPU and back;
+- the routines are not yet measured on a GPU.
 
 ## Building
 
@@ -104,6 +144,12 @@ precision through the `cu_mpfr` kernels.
   to the system MPFR (libmpc_cuda's own host code needs a GPU). No GPU needed.
 - `device`: the kernels run on the GPU; skipped when no device is present.
 
+`mpfr_cuda_blas3_{host,device}[_runtime]` compare the Level 3 routines bit
+for bit with the reference. They cover every side, uplo, trans and diag,
+`alpha` in {1, -1/2, random}, `beta` in {0, 1, 3/4, -5/4}, and odd sizes and
+leading dimensions, at 256, 512, 768, 1024, 2048, 64, 200 and 333 bits.
+Elements outside the referenced part must be left untouched.
+
 `mpfr_cuda_Rgemm_winograd_{host,device}` check the Winograd path at
 256/512/768/1024/2048 bits with cutoffs 1, 2, 3 and 8: integer matrices (no rounding) must
 equal the CPU `Rgemm` exactly for odd/even sizes, all transpose combinations
@@ -117,7 +163,7 @@ default precision, which is not the caller's precision.
 
 ## Limitations
 
-- Only `Rgemm` is accelerated.
+- Accelerated: `Rgemm`, `Rsyrk`, `Rsyr2k`, `Rsymm`, `Rtrmm`, `Rtrsm`.
 - One thread per element of `C`, no shared-memory tiling yet.
 - The Winograd variant exists for the fixed precisions only (not for the
   `cu_mpfr` kernels) and allocates its temporaries with `cudaMalloc` at every level.

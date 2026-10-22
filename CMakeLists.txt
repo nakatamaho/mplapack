@@ -396,13 +396,23 @@ if(_mplapack_mpc_cuda_bundled)
 endif()
 
 if(MPLAPACK_ENABLE_MPFR_CUDA)
-  # cuda/Rgemm.cpp shadows optimized/mpfr/Rgemm.cpp; the *_cuda files are helpers.
+  # cuda/Rgemm.cpp shadows optimized/mpfr/Rgemm.cpp and cuda/R{syrk,syr2k,
+  # symm,trmm,trsm}.cpp the reference files (whose code they call, renamed,
+  # through *_ref_cuda.cpp); the *_cuda files are helpers.
   set(_mplapack_mpfr_cuda_dir "${CMAKE_CURRENT_SOURCE_DIR}/mpblas/optimized/mpfr/cuda")
+  set(_mplapack_mpfr_cuda_l3 "")
+  foreach(_r Rsyrk Rsyr2k Rsymm Rtrmm Rtrsm)
+    list(APPEND _mplapack_mpfr_cuda_l3
+      "${_mplapack_mpfr_cuda_dir}/${_r}.cpp" "${_mplapack_mpfr_cuda_dir}/${_r}_ref_cuda.cpp")
+  endforeach()
   mplapack_add_accelerator_backend(mpfr cuda
     "${_mplapack_mpfr_cuda_dir}/Rgemm.cpp"
     "${_mplapack_mpfr_cuda_dir}/Rgemm_bridge_cuda.cpp"
     "${_mplapack_mpfr_cuda_dir}/Rgemm_device_cuda.cu"
-    "${_mplapack_mpfr_cuda_dir}/Rgemm_rt_cuda.cu")
+    "${_mplapack_mpfr_cuda_dir}/Rgemm_rt_cuda.cu"
+    ${_mplapack_mpfr_cuda_l3}
+    "${_mplapack_mpfr_cuda_dir}/blas3_bridge_cuda.cpp"
+    "${_mplapack_mpfr_cuda_dir}/blas3_device_cuda.cu")
   target_sources(mplapack_mpfr_opt_cuda PRIVATE
     "${_mplapack_mpfr_cuda_dir}/Rgemm_kernel_cuda.h"
     "${_mplapack_mpfr_cuda_dir}/Rgemm_rt_cuda.h")
@@ -619,6 +629,39 @@ if(MPLAPACK_BUILD_TESTS)
       add_test(NAME mpfr_cuda_Rgemm_winograd_${_variant} COMMAND ${_wexe})
       set_tests_properties(mpfr_cuda_Rgemm_winograd_${_variant} PROPERTIES
         SKIP_RETURN_CODE 77 ENVIRONMENT "OMP_NUM_THREADS=1")
+
+      # Level 3 (Rsyrk, Rsyr2k, Rsymm, Rtrmm, Rtrsm): bit for bit against the
+      # reference implementation, on both engines.
+      set(_l3exe mpfr_cuda_blas3_${_variant}_test)
+      add_executable(${_l3exe}
+        "${_mplapack_mpfr_cuda_dir}/test/blas3_cuda_test.cpp"
+        "${_mplapack_mpfr_cuda_dir}/blas3_bridge_cuda.cpp"
+        "${_mplapack_mpfr_cuda_dir}/blas3_device_cuda.cu"
+        "${_fixed}"
+        "${_mplapack_mpfr_cuda_dir}/Rgemm_rt_cuda.cu")
+      if(_variant STREQUAL "host")
+        target_compile_definitions(${_l3exe} PRIVATE MPLAPACK_MPFR_CUDA_HOST_EMULATION)
+        target_link_libraries(${_l3exe} PRIVATE mplapack_mpfr_opt CUDA::cudart)
+      else()
+        target_link_libraries(${_l3exe} PRIVATE mplapack_mpfr_opt "${MPLAPACK_MPC_CUDA_LIBRARY}" CUDA::cudart)
+      endif()
+      target_include_directories(${_l3exe} PRIVATE
+        "${MPLAPACK_MPC_CUDA_INCLUDE_DIR}" "${_mplapack_mpfr_cuda_dir}")
+      target_compile_options(${_l3exe} PRIVATE "$<$<COMPILE_LANGUAGE:CUDA>:-fmad=false>")
+      set_target_properties(${_l3exe} PROPERTIES
+        CUDA_ARCHITECTURES "${MPLAPACK_CUDA_ARCHITECTURES}"
+        CUDA_STANDARD 17
+        CUDA_STANDARD_REQUIRED ON
+        CUDA_SEPARABLE_COMPILATION ON
+        CUDA_RESOLVE_DEVICE_SYMBOLS ON)
+      if(_mplapack_mpc_cuda_bundled)
+        add_dependencies(${_l3exe} mpc_cuda_bundled)
+      endif()
+      add_test(NAME mpfr_cuda_blas3_${_variant} COMMAND ${_l3exe})
+      add_test(NAME mpfr_cuda_blas3_${_variant}_runtime COMMAND ${_l3exe})
+      set_tests_properties(mpfr_cuda_blas3_${_variant} PROPERTIES SKIP_RETURN_CODE 77)
+      set_tests_properties(mpfr_cuda_blas3_${_variant}_runtime PROPERTIES
+        SKIP_RETURN_CODE 77 ENVIRONMENT "MPLAPACK_MPFR_CUDA_FORCE_RUNTIME=1")
     endforeach()
   endif()
   add_subdirectory(mplapack/test)

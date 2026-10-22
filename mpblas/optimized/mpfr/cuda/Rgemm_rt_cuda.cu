@@ -45,12 +45,16 @@
  * calls mapped to the system MPFR (cu_mpfr is MPFR 4.2.2 compiled for the
  * device, and libmpc_cuda's host code needs a GPU for its managed memory).
  * The tests use it to check the element code without a GPU.
+ *
+ * blas3_rt (end of the file) runs the Level 3 lanes of blas3_kernel_cuda.h
+ * with the same cu_mpfr arithmetic, arena and thread pool.
  */
 
 #include <cstdio>
 #include <cstdlib>
 #include <vector>
 #include "Rgemm_rt_cuda.h"
+#include "blas3_kernel_cuda.h"
 
 #ifdef MPLAPACK_MPFR_CUDA_HOST_EMULATION
 #include <mpfr.h>
@@ -71,6 +75,12 @@ typedef mpfr_exp_t cu_mpfr_exp_t;
 #define cu_mpfr_add mpfr_add
 #define cu_mpfr_set mpfr_set
 #define cu_mpfr_set_zero mpfr_set_zero
+#define cu_mpfr_sub mpfr_sub
+#define cu_mpfr_div mpfr_div
+#define cu_mpfr_set_ui mpfr_set_ui
+#define cu_mpfr_zero_p mpfr_zero_p
+#define cu_mpfr_nan_p mpfr_nan_p
+#define cu_mpfr_cmp_ui mpfr_cmp_ui
 #define RT_HD
 #else
 #include <cuda_runtime.h>
@@ -115,6 +125,82 @@ RT_HD inline void store(cu_mpfr_srcptr x, int nl, dpack &P, size_t idx)
     } else {
         P.E[idx] = 0;
     }
+}
+
+// Level 3 engine (blas3_kernel_cuda.h) on cu_mpfr; W holds 8 registers.
+struct l3_rt_engine {
+    struct V {
+        cu_mpfr_t x;
+    };
+    struct M {
+        dpack P;
+        long ld;
+    };
+    static const bool has_div = true;
+    long prec;
+    int nl;
+    cu_mp_limb_t *W;
+    RT_HD V reg(int slot) const
+    {
+        V v;
+        cu_mpfr_custom_init_set(v.x, CU_MPFR_ZERO_KIND, 0, (cu_mpfr_prec_t)prec, W + (size_t)slot * nl);
+        return v;
+    }
+    RT_HD V at(const M &a, long i, long j) const
+    {
+        V v;
+        view(v.x, prec, nl, a.P, (size_t)(i + j * a.ld));
+        return v;
+    }
+    RT_HD void put(M &a, long i, long j, const V &v) const { store(v.x, nl, a.P, (size_t)(i + j * a.ld)); }
+    RT_HD void set(V &r, const V &a) const
+    {
+        arena_reset();
+        cu_mpfr_set(r.x, a.x, CU_MPFR_RNDN);
+    }
+    RT_HD void zero(V &r) const { cu_mpfr_set_zero(r.x, 1); }
+    RT_HD void one(V &r) const
+    {
+        arena_reset();
+        cu_mpfr_set_ui(r.x, 1, CU_MPFR_RNDN);
+    }
+    RT_HD void add(V &r, const V &a, const V &b) const
+    {
+        arena_reset();
+        cu_mpfr_add(r.x, a.x, b.x, CU_MPFR_RNDN);
+    }
+    RT_HD void sub(V &r, const V &a, const V &b) const
+    {
+        arena_reset();
+        cu_mpfr_sub(r.x, a.x, b.x, CU_MPFR_RNDN);
+    }
+    RT_HD void mul(V &r, const V &a, const V &b) const
+    {
+        arena_reset();
+        cu_mpfr_mul(r.x, a.x, b.x, CU_MPFR_RNDN);
+    }
+    RT_HD void div(V &r, const V &a, const V &b) const
+    {
+        arena_reset();
+        cu_mpfr_div(r.x, a.x, b.x, CU_MPFR_RNDN);
+    }
+    RT_HD bool iszero(const V &a) const { return cu_mpfr_zero_p(a.x) != 0; }
+    RT_HD bool isone(const V &a) const { return !cu_mpfr_nan_p(a.x) && cu_mpfr_cmp_ui(a.x, 1) == 0; }
+};
+
+RT_HD void l3_rt_lane(const l3_shape &s, long prec, int nl, const dpack &al, const dpack &be, const dpack &A, const dpack &B, const dpack &C, long lane, cu_mp_limb_t *W)
+{
+    l3_rt_engine e;
+    e.prec = prec;
+    e.nl = nl;
+    e.W = W;
+    l3_mats<l3_rt_engine> x;
+    x.al.P = al, x.al.ld = 1;
+    x.be.P = be, x.be.ld = 1;
+    x.a.P = A, x.a.ld = s.lda;
+    x.b.P = B, x.b.ld = s.ldb;
+    x.c.P = C, x.c.ld = s.ldc;
+    l3_lane(e, s, x, lane);
 }
 
 RT_HD inline size_t opB_index(const gemm_shape &s, long l, long j) { return s.notb ? (size_t)(l + j * s.ldb) : (size_t)(j + l * s.ldb); }
@@ -221,6 +307,15 @@ __global__ void gemm_kernel(gemm_shape s, long prec, int nl, dpack alpha, dpack 
     cu_mp_limb_t *W = work + (size_t)tid * 3 * nl;
     for (long e = tid; e < s.m * s.n; e += stride)
         rt_element(s, prec, nl, alpha, beta, A, B, AB, C, e % s.m, e / s.m, W);
+}
+
+__global__ void l3_kernel(l3_shape s, long prec, int nl, dpack al, dpack be, dpack A, dpack B, dpack C, long lanes, cu_mp_limb_t *work)
+{
+    const long tid = (long)blockIdx.x * blockDim.x + threadIdx.x;
+    const long stride = (long)gridDim.x * blockDim.x;
+    cu_mp_limb_t *W = work + (size_t)tid * 8 * nl;
+    for (long lane = tid; lane < lanes; lane += stride)
+        l3_rt_lane(s, prec, nl, al, be, A, B, C, lane, W);
 }
 
 bool verbose()
@@ -363,6 +458,73 @@ int gemm_rt(const gemm_shape &s, long prec, const rt_pack &alpha, const rt_pack 
     if (rc != 0)
         return rc;
     if (!dC.download(C, countC, nl))
+        return 5;
+    return 0;
+#endif
+}
+
+int blas3_rt(const l3_shape &s, long prec, const rt_pack &alpha, const rt_pack &beta, const rt_pack &A, size_t countA, const rt_pack &B, size_t countB, rt_pack &C, size_t countC)
+{
+    const int nl = (int)((prec + 63) / 64);
+    const long lanes = l3_lanes(s);
+#ifdef MPLAPACK_MPFR_CUDA_HOST_EMULATION
+    (void)countA, (void)countB, (void)countC;
+    dpack dal = {(cu_mp_limb_t *)alpha.limbs, alpha.exp, alpha.kind}, dbe = {(cu_mp_limb_t *)beta.limbs, beta.exp, beta.kind};
+    dpack dA = {(cu_mp_limb_t *)A.limbs, A.exp, A.kind}, dB = {(cu_mp_limb_t *)B.limbs, B.exp, B.kind};
+    dpack dC = {(cu_mp_limb_t *)C.limbs, C.exp, C.kind};
+#ifdef _OPENMP
+#pragma omp parallel
+#endif
+    {
+        std::vector<cu_mp_limb_t> W(8 * (size_t)nl);
+#ifdef _OPENMP
+#pragma omp for schedule(dynamic, 1)
+#endif
+        for (long lane = 0; lane < lanes; lane++)
+            l3_rt_lane(s, prec, nl, dal, dbe, dA, dB, dC, lane, W.data());
+    }
+    return 0;
+#else
+    int ndev = 0;
+    if (failed(cudaGetDeviceCount(&ndev), "cudaGetDeviceCount") || ndev == 0)
+        return 1;
+    const long blocks = env_long("MPLAPACK_MPFR_CUDA_RT_BLOCKS", 256);
+    const long threads = env_long("MPLAPACK_MPFR_CUDA_RT_THREADS", 32);
+    const size_t pool = (size_t)blocks * threads;
+    const size_t slab = (size_t)16 * 1024 * ((prec + 1023) / 1024);
+    limit_guard stack(cudaLimitStackSize, 64 * 1024);
+    limit_guard heap(cudaLimitMallocHeapSize, (size_t)64 * 1024 * 1024);
+
+    device_pack dal, dbe, dA, dB, dC;
+    device_mem arena, top, work;
+    if (!dal.allocate(1, nl) || !dbe.allocate(1, nl) || !dA.allocate(countA, nl) || !dB.allocate(countB, nl) || !dC.allocate(countC, nl))
+        return 2;
+    if (failed(cudaMalloc(&arena.p, pool * slab), "cudaMalloc arena") || failed(cudaMalloc(&top.p, pool * sizeof(size_t)), "cudaMalloc arena tops") || failed(cudaMalloc(&work.p, pool * 8 * nl * sizeof(cu_mp_limb_t)), "cudaMalloc workspace"))
+        return 2;
+    if (failed(cudaMemset(top.p, 0, pool * sizeof(size_t)), "clear arena tops"))
+        return 2;
+    if (!dal.upload(alpha, 1, nl) || !dbe.upload(beta, 1, nl) || (countA && !dA.upload(A, countA, nl)) || (countB && !dB.upload(B, countB, nl)) || (countC && !dC.upload(C, countC, nl)))
+        return 3;
+
+    char *saved_base = mpc_cuda_arena_base;
+    size_t saved_slab = mpc_cuda_arena_slab;
+    size_t *saved_top = mpc_cuda_arena_top;
+    mpc_cuda_arena_base = static_cast<char *>(arena.p);
+    mpc_cuda_arena_slab = slab;
+    mpc_cuda_arena_top = static_cast<size_t *>(top.p);
+
+    int rc = 0;
+    if (lanes > 0) {
+        l3_kernel<<<(unsigned)blocks, (unsigned)threads>>>(s, prec, nl, dal.d, dbe.d, dA.d, dB.d, dC.d, lanes, static_cast<cu_mp_limb_t *>(work.p));
+        if (failed(cudaGetLastError(), "l3_kernel launch") || failed(cudaDeviceSynchronize(), "l3_kernel"))
+            rc = 4;
+    }
+    mpc_cuda_arena_base = saved_base;
+    mpc_cuda_arena_slab = saved_slab;
+    mpc_cuda_arena_top = saved_top;
+    if (rc != 0)
+        return rc;
+    if (countC && !dC.download(C, countC, nl))
         return 5;
     return 0;
 #endif

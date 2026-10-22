@@ -3,6 +3,8 @@ include $(top_srcdir)/mplapack/reference/accelerator-sources.am
 # Layered basename shadowing:
 # - cuda/Rgemm.cpp replaces ../Rgemm.cpp; it computes eligible calls on
 #   the GPU and otherwise runs the same OpenMP code as ../Rgemm.cpp.
+# - cuda/R{syrk,syr2k,symm,trmm,trsm}.cpp replace the reference files; the
+#   reference code is compiled under other names by R*_ref_cuda.cpp.
 # - *_cuda.* files are helpers and never shadow.
 MPLAPACK_MPFR_CUDA_LAPACK_OPTIMIZED_SOURCES =
 
@@ -17,8 +19,8 @@ NVCC_MPFR_CUDA_FLAGS = $(NVCC_GLIBC_FEATURE_FLAGS) -std=c++17 -rdc=true -fmad=fa
 .cu.lo:
 	$(top_srcdir)/misc/cudalt.py $@ $(NVCC) $(NVCC_MPFR_CUDA_FLAGS) --compiler-options=\"$(CFLAGS) $(DEFAULT_INCLUDES) $(CPPFLAGS) \" -c $<
 
-Rgemm_dlink_cuda.lo: Rgemm_device_cuda.lo Rgemm_rt_cuda.lo
-	$(top_srcdir)/misc/cudalt.py $@ $(NVCC) $(MPFR_CUDA_GENCODE) -dlink .libs/Rgemm_device_cuda.o .libs/Rgemm_rt_cuda.o $(MPC_CUDA_LIBRARY)
+Rgemm_dlink_cuda.lo: Rgemm_device_cuda.lo Rgemm_rt_cuda.lo blas3_device_cuda.lo
+	$(top_srcdir)/misc/cudalt.py $@ $(NVCC) $(MPFR_CUDA_GENCODE) -dlink .libs/Rgemm_device_cuda.o .libs/Rgemm_rt_cuda.o .libs/blas3_device_cuda.o $(MPC_CUDA_LIBRARY)
 
 # Must match the architecture libmpc_cuda.a was built for (--with-mpfr-cuda-arch).
 MPFR_CUDA_GENCODE = -gencode arch=compute_$(MPFR_CUDA_ARCH),code=sm_$(MPFR_CUDA_ARCH) -m64 -O3
@@ -91,19 +93,14 @@ libmplapack_mpfr_opt_cuda_la_SOURCES = \
 ../../../reference/Rspr.cpp \
 ../../../reference/Rspr2.cpp \
 ../../../reference/Rswap.cpp \
-../../../reference/Rsymm.cpp \
 ../../../reference/Rsymv.cpp \
 ../../../reference/Rsyr.cpp \
 ../../../reference/Rsyr2.cpp \
-../../../reference/Rsyr2k.cpp \
-../../../reference/Rsyrk.cpp \
 ../../../reference/Rtbmv.cpp \
 ../../../reference/Rtbsv.cpp \
 ../../../reference/Rtpmv.cpp \
 ../../../reference/Rtpsv.cpp \
-../../../reference/Rtrmm.cpp \
 ../../../reference/Rtrmv.cpp \
-../../../reference/Rtrsm.cpp \
 ../../../reference/Rtrsv.cpp \
 ../../../reference/iCamax.cpp \
 ../../../reference/iRamax.cpp \
@@ -111,7 +108,10 @@ libmplapack_mpfr_opt_cuda_la_SOURCES = \
 $(MPLAPACK_ACCEL_REFERENCE_SOURCES) \
 $(MPLAPACK_MPFR_CUDA_LAPACK_OPTIMIZED_SOURCES) \
 Rgemm.cpp Rgemm_bridge_cuda.cpp Rgemm_device_cuda.cu Rgemm_kernel_cuda.h \
-Rgemm_rt_cuda.cu Rgemm_rt_cuda.h Rgemm_winograd_cuda.h
+Rgemm_rt_cuda.cu Rgemm_rt_cuda.h Rgemm_winograd_cuda.h mpfr_pack_cuda.h \
+Rsyrk.cpp Rsyrk_ref_cuda.cpp Rsyr2k.cpp Rsyr2k_ref_cuda.cpp Rsymm.cpp Rsymm_ref_cuda.cpp \
+Rtrmm.cpp Rtrmm_ref_cuda.cpp Rtrsm.cpp Rtrsm_ref_cuda.cpp \
+blas3_bridge_cuda.cpp blas3_device_cuda.cu blas3_kernel_cuda.h
 
 libmplapack_mpfr_opt_cuda_la_LDFLAGS = $(AM_LDFLAGS) $(CUDA_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO) -Wl,-rpath,$(libdir)
 libmplapack_mpfr_opt_cuda_la_LIBADD = Rgemm_dlink_cuda.lo $(MPC_CUDA_LIBRARY) $(CUDA_LIBS) -lcudart $(MPLAPACK_MPFR_LIBS) $(OPENMP_LIBS)
@@ -124,4 +124,4 @@ if IS_MINGW
 libmplapack_mpfr_opt_cuda_la_LDFLAGS += -fopenmp -no-undefined
 endif
 
-EXTRA_DIST = README.md Rgemm_host_cuda.cpp test/Rgemm_cuda_test.cpp test/Rgemm_winograd_cuda_test.cpp
+EXTRA_DIST = README.md Rgemm_host_cuda.cpp test/Rgemm_cuda_test.cpp test/Rgemm_winograd_cuda_test.cpp test/blas3_cuda_test.cpp
