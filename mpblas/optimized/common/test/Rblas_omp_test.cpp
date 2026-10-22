@@ -63,6 +63,8 @@ void Rrot_reference_cpu(INTEGER const n, REAL *dx, INTEGER const incx, REAL *dy,
 void Rlaswp(INTEGER const n, REAL *a, INTEGER const lda, INTEGER const k1, INTEGER const k2, INTEGER *ipiv, INTEGER const incx);
 void Rlaswp_reference_cpu(INTEGER const n, REAL *a, INTEGER const lda, INTEGER const k1, INTEGER const k2, INTEGER *ipiv, INTEGER const incx);
 
+void Rtrsv_reference_cpu(const char *uplo, const char *trans, const char *diag, INTEGER const n, REAL *a, INTEGER const lda, REAL *x, INTEGER const incx);
+
 namespace {
 
 std::mt19937_64 rng(20261022);
@@ -242,6 +244,13 @@ int main()
                                     Rtrmv_reference_cpu(u, t, d, nn, A.data(), m + 2, R.data(), ix);
                                     Rtrmv(u, t, d, nn, A.data(), m + 2, G.data(), ix);
                                     compare(tag("Rtrmv", {u, t, d}, {nn, ix}), R, G);
+                                    std::vector<REAL> T(A);
+                                    for (long q = 0; q < nn; q++)
+                                        T[q + q * (m + 2)] = T[q + q * (m + 2)] + REAL(2.0 + nn);
+                                    R = X, G = X;
+                                    Rtrsv_reference_cpu(u, t, d, nn, T.data(), m + 2, R.data(), ix);
+                                    Rtrsv(u, t, d, nn, T.data(), m + 2, G.data(), ix);
+                                    compare(tag("Rtrsv", {u, t, d}, {nn, ix}), R, G);
                                 }
                             R = A, G = A;
                             Rsyr_reference_cpu(u, nn, alpha, X.data(), ix, R.data(), m + 2);

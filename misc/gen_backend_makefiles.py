@@ -45,6 +45,9 @@ CONF_KEYS = {
 # Sources of mpblas/optimized/common/blas_cuda (the dd/td/qd CUDA BLAS).
 BLAS_CUDA_SOURCES = ["Rblas_bridge_cuda", "Rsyrk", "Rsyr2k", "Rsymm", "Rtrmm", "Rtrsm", "Rgemv",
                      "Rsymv", "Rtrmv", "Rger", "Rsyr", "Rsyr2", "Rscal", "Rswap", "Rrot"]
+CBLAS_CUDA_SOURCES = ["Cblas_bridge_cuda", "Cgemm", "Csymm", "Chemm", "Ctrmm", "Ctrsm", "Cgemv", "Cgeru",
+                      "Cgerc", "Caxpy", "Ccopy", "Cswap", "CRrot", "Cscal", "CRscal", "Csyrk", "Cherk",
+                      "Csyr2k", "Cher2k", "Cgemmtr", "Rgemmtr", "Cher", "Cher2"]
 
 # The MPFR backend is the test oracle; every other backend's tests link it.
 ORACLE = "mpfr"
@@ -143,6 +146,14 @@ def values(name, traits, conf):
         if gpu_host:
             programs.append("Rgemm_gpu_host_test")
             programs.append("Rblas_gpu_host_test_%%b%%")
+            programs.append("Cblas_gpu_host_test_%%b%%")
+            tests += ["# The CUDA complex Level 1/2/3 BLAS code run on the host (no CUDA needed).",
+                      "Cblas_gpu_host_test_%%b%%_SOURCES = ../common/test/Cblas_gpu_test.cpp " + " ".join(
+                          "../common/blas_cuda/%s.cpp" % r for r in CBLAS_CUDA_SOURCES),
+                      "Cblas_gpu_host_test_%%b%%_CPPFLAGS = $(libmplapack_%%b%%_opt_la_CPPFLAGS) -DMPLAPACK_GEMM_CUDA_HOST_EMULATION",
+                      "Cblas_gpu_host_test_%%b%%_CXXFLAGS = $(DD_CXXFLAGS)",
+                      "Cblas_gpu_host_test_%%b%%_LDFLAGS = -static $(QD_RPATH_LDFLAGS)",
+                      "Cblas_gpu_host_test_%%b%%_LDADD = libmplapack_%%b%%_opt.la $(libmplapack_%%b%%_opt_la_LIBADD)"]
             tests += ["# The CUDA Level 1/2/3 BLAS code run on the host (no CUDA needed).",
                       "Rblas_gpu_host_test_%%b%%_SOURCES = ../common/test/Rblas_gpu_test.cpp " + " ".join(
                           "../common/blas_cuda/%s.cpp" % r for r in BLAS_CUDA_SOURCES),

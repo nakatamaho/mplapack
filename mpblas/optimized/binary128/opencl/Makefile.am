@@ -49,13 +49,15 @@ libmplapack_binary128_opt_opencl_la_SOURCES = \
 ../../common/blas/Csyr2k.cpp ../../common/blas/Csyr2k_omp.cpp \
 ../../common/blas/Cher2k.cpp ../../common/blas/Cher2k_omp.cpp \
 ../../common/blas/Cgemmtr.cpp ../../common/blas/Cgemmtr_omp.cpp \
+../../common/blas/Rtrsv.cpp ../../common/blas/Rtrsv_omp.cpp \
+../../common/blas/Ctrsv.cpp ../../common/blas/Ctrsv_omp.cpp \
+../../common/blas/Cher.cpp ../../common/blas/Cher_omp.cpp \
+../../common/blas/Cher2.cpp ../../common/blas/Cher2_omp.cpp \
 ../../../reference/Cdotc.cpp \
 ../../../reference/Cdotu.cpp \
 ../../../reference/Cgbmv.cpp \
 ../../../reference/Chbmv.cpp \
 ../../../reference/Chemv.cpp \
-../../../reference/Cher.cpp \
-../../../reference/Cher2.cpp \
 ../../../reference/Chpmv.cpp \
 ../../../reference/Chpr.cpp \
 ../../../reference/Chpr2.cpp \
@@ -65,7 +67,6 @@ libmplapack_binary128_opt_opencl_la_SOURCES = \
 ../../../reference/Ctpmv.cpp \
 ../../../reference/Ctpsv.cpp \
 ../../../reference/Ctrmv.cpp \
-../../../reference/Ctrsv.cpp \
 ../../../reference/Mlsame.cpp \
 ../../../reference/Mxerbla.cpp \
 ../../../reference/RCabs1.cpp \
@@ -85,7 +86,6 @@ libmplapack_binary128_opt_opencl_la_SOURCES = \
 ../../../reference/Rtbsv.cpp \
 ../../../reference/Rtpmv.cpp \
 ../../../reference/Rtpsv.cpp \
-../../../reference/Rtrsv.cpp \
 ../../../reference/iCamax.cpp \
 ../../../reference/iRamax.cpp \
 ../../../reference/mplapackinit.cpp \

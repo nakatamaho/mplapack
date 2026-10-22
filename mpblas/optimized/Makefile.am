@@ -37,7 +37,32 @@ EXTRA_DIST = common/README.md \
 common/Rblas_lanes_common.h common/Rblas_calls_common.h common/Rblas_cpu_common.h \
 common/Rblas_cuda_common.cuh common/Rblas_cuda_bridge_common.h common/Rblas_simd_common.h \
 common/Rblas_split_common.h common/Cblas_simd_common.h \
-common/blas/Rgemmtr_columns.h common/blas/Csyrk_columns.h common/blas/Cherk_columns.h common/blas/Csyr2k_columns.h common/blas/Cher2k_columns.h common/blas/Cgemmtr_columns.h \
+common/Rblas_dev_types.h common/Cblas_cuda_common.cuh common/Cblas_cuda_jobs_common.h \
+common/blas_dev/CRrot_dev.h \
+common/blas_dev/CRscal_dev.h \
+common/blas_dev/Caxpy_dev.h \
+common/blas_dev/Ccopy_dev.h \
+common/blas_dev/Cgemm_dev.h \
+common/blas_dev/Cgemmtr_columns_dev.h \
+common/blas_dev/Cgemv_dev.h \
+common/blas_dev/Cgerc_dev.h \
+common/blas_dev/Cgeru_dev.h \
+common/blas_dev/Chemm_dev.h \
+common/blas_dev/Cher2_columns_dev.h \
+common/blas_dev/Cher2k_columns_dev.h \
+common/blas_dev/Cher_columns_dev.h \
+common/blas_dev/Cherk_columns_dev.h \
+common/blas_dev/Cscal_dev.h \
+common/blas_dev/Cswap_dev.h \
+common/blas_dev/Csymm_dev.h \
+common/blas_dev/Csyr2k_columns_dev.h \
+common/blas_dev/Csyrk_columns_dev.h \
+common/blas_dev/Ctrmm_dev.h \
+common/blas_dev/Ctrsm_dev.h \
+common/blas_dev/Rgemmtr_columns_dev.h \
+common/blas_dev/blas_dev.h \
+common/test/Cblas_gpu_test.cpp \
+common/blas/Rgemmtr_columns.h common/blas/Csyrk_columns.h common/blas/Cherk_columns.h common/blas/Csyr2k_columns.h common/blas/Cher2k_columns.h common/blas/Cgemmtr_columns.h common/blas/Cher_columns.h common/blas/Cher2_columns.h \
 common/Rgemm_blocked_common.h common/Rgemm_cpu_common.h \
 common/Rgemm_cuda_bridge_common.h common/Rgemm_cuda_common.cuh \
 common/Rgemm_cuda_ops_common.h common/Rgemm_ozaki_common.h \

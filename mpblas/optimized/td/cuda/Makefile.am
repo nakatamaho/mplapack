@@ -48,33 +48,35 @@ libmplapack_td_opt_cuda_la_SOURCES = \
 ../../common/blas/Rscal_omp.cpp ../../common/blas_cuda/Rscal.cpp \
 ../../common/blas/Rswap_omp.cpp ../../common/blas_cuda/Rswap.cpp \
 ../../common/blas/Rrot_omp.cpp ../../common/blas_cuda/Rrot.cpp \
-../../common/blas/Rgemmtr.cpp ../../common/blas/Rgemmtr_omp.cpp \
-../../common/blas/Cgemm.cpp ../../common/blas/Cgemm_omp.cpp \
-../../common/blas/Csymm.cpp ../../common/blas/Csymm_omp.cpp \
-../../common/blas/Chemm.cpp ../../common/blas/Chemm_omp.cpp \
-../../common/blas/Ctrmm.cpp ../../common/blas/Ctrmm_omp.cpp \
-../../common/blas/Ctrsm.cpp ../../common/blas/Ctrsm_omp.cpp \
-../../common/blas/Cgemv.cpp ../../common/blas/Cgemv_omp.cpp \
-../../common/blas/Cgeru.cpp ../../common/blas/Cgeru_omp.cpp \
-../../common/blas/Cgerc.cpp ../../common/blas/Cgerc_omp.cpp \
-../../common/blas/Caxpy.cpp ../../common/blas/Caxpy_omp.cpp \
-../../common/blas/Ccopy.cpp ../../common/blas/Ccopy_omp.cpp \
-../../common/blas/Cscal.cpp ../../common/blas/Cscal_omp.cpp \
-../../common/blas/CRscal.cpp ../../common/blas/CRscal_omp.cpp \
-../../common/blas/Cswap.cpp ../../common/blas/Cswap_omp.cpp \
-../../common/blas/CRrot.cpp ../../common/blas/CRrot_omp.cpp \
-../../common/blas/Csyrk.cpp ../../common/blas/Csyrk_omp.cpp \
-../../common/blas/Cherk.cpp ../../common/blas/Cherk_omp.cpp \
-../../common/blas/Csyr2k.cpp ../../common/blas/Csyr2k_omp.cpp \
-../../common/blas/Cher2k.cpp ../../common/blas/Cher2k_omp.cpp \
-../../common/blas/Cgemmtr.cpp ../../common/blas/Cgemmtr_omp.cpp \
+../../common/blas/Rgemmtr_omp.cpp ../../common/blas_cuda/Rgemmtr.cpp \
+../../common/blas/Cgemm_omp.cpp ../../common/blas_cuda/Cgemm.cpp \
+../../common/blas/Csymm_omp.cpp ../../common/blas_cuda/Csymm.cpp \
+../../common/blas/Chemm_omp.cpp ../../common/blas_cuda/Chemm.cpp \
+../../common/blas/Ctrmm_omp.cpp ../../common/blas_cuda/Ctrmm.cpp \
+../../common/blas/Ctrsm_omp.cpp ../../common/blas_cuda/Ctrsm.cpp \
+../../common/blas/Cgemv_omp.cpp ../../common/blas_cuda/Cgemv.cpp \
+../../common/blas/Cgeru_omp.cpp ../../common/blas_cuda/Cgeru.cpp \
+../../common/blas/Cgerc_omp.cpp ../../common/blas_cuda/Cgerc.cpp \
+../../common/blas/Caxpy_omp.cpp ../../common/blas_cuda/Caxpy.cpp \
+../../common/blas/Ccopy_omp.cpp ../../common/blas_cuda/Ccopy.cpp \
+../../common/blas/Cscal_omp.cpp ../../common/blas_cuda/Cscal.cpp \
+../../common/blas/CRscal_omp.cpp ../../common/blas_cuda/CRscal.cpp \
+../../common/blas/Cswap_omp.cpp ../../common/blas_cuda/Cswap.cpp \
+../../common/blas/CRrot_omp.cpp ../../common/blas_cuda/CRrot.cpp \
+../../common/blas/Csyrk_omp.cpp ../../common/blas_cuda/Csyrk.cpp \
+../../common/blas/Cherk_omp.cpp ../../common/blas_cuda/Cherk.cpp \
+../../common/blas/Csyr2k_omp.cpp ../../common/blas_cuda/Csyr2k.cpp \
+../../common/blas/Cher2k_omp.cpp ../../common/blas_cuda/Cher2k.cpp \
+../../common/blas/Cgemmtr_omp.cpp ../../common/blas_cuda/Cgemmtr.cpp \
+../../common/blas/Rtrsv.cpp ../../common/blas/Rtrsv_omp.cpp \
+../../common/blas/Ctrsv.cpp ../../common/blas/Ctrsv_omp.cpp \
+../../common/blas/Cher_omp.cpp ../../common/blas_cuda/Cher.cpp \
+../../common/blas/Cher2_omp.cpp ../../common/blas_cuda/Cher2.cpp \
 ../../../reference/Cdotc.cpp \
 ../../../reference/Cdotu.cpp \
 ../../../reference/Cgbmv.cpp \
 ../../../reference/Chbmv.cpp \
 ../../../reference/Chemv.cpp \
-../../../reference/Cher.cpp \
-../../../reference/Cher2.cpp \
 ../../../reference/Chpmv.cpp \
 ../../../reference/Chpr.cpp \
 ../../../reference/Chpr2.cpp \
@@ -84,7 +86,6 @@ libmplapack_td_opt_cuda_la_SOURCES = \
 ../../../reference/Ctpmv.cpp \
 ../../../reference/Ctpsv.cpp \
 ../../../reference/Ctrmv.cpp \
-../../../reference/Ctrsv.cpp \
 ../../../reference/Mlsame.cpp \
 ../../../reference/Mxerbla.cpp \
 ../../../reference/RCabs1.cpp \
@@ -104,7 +105,6 @@ libmplapack_td_opt_cuda_la_SOURCES = \
 ../../../reference/Rtbsv.cpp \
 ../../../reference/Rtpmv.cpp \
 ../../../reference/Rtpsv.cpp \
-../../../reference/Rtrsv.cpp \
 ../../../reference/iCamax.cpp \
 ../../../reference/iRamax.cpp \
 ../../../reference/mplapackinit.cpp \
@@ -112,7 +112,7 @@ $(MPLAPACK_ACCEL_REFERENCE_SOURCES) \
 ../../../../mplapack/optimized/common/Rlaswp.cpp \
 ../../../../mplapack/optimized/common/Claswp.cpp \
 $(MPLAPACK_TD_CUDA_LAPACK_OPTIMIZED_SOURCES) \
-Rgemm.cpp Rgemm_bridge_cuda.cpp Rgemm_gpu_cuda.cu ../../common/blas_cuda/Rblas_bridge_cuda.cpp
+Rgemm.cpp Rgemm_bridge_cuda.cpp Rgemm_gpu_cuda.cu ../../common/blas_cuda/Rblas_bridge_cuda.cpp ../../common/blas_cuda/Cblas_bridge_cuda.cpp
 
 libmplapack_td_opt_cuda_la_LDFLAGS = $(AM_LDFLAGS) $(CUDA_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO) -Wl,-rpath,$(libdir)
 libmplapack_td_opt_cuda_la_LIBADD = $(CUDA_LIBS) -lcublas -lcudart $(QD_LIBADD) $(OPENMP_LIBS)

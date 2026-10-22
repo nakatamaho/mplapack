@@ -63,6 +63,9 @@ struct dd_ops {
         r.x[1] = 0.0;
         return r;
     }
+    static MPLAPACK_GEMM_HD F neg(const F &a) { return dd_neg(a); }
+    static MPLAPACK_GEMM_HD bool is_zero(const F &a) { return a.x[0] == 0.0; }
+    static MPLAPACK_GEMM_HD bool is_nan(const F &a) { return qd_ops_isnan(a.x[0]) || qd_ops_isnan(a.x[1]); }
     // a == b: qd::dd_comparison_eq
     static MPLAPACK_GEMM_HD bool eq(const F &a, const F &b) {
         if (qd_ops_isnan(a.x[0]) || qd_ops_isnan(a.x[1]) || qd_ops_isnan(b.x[0]) || qd_ops_isnan(b.x[1]))
@@ -91,6 +94,9 @@ struct qd_ops {
         r.x[1] = r.x[2] = r.x[3] = 0.0;
         return r;
     }
+    static MPLAPACK_GEMM_HD F neg(const F &a) { return qd_neg(a); }
+    static MPLAPACK_GEMM_HD bool is_zero(const F &a) { return a.x[0] == 0.0; }
+    static MPLAPACK_GEMM_HD bool is_nan(const F &a) { return qd_ops_isnan(a.x[0]) || qd_ops_isnan(a.x[1]) || qd_ops_isnan(a.x[2]) || qd_ops_isnan(a.x[3]); }
     // a == b: qd::comparison_eq
     static MPLAPACK_GEMM_HD bool eq(const F &a, const F &b) {
         for (int q = 0; q < 4; q++)
@@ -110,6 +116,9 @@ struct td_ops {
     static MPLAPACK_GEMM_HD F add_d(const F &a, double b) { return td_add_d(a, b); }
     static MPLAPACK_GEMM_HD F div(const F &a, const F &b) { return td_div(a, b); }
     static MPLAPACK_GEMM_HD F from_d(double d) { return td_make(d, 0.0, 0.0); }
+    static MPLAPACK_GEMM_HD F neg(const F &a) { return td_neg(a); }
+    static MPLAPACK_GEMM_HD bool is_zero(const F &a) { return a.x[0] == 0.0 && a.x[1] == 0.0 && a.x[2] == 0.0; }
+    static MPLAPACK_GEMM_HD bool is_nan(const F &a) { return qd_ops_isnan(a.x[0]) || qd_ops_isnan(a.x[1]) || qd_ops_isnan(a.x[2]); }
     // a == b: td::comparison_eq
     static MPLAPACK_GEMM_HD bool eq(const F &a, const F &b) {
         for (int q = 0; q < 3; q++)

@@ -27,12 +27,14 @@
  */
 
 // Device code of the qd CUDA Rgemm (../../common/Rgemm_cuda_common.cuh) and
-// Level 1/2/3 BLAS (../../common/Rblas_cuda_common.cuh).
+// Level 1/2/3 BLAS (../../common/Rblas_cuda_common.cuh, and for the complex
+// routines ../../common/Cblas_cuda_common.cuh).
 // Compile with -fmad=false.  With MPLAPACK_GEMM_CUDA_HOST_EMULATION and a
 // C++ compiler (-x c++ -ffp-contract=off) the same code runs on the host.
 
 #include "../../common/Rgemm_cuda_common.cuh"
 #include "../../common/Rblas_cuda_common.cuh"
+#include "../../common/Cblas_cuda_common.cuh"
 
 namespace mplapack_gemm {
 template int gemm_cuda<qd_ops>(const shape &, int, long, const ozaki_plan *, const gpu_scalars<qd_ops::F> &, const qd_ops::F *, const qd_ops::F *, qd_ops::F *);
@@ -42,3 +44,29 @@ template int gpu_device_count<qd_ops>();
 namespace mplapack_blas {
 template int blas_gpu<mplapack_gemm::qd_ops>(const blas_shape &, const mplapack_gemm::qd_ops::F &, const mplapack_gemm::qd_ops::F &, const gpu_operand<mplapack_gemm::qd_ops::F> &, const gpu_operand<mplapack_gemm::qd_ops::F> &, const gpu_operand<mplapack_gemm::qd_ops::F> &);
 } // namespace mplapack_blas
+
+namespace mplapack_blas_dev {
+typedef mplapack_gemm::qd_ops OPS;
+template int cgpu_run<job_Cgemm<OPS> >(job_Cgemm<OPS>, const mplapack_blas::gpu_operand<job_Cgemm<OPS>::E> *, int);
+template int cgpu_run<job_Csymm<OPS> >(job_Csymm<OPS>, const mplapack_blas::gpu_operand<job_Csymm<OPS>::E> *, int);
+template int cgpu_run<job_Chemm<OPS> >(job_Chemm<OPS>, const mplapack_blas::gpu_operand<job_Chemm<OPS>::E> *, int);
+template int cgpu_run<job_Ctrmm<OPS> >(job_Ctrmm<OPS>, const mplapack_blas::gpu_operand<job_Ctrmm<OPS>::E> *, int);
+template int cgpu_run<job_Ctrsm<OPS> >(job_Ctrsm<OPS>, const mplapack_blas::gpu_operand<job_Ctrsm<OPS>::E> *, int);
+template int cgpu_run<job_Cgemv<OPS> >(job_Cgemv<OPS>, const mplapack_blas::gpu_operand<job_Cgemv<OPS>::E> *, int);
+template int cgpu_run<job_Cgeru<OPS> >(job_Cgeru<OPS>, const mplapack_blas::gpu_operand<job_Cgeru<OPS>::E> *, int);
+template int cgpu_run<job_Cgerc<OPS> >(job_Cgerc<OPS>, const mplapack_blas::gpu_operand<job_Cgerc<OPS>::E> *, int);
+template int cgpu_run<job_Caxpy<OPS> >(job_Caxpy<OPS>, const mplapack_blas::gpu_operand<job_Caxpy<OPS>::E> *, int);
+template int cgpu_run<job_Ccopy<OPS> >(job_Ccopy<OPS>, const mplapack_blas::gpu_operand<job_Ccopy<OPS>::E> *, int);
+template int cgpu_run<job_Cswap<OPS> >(job_Cswap<OPS>, const mplapack_blas::gpu_operand<job_Cswap<OPS>::E> *, int);
+template int cgpu_run<job_CRrot<OPS> >(job_CRrot<OPS>, const mplapack_blas::gpu_operand<job_CRrot<OPS>::E> *, int);
+template int cgpu_run<job_Cscal<OPS> >(job_Cscal<OPS>, const mplapack_blas::gpu_operand<job_Cscal<OPS>::E> *, int);
+template int cgpu_run<job_CRscal<OPS> >(job_CRscal<OPS>, const mplapack_blas::gpu_operand<job_CRscal<OPS>::E> *, int);
+template int cgpu_run<job_Csyrk<OPS> >(job_Csyrk<OPS>, const mplapack_blas::gpu_operand<job_Csyrk<OPS>::E> *, int);
+template int cgpu_run<job_Cherk<OPS> >(job_Cherk<OPS>, const mplapack_blas::gpu_operand<job_Cherk<OPS>::E> *, int);
+template int cgpu_run<job_Csyr2k<OPS> >(job_Csyr2k<OPS>, const mplapack_blas::gpu_operand<job_Csyr2k<OPS>::E> *, int);
+template int cgpu_run<job_Cher2k<OPS> >(job_Cher2k<OPS>, const mplapack_blas::gpu_operand<job_Cher2k<OPS>::E> *, int);
+template int cgpu_run<job_Cgemmtr<OPS> >(job_Cgemmtr<OPS>, const mplapack_blas::gpu_operand<job_Cgemmtr<OPS>::E> *, int);
+template int cgpu_run<job_Rgemmtr<OPS> >(job_Rgemmtr<OPS>, const mplapack_blas::gpu_operand<job_Rgemmtr<OPS>::E> *, int);
+template int cgpu_run<job_Cher<OPS> >(job_Cher<OPS>, const mplapack_blas::gpu_operand<job_Cher<OPS>::E> *, int);
+template int cgpu_run<job_Cher2<OPS> >(job_Cher2<OPS>, const mplapack_blas::gpu_operand<job_Cher2<OPS>::E> *, int);
+} // namespace mplapack_blas_dev

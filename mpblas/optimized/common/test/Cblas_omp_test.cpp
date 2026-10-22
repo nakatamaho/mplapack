@@ -71,6 +71,10 @@ void Cgemmtr_reference_cpu(const char *uplo, const char *transa, const char *tra
 void Claswp(INTEGER const n, COMPLEX *a, INTEGER const lda, INTEGER const k1, INTEGER const k2, INTEGER *ipiv, INTEGER const incx);
 void Claswp_reference_cpu(INTEGER const n, COMPLEX *a, INTEGER const lda, INTEGER const k1, INTEGER const k2, INTEGER *ipiv, INTEGER const incx);
 
+void Ctrsv_reference_cpu(const char *uplo, const char *trans, const char *diag, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *x, INTEGER const incx);
+void Cher_reference_cpu(const char *uplo, INTEGER const n, REAL const alpha, COMPLEX *x, INTEGER const incx, COMPLEX *a, INTEGER const lda);
+void Cher2_reference_cpu(const char *uplo, INTEGER const n, COMPLEX const alpha, COMPLEX *x, INTEGER const incx, COMPLEX *y, INTEGER const incy, COMPLEX *a, INTEGER const lda);
+
 namespace {
 
 std::mt19937_64 rng(20261023);
@@ -147,6 +151,14 @@ std::string tag(const char *r, std::initializer_list<const char *> opts, std::in
 int main()
 {
     setenv("MPLAPACK_BLAS_OMP_MIN", "1", 1);
+#ifdef RBLAS_TEST_GPU
+    // Cblas_gpu_test.cpp: every call, Level 1 and 2 included, on the GPU
+    rblas_test_gpu_setup();
+    if (!rblas_test_have_gpu()) {
+        std::printf("no CUDA device: skipped\n");
+        return 77;
+    }
+#endif
     const char *ul[] = {"U", "L"}, *tr[] = {"N", "T", "C"}, *sd[] = {"L", "R"}, *dg[] = {"N", "U"};
     const long sizes[][3] = {{1, 1, 1}, {7, 5, 3}, {19, 23, 6}};
     const long incs[] = {1, 2, -2};
@@ -243,6 +255,27 @@ int main()
                             Cgemv(t, m, n, alpha, A.data(), m + 2, X.data(), ix, beta, G.data(), iy);
                             compare(tag("Cgemv", {t}, {m, n, ix, iy, ak, bk}), R, G);
                         }
+                        const long nn = std::min(m, n);
+                        for (const char *u : ul) {
+                            std::vector<COMPLEX> R(A), G(A);
+                            Cher_reference_cpu(u, nn, alpha.real(), X.data(), ix, R.data(), m + 2);
+                            Cher(u, nn, alpha.real(), X.data(), ix, G.data(), m + 2);
+                            compare(tag("Cher", {u}, {nn, ix, ak}), R, G);
+                            R = A, G = A;
+                            Cher2_reference_cpu(u, nn, alpha, X.data(), ix, Y.data(), iy, R.data(), m + 2);
+                            Cher2(u, nn, alpha, X.data(), ix, Y.data(), iy, G.data(), m + 2);
+                            compare(tag("Cher2", {u}, {nn, ix, iy, ak}), R, G);
+                            for (const char *t : tr)
+                                for (const char *d : dg) {
+                                    std::vector<COMPLEX> T(A);
+                                    for (long q = 0; q < nn; q++)
+                                        T[q + q * (m + 2)] = T[q + q * (m + 2)] + COMPLEX(REAL(2.0 + nn), REAL(0.0));
+                                    std::vector<COMPLEX> RX(X), GX(X);
+                                    Ctrsv_reference_cpu(u, t, d, nn, T.data(), m + 2, RX.data(), ix);
+                                    Ctrsv(u, t, d, nn, T.data(), m + 2, GX.data(), ix);
+                                    compare(tag("Ctrsv", {u, t, d}, {nn, ix}), RX, GX);
+                                }
+                        }
                         {
                             std::vector<COMPLEX> R(A), G(A);
                             Cgeru_reference_cpu(m, n, alpha, X.data(), ix, Y.data(), iy, R.data(), m + 2);
@@ -299,6 +332,10 @@ int main()
             compare(tag("Claswp", {}, {m, n, incx}), R, G);
         }
     }
+#ifdef RBLAS_TEST_GPU
+    std::printf("complex BLAS (GPU): %ld checks, %ld failures\n", checks, failures);
+#else
     std::printf("complex BLAS (OpenMP): %ld checks, %ld failures\n", checks, failures);
+#endif
     return failures == 0 ? 0 : 1;
 }

@@ -56,13 +56,15 @@ Raxpy.cpp Raxpy_ref.cpp openmp/Raxpy_omp.cpp \
 ../common/blas/Csyr2k.cpp ../common/blas/Csyr2k_omp.cpp \
 ../common/blas/Cher2k.cpp ../common/blas/Cher2k_omp.cpp \
 ../common/blas/Cgemmtr.cpp ../common/blas/Cgemmtr_omp.cpp \
+../common/blas/Rtrsv.cpp ../common/blas/Rtrsv_omp.cpp \
+../common/blas/Ctrsv.cpp ../common/blas/Ctrsv_omp.cpp \
+../common/blas/Cher.cpp ../common/blas/Cher_omp.cpp \
+../common/blas/Cher2.cpp ../common/blas/Cher2_omp.cpp \
 ../../reference/Cdotc.cpp \
 ../../reference/Cdotu.cpp \
 ../../reference/Cgbmv.cpp \
 ../../reference/Chbmv.cpp \
 ../../reference/Chemv.cpp \
-../../reference/Cher.cpp \
-../../reference/Cher2.cpp \
 ../../reference/Chpmv.cpp \
 ../../reference/Chpr.cpp \
 ../../reference/Chpr2.cpp \
@@ -72,7 +74,6 @@ Raxpy.cpp Raxpy_ref.cpp openmp/Raxpy_omp.cpp \
 ../../reference/Ctpmv.cpp \
 ../../reference/Ctpsv.cpp \
 ../../reference/Ctrmv.cpp \
-../../reference/Ctrsv.cpp \
 ../../reference/Mlsame.cpp \
 ../../reference/Mxerbla.cpp \
 ../../reference/RCabs1.cpp \
@@ -92,7 +93,6 @@ Raxpy.cpp Raxpy_ref.cpp openmp/Raxpy_omp.cpp \
 ../../reference/Rtbsv.cpp \
 ../../reference/Rtpmv.cpp \
 ../../reference/Rtpsv.cpp \
-../../reference/Rtrsv.cpp \
 ../../reference/iCamax.cpp \
 ../../reference/iRamax.cpp \
 ../../reference/mplapackinit.cpp \
@@ -112,7 +112,7 @@ endif
 
 # Parallel Level 1/2/3 BLAS (../common/blas), real and complex:
 # bit-identical to the reference routines.
-check_PROGRAMS = Rblas_omp_test_qd Cblas_omp_test_qd Rgemm_opt_test Rgemm_gpu_host_test Rblas_gpu_host_test_qd
+check_PROGRAMS = Rblas_omp_test_qd Cblas_omp_test_qd Rgemm_opt_test Rgemm_gpu_host_test Rblas_gpu_host_test_qd Cblas_gpu_host_test_qd
 Rblas_omp_test_qd_SOURCES = ../common/test/Rblas_omp_test.cpp
 Rblas_omp_test_qd_CPPFLAGS = $(libmplapack_qd_opt_la_CPPFLAGS)
 Rblas_omp_test_qd_LDFLAGS = -static $(QD_RPATH_LDFLAGS)
@@ -128,6 +128,12 @@ Rgemm_opt_test_CPPFLAGS = $(libmplapack_qd_opt_la_CPPFLAGS) -DRGEMM_TEST_QD
 Rgemm_opt_test_CXXFLAGS = $(DD_CXXFLAGS)
 Rgemm_opt_test_LDFLAGS = -static $(QD_RPATH_LDFLAGS)
 Rgemm_opt_test_LDADD = libmplapack_qd_opt.la $(libmplapack_qd_opt_la_LIBADD)
+# The CUDA complex Level 1/2/3 BLAS code run on the host (no CUDA needed).
+Cblas_gpu_host_test_qd_SOURCES = ../common/test/Cblas_gpu_test.cpp ../common/blas_cuda/Cblas_bridge_cuda.cpp ../common/blas_cuda/Cgemm.cpp ../common/blas_cuda/Csymm.cpp ../common/blas_cuda/Chemm.cpp ../common/blas_cuda/Ctrmm.cpp ../common/blas_cuda/Ctrsm.cpp ../common/blas_cuda/Cgemv.cpp ../common/blas_cuda/Cgeru.cpp ../common/blas_cuda/Cgerc.cpp ../common/blas_cuda/Caxpy.cpp ../common/blas_cuda/Ccopy.cpp ../common/blas_cuda/Cswap.cpp ../common/blas_cuda/CRrot.cpp ../common/blas_cuda/Cscal.cpp ../common/blas_cuda/CRscal.cpp ../common/blas_cuda/Csyrk.cpp ../common/blas_cuda/Cherk.cpp ../common/blas_cuda/Csyr2k.cpp ../common/blas_cuda/Cher2k.cpp ../common/blas_cuda/Cgemmtr.cpp ../common/blas_cuda/Rgemmtr.cpp ../common/blas_cuda/Cher.cpp ../common/blas_cuda/Cher2.cpp
+Cblas_gpu_host_test_qd_CPPFLAGS = $(libmplapack_qd_opt_la_CPPFLAGS) -DMPLAPACK_GEMM_CUDA_HOST_EMULATION
+Cblas_gpu_host_test_qd_CXXFLAGS = $(DD_CXXFLAGS)
+Cblas_gpu_host_test_qd_LDFLAGS = -static $(QD_RPATH_LDFLAGS)
+Cblas_gpu_host_test_qd_LDADD = libmplapack_qd_opt.la $(libmplapack_qd_opt_la_LIBADD)
 # The CUDA Level 1/2/3 BLAS code run on the host (no CUDA needed).
 Rblas_gpu_host_test_qd_SOURCES = ../common/test/Rblas_gpu_test.cpp ../common/blas_cuda/Rblas_bridge_cuda.cpp ../common/blas_cuda/Rsyrk.cpp ../common/blas_cuda/Rsyr2k.cpp ../common/blas_cuda/Rsymm.cpp ../common/blas_cuda/Rtrmm.cpp ../common/blas_cuda/Rtrsm.cpp ../common/blas_cuda/Rgemv.cpp ../common/blas_cuda/Rsymv.cpp ../common/blas_cuda/Rtrmv.cpp ../common/blas_cuda/Rger.cpp ../common/blas_cuda/Rsyr.cpp ../common/blas_cuda/Rsyr2.cpp ../common/blas_cuda/Rscal.cpp ../common/blas_cuda/Rswap.cpp ../common/blas_cuda/Rrot.cpp
 Rblas_gpu_host_test_qd_CPPFLAGS = $(libmplapack_qd_opt_la_CPPFLAGS) -DMPLAPACK_GEMM_CUDA_HOST_EMULATION
@@ -140,4 +146,4 @@ Rgemm_gpu_host_test_CPPFLAGS = $(libmplapack_qd_opt_la_CPPFLAGS) -DRGEMM_TEST_QD
 Rgemm_gpu_host_test_CXXFLAGS = $(DD_CXXFLAGS)
 Rgemm_gpu_host_test_LDFLAGS = -static $(QD_RPATH_LDFLAGS)
 Rgemm_gpu_host_test_LDADD = libmplapack_qd_opt.la $(libmplapack_qd_opt_la_LIBADD)
-TESTS = Rblas_omp_test_qd Cblas_omp_test_qd Rgemm_opt_test Rgemm_gpu_host_test Rblas_gpu_host_test_qd
+TESTS = Rblas_omp_test_qd Cblas_omp_test_qd Rgemm_opt_test Rgemm_gpu_host_test Rblas_gpu_host_test_qd Cblas_gpu_host_test_qd
