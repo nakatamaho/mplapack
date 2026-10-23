@@ -68,7 +68,6 @@ MPLAPACK_OPT_REFERENCE_SOURCES = \
 ../../../mplapack/reference/Cgesvx.cpp \
 ../../../mplapack/reference/Cgetc2.cpp \
 ../../../mplapack/reference/Cgetf2.cpp \
-../../../mplapack/reference/Cgetrf.cpp \
 ../../../mplapack/reference/Cgetrf2.cpp \
 ../../../mplapack/reference/Cgetri.cpp \
 ../../../mplapack/reference/Cgetrs.cpp \
@@ -312,7 +311,6 @@ MPLAPACK_OPT_REFERENCE_SOURCES = \
 ../../../mplapack/reference/Cposv.cpp \
 ../../../mplapack/reference/Cposvx.cpp \
 ../../../mplapack/reference/Cpotf2.cpp \
-../../../mplapack/reference/Cpotrf.cpp \
 ../../../mplapack/reference/Cpotrf2.cpp \
 ../../../mplapack/reference/Cpotri.cpp \
 ../../../mplapack/reference/Cpotrs.cpp \
@@ -545,7 +543,6 @@ MPLAPACK_OPT_REFERENCE_SOURCES = \
 ../../../mplapack/reference/Rgesvx.cpp \
 ../../../mplapack/reference/Rgetc2.cpp \
 ../../../mplapack/reference/Rgetf2.cpp \
-../../../mplapack/reference/Rgetrf.cpp \
 ../../../mplapack/reference/Rgetrf2.cpp \
 ../../../mplapack/reference/Rgetri.cpp \
 ../../../mplapack/reference/Rgetrs.cpp \
@@ -795,7 +792,6 @@ MPLAPACK_OPT_REFERENCE_SOURCES = \
 ../../../mplapack/reference/Rposv.cpp \
 ../../../mplapack/reference/Rposvx.cpp \
 ../../../mplapack/reference/Rpotf2.cpp \
-../../../mplapack/reference/Rpotrf.cpp \
 ../../../mplapack/reference/Rpotrf2.cpp \
 ../../../mplapack/reference/Rpotri.cpp \
 ../../../mplapack/reference/Rpotrs.cpp \
@@ -974,5 +970,9 @@ MPLAPACK_OPT_REFERENCE_SOURCES = \
 # Replaced in the optimized libraries by mplapack/optimized/common (same
 # basenames); listed here so that the manifest names every reference file.
 MPLAPACK_OPT_REFERENCE_SOURCES_SHADOWED = \
+../../../mplapack/reference/Cgetrf.cpp \
 ../../../mplapack/reference/Claswp.cpp \
-../../../mplapack/reference/Rlaswp.cpp
+../../../mplapack/reference/Cpotrf.cpp \
+../../../mplapack/reference/Rgetrf.cpp \
+../../../mplapack/reference/Rlaswp.cpp \
+../../../mplapack/reference/Rpotrf.cpp

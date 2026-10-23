@@ -112,6 +112,10 @@ libmplapack_qd_opt_cuda_la_SOURCES = \
 $(MPLAPACK_ACCEL_REFERENCE_SOURCES) \
 ../../../../mplapack/optimized/common/Rlaswp.cpp \
 ../../../../mplapack/optimized/common/Claswp.cpp \
+../../../../mplapack/optimized/common/Rgetrf.cpp \
+../../../../mplapack/optimized/common/Cgetrf.cpp \
+../../../../mplapack/optimized/common/Rpotrf.cpp \
+../../../../mplapack/optimized/common/Cpotrf.cpp \
 $(MPLAPACK_QD_CUDA_LAPACK_OPTIMIZED_SOURCES) \
 Rgemm.cpp Rgemm_bridge_cuda.cpp Rgemm_gpu_cuda.cu ../../common/blas_cuda/Rblas_bridge_cuda.cpp ../../common/blas_cuda/Cblas_bridge_cuda.cpp
 

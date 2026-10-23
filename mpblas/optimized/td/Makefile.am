@@ -100,6 +100,10 @@ Raxpy.cpp Raxpy_ref.cpp openmp/Raxpy_omp.cpp \
 $(MPLAPACK_OPT_REFERENCE_SOURCES) \
 ../../../mplapack/optimized/common/Rlaswp.cpp \
 ../../../mplapack/optimized/common/Claswp.cpp \
+../../../mplapack/optimized/common/Rgetrf.cpp \
+../../../mplapack/optimized/common/Cgetrf.cpp \
+../../../mplapack/optimized/common/Rpotrf.cpp \
+../../../mplapack/optimized/common/Cpotrf.cpp \
 $(MPLAPACK_TD_OPTIMIZED_SOURCES)
 
 libmplapack_td_opt_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO) -Wl,-rpath,$(libdir)
@@ -113,7 +117,7 @@ endif
 
 # Parallel Level 1/2/3 BLAS (../common/blas), real and complex:
 # bit-identical to the reference routines.
-check_PROGRAMS = Rblas_omp_test_td Cblas_omp_test_td Rgemm_opt_test Rgemm_gpu_host_test Rblas_gpu_host_test_td Cblas_gpu_host_test_td
+check_PROGRAMS = Rblas_omp_test_td Cblas_omp_test_td Rlapack_omp_test_td Rgemm_opt_test Rgemm_gpu_host_test Rblas_gpu_host_test_td Cblas_gpu_host_test_td
 Rblas_omp_test_td_SOURCES = ../common/test/Rblas_omp_test.cpp
 Rblas_omp_test_td_CPPFLAGS = $(libmplapack_td_opt_la_CPPFLAGS)
 Rblas_omp_test_td_LDFLAGS = -static $(QD_RPATH_LDFLAGS)
@@ -122,6 +126,12 @@ Cblas_omp_test_td_SOURCES = ../common/test/Cblas_omp_test.cpp
 Cblas_omp_test_td_CPPFLAGS = $(libmplapack_td_opt_la_CPPFLAGS)
 Cblas_omp_test_td_LDFLAGS = -static $(QD_RPATH_LDFLAGS)
 Cblas_omp_test_td_LDADD = libmplapack_td_opt.la $(libmplapack_td_opt_la_LIBADD)
+# Rgetrf, Rpotrf, Cgetrf, Cpotrf with look-ahead (mplapack/optimized/common):
+# bit-identical to the reference routines.
+Rlapack_omp_test_td_SOURCES = ../common/test/Rlapack_omp_test.cpp
+Rlapack_omp_test_td_CPPFLAGS = $(libmplapack_td_opt_la_CPPFLAGS)
+Rlapack_omp_test_td_LDFLAGS = -static $(QD_RPATH_LDFLAGS)
+Rlapack_omp_test_td_LDADD = libmplapack_td_opt.la $(libmplapack_td_opt_la_LIBADD)
 # Optimized Rgemm (../common/Rgemm_*_common.h): the blocked engine is
 # bit-identical to openmp/Rgemm_*_omp.cpp; Winograd and Ozaki are bounded.
 Rgemm_opt_test_SOURCES = test/Rgemm_opt_test.cpp
@@ -147,4 +157,4 @@ Rgemm_gpu_host_test_CPPFLAGS = $(libmplapack_td_opt_la_CPPFLAGS) -DRGEMM_TEST_TD
 Rgemm_gpu_host_test_CXXFLAGS = $(DD_CXXFLAGS)
 Rgemm_gpu_host_test_LDFLAGS = -static $(QD_RPATH_LDFLAGS)
 Rgemm_gpu_host_test_LDADD = libmplapack_td_opt.la $(libmplapack_td_opt_la_LIBADD)
-TESTS = Rblas_omp_test_td Cblas_omp_test_td Rgemm_opt_test Rgemm_gpu_host_test Rblas_gpu_host_test_td Cblas_gpu_host_test_td
+TESTS = Rblas_omp_test_td Cblas_omp_test_td Rlapack_omp_test_td Rgemm_opt_test Rgemm_gpu_host_test Rblas_gpu_host_test_td Cblas_gpu_host_test_td

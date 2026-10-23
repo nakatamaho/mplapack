@@ -96,6 +96,10 @@ Raxpy.cpp Raxpy_ref.cpp openmp/Raxpy_omp.cpp \
 $(MPLAPACK_OPT_REFERENCE_SOURCES) \
 ../../../mplapack/optimized/common/Rlaswp.cpp \
 ../../../mplapack/optimized/common/Claswp.cpp \
+../../../mplapack/optimized/common/Rgetrf.cpp \
+../../../mplapack/optimized/common/Cgetrf.cpp \
+../../../mplapack/optimized/common/Rpotrf.cpp \
+../../../mplapack/optimized/common/Cpotrf.cpp \
 $(MPLAPACK_%%B%%_OPTIMIZED_SOURCES)
 
 libmplapack_%%b%%_opt_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO) -Wl,-rpath,$(libdir)

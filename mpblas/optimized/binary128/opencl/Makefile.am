@@ -93,6 +93,10 @@ libmplapack_binary128_opt_opencl_la_SOURCES = \
 $(MPLAPACK_ACCEL_REFERENCE_SOURCES) \
 ../../../../mplapack/optimized/common/Rlaswp.cpp \
 ../../../../mplapack/optimized/common/Claswp.cpp \
+../../../../mplapack/optimized/common/Rgetrf.cpp \
+../../../../mplapack/optimized/common/Cgetrf.cpp \
+../../../../mplapack/optimized/common/Rpotrf.cpp \
+../../../../mplapack/optimized/common/Cpotrf.cpp \
 $(MPLAPACK_BINARY128_OPENCL_LAPACK_OPTIMIZED_SOURCES) \
 Rgemm.cpp OclHelper.hpp cpp_kernel.h
 

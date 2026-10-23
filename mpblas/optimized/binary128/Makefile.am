@@ -99,6 +99,10 @@ Raxpy.cpp Raxpy_ref.cpp openmp/Raxpy_omp.cpp \
 $(MPLAPACK_OPT_REFERENCE_SOURCES) \
 ../../../mplapack/optimized/common/Rlaswp.cpp \
 ../../../mplapack/optimized/common/Claswp.cpp \
+../../../mplapack/optimized/common/Rgetrf.cpp \
+../../../mplapack/optimized/common/Cgetrf.cpp \
+../../../mplapack/optimized/common/Rpotrf.cpp \
+../../../mplapack/optimized/common/Cpotrf.cpp \
 $(MPLAPACK_BINARY128_OPTIMIZED_SOURCES)
 
 libmplapack_binary128_opt_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO) -Wl,-rpath,$(libdir)
@@ -112,7 +116,7 @@ endif
 
 # Parallel Level 1/2/3 BLAS (../common/blas), real and complex:
 # bit-identical to the reference routines.
-check_PROGRAMS = Rblas_omp_test_binary128 Cblas_omp_test_binary128 Rgemm_opt_test
+check_PROGRAMS = Rblas_omp_test_binary128 Cblas_omp_test_binary128 Rlapack_omp_test_binary128 Rgemm_opt_test
 Rblas_omp_test_binary128_SOURCES = ../common/test/Rblas_omp_test.cpp
 Rblas_omp_test_binary128_CPPFLAGS = $(libmplapack_binary128_opt_la_CPPFLAGS)
 Rblas_omp_test_binary128_LDFLAGS = -static
@@ -121,6 +125,12 @@ Cblas_omp_test_binary128_SOURCES = ../common/test/Cblas_omp_test.cpp
 Cblas_omp_test_binary128_CPPFLAGS = $(libmplapack_binary128_opt_la_CPPFLAGS)
 Cblas_omp_test_binary128_LDFLAGS = -static
 Cblas_omp_test_binary128_LDADD = libmplapack_binary128_opt.la $(libmplapack_binary128_opt_la_LIBADD)
+# Rgetrf, Rpotrf, Cgetrf, Cpotrf with look-ahead (mplapack/optimized/common):
+# bit-identical to the reference routines.
+Rlapack_omp_test_binary128_SOURCES = ../common/test/Rlapack_omp_test.cpp
+Rlapack_omp_test_binary128_CPPFLAGS = $(libmplapack_binary128_opt_la_CPPFLAGS)
+Rlapack_omp_test_binary128_LDFLAGS = -static
+Rlapack_omp_test_binary128_LDADD = libmplapack_binary128_opt.la $(libmplapack_binary128_opt_la_LIBADD)
 # Optimized Rgemm (../common/Rgemm_*_common.h): the blocked engine is
 # bit-identical to openmp/Rgemm_*_omp.cpp; Winograd and Ozaki are bounded.
 Rgemm_opt_test_SOURCES = test/Rgemm_opt_test.cpp
@@ -128,4 +138,4 @@ Rgemm_opt_test_CPPFLAGS = $(libmplapack_binary128_opt_la_CPPFLAGS) -DRGEMM_TEST_
 Rgemm_opt_test_CXXFLAGS = $(DD_CXXFLAGS)
 Rgemm_opt_test_LDFLAGS = -static $(QD_RPATH_LDFLAGS)
 Rgemm_opt_test_LDADD = libmplapack_binary128_opt.la $(libmplapack_binary128_opt_la_LIBADD)
-TESTS = Rblas_omp_test_binary128 Cblas_omp_test_binary128 Rgemm_opt_test
+TESTS = Rblas_omp_test_binary128 Cblas_omp_test_binary128 Rlapack_omp_test_binary128 Rgemm_opt_test

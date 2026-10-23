@@ -99,6 +99,10 @@ Raxpy.cpp Raxpy_ref.cpp openmp/Raxpy_omp.cpp \
 $(MPLAPACK_OPT_REFERENCE_SOURCES) \
 ../../../mplapack/optimized/common/Rlaswp.cpp \
 ../../../mplapack/optimized/common/Claswp.cpp \
+../../../mplapack/optimized/common/Rgetrf.cpp \
+../../../mplapack/optimized/common/Cgetrf.cpp \
+../../../mplapack/optimized/common/Rpotrf.cpp \
+../../../mplapack/optimized/common/Cpotrf.cpp \
 $(MPLAPACK_MPFR_OPTIMIZED_SOURCES)
 
 libmplapack_mpfr_opt_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO) -Wl,-rpath,$(libdir)
@@ -112,7 +116,7 @@ endif
 
 # Parallel Level 1/2/3 BLAS (../common/blas), real and complex:
 # bit-identical to the reference routines.
-check_PROGRAMS = Rblas_omp_test_mpfr Cblas_omp_test_mpfr
+check_PROGRAMS = Rblas_omp_test_mpfr Cblas_omp_test_mpfr Rlapack_omp_test_mpfr
 Rblas_omp_test_mpfr_SOURCES = ../common/test/Rblas_omp_test.cpp
 Rblas_omp_test_mpfr_CPPFLAGS = $(libmplapack_mpfr_opt_la_CPPFLAGS)
 Rblas_omp_test_mpfr_LDFLAGS = -static
@@ -121,4 +125,10 @@ Cblas_omp_test_mpfr_SOURCES = ../common/test/Cblas_omp_test.cpp
 Cblas_omp_test_mpfr_CPPFLAGS = $(libmplapack_mpfr_opt_la_CPPFLAGS)
 Cblas_omp_test_mpfr_LDFLAGS = -static
 Cblas_omp_test_mpfr_LDADD = libmplapack_mpfr_opt.la $(libmplapack_mpfr_opt_la_LIBADD)
-TESTS = Rblas_omp_test_mpfr Cblas_omp_test_mpfr
+# Rgetrf, Rpotrf, Cgetrf, Cpotrf with look-ahead (mplapack/optimized/common):
+# bit-identical to the reference routines.
+Rlapack_omp_test_mpfr_SOURCES = ../common/test/Rlapack_omp_test.cpp
+Rlapack_omp_test_mpfr_CPPFLAGS = $(libmplapack_mpfr_opt_la_CPPFLAGS)
+Rlapack_omp_test_mpfr_LDFLAGS = -static
+Rlapack_omp_test_mpfr_LDADD = libmplapack_mpfr_opt.la $(libmplapack_mpfr_opt_la_LIBADD)
+TESTS = Rblas_omp_test_mpfr Cblas_omp_test_mpfr Rlapack_omp_test_mpfr

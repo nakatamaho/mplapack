@@ -118,6 +118,10 @@ libmplapack_mpfr_opt_cuda_la_SOURCES = \
 $(MPLAPACK_ACCEL_REFERENCE_SOURCES) \
 ../../../../mplapack/optimized/common/Rlaswp.cpp \
 ../../../../mplapack/optimized/common/Claswp.cpp \
+../../../../mplapack/optimized/common/Rgetrf.cpp \
+../../../../mplapack/optimized/common/Cgetrf.cpp \
+../../../../mplapack/optimized/common/Rpotrf.cpp \
+../../../../mplapack/optimized/common/Cpotrf.cpp \
 $(MPLAPACK_MPFR_CUDA_LAPACK_OPTIMIZED_SOURCES) \
 Rgemm.cpp Rgemm_bridge_cuda.cpp Rgemm_device_cuda.cu Rgemm_kernel_cuda.h \
 Rgemm_rt_cuda.cu Rgemm_rt_cuda.h Rgemm_winograd_cuda.h mpfr_pack_cuda.h \
