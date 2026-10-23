@@ -1,6 +1,6 @@
 # Optimized Rgemm and Level 1/2/3 BLAS
 
-Rgemm: header-only code shared by `libmplapack_{dd,td,qd,binary128}_opt` (CPU) and
+Rgemm: header-only code shared by every `libmplapack_<type>_opt` (CPU) and
 `libmplapack_{dd,td,qd}_opt_cuda` (GPU). It covers the matrix-multiplication
 features of [BNCmatmul](https://github.com/tkouya/bncmatmul): SIMD, cache
 blocking, OpenMP, Strassen/Winograd and the Ozaki scheme on the CPU, and naive,
@@ -26,6 +26,30 @@ in the same order, as in `openmp/Rgemm_{NN,NT,TN,TT}_omp.cpp`. Only the loops
 over i and j are blocked and reordered. Every combination of transposes is
 supported.
 
+## Small-block engine (every CPU type)
+
+`Rblas_block_common.h` is the CPU engine of `Rgemm` for every type
+(`blas/Rgemm_blocked_omp.cpp`, called by `<type>/Rgemm.cpp`), after Goto and
+van de Geijn and [dgemm_tutorial](https://github.com/nakatamaho/dgemm_tutorial):
+NC columns, KC steps and MC rows per block; op(A) and alpha*op(B) packed into
+micro-panels of MR rows and NR columns, in the order the micro-kernel reads
+them, in page-aligned per-thread buffers (contiguous panels touch few pages,
+so few TLB entries); an MR x NR tile of C held in registers over the KC steps;
+the (NC, MC) blocks spread over the threads. Each element of C still goes
+through the operations of `Rgemm_*_omp` in their order. Only the micro-kernel
+depends on the type:
+
+| Type | Kernel | MR x NR | Rgemm, n = 400..1000, vs `Rgemm_*_omp` (1 / 4 threads) |
+|---|---|---|---|
+| double | values, AVX2 multiply and add (no FMA contraction) | 16 x 4 | 3.5-6.9x / 2.0-7.0x |
+| dd, td, qd | words in planes, BF arithmetic, AVX2 | 4 x 4, 4 x 2, 4 x 2 | 3.8-6.6x / 2.7-4.5x |
+| long double, binary128 | values | 4 x 4 | 0.5-1.0x: not used by default |
+| MPFR, GMP | pointers (no copy, the precision is kept) | 4 x 4 | 0.7-0.9x: not used by default |
+
+For the last two rows the arithmetic dominates and blocking does not pay;
+`MPLAPACK_BLAS_BLOCK=2` uses the engine anyway (the tests do), `=0` never.
+`MPLAPACK_BLAS_BLOCK_MIN=N` is the smallest m*n*k (32768).
+
 Winograd and Ozaki are opt-in. Their results differ
 from the conventional ones in rounding, and their errors are bounded normwise,
 not elementwise.
@@ -34,8 +58,8 @@ not elementwise.
 
 | File | Contents |
 |---|---|
-| `Rgemm_blocked_common.h` | blocked engine (packing, OpenMP over C blocks), generic scalar kernel |
-| `Rgemm_simd_kernels_common.h` | dd/td/qd branch-free kernels (vectorized over i) |
+| `Rblas_block_common.h` | small-block engine and the micro-kernels of every type |
+| `Rgemm_blocked_common.h` | shape of an Rgemm call, helpers of Winograd, Ozaki and CUDA |
 | `Rgemm_simd_common.h` | AVX2 / baseline function multiversioning (x86-64 ELF), `omp simd` |
 | `Rgemm_qd_ops_common.h` | dd/td/qd branch-free arithmetic on doubles for host and device, identical to libQD3 built with `QD_BF` |
 | `Rgemm_winograd_common.h` | Winograd recursion (BNCmatmul's schedule), CPU backend |
@@ -53,7 +77,7 @@ not elementwise.
 | `blas/R*.cpp`, `blas/R*_omp.cpp` | CPU dispatchers; the reference code renamed `R*_reference_cpu` and `R*_omp` |
 | `blas_cuda/R*.cpp`, `blas_cuda/Rblas_bridge_cuda.cpp` | dd/td/qd CUDA dispatchers and `R*_gpu` |
 
-Per type, `<type>/openmp/Rgemm_blocked_omp.cpp` instantiates the CPU code and
+`blas/Rgemm_blocked_omp.cpp` instantiates the CPU code for every type and
 is called by `<type>/Rgemm.cpp`. `<type>/cuda/{Rgemm.cpp,
 Rgemm_bridge_cuda.cpp, Rgemm_gpu_cuda.cu}` instantiate the GPU code.
 

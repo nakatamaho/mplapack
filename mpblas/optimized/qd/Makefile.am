@@ -15,14 +15,15 @@ MPLAPACK_QD_OPTIMIZED_SOURCES =
 lib_LTLIBRARIES = libmplapack_qd_opt.la
 
 libmplapack_qd_opt_la_CPPFLAGS = -I. -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) $(OPENMP_CXXFLAGS) -DMPLAPACK_BUILD_WITH_QD
-# Rgemm_blocked_omp.cpp needs uncontracted arithmetic.
+# The blocked Rgemm needs uncontracted arithmetic.
 libmplapack_qd_opt_la_CXXFLAGS = $(DD_CXXFLAGS)
 libmplapack_qd_opt_la_SOURCES = \
 Rcopy.cpp Rcopy_ref.cpp openmp/Rcopy_omp.cpp \
 Rdot.cpp  Rdot_ref.cpp  openmp/Rdot_omp.cpp \
-Rgemm.cpp Rgemm_ref.cpp openmp/Rgemm_blocked_omp.cpp openmp/Rgemm_NN_omp.cpp openmp/Rgemm_NT_omp.cpp openmp/Rgemm_TN_omp.cpp openmp/Rgemm_TT_omp.cpp \
+Rgemm.cpp Rgemm_ref.cpp openmp/Rgemm_NN_omp.cpp openmp/Rgemm_NT_omp.cpp openmp/Rgemm_TN_omp.cpp openmp/Rgemm_TT_omp.cpp \
 Raxpy.cpp Raxpy_ref.cpp openmp/Raxpy_omp.cpp \
 ../common/blas/Rdot_par.cpp \
+../common/blas/Rgemm_blocked_omp.cpp \
 ../common/blas/Rsyrk.cpp ../common/blas/Rsyrk_omp.cpp \
 ../common/blas/Rsyr2k.cpp ../common/blas/Rsyr2k_omp.cpp \
 ../common/blas/Rsymm.cpp ../common/blas/Rsymm_omp.cpp \

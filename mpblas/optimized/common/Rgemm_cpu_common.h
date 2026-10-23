@@ -51,6 +51,7 @@
 #include <string>
 #include <vector>
 #include "Rgemm_blocked_common.h"
+#include "Rblas_cpu_common.h"
 #include "Rgemm_winograd_common.h"
 #include "Rgemm_ozaki_common.h"
 
@@ -58,15 +59,11 @@ namespace mplapack_gemm {
 
 inline long env_param(const char *prefix, const char *name, long dflt) { return env_long((std::string(prefix) + name).c_str(), dflt); }
 
-// C = A*B with the blocked engine (Winograd leaves).
-template <class K> struct blocked_leaf {
-    typedef typename K::value_type T;
+// C = A*B with the small-block engine (Winograd leaves).
+template <class T> struct blocked_leaf {
     void product(long m, long n, long k, T *C, long ldc, const T *A, long lda, const T *B, long ldb) {
-        if ((double)m * n * k >= 32768.0) {
-            shape s = {true, true, m, n, k, lda, ldb, ldc};
-            gemm_blocked<K>(s, T(1.0), T(0.0), A, B, C);
+        if (mplapack_blas::blk_gemm<mplapack_blas::blas_thread_context>(true, true, m, n, k, T(1.0), A, lda, B, ldb, T(0.0), C, ldc))
             return;
-        }
         for (long j = 0; j < n; j++)
             for (long i = 0; i < m; i++) {
                 T c = 0.0;
@@ -77,8 +74,7 @@ template <class K> struct blocked_leaf {
     }
 };
 
-template <class K> bool gemm_winograd_cpu(const shape &s, const typename K::value_type &alpha, const typename K::value_type &beta, const typename K::value_type *A, const typename K::value_type *B, typename K::value_type *C, long cutoff) {
-    typedef typename K::value_type T;
+template <class T> bool gemm_winograd_cpu(const shape &s, const T &alpha, const T &beta, const T *A, const T *B, T *C, long cutoff) {
     const long m = s.m, n = s.n, k = s.k;
     std::vector<T> Ab, Bb, P((size_t)m * n);
     const T *Ap = A, *Bp = B;
@@ -99,8 +95,8 @@ template <class K> bool gemm_winograd_cpu(const shape &s, const typename K::valu
         Bp = Bb.data();
         ldb = k;
     }
-    blocked_leaf<K> leaf;
-    winograd_cpu_backend<T, blocked_leaf<K> > be(leaf);
+    blocked_leaf<T> leaf;
+    winograd_cpu_backend<T, blocked_leaf<T> > be(leaf);
     winograd<T>(be, m, n, k, Ap, lda, Bp, ldb, P.data(), m, cutoff);
     if (be.failed())
         return false;
@@ -120,23 +116,21 @@ template <class K> bool gemm_winograd_cpu(const shape &s, const typename K::valu
 
 // Returns false when the call is left to the caller (small sizes or the
 // blocked engine disabled).  alpha != 0 and m, n > 0 are assumed.
-template <class K> bool gemm_cpu(const char *prefix, const shape &s, const typename K::value_type &alpha, const typename K::value_type &beta, const typename K::value_type *A, const typename K::value_type *B, typename K::value_type *C) {
-    typedef typename K::value_type T;
+template <class T> bool gemm_cpu(const char *prefix, const shape &s, const T &alpha, const T &beta, const T *A, const T *B, T *C) {
     if (s.k > 0 && env_param(prefix, "_GEMM_OZAKI", 0) > 0) {
         if (gemm_ozaki_cpu<T>(s, alpha, beta, A, B, C, (int)env_param(prefix, "_GEMM_OZAKI_SLICES", 0)))
             return true;
     }
     const long cutoff = env_param(prefix, "_GEMM_WINOGRAD_CUTOFF", 0);
     if (cutoff > 0 && s.m > cutoff && s.n > cutoff && s.k > cutoff) {
-        if (gemm_winograd_cpu<K>(s, alpha, beta, A, B, C, cutoff))
+        if (gemm_winograd_cpu<T>(s, alpha, beta, A, B, C, cutoff))
             return true;
     }
     if (env_param(prefix, "_GEMM_BLOCKED", 1) == 0)
         return false;
     if ((double)s.m * s.n * s.k < (double)env_param(prefix, "_GEMM_MIN_MNK", 32768))
         return false;
-    gemm_blocked<K>(s, alpha, beta, A, B, C);
-    return true;
+    return mplapack_blas::blk_gemm<mplapack_blas::blas_thread_context>(s.nota, s.notb, s.m, s.n, s.k, alpha, A, s.lda, B, s.ldb, beta, C, s.ldc, 0.0);
 }
 
 } // namespace mplapack_gemm

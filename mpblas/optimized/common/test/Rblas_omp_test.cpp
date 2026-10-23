@@ -80,6 +80,12 @@ REAL Rdot_reference_cpu(INTEGER const n, REAL *dx, INTEGER const incx, REAL *dy,
 REAL Rnrm2_reference_cpu(INTEGER const n, REAL *x, INTEGER const incx);
 INTEGER iRamax_reference_cpu(INTEGER const n, REAL *dx, INTEGER const incx);
 
+// the OpenMP loops of <type>/openmp, which the blocked Rgemm reproduces
+void Rgemm_NN_omp(mplapackint m, mplapackint n, mplapackint k, REAL alpha, REAL *A, mplapackint lda, REAL *B, mplapackint ldb, REAL beta, REAL *C, mplapackint ldc);
+void Rgemm_NT_omp(mplapackint m, mplapackint n, mplapackint k, REAL alpha, REAL *A, mplapackint lda, REAL *B, mplapackint ldb, REAL beta, REAL *C, mplapackint ldc);
+void Rgemm_TN_omp(mplapackint m, mplapackint n, mplapackint k, REAL alpha, REAL *A, mplapackint lda, REAL *B, mplapackint ldb, REAL beta, REAL *C, mplapackint ldc);
+void Rgemm_TT_omp(mplapackint m, mplapackint n, mplapackint k, REAL alpha, REAL *A, mplapackint lda, REAL *B, mplapackint ldb, REAL beta, REAL *C, mplapackint ldc);
+
 namespace {
 
 std::mt19937_64 rng(20261022);
@@ -415,6 +421,41 @@ int main()
                 }
             }
     }
+#ifndef RBLAS_TEST_GPU
+    // Rgemm: the small-block engine (../blas/Rgemm_blocked_omp.cpp) against
+    // the OpenMP loops <type>/openmp/Rgemm_{NN,NT,TN,TT}_omp.cpp; the sizes
+    // cross the block and micro-tile boundaries of every kernel
+    setenv("MPLAPACK_BLAS_BLOCK_MIN", "1", 1);
+    setenv("MPLAPACK_BLAS_BLOCK", "2", 1); // every type
+    {
+        const long gs[][3] = {{1, 1, 1}, {7, 5, 3}, {19, 23, 17}, {33, 9, 65}, {150, 70, 300}, {70, 140, 40}, {260, 9, 130}};
+        for (auto &z : gs)
+            for (const char *ta : tr)
+                for (const char *tb : tr)
+                    for (int ak = 0; ak < 3; ak += 2)
+                        for (int bk = 0; bk < 3; bk++) {
+                            const long m = z[0], n = z[1], k = z[2];
+                            if (m * n * k > 100000 && (ak != 2 || bk != 2))
+                                continue;
+                            const bool na = ta[0] == 'N', nb = tb[0] == 'N';
+                            const long lda = (na ? m : k) + 3, ldb = (nb ? k : n) + 1, ldc = m + 2;
+                            std::vector<REAL> A(lda * (na ? k : m)), B(ldb * (nb ? n : k)), C(ldc * n);
+                            fill(A), fill(B), fill(C);
+                            const REAL alpha = scalar(ak), beta = scalar(bk);
+                            std::vector<REAL> R(C), G(C);
+                            if (na && nb)
+                                Rgemm_NN_omp(m, n, k, alpha, A.data(), lda, B.data(), ldb, beta, R.data(), ldc);
+                            else if (na)
+                                Rgemm_NT_omp(m, n, k, alpha, A.data(), lda, B.data(), ldb, beta, R.data(), ldc);
+                            else if (nb)
+                                Rgemm_TN_omp(m, n, k, alpha, A.data(), lda, B.data(), ldb, beta, R.data(), ldc);
+                            else
+                                Rgemm_TT_omp(m, n, k, alpha, A.data(), lda, B.data(), ldb, beta, R.data(), ldc);
+                            Rgemm(ta, tb, m, n, k, alpha, A.data(), lda, B.data(), ldb, beta, G.data(), ldc);
+                            compare(tag("Rgemm", {ta, tb}, {m, n, k, ak, bk}), R, G);
+                        }
+    }
+#endif
 #ifdef RBLAS_TEST_GPU
     std::printf("lane BLAS (GPU): %ld checks, %ld failures\n", checks, failures);
 #else

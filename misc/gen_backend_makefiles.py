@@ -103,15 +103,17 @@ def values(name, traits, conf):
     if nofma:
         v["opt_cxxflags"] = ["libmplapack_%%b%%_opt_la_CXXFLAGS = $(DD_CXXFLAGS)"]
     elif c.get("opt_nofma", "no") == "yes":
-        v["opt_cxxflags"] = ["# Rgemm_blocked_omp.cpp needs uncontracted arithmetic.",
+        v["opt_cxxflags"] = ["# The blocked Rgemm needs uncontracted arithmetic.",
                              "libmplapack_%%b%%_opt_la_CXXFLAGS = $(DD_CXXFLAGS)"]
     else:
         v["opt_cxxflags"] = []
-    # Optimized Rgemm of mpblas/optimized/common (openmp/Rgemm_blocked_omp.cpp)
+    # Optimized Rgemm tests of mpblas/optimized/common
     # and its tests (test/*.cpp include ../../common/test/*.cpp).
     rgemm_opt = c.get("rgemm_opt", "no") == "yes"
     gpu_host = c.get("rgemm_gpu_host_test", "no") == "yes"
-    v["opt_rgemm_sources"] = " openmp/Rgemm_blocked_omp.cpp" if rgemm_opt else ""
+    # (the blocked Rgemm itself, ../common/blas/Rgemm_blocked_omp.cpp, is in
+    # every optimized library)
+    v["opt_rgemm_sources"] = ""
     # Program names carry the backend: their objects of ../common/test/*.cpp
     # are built in that shared directory.
     programs = ["Rblas_omp_test_%%b%%", "Cblas_omp_test_%%b%%"]

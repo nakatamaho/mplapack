@@ -60,6 +60,7 @@
 #if defined(MPLAPACK_BUILD_WITH_MPFR)
 #include <mplapack_mpfr_precision.h>
 #endif
+#include "Rblas_block_common.h"
 
 namespace mplapack_blas {
 

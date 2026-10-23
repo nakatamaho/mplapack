@@ -69,5 +69,5 @@ common/Rgemm_blocked_common.h common/Rgemm_cpu_common.h \
 common/Rgemm_cuda_bridge_common.h common/Rgemm_cuda_common.cuh \
 common/Rgemm_cuda_ops_common.h common/Rgemm_ozaki_common.h \
 common/Rgemm_qd_ops_common.h common/Rgemm_simd_common.h \
-common/Rgemm_simd_kernels_common.h common/Rgemm_winograd_common.h \
+common/Rblas_block_common.h common/Rgemm_winograd_common.h \
 common/test/Rgemm_opt_test.cpp common/test/Rgemm_gpu_test.cpp
