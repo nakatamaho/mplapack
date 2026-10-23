@@ -106,13 +106,15 @@ struct blk_buffer {
 
 // The AVX2 variant must not contract the products and sums into FMAs (the
 // reference loops are compiled for the baseline, without FMA).
+// The multiversioned kernels are static: their clones and resolvers are
+// global symbols otherwise, defined in every object that includes this file.
 #if defined(__GNUC__) && !defined(__clang__) && !defined(__INTEL_COMPILER)
 #define MPLAPACK_BLK_NO_CONTRACT __attribute__((optimize("fp-contract=off")))
 #else
 #define MPLAPACK_BLK_NO_CONTRACT
 #endif
 
-template <class T, int MR, int NR, int MODE, bool HM> MPLAPACK_GEMM_CLONES MPLAPACK_BLK_NO_CONTRACT void blk_value_micro(long kc, const T *A, const T *B, const unsigned char *mask, T *C, long ldc, int mr, int nr)
+template <class T, int MR, int NR, int MODE, bool HM> MPLAPACK_GEMM_CLONES MPLAPACK_BLK_NO_CONTRACT static void blk_value_micro(long kc, const T *A, const T *B, const unsigned char *mask, T *C, long ldc, int mr, int nr)
 {
     T acc[NR][MR];
     for (int jj = 0; jj < NR; jj++)
@@ -264,7 +266,7 @@ MPLAPACK_BLK_PLANE_STEPS(2, DD)
 MPLAPACK_BLK_PLANE_STEPS(3, TD)
 MPLAPACK_BLK_PLANE_STEPS(4, QD)
 
-template <int W, int MR, int NR, int MODE, bool HM> MPLAPACK_GEMM_CLONES void blk_plane_micro(long kc, const double *A, const double *B, const unsigned char *mask, double *C, long ldc, int mr, int nr)
+template <int W, int MR, int NR, int MODE, bool HM> MPLAPACK_GEMM_CLONES static void blk_plane_micro(long kc, const double *A, const double *B, const unsigned char *mask, double *C, long ldc, int mr, int nr)
 {
     double acc[W][NR][MR];
     for (int jj = 0; jj < NR; jj++)
