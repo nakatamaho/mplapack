@@ -43,6 +43,7 @@
  *
  *   MPLAPACK_BLAS_SIMD=0        use the lanes instead
  *   MPLAPACK_BLAS_SIMD_COLS=N   columns per group (8)
+ *   MPLAPACK_BLAS_SIMD_PLANES=0 column groups on the interleaved words
  */
 
 #ifndef _MPLAPACK_RBLAS_SIMD_COMMON_H_
@@ -87,6 +88,84 @@ namespace mplapack_blas {
 #define MPLAPACK_BK_QD_ZERO(p) ((p)[0] = 0.0, (p)[1] = 0.0, (p)[2] = 0.0, (p)[3] = 0.0)
 #define MPLAPACK_BK_QD_MUL(r, a, b) mplapack_gemm::qd_bf_mul_w(a##0, a##1, a##2, a##3, b##0, b##1, b##2, b##3, r##0, r##1, r##2, r##3)
 #define MPLAPACK_BK_QD_ADD(r, a, b) mplapack_gemm::qd_bf_add_w(a##0, a##1, a##2, a##3, b##0, b##1, b##2, b##3, r##0, r##1, r##2, r##3)
+
+// The same on planes (structure of arrays): word q of element k at P##q[k].
+#define MPLAPACK_BK_DD_PTRS(P, p, s) double *__restrict P##0 = (p), *__restrict P##1 = (p) + (s)
+#define MPLAPACK_BK_DD_CPTRS(P, p, s) const double *__restrict P##0 = (p), *__restrict P##1 = (p) + (s)
+#define MPLAPACK_BK_DD_LOADI(v, P, k) (v##0 = P##0[k], v##1 = P##1[k])
+#define MPLAPACK_BK_DD_STOREI(P, k, v) (P##0[k] = v##0, P##1[k] = v##1)
+#define MPLAPACK_BK_TD_PTRS(P, p, s) double *__restrict P##0 = (p), *__restrict P##1 = (p) + (s), *__restrict P##2 = (p) + 2 * (s)
+#define MPLAPACK_BK_TD_CPTRS(P, p, s) const double *__restrict P##0 = (p), *__restrict P##1 = (p) + (s), *__restrict P##2 = (p) + 2 * (s)
+#define MPLAPACK_BK_TD_LOADI(v, P, k) (v##0 = P##0[k], v##1 = P##1[k], v##2 = P##2[k])
+#define MPLAPACK_BK_TD_STOREI(P, k, v) (P##0[k] = v##0, P##1[k] = v##1, P##2[k] = v##2)
+#define MPLAPACK_BK_QD_PTRS(P, p, s) double *__restrict P##0 = (p), *__restrict P##1 = (p) + (s), *__restrict P##2 = (p) + 2 * (s), *__restrict P##3 = (p) + 3 * (s)
+#define MPLAPACK_BK_QD_CPTRS(P, p, s) const double *__restrict P##0 = (p), *__restrict P##1 = (p) + (s), *__restrict P##2 = (p) + 2 * (s), *__restrict P##3 = (p) + 3 * (s)
+#define MPLAPACK_BK_QD_LOADI(v, P, k) (v##0 = P##0[k], v##1 = P##1[k], v##2 = P##2[k], v##3 = P##3[k])
+#define MPLAPACK_BK_QD_STOREI(P, k, v) (P##0[k] = v##0, P##1[k] = v##1, P##2[k] = v##2, P##3[k] = v##3)
+
+// Kernels on planes: y with plane stride ys, x with plane stride xs.
+#define MPLAPACK_BK_PLANE_KERNELS(T)                                                                                       \
+    /* y = y + t*x, or y = y - t*x (sub) */                                                                                \
+    MPLAPACK_GEMM_CLONES static void bk_axpyp_##T(long n, double *y, long ys, const double *t, const double *x, long xs, int sub) \
+    {                                                                                                                      \
+        MPLAPACK_BK_##T##_DECL(tt);                                                                                        \
+        MPLAPACK_BK_##T##_LOAD(tt, t);                                                                                     \
+        MPLAPACK_BK_##T##_PTRS(Y, y, ys);                                                                                  \
+        MPLAPACK_BK_##T##_CPTRS(X, x, xs);                                                                                 \
+        if (sub) {                                                                                                         \
+            MPLAPACK_GEMM_SIMD                                                                                             \
+            for (long k = 0; k < n; k++) {                                                                                 \
+                MPLAPACK_BK_##T##_DECL(xv);                                                                                \
+                MPLAPACK_BK_##T##_DECL(yv);                                                                                \
+                MPLAPACK_BK_##T##_DECL(p);                                                                                 \
+                MPLAPACK_BK_##T##_LOADI(xv, X, k);                                                                         \
+                MPLAPACK_BK_##T##_LOADI(yv, Y, k);                                                                         \
+                MPLAPACK_BK_##T##_MUL(p, tt, xv);                                                                          \
+                MPLAPACK_BK_##T##_NEG(p);                                                                                  \
+                MPLAPACK_BK_##T##_ADD(yv, yv, p);                                                                          \
+                MPLAPACK_BK_##T##_STOREI(Y, k, yv);                                                                        \
+            }                                                                                                              \
+        } else {                                                                                                           \
+            MPLAPACK_GEMM_SIMD                                                                                             \
+            for (long k = 0; k < n; k++) {                                                                                 \
+                MPLAPACK_BK_##T##_DECL(xv);                                                                                \
+                MPLAPACK_BK_##T##_DECL(yv);                                                                                \
+                MPLAPACK_BK_##T##_DECL(p);                                                                                 \
+                MPLAPACK_BK_##T##_LOADI(xv, X, k);                                                                         \
+                MPLAPACK_BK_##T##_LOADI(yv, Y, k);                                                                         \
+                MPLAPACK_BK_##T##_MUL(p, tt, xv);                                                                          \
+                MPLAPACK_BK_##T##_ADD(yv, yv, p);                                                                          \
+                MPLAPACK_BK_##T##_STOREI(Y, k, yv);                                                                        \
+            }                                                                                                              \
+        }                                                                                                                  \
+    }                                                                                                                      \
+    /* y = y + ((x1*t1) + (x2*t2)) */                                                                                      \
+    MPLAPACK_GEMM_CLONES static void bk_axpy2p_##T(long n, double *y, long ys, const double *x1, const double *t1, const double *x2, const double *t2, long xs) \
+    {                                                                                                                      \
+        MPLAPACK_BK_##T##_DECL(s1);                                                                                        \
+        MPLAPACK_BK_##T##_DECL(s2);                                                                                        \
+        MPLAPACK_BK_##T##_LOAD(s1, t1);                                                                                    \
+        MPLAPACK_BK_##T##_LOAD(s2, t2);                                                                                    \
+        MPLAPACK_BK_##T##_PTRS(Y, y, ys);                                                                                  \
+        MPLAPACK_BK_##T##_CPTRS(X, x1, xs);                                                                                \
+        MPLAPACK_BK_##T##_CPTRS(Z, x2, xs);                                                                                \
+        MPLAPACK_GEMM_SIMD                                                                                                 \
+        for (long k = 0; k < n; k++) {                                                                                     \
+            MPLAPACK_BK_##T##_DECL(a);                                                                                     \
+            MPLAPACK_BK_##T##_DECL(b);                                                                                     \
+            MPLAPACK_BK_##T##_DECL(yv);                                                                                    \
+            MPLAPACK_BK_##T##_DECL(p);                                                                                     \
+            MPLAPACK_BK_##T##_DECL(q);                                                                                     \
+            MPLAPACK_BK_##T##_LOADI(a, X, k);                                                                              \
+            MPLAPACK_BK_##T##_LOADI(b, Z, k);                                                                              \
+            MPLAPACK_BK_##T##_LOADI(yv, Y, k);                                                                             \
+            MPLAPACK_BK_##T##_MUL(p, a, s1);                                                                               \
+            MPLAPACK_BK_##T##_MUL(q, b, s2);                                                                               \
+            MPLAPACK_BK_##T##_ADD(p, p, q);                                                                                \
+            MPLAPACK_BK_##T##_ADD(yv, yv, p);                                                                              \
+            MPLAPACK_BK_##T##_STOREI(Y, k, yv);                                                                            \
+        }                                                                                                                  \
+    }
 
 // T: the word macros above (DD, TD, QD); W: words per element.
 #define MPLAPACK_BK_KERNELS(T, W)                                                                                         \
@@ -234,12 +313,15 @@ namespace mplapack_blas {
 
 #if defined(MPLAPACK_BUILD_WITH_DD)
 MPLAPACK_BK_KERNELS(DD, 2)
+MPLAPACK_BK_PLANE_KERNELS(DD)
 #define MPLAPACK_BK_TYPE DD
 #elif defined(MPLAPACK_BUILD_WITH_TD)
 MPLAPACK_BK_KERNELS(TD, 3)
+MPLAPACK_BK_PLANE_KERNELS(TD)
 #define MPLAPACK_BK_TYPE TD
 #elif defined(MPLAPACK_BUILD_WITH_QD)
 MPLAPACK_BK_KERNELS(QD, 4)
+MPLAPACK_BK_PLANE_KERNELS(QD)
 #define MPLAPACK_BK_TYPE QD
 #endif
 
@@ -346,6 +428,54 @@ template <class T> void bk_rot(long n, T *x, long sx, T *y, long sy, const T &c,
         y[k * sy] = p - q;
         x[k * sx] = u;
     }
+}
+
+// ---- packed planes ----
+// A matrix of T stored word by word: word q of element (i, j) is
+// v[q * ps + i + j * ld].  The packed copies of A (and B) are shared by the
+// units; a unit packs its group of columns of the result, so that the loops
+// over the rows run on unit-stride planes.
+
+template <class T> struct bk_planes {
+    static const int W = (int)(sizeof(T) / sizeof(double));
+    std::vector<double> v;
+    long ld, ps;
+    bk_planes() : ld(0), ps(0) {}
+    double *at(long i, long j) { return v.data() + i + j * ld; }
+    const double *at(long i, long j) const { return v.data() + i + j * ld; }
+    T get(long i, long j) const
+    {
+        T x;
+        double *w = bk_w(&x);
+        for (int q = 0; q < W; q++)
+            w[q] = v[(size_t)(q * ps + i + j * ld)];
+        return x;
+    }
+    void set(long i, long j, const T &x)
+    {
+        const double *w = bk_w(&x);
+        for (int q = 0; q < W; q++)
+            v[(size_t)(q * ps + i + j * ld)] = w[q];
+    }
+    void resize(long rows, long cols)
+    {
+        ld = rows, ps = rows * cols;
+        v.resize((size_t)(W * ps));
+    }
+};
+
+// y(k) = y(k) + t*x(k) (sub: y(k) - t*x(k)), k < n, on planes
+template <class T> void bk_axpyp(long n, double *y, long ys, const T &t, const double *x, long xs, bool sub)
+{
+    if (n > 0)
+        MPLAPACK_BK_FN(bk_axpyp_)(n, y, ys, bk_w(&t), x, xs, sub ? 1 : 0);
+}
+
+// y(k) = y(k) + ((x1(k)*t1) + (x2(k)*t2)), on planes
+template <class T> void bk_axpy2p(long n, double *y, long ys, const double *x1, const T &t1, const double *x2, const T &t2, long xs)
+{
+    if (n > 0)
+        MPLAPACK_BK_FN(bk_axpy2p_)(n, y, ys, x1, bk_w(&t1), x2, bk_w(&t2), xs);
 }
 
 // ---- units of work ----
@@ -503,6 +633,110 @@ template <class T> void bk_trxm_lt(const blas_call<T> &c, long u, long rb)
     for (long i = 0; i < m; i++)
         for (long t = 0; t < w; t++)
             C(i, j0 + t) = Bt[(size_t)(t + i * w)];
+}
+
+// The column groups of Rsyrk/Rsyr2k (trans = N) and Rtrmm/Rtrsm (side L,
+// transa = N) on planes: Ap, Bp are A and B packed, the columns [g0, g1) of
+// C (B for trmm/trsm) are packed here and unpacked at the end.  The
+// operations are those of bk_unit.
+template <class T> void bk_unit_planes(const blas_call<T> &c, long g0, long g1, const bk_planes<T> &Ap, const bk_planes<T> &Bp)
+{
+    const blas_shape &s = c.s;
+    const bk_mat<T> A = bk_of(c.a), B = bk_of(c.b), C = bk_of(c.c);
+    const T &al = c.alpha;
+    const long g = g1 - g0, rows = s.op == L3_SYRK || s.op == L3_SYR2K ? s.n : s.m;
+    bk_planes<T> Cp;
+    Cp.resize(rows, g);
+    for (long j = g0; j < g1; j++) {
+        const long r0 = s.op == L3_TRMM || s.op == L3_TRSM || s.upper ? 0 : j;
+        const long r1 = s.op == L3_TRMM || s.op == L3_TRSM || !s.upper ? rows : j + 1;
+        if (s.op == L3_SYRK || s.op == L3_SYR2K)
+            bk_beta(r1 - r0, C.col(r0, j), 1, c);
+        else if (s.op == L3_TRSM && !s.alpha_one)
+            bk_scale(rows, C.col(0, j), 1, al);
+        for (long i = r0; i < r1; i++)
+            Cp.set(i, j - g0, C(i, j));
+    }
+    switch (s.op) {
+    case L3_SYRK:
+    case L3_SYR2K:
+        for (long l = 0; l < s.k; l++)
+            for (long j = g0; j < g1; j++) {
+                const long r0 = s.upper ? 0 : j, r1 = s.upper ? j + 1 : rows;
+                double *cj = Cp.at(r0, j - g0);
+                if (s.op == L3_SYRK) {
+                    if (A(j, l) == 0.0)
+                        continue;
+                    const T t = al * A(j, l); // temp = alpha * a(j,l)
+                    bk_axpyp(r1 - r0, cj, Cp.ps, t, Ap.at(r0, l), Ap.ps, false);
+                } else {
+                    if (A(j, l) == 0.0 && B(j, l) == 0.0)
+                        continue;
+                    const T t1 = al * B(j, l), t2 = al * A(j, l);
+                    bk_axpy2p(r1 - r0, cj, Cp.ps, Ap.at(r0, l), t1, Bp.at(r0, l), t2, Ap.ps);
+                }
+            }
+        break;
+    case L3_TRMM: {
+        const long m = rows;
+        for (long kk = 0; kk < m; kk++) {
+            for (long j = g0; j < g1; j++) {
+                const long k = s.upper ? kk : m - 1 - kk, t = j - g0;
+                const T bkj = Cp.get(k, t);
+                if (bkj == 0.0)
+                    continue;
+                T tk = al * bkj; // temp = alpha * b(k,j)
+                if (s.upper) {
+                    bk_axpyp(k, Cp.at(0, t), Cp.ps, tk, Ap.at(0, k), Ap.ps, false);
+                    if (s.nounit)
+                        tk = tk * A(k, k);
+                    Cp.set(k, t, tk);
+                } else {
+                    if (s.nounit)
+                        Cp.set(k, t, tk * A(k, k));
+                    else
+                        Cp.set(k, t, tk);
+                    bk_axpyp(m - k - 1, Cp.at(k + 1, t), Cp.ps, tk, Ap.at(k + 1, k), Ap.ps, false);
+                }
+            }
+        }
+        break;
+    }
+    case L3_TRSM: {
+        const long m = rows;
+        for (long kk = 0; kk < m; kk++) {
+            for (long j = g0; j < g1; j++) {
+                const long k = s.upper ? m - 1 - kk : kk, t = j - g0;
+                T bk = Cp.get(k, t);
+                if (bk == 0.0)
+                    continue;
+                if (s.nounit) {
+                    bk = bk / A(k, k);
+                    Cp.set(k, t, bk);
+                }
+                if (s.upper)
+                    bk_axpyp(k, Cp.at(0, t), Cp.ps, bk, Ap.at(0, k), Ap.ps, true);
+                else
+                    bk_axpyp(m - k - 1, Cp.at(k + 1, t), Cp.ps, bk, Ap.at(k + 1, k), Ap.ps, true);
+            }
+        }
+        break;
+    }
+    default:
+        break;
+    }
+    for (long j = g0; j < g1; j++) {
+        const long r0 = s.op == L3_TRMM || s.op == L3_TRSM || s.upper ? 0 : j;
+        const long r1 = s.op == L3_TRMM || s.op == L3_TRSM || !s.upper ? rows : j + 1;
+        for (long i = r0; i < r1; i++)
+            C(i, j) = Cp.get(i, j - g0);
+    }
+}
+
+// The calls that run on planes (bk_unit_planes).
+inline bool bk_on_planes(const blas_shape &s)
+{
+    return ((s.op == L3_SYRK || s.op == L3_SYR2K) && !s.trans) || ((s.op == L3_TRMM || s.op == L3_TRSM) && s.left && !s.trans);
 }
 
 template <class T> void bk_unit(const blas_call<T> &c, long u, long rb, long cb, const T *At = 0, const T *Bt = 0)
@@ -781,17 +1015,42 @@ template <class T> bool blas_simd_cpu(blas_call<T> &c, bool parallel)
             }
     }
     const T *at = At.empty() ? 0 : At.data(), *bt = Bt.empty() ? 0 : Bt.data();
+    // the column forms on planes: A (and B) packed, shared by the units
+    bk_planes<T> Ap, Bp;
+    const bool planes = bk_on_planes(c.s) && blas_env_long("MPLAPACK_BLAS_SIMD_PLANES", 1) != 0;
+    if (planes) {
+        const bool tr = c.s.op == L3_TRMM || c.s.op == L3_TRSM;
+        const long rows = tr ? c.s.m : c.s.n, cols = tr ? c.s.m : c.s.k;
+        const bk_mat<T> A = bk_of(c.a), B = bk_of(c.b);
+        Ap.resize(rows, cols);
+        if (c.s.op == L3_SYR2K)
+            Bp.resize(rows, cols);
+        for (long l = 0; l < cols; l++)
+            for (long i = 0; i < rows; i++) {
+                Ap.set(i, l, A(i, l));
+                if (c.s.op == L3_SYR2K)
+                    Bp.set(i, l, B(i, l));
+            }
+    }
 #ifdef _OPENMP
     if (parallel) {
 #pragma omp parallel for schedule(dynamic, 1)
-        for (long u = 0; u < units; u++)
-            bk_unit(c, u, rb, cb, at, bt);
+        for (long u = 0; u < units; u++) {
+            if (planes)
+                bk_unit_planes(c, u * cb, std::min(u * cb + cb, c.s.n), Ap, Bp);
+            else
+                bk_unit(c, u, rb, cb, at, bt);
+        }
         return true;
     }
 #endif
     (void)parallel;
-    for (long u = 0; u < units; u++)
-        bk_unit(c, u, rb, cb, at, bt);
+    for (long u = 0; u < units; u++) {
+        if (planes)
+            bk_unit_planes(c, u * cb, std::min(u * cb + cb, c.s.n), Ap, Bp);
+        else
+            bk_unit(c, u, rb, cb, at, bt);
+    }
     return true;
 }
 

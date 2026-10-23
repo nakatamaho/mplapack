@@ -165,9 +165,16 @@ the result is the reference result bit for bit whatever the engine:
   thread. The columns of a group are independent; each goes through its own
   operations in the reference order, and the steps of the group are
   interleaved so that a column of A serves the whole group while it is in
-  the cache (`MPLAPACK_BLAS_SIMD_COLS=N` sets the group size; the complex
-  forms of `Cblas_simd_common.h` do the same). The other cases keep the
-  lanes.
+  the cache (`MPLAPACK_BLAS_SIMD_COLS=N` sets the group size). For
+  `Rsyrk`/`Rsyr2k` (trans = N) and `Rtrmm`/`Rtrsm` (side L, transa = N), A
+  and B are packed once into planes (word by word, structure of arrays)
+  and each unit packs its columns of the result, so that the vectorized
+  loops read and write unit-stride planes (`MPLAPACK_BLAS_SIMD_PLANES=0`:
+  the interleaved words instead). The complex column forms of
+  `Cblas_simd_common.h` (`Cgemm`, `Csyrk`, `Cherk`, `Ctrmm`/`Ctrsm` with
+  side L) take the same groups on planes. On 4 cores (n = 600) this makes
+  these routines 1.3 to 1.6 times faster than the column-by-column form. The
+  other cases keep the lanes.
   `MPLAPACK_BLAS_SIMD=0` turns this off. On 4 cores, dd `Rsyrk` and `Rtrsm`
   with n = 400 run about 10 times faster than the reference (2.7 to 3.3
   times on one core).
@@ -188,6 +195,7 @@ increments always run the reference code.
 | `MPLAPACK_BLAS_OMP=0` | no OpenMP lanes |
 | `MPLAPACK_BLAS_SIMD=0` | dd/td/qd: lanes instead of the AVX2 columns/row blocks |
 | `MPLAPACK_BLAS_SIMD_COLS=N` | dd/td/qd: columns per unit of the column forms (8) |
+| `MPLAPACK_BLAS_SIMD_PLANES=0` | dd/td/qd: real column forms on the interleaved words instead of planes |
 | `MPLAPACK_BLAS_OMP_MIN=N` | smallest number of multiply-adds for OpenMP (32768; Level 1 needs 4N) |
 | `<P>_BLAS_CUDA=0` | dd/td/qd: no GPU |
 | `<P>_BLAS_CUDA_MIN=N` | smallest number of multiply-adds sent to the GPU (32768) |

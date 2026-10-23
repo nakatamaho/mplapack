@@ -36,7 +36,8 @@
  * Cherk (trans = N: columns; trans = T, C: over a transposed copy), Ctrmm and
  * Ctrsm with side L (transa = N: columns; T, C: blocks of columns of a
  * transposed copy) or with
- * side R, Cgemv with trans = N, Cgeru, Cgerc.  The loops are those of the
+ * side R, Cgemv with trans = N, Cgeru, Cgerc.  The column forms take groups
+ * of columns on packed planes (bk_planes).  The loops are those of the
  * reference routines, so the results are the reference results bit for bit;
  * the other cases run the reference code in parallel (Rblas_split_common.h).
  */
@@ -157,12 +158,58 @@ namespace mplapack_blas {
         }                                                                                                                  \
     }
 
+// cbk_axpy on planes (bk_planes): word q of the real part of element k at
+// y[q * ys + k], of the imaginary part at y[(W + q) * ys + k].
+#define MPLAPACK_CBK_PLANE_KERNELS(T, W)                                                                                  \
+    MPLAPACK_GEMM_CLONES static void cbk_axpyp_##T(long n, double *y, long ys, const double *t, const double *x, long xs, int sub) \
+    {                                                                                                                      \
+        MPLAPACK_BK_##T##_DECL(tr);                                                                                        \
+        MPLAPACK_BK_##T##_DECL(ti);                                                                                        \
+        MPLAPACK_BK_##T##_LOAD(tr, t);                                                                                     \
+        MPLAPACK_BK_##T##_LOAD(ti, t + W);                                                                                 \
+        MPLAPACK_BK_##T##_PTRS(YR, y, ys);                                                                                 \
+        MPLAPACK_BK_##T##_PTRS(YI, y + W * ys, ys);                                                                        \
+        MPLAPACK_BK_##T##_CPTRS(XR, x, xs);                                                                                \
+        MPLAPACK_BK_##T##_CPTRS(XI, x + W * xs, xs);                                                                       \
+        MPLAPACK_GEMM_SIMD                                                                                                 \
+        for (long k = 0; k < n; k++) {                                                                                     \
+            MPLAPACK_BK_##T##_DECL(xr);                                                                                    \
+            MPLAPACK_BK_##T##_DECL(xi);                                                                                    \
+            MPLAPACK_BK_##T##_DECL(yr);                                                                                    \
+            MPLAPACK_BK_##T##_DECL(yi);                                                                                    \
+            MPLAPACK_BK_##T##_DECL(a);                                                                                     \
+            MPLAPACK_BK_##T##_DECL(b);                                                                                     \
+            MPLAPACK_BK_##T##_LOADI(xr, XR, k);                                                                            \
+            MPLAPACK_BK_##T##_LOADI(xi, XI, k);                                                                            \
+            MPLAPACK_BK_##T##_LOADI(yr, YR, k);                                                                            \
+            MPLAPACK_BK_##T##_LOADI(yi, YI, k);                                                                            \
+            MPLAPACK_BK_##T##_MUL(a, tr, xr); /* re = tr*xr - ti*xi */                                                     \
+            MPLAPACK_BK_##T##_MUL(b, ti, xi);                                                                              \
+            MPLAPACK_BK_##T##_NEG(b);                                                                                      \
+            MPLAPACK_BK_##T##_ADD(a, a, b);                                                                                \
+            if (sub)                                                                                                       \
+                MPLAPACK_BK_##T##_NEG(a);                                                                                  \
+            MPLAPACK_BK_##T##_ADD(yr, yr, a);                                                                              \
+            MPLAPACK_BK_##T##_MUL(a, tr, xi); /* im = tr*xi + ti*xr */                                                     \
+            MPLAPACK_BK_##T##_MUL(b, ti, xr);                                                                              \
+            MPLAPACK_BK_##T##_ADD(a, a, b);                                                                                \
+            if (sub)                                                                                                       \
+                MPLAPACK_BK_##T##_NEG(a);                                                                                  \
+            MPLAPACK_BK_##T##_ADD(yi, yi, a);                                                                              \
+            MPLAPACK_BK_##T##_STOREI(YR, k, yr);                                                                           \
+            MPLAPACK_BK_##T##_STOREI(YI, k, yi);                                                                           \
+        }                                                                                                                  \
+    }
+
 #if defined(MPLAPACK_BUILD_WITH_DD)
 MPLAPACK_CBK_KERNELS(DD, 2)
+MPLAPACK_CBK_PLANE_KERNELS(DD, 2)
 #elif defined(MPLAPACK_BUILD_WITH_TD)
 MPLAPACK_CBK_KERNELS(TD, 3)
+MPLAPACK_CBK_PLANE_KERNELS(TD, 3)
 #elif defined(MPLAPACK_BUILD_WITH_QD)
 MPLAPACK_CBK_KERNELS(QD, 4)
+MPLAPACK_CBK_PLANE_KERNELS(QD, 4)
 #endif
 
 #define MPLAPACK_CBLAS_SIMD_AVAILABLE 1
@@ -215,10 +262,13 @@ template <class C> void cbk_zero(long n, C *y, long sy)
         y[k * sy] = C(0.0, 0.0);
 }
 
+// Whether cbk_run runs the units.
+inline bool cbk_go(double work, long units) { return units > 0 && blas_env_long("MPLAPACK_BLAS_SIMD", 1) != 0 && work >= (double)blas_env_long("MPLAPACK_BLAS_OMP_MIN", 32768); }
+
 // Runs f(u) for the units u < units: in parallel, or on one thread.
 template <class F> bool cbk_run(double work, long units, F f)
 {
-    if (units <= 0 || blas_env_long("MPLAPACK_BLAS_SIMD", 1) == 0 || work < (double)blas_env_long("MPLAPACK_BLAS_OMP_MIN", 32768))
+    if (!cbk_go(work, units))
         return false;
 #ifdef _OPENMP
     if (blas_env_long("MPLAPACK_BLAS_OMP", 1) != 0 && omp_get_max_threads() >= 2) {
@@ -241,55 +291,83 @@ static const long cbk_rows = 64; // rows per unit of the row-block forms
 // by all of them while it is in the cache.
 inline long cbk_cols() { return std::max(1L, blas_env_long("MPLAPACK_BLAS_SIMD_COLS", 8)); }
 
-// ---- Cgemm, transa = N: column j of C ----
+// y(k) = y(k) + t*x(k) (sub: y(k) - t*x(k)) on planes (bk_planes)
+template <class C> void cbk_axpyp(long n, double *y, long ys, const C &t, const double *x, long xs, bool sub)
+{
+    if (n > 0)
+        MPLAPACK_BK_FN(cbk_axpyp_)(n, y, ys, bk_w(&t), x, xs, sub ? 1 : 0);
+}
+
+// P (rows x cols) := f(i, l)
+template <class C, class F> void cbk_pack(bk_planes<C> &P, long rows, long cols, F f)
+{
+    P.resize(rows, cols);
+    for (long l = 0; l < cols; l++)
+        for (long i = 0; i < rows; i++)
+            P.set(i, l, f(i, l));
+}
+
+// The column forms below take groups of columns (cbk_cols); the matrices
+// read by the loops over the rows are packed into planes once (bk_planes),
+// and a unit packs its columns of the result.
+
+// ---- Cgemm, transa = N: columns [g0, g1) of C ----
 template <class C> bool cgemm_simd(bool notb, bool conjb, long m, long n, long k, const C &alpha, const C *a, long lda, const C *b, long ldb, const C &beta, C *c, long ldc)
 {
     const C zero(0.0, 0.0), one(1.0, 0.0);
-    if (alpha == zero) // the reference only scales
+    const long cb = cbk_cols(), units = (n + cb - 1) / cb;
+    if (alpha == zero || !cbk_go(4.0 * m * n * k, units)) // alpha == 0: the reference only scales
         return false;
-    const long cb = cbk_cols();
-    return cbk_run(4.0 * m * n * k, (n + cb - 1) / cb, [&](long u) { // columns [g0, g1)
+    bk_planes<C> Ap;
+    cbk_pack(Ap, m, k, [&](long i, long l) { return a[i + l * lda]; });
+    return cbk_run(4.0 * m * n * k, units, [&](long u) {
         const long g0 = u * cb, g1 = std::min(g0 + cb, n);
+        bk_planes<C> Cp;
+        Cp.resize(m, g1 - g0);
         for (long j = g0; j < g1; j++) {
             C *cj = c + j * ldc;
             if (beta == zero)
                 cbk_zero(m, cj, 1);
             else if (beta != one)
                 cbk_scale(m, cj, 1, beta);
+            for (long i = 0; i < m; i++)
+                Cp.set(i, j - g0, cj[i]);
         }
         for (long l = 0; l < k; l++)
             for (long j = g0; j < g1; j++) {
                 const C temp = notb ? alpha * b[l + j * ldb] : (conjb ? alpha * conj(b[j + l * ldb]) : alpha * b[j + l * ldb]);
-                cbk_axpy(m, c + j * ldc, 1, temp, a + l * lda, 1, false);
+                cbk_axpyp(m, Cp.at(0, j - g0), Cp.ps, temp, Ap.at(0, l), Ap.ps, false);
             }
+        for (long j = g0; j < g1; j++)
+            for (long i = 0; i < m; i++)
+                c[i + j * ldc] = Cp.get(i, j - g0);
     });
 }
 
-// ---- Cgemm, transa = T or C: column j of C, the dot products of the rows
-// accumulated at once over a transposed copy At of op(A) (m x k) ----
+// ---- Cgemm, transa = T or C: columns [g0, g1) of C, the dot products of
+// the rows accumulated at once over the transposed op(A) (m x k) ----
 template <class C> bool cgemm_t_simd(bool conja, bool notb, bool conjb, long m, long n, long k, const C &alpha, const C *a, long lda, const C *b, long ldb, const C &beta, C *c, long ldc)
 {
     const C zero(0.0, 0.0);
-    if (alpha == zero) // the reference only scales
+    const long cb = cbk_cols(), units = (n + cb - 1) / cb;
+    if (alpha == zero || !cbk_go(4.0 * m * n * k, units)) // alpha == 0: the reference only scales
         return false;
-    std::vector<C> At((size_t)(m * k));
-    for (long l = 0; l < k; l++)
-        for (long i = 0; i < m; i++)
-            At[(size_t)(i + l * m)] = conja ? conj(a[l + i * lda]) : a[l + i * lda];
-    const long cb = cbk_cols();
-    return cbk_run(4.0 * m * n * k, (n + cb - 1) / cb, [&](long u) { // columns [g0, g1)
+    bk_planes<C> At;
+    cbk_pack(At, m, k, [&](long i, long l) { return conja ? conj(a[l + i * lda]) : a[l + i * lda]; });
+    return cbk_run(4.0 * m * n * k, units, [&](long u) {
         const long g0 = u * cb, g1 = std::min(g0 + cb, n);
-        std::vector<C> tv((size_t)(m * (g1 - g0)), zero); // temp = zero
+        bk_planes<C> tv;
+        cbk_pack(tv, m, g1 - g0, [&](long, long) { return zero; }); // temp = zero
         for (long l = 0; l < k; l++)
             for (long j = g0; j < g1; j++) {
                 // temp += op(a)(l,i)*op(b)(l,j)
                 const C t = notb ? b[l + j * ldb] : (conjb ? conj(b[j + l * ldb]) : b[j + l * ldb]);
-                cbk_axpy(m, tv.data() + (j - g0) * m, 1, t, At.data() + l * m, 1, false);
+                cbk_axpyp(m, tv.at(0, j - g0), tv.ps, t, At.at(0, l), At.ps, false);
             }
         for (long j = g0; j < g1; j++)
             for (long i = 0; i < m; i++) {
                 C &cij = c[i + j * ldc];
-                const C &t = tv[(size_t)(i + (j - g0) * m)];
+                const C t = tv.get(i, j - g0);
                 if (beta == zero)
                     cij = alpha * t;
                 else
@@ -298,15 +376,19 @@ template <class C> bool cgemm_t_simd(bool conja, bool notb, bool conjb, long m, 
     });
 }
 
-// ---- Csyrk / Cherk, trans = N: column j of the triangle of C ----
+// ---- Csyrk / Cherk, trans = N: columns [g0, g1) of the triangle of C ----
 template <class C> bool csyrk_simd(bool upper, long n, long k, const C &alpha, const C *a, long lda, const C &beta, C *c, long ldc)
 {
     const C zero(0.0, 0.0), one(1.0, 0.0);
-    if (alpha == zero)
+    const long cb = cbk_cols(), units = (n + cb - 1) / cb;
+    if (alpha == zero || !cbk_go(4.0 * n * n * k, units))
         return false;
-    const long cb = cbk_cols();
-    return cbk_run(4.0 * n * n * k, (n + cb - 1) / cb, [&](long u) { // columns [g0, g1)
+    bk_planes<C> Ap;
+    cbk_pack(Ap, n, k, [&](long i, long l) { return a[i + l * lda]; });
+    return cbk_run(4.0 * n * n * k, units, [&](long u) {
         const long g0 = u * cb, g1 = std::min(g0 + cb, n);
+        bk_planes<C> Cp;
+        Cp.resize(n, g1 - g0);
         for (long j = g0; j < g1; j++) {
             const long r0 = upper ? 0 : j, cnt = upper ? j + 1 : n - j;
             C *cj = c + r0 + j * ldc;
@@ -314,27 +396,38 @@ template <class C> bool csyrk_simd(bool upper, long n, long k, const C &alpha, c
                 cbk_zero(cnt, cj, 1);
             else if (beta != one)
                 cbk_scale(cnt, cj, 1, beta);
+            for (long t = 0; t < cnt; t++)
+                Cp.set(r0 + t, j - g0, cj[t]);
         }
         for (long l = 0; l < k; l++)
             for (long j = g0; j < g1; j++)
                 if (a[j + l * lda] != zero) {
                     const long r0 = upper ? 0 : j, cnt = upper ? j + 1 : n - j;
                     const C temp = alpha * a[j + l * lda];
-                    cbk_axpy(cnt, c + r0 + j * ldc, 1, temp, a + r0 + l * lda, 1, false);
+                    cbk_axpyp(cnt, Cp.at(r0, j - g0), Cp.ps, temp, Ap.at(r0, l), Ap.ps, false);
                 }
+        for (long j = g0; j < g1; j++) {
+            const long r0 = upper ? 0 : j, cnt = upper ? j + 1 : n - j;
+            for (long t = 0; t < cnt; t++)
+                c[r0 + t + j * ldc] = Cp.get(r0 + t, j - g0);
+        }
     });
 }
 
 template <class C, class R> bool cherk_simd(bool upper, long n, long k, const R &alpha, const C *a, long lda, const R &beta, C *c, long ldc)
 {
     const R zero = 0.0, one = 1.0;
-    if (alpha == zero || (k == 0 && beta == one)) // the reference only scales, or returns
+    const long cb = cbk_cols(), units = (n + cb - 1) / cb;
+    if (alpha == zero || (k == 0 && beta == one) || !cbk_go(4.0 * n * n * k, units)) // the reference only scales, or returns
         return false;
-    const long cb = cbk_cols();
-    return cbk_run(4.0 * n * n * k, (n + cb - 1) / cb, [&](long u) { // columns [g0, g1)
+    bk_planes<C> Ap;
+    cbk_pack(Ap, n, k, [&](long i, long l) { return a[i + l * lda]; });
+    return cbk_run(4.0 * n * n * k, units, [&](long u) {
         const long g0 = u * cb, g1 = std::min(g0 + cb, n);
+        bk_planes<C> Cp; // the off-diagonal rows; the diagonal stays in c
+        Cp.resize(n, g1 - g0);
         for (long j = g0; j < g1; j++) {
-            const long r0 = upper ? 0 : j + 1, cnt = upper ? j : n - j - 1; // off-diagonal rows
+            const long r0 = upper ? 0 : j + 1, cnt = upper ? j : n - j - 1;
             C *col = c + r0 + j * ldc;
             C &d = c[j + j * ldc];
             if (beta == zero) {
@@ -346,6 +439,8 @@ template <class C, class R> bool cherk_simd(bool upper, long n, long k, const R 
             } else {
                 d = d.real();
             }
+            for (long t = 0; t < cnt; t++)
+                Cp.set(r0 + t, j - g0, col[t]);
         }
         for (long l = 0; l < k; l++)
             for (long j = g0; j < g1; j++)
@@ -353,44 +448,46 @@ template <class C, class R> bool cherk_simd(bool upper, long n, long k, const R 
                     const long r0 = upper ? 0 : j + 1, cnt = upper ? j : n - j - 1;
                     C &d = c[j + j * ldc];
                     const C temp = alpha * conj(a[j + l * lda]);
-                    cbk_axpy(cnt, c + r0 + j * ldc, 1, temp, a + r0 + l * lda, 1, false);
+                    cbk_axpyp(cnt, Cp.at(r0, j - g0), Cp.ps, temp, Ap.at(r0, l), Ap.ps, false);
                     d = d.real() + (temp * a[j + l * lda]).real();
                 }
+        for (long j = g0; j < g1; j++) {
+            const long r0 = upper ? 0 : j + 1, cnt = upper ? j : n - j - 1;
+            for (long t = 0; t < cnt; t++)
+                c[r0 + t + j * ldc] = Cp.get(r0 + t, j - g0);
+        }
     });
 }
 
-// ---- Csyrk trans = T / Cherk trans = C: column j, the dot products of the
-// rows accumulated at once over a transposed copy At of A (Cherk: of
-// conj(A)), n x k with leading dimension n ----
+// ---- Csyrk trans = T / Cherk trans = C: columns [g0, g1), the dot
+// products of the rows accumulated at once over the transposed A (Cherk:
+// conj(A)), n x k ----
 template <class C> bool csyrk_t_simd(bool upper, long n, long k, const C &alpha, const C *a, long lda, const C &beta, C *c, long ldc)
 {
     const C zero(0.0, 0.0);
-    if (alpha == zero) // the reference only scales
+    const long cb = cbk_cols(), units = (n + cb - 1) / cb;
+    if (alpha == zero || !cbk_go(4.0 * n * n * k, units)) // alpha == 0: the reference only scales
         return false;
-    std::vector<C> At((size_t)(n * k));
-    for (long l = 0; l < k; l++)
-        for (long i = 0; i < n; i++)
-            At[(size_t)(i + l * n)] = a[l + i * lda];
-    const long cb = cbk_cols();
-    return cbk_run(4.0 * n * n * k, (n + cb - 1) / cb, [&](long u) { // columns [g0, g1)
+    bk_planes<C> At;
+    cbk_pack(At, n, k, [&](long i, long l) { return a[l + i * lda]; });
+    return cbk_run(4.0 * n * n * k, units, [&](long u) {
         const long g0 = u * cb, g1 = std::min(g0 + cb, n);
-        std::vector<std::vector<C> > tv((size_t)(g1 - g0)); // temp = zero
-        for (long j = g0; j < g1; j++)
-            tv[(size_t)(j - g0)].assign((size_t)(upper ? j + 1 : n - j), zero);
+        bk_planes<C> tv;
+        cbk_pack(tv, n, g1 - g0, [&](long, long) { return zero; }); // temp = zero
         for (long l = 0; l < k; l++)
             for (long j = g0; j < g1; j++) {
                 const long r0 = upper ? 0 : j, cnt = upper ? j + 1 : n - j;
-                cbk_axpy(cnt, tv[(size_t)(j - g0)].data(), 1, a[l + j * lda], At.data() + r0 + l * n, 1, false); // temp += a(l,i)*a(l,j)
+                cbk_axpyp(cnt, tv.at(r0, j - g0), tv.ps, a[l + j * lda], At.at(r0, l), At.ps, false); // temp += a(l,i)*a(l,j)
             }
         for (long j = g0; j < g1; j++) {
             const long r0 = upper ? 0 : j, cnt = upper ? j + 1 : n - j;
-            const std::vector<C> &tj = tv[(size_t)(j - g0)];
             for (long t = 0; t < cnt; t++) {
                 C &cij = c[(r0 + t) + j * ldc];
+                const C tt = tv.get(r0 + t, j - g0);
                 if (beta == zero)
-                    cij = alpha * tj[(size_t)t];
+                    cij = alpha * tt;
                 else
-                    cij = alpha * tj[(size_t)t] + beta * cij;
+                    cij = alpha * tt + beta * cij;
             }
         }
     });
@@ -399,32 +496,29 @@ template <class C> bool csyrk_t_simd(bool upper, long n, long k, const C &alpha,
 template <class C, class R> bool cherk_c_simd(bool upper, long n, long k, const R &alpha, const C *a, long lda, const R &beta, C *c, long ldc)
 {
     const R zero = 0.0, one = 1.0;
-    if (alpha == zero || (k == 0 && beta == one)) // the reference only scales, or returns
+    const long cb = cbk_cols(), units = (n + cb - 1) / cb;
+    if (alpha == zero || (k == 0 && beta == one) || !cbk_go(4.0 * n * n * k, units)) // the reference only scales, or returns
         return false;
-    std::vector<C> At((size_t)(n * k));
-    for (long l = 0; l < k; l++)
-        for (long i = 0; i < n; i++)
-            At[(size_t)(i + l * n)] = conj(a[l + i * lda]);
-    const long cb = cbk_cols();
-    return cbk_run(4.0 * n * n * k, (n + cb - 1) / cb, [&](long u) { // columns [g0, g1)
+    bk_planes<C> At;
+    cbk_pack(At, n, k, [&](long i, long l) { return conj(a[l + i * lda]); });
+    return cbk_run(4.0 * n * n * k, units, [&](long u) {
         const long g0 = u * cb, g1 = std::min(g0 + cb, n);
-        std::vector<std::vector<C> > tv((size_t)(g1 - g0)); // temp = zero, off-diagonal rows
-        for (long j = g0; j < g1; j++)
-            tv[(size_t)(j - g0)].assign((size_t)(upper ? j : n - j - 1), C(zero));
+        bk_planes<C> tv; // temp = zero, off-diagonal rows
+        cbk_pack(tv, n, g1 - g0, [&](long, long) { return C(zero); });
         for (long l = 0; l < k; l++)
             for (long j = g0; j < g1; j++) {
                 const long r0 = upper ? 0 : j + 1, cnt = upper ? j : n - j - 1;
-                cbk_axpy(cnt, tv[(size_t)(j - g0)].data(), 1, a[l + j * lda], At.data() + r0 + l * n, 1, false); // temp += conj(a(l,i))*a(l,j)
+                cbk_axpyp(cnt, tv.at(r0, j - g0), tv.ps, a[l + j * lda], At.at(r0, l), At.ps, false); // temp += conj(a(l,i))*a(l,j)
             }
         for (long j = g0; j < g1; j++) {
             const long r0 = upper ? 0 : j + 1, cnt = upper ? j : n - j - 1;
-            const std::vector<C> &tj = tv[(size_t)(j - g0)];
             for (long t = 0; t < cnt; t++) {
                 C &cij = c[(r0 + t) + j * ldc];
+                const C tt = tv.get(r0 + t, j - g0);
                 if (beta == zero)
-                    cij = alpha * tj[(size_t)t];
+                    cij = alpha * tt;
                 else
-                    cij = alpha * tj[(size_t)t] + beta * cij;
+                    cij = alpha * tt + beta * cij;
             }
             R rtemp = zero;
             for (long l = 0; l < k; l++)
@@ -487,50 +581,54 @@ template <class C> bool ctrxm_simd(bool solve, bool left, bool upper, bool notr,
     if (left) {
         if (!notr)
             return cbk_run(4.0 * m * m * n, (n + cbk_rows - 1) / cbk_rows, [&](long u) { ctrxm_lt_unit(solve, upper, noconj, nounit, m, n, alpha, a, lda, b, ldb, u); });
-        const long cb = cbk_cols();
-        return cbk_run(4.0 * m * m * n, (n + cb - 1) / cb, [&](long u) { // columns [g0, g1)
+        const long cb = cbk_cols(), units = (n + cb - 1) / cb;
+        if (!cbk_go(4.0 * m * m * n, units))
+            return false;
+        bk_planes<C> Ap;
+        cbk_pack(Ap, m, m, [&](long i, long l) { return a[i + l * lda]; });
+        return cbk_run(4.0 * m * m * n, units, [&](long u) { // columns [g0, g1) of B, on planes
             const long g0 = u * cb, g1 = std::min(g0 + cb, n);
-            if (solve) {
-                if (alpha != one)
-                    for (long j = g0; j < g1; j++)
-                        cbk_scale(m, b + j * ldb, 1, alpha);
-                for (long kk = 0; kk < m; kk++) {
-                    for (long j = g0; j < g1; j++) {
-                        C *bj = b + j * ldb;
-                        const long k = upper ? m - 1 - kk : kk;
-                        if (bj[k] != zero) {
-                            if (nounit)
-                                bj[k] = bj[k] / a[k + k * lda];
-                            const C bk = bj[k];
-                            if (upper)
-                                cbk_axpy(k, bj, 1, bk, a + k * lda, 1, true);
-                            else
-                                cbk_axpy(m - k - 1, bj + k + 1, 1, bk, a + k + 1 + k * lda, 1, true);
+            bk_planes<C> Bp;
+            Bp.resize(m, g1 - g0);
+            for (long j = g0; j < g1; j++) {
+                if (solve && alpha != one)
+                    cbk_scale(m, b + j * ldb, 1, alpha);
+                for (long i = 0; i < m; i++)
+                    Bp.set(i, j - g0, b[i + j * ldb]);
+            }
+            for (long kk = 0; kk < m; kk++) {
+                for (long j = g0; j < g1; j++) {
+                    const long t = j - g0;
+                    const long k = upper == solve ? m - 1 - kk : kk; // solve: upper from the bottom
+                    C bk = Bp.get(k, t);
+                    if (bk == zero)
+                        continue;
+                    if (solve) {
+                        if (nounit) {
+                            bk = bk / a[k + k * lda];
+                            Bp.set(k, t, bk);
                         }
-                    }
-                }
-            } else {
-                for (long kk = 0; kk < m; kk++) {
-                    for (long j = g0; j < g1; j++) {
-                        C *bj = b + j * ldb;
-                        const long k = upper ? kk : m - 1 - kk;
-                        if (bj[k] != zero) {
-                            C temp = alpha * bj[k];
-                            if (upper) {
-                                cbk_axpy(k, bj, 1, temp, a + k * lda, 1, false);
-                                if (nounit)
-                                    temp = temp * a[k + k * lda];
-                                bj[k] = temp;
-                            } else {
-                                bj[k] = temp;
-                                if (nounit)
-                                    bj[k] = bj[k] * a[k + k * lda];
-                                cbk_axpy(m - k - 1, bj + k + 1, 1, temp, a + k + 1 + k * lda, 1, false);
-                            }
+                        if (upper)
+                            cbk_axpyp(k, Bp.at(0, t), Bp.ps, bk, Ap.at(0, k), Ap.ps, true);
+                        else
+                            cbk_axpyp(m - k - 1, Bp.at(k + 1, t), Bp.ps, bk, Ap.at(k + 1, k), Ap.ps, true);
+                    } else {
+                        C temp = alpha * bk;
+                        if (upper) {
+                            cbk_axpyp(k, Bp.at(0, t), Bp.ps, temp, Ap.at(0, k), Ap.ps, false);
+                            if (nounit)
+                                temp = temp * a[k + k * lda];
+                            Bp.set(k, t, temp);
+                        } else {
+                            Bp.set(k, t, nounit ? temp * a[k + k * lda] : temp);
+                            cbk_axpyp(m - k - 1, Bp.at(k + 1, t), Bp.ps, temp, Ap.at(k + 1, k), Ap.ps, false);
                         }
                     }
                 }
             }
+            for (long j = g0; j < g1; j++)
+                for (long i = 0; i < m; i++)
+                    b[i + j * ldb] = Bp.get(i, j - g0);
         });
     }
     const long units = (m + cbk_rows - 1) / cbk_rows;
