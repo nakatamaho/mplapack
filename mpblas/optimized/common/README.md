@@ -50,6 +50,31 @@ For the last two rows the arithmetic dominates and blocking does not pay;
 `MPLAPACK_BLAS_BLOCK=2` uses the engine anyway (the tests do), `=0` never.
 `MPLAPACK_BLAS_BLOCK_MIN=N` is the smallest m*n*k (32768).
 
+`Rtrsm` and `Rsyrk` (`Rblas_cpu_common.h`) also run on the engine, with the
+operations of the reference routines in their order:
+
+- `Rtrsm`: the triangular index range is split in two recursively; the half
+  the reference solves first, then the terms of its rows (columns) in the
+  other half as one engine update, in the reference order (the zero tests of
+  the reference become the skipped steps), then the other half; ranges of at
+  most `MPLAPACK_BLAS_BLOCK_NB` (64; dd/td/qd 16) run the reference loops.
+  This applies to side L with transa = N, side L upper with transa = T, side
+  R upper with transa = N and side R with transa = T (alpha applied at the
+  end, which the reference allows since a column is not changed after its
+  scaling). Side L lower with transa = T and side R lower with transa = N add
+  the terms of the block before those of the solved part and keep the lanes.
+  The LU and Cholesky drivers use only the covered forms.
+- `Rsyrk`: the triangle in tiles of MC x MC, the tiles off the diagonal in one
+  parallel engine loop, the diagonal tiles on the engine on a copy (trans = N)
+  or into the dot-product buffer (trans = T); all the terms of an element are
+  added in one place.
+
+They are used by default for double: on 4 cores, n = 1500, `Rsyrk` 61x,
+`Rtrsm` 2.1x, `Rpotrf` 1.2x, `Rgetrf` 1.1x over the lanes (1 core: 4.1x,
+4.6x, 1.4x, 1.0x). For dd, td and qd the column forms on planes of
+`Rblas_simd_common.h` are as fast or faster (0.76 to 1.05 times on the
+engine) and stay the default.
+
 Winograd and Ozaki are opt-in. Their results differ
 from the conventional ones in rounding, and their errors are bounded normwise,
 not elementwise.

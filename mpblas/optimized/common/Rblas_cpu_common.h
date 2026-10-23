@@ -37,8 +37,9 @@
  *   MPLAPACK_BLAS_OMP_MIN=N     smallest work (multiply-adds) run in parallel
  *                               (default 32768; Level 1: 4 * N)
  *
- * dd/td/qd run the routines of Rblas_simd_common.h instead where it has
- * them (AVX2, branch-free arithmetic; also on a single thread).
+ * Rtrsm and Rsyrk run on the small-block engine (Rblas_block_common.h) where
+ * it applies; dd/td/qd run the routines of Rblas_simd_common.h instead where
+ * it has them (AVX2, branch-free arithmetic; also on a single thread).
  *
  * blas_cpu() returns false, and the caller then runs the reference code, for
  * small calls, OpenMP disabled or a single thread.
@@ -142,6 +143,11 @@ template <class T> bool blas_cpu(blas_call<T> &c)
 #else
     const bool omp = false;
 #endif
+    // Rtrsm, Rsyrk: blocks on the small-block engine (Rblas_block_common.h)
+    if (c.s.op == L3_TRSM && blk_trsm<blas_thread_context>(c.s.left, c.s.upper, c.s.trans, c.s.nounit, c.s.m, c.s.n, c.alpha, c.a.X, c.a.ld, c.c.X, c.c.ld))
+        return true;
+    if (c.s.op == L3_SYRK && blk_syrk<blas_thread_context>(c.s.upper, c.s.trans, c.s.n, c.s.k, c.alpha, c.a.X, c.a.ld, c.beta, c.c.X, c.c.ld))
+        return true;
 #ifdef MPLAPACK_BLAS_SIMD_AVAILABLE
     // dd/td/qd: columns and row blocks with AVX2 loops (also on one thread)
     if (blas_simd_cpu(c, omp))

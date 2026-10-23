@@ -175,6 +175,9 @@ std::string tag(const char *r, std::initializer_list<const char *> opts, std::in
 int main()
 {
     setenv("MPLAPACK_BLAS_OMP_MIN", "1", 1);
+    // the small-block engine (Rblas_block_common.h) for every type and size
+    setenv("MPLAPACK_BLAS_BLOCK_MIN", "1", 1);
+    setenv("MPLAPACK_BLAS_BLOCK", "2", 1);
 #ifdef RBLAS_TEST_GPU
     // Rblas_gpu_test.cpp: every call, Level 1 and 2 included, on the GPU
     rblas_test_gpu_setup();
@@ -184,12 +187,15 @@ int main()
     }
 #endif
     const char *ul[] = {"U", "L"}, *tr[] = {"N", "T"}, *sd[] = {"L", "R"}, *dg[] = {"N", "U"};
-    const long sizes[][2] = {{1, 1}, {7, 5}, {19, 23}};
+    // {150, 70}: several blocks of the engine (alpha general only)
+    const long sizes[][2] = {{1, 1}, {7, 5}, {19, 23}, {150, 70}};
     const long incs[] = {1, 2, -2};
     for (auto &z : sizes) {
         const long m = z[0], n = z[1];
         for (int ak = 0; ak < 3; ak++)
             for (int bk = 0; bk < 3; bk++) {
+                if (m > 100 && (ak != 2 || bk == 1)) // Rtrmm/Rtrsm run with bk == 0
+                    continue;
                 const REAL alpha = scalar(ak), beta = scalar(bk);
                 // Level 3
                 for (const char *u : ul)
@@ -425,8 +431,6 @@ int main()
     // Rgemm: the small-block engine (../blas/Rgemm_blocked_omp.cpp) against
     // the OpenMP loops <type>/openmp/Rgemm_{NN,NT,TN,TT}_omp.cpp; the sizes
     // cross the block and micro-tile boundaries of every kernel
-    setenv("MPLAPACK_BLAS_BLOCK_MIN", "1", 1);
-    setenv("MPLAPACK_BLAS_BLOCK", "2", 1); // every type
     {
         const long gs[][3] = {{1, 1, 1}, {7, 5, 3}, {19, 23, 17}, {33, 9, 65}, {150, 70, 300}, {70, 140, 40}, {260, 9, 130}};
         for (auto &z : gs)
