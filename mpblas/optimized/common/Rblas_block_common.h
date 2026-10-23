@@ -71,6 +71,7 @@
 #include <algorithm>
 #include <cstdlib>
 #include <cstring>
+#include <complex>
 #include <type_traits>
 #include <vector>
 #ifdef _OPENMP
@@ -196,6 +197,84 @@ template <class T, int MR_, int NR_, long MC_, long KC_, long NC_> struct blk_po
                 }
             }
         }
+    }
+};
+
+// ---- complex double on planes ----
+// std::complex<double> multiplication as GCC computes it: (a,b)*(c,d) =
+// (a*c - b*d, a*d + b*c), and, when both parts are NaN, the C99 Annex G
+// recovery (__muldc3); the kernel computes the first form vectorized and
+// recomputes the lanes whose parts are both NaN with the operator.  Planes:
+// real part of row ii of step l at A[l * 2 * MR + ii], imaginary part at
+// A[l * 2 * MR + MR + ii]; B likewise with NR.
+
+template <int MR, int NR, int MODE, bool HM> MPLAPACK_GEMM_CLONES MPLAPACK_BLK_NO_CONTRACT static void blk_zplane_micro(long kc, const double *A, const double *B, const unsigned char *mask, double *C, long ldc, int mr, int nr)
+{
+    double cr[NR][MR], ci[NR][MR];
+    for (int jj = 0; jj < NR; jj++)
+        for (int ii = 0; ii < MR; ii++) {
+            const bool in = ii < mr && jj < nr;
+            cr[jj][ii] = in ? C[(ii + jj * ldc) * 2] : 0.0;
+            ci[jj][ii] = in ? C[(ii + jj * ldc) * 2 + 1] : 0.0;
+        }
+    for (long l = 0; l < kc; l++) {
+        const double *a = A + l * 2 * MR, *b = B + l * 2 * NR;
+        for (int jj = 0; jj < NR; jj++) {
+            if (HM && mask[l * NR + jj])
+                continue;
+            const double br = b[jj], bi = b[NR + jj];
+            double pr[MR], pi[MR];
+            int nan = 0;
+            MPLAPACK_GEMM_SIMD
+            for (int ii = 0; ii < MR; ii++) {
+                const double ar = a[ii], ai = a[MR + ii];
+                if (MODE == BLK_DOT || MODE == BLK_SUBDOT) { // x*coef
+                    pr[ii] = ar * br - ai * bi;
+                    pi[ii] = ar * bi + ai * br;
+                } else { // coef*x
+                    pr[ii] = br * ar - bi * ai;
+                    pi[ii] = br * ai + bi * ar;
+                }
+                nan |= (pr[ii] != pr[ii]) & (pi[ii] != pi[ii]);
+            }
+            if (nan)
+                for (int ii = 0; ii < MR; ii++)
+                    if (pr[ii] != pr[ii] && pi[ii] != pi[ii]) {
+                        const std::complex<double> x(a[ii], a[MR + ii]), t(br, bi);
+                        const std::complex<double> p = (MODE == BLK_DOT || MODE == BLK_SUBDOT) ? x * t : t * x;
+                        pr[ii] = p.real(), pi[ii] = p.imag();
+                    }
+            if (MODE == BLK_SUB || MODE == BLK_SUBDOT) {
+                MPLAPACK_GEMM_SIMD
+                for (int ii = 0; ii < MR; ii++)
+                    cr[jj][ii] -= pr[ii], ci[jj][ii] -= pi[ii];
+            } else {
+                MPLAPACK_GEMM_SIMD
+                for (int ii = 0; ii < MR; ii++)
+                    cr[jj][ii] += pr[ii], ci[jj][ii] += pi[ii];
+            }
+        }
+    }
+    for (int jj = 0; jj < nr; jj++)
+        for (int ii = 0; ii < mr; ii++) {
+            C[(ii + jj * ldc) * 2] = cr[jj][ii];
+            C[(ii + jj * ldc) * 2 + 1] = ci[jj][ii];
+        }
+}
+
+template <int MR_, int NR_, long MC_, long KC_, long NC_> struct blk_zplane_kernel {
+    typedef double slot;
+    typedef std::complex<double> T;
+    static const int W = 2, MR = MR_, NR = NR_;
+    static const long MC = MC_, KC = KC_, NC = NC_;
+    static void put(slot *p, long stride, const T &v) { p[0] = v.real(), p[stride] = v.imag(); }
+    static void pad(slot *p, long stride) { p[0] = 0.0, p[stride] = 0.0; }
+    template <int MODE> static void micro(long kc, const slot *A, const slot *B, const unsigned char *mask, T *C, long ldc, int mr, int nr)
+    {
+        if (mask)
+            blk_zplane_micro<MR, NR, MODE, true>(kc, A, B, mask, reinterpret_cast<double *>(C), ldc, mr, nr);
+        else
+            blk_zplane_micro<MR, NR, MODE, false>(kc, A, B, mask, reinterpret_cast<double *>(C), ldc, mr, nr);
     }
 };
 
@@ -438,6 +517,9 @@ template <class T> struct blk_kernel_of<T, typename std::enable_if<std::is_trivi
 template <> struct blk_kernel_of<double, void> {
     typedef blk_value_kernel<double, 16, 4, 128, 256, 1024> type;
 };
+template <> struct blk_kernel_of<std::complex<double>, void> {
+    typedef blk_zplane_kernel<16, 4, 64, 256, 512> type;
+};
 #if defined(MPLAPACK_BUILD_WITH_DD)
 template <> struct blk_kernel_of<dd_real, void> {
     typedef blk_plane_kernel<dd_real, 2, 4, 4, 64, 256, 512> type;
@@ -463,6 +545,9 @@ template <class T> struct blk_profitable {
 template <> struct blk_profitable<double> {
     static const bool value = true;
 };
+template <> struct blk_profitable<std::complex<double> > {
+    static const bool value = true;
+};
 #if defined(MPLAPACK_BUILD_WITH_DD)
 template <> struct blk_profitable<dd_real> {
     static const bool value = true;
@@ -484,6 +569,9 @@ template <class T> struct blk_profitable_l3 {
     static const bool value = false;
 };
 template <> struct blk_profitable_l3<double> {
+    static const bool value = true;
+};
+template <> struct blk_profitable_l3<std::complex<double> > {
     static const bool value = true;
 };
 
@@ -567,6 +655,71 @@ template <class Context, class T> bool blk_gemm(bool nota, bool notb, long m, lo
     return true;
 }
 
+// ---- Cgemm ----
+// C := alpha*op(A)*op(B) + beta*C with the operations of the reference Cgemm
+// (mpblas/reference): op(A) = A: c := beta*c (zero when beta == 0), then
+// c(i,j) += temp*a(i,l), temp = alpha*op(b)(l,j); op(A) = A' or A^H:
+// temp = zero; temp += op(a)(l,i)*op(b)(l,j); c = alpha*temp [+ beta*c].
+// op(b)(l,j) is b(l,j), b(j,l) or conj(b(j,l)).  Same conditions as blk_gemm.
+template <class Context, class T> bool blk_cgemm(bool nota, bool conja, bool notb, bool conjb, long m, long n, long k, const T &alpha, const T *A, long lda, const T *B, long ldb, const T &beta, T *C, long ldc)
+{
+    typedef typename blk_kernel_of<T>::type K;
+    const long use = blk_env("MPLAPACK_BLAS_BLOCK", 1);
+    if (use == 0 || (use == 1 && !blk_profitable<T>::value) || (double)m * n * k < (double)blk_env("MPLAPACK_BLAS_BLOCK_MIN", 32768))
+        return false;
+    const bool par = blk_parallel();
+    const T zero(0.0, 0.0), one(1.0, 0.0);
+    // op(b)(l,j)
+    const auto opb = [&](long l, long j) -> T { return notb ? B[l + j * ldb] : (conjb ? T(conj(B[j + l * ldb])) : B[j + l * ldb]); };
+    if (nota) {
+        blk_columns<Context>(n, par, [&](long j) {
+            if (beta == zero) {
+                for (long i = 0; i < m; i++)
+                    C[i + j * ldc] = zero;
+            } else if (beta != one) {
+                for (long i = 0; i < m; i++)
+                    C[i + j * ldc] = beta * C[i + j * ldc];
+            }
+        });
+        if (k <= 0)
+            return true;
+        std::vector<T> temp((size_t)(k * n)); // temp = alpha*op(b)(l,j)
+        blk_columns<Context>(n, par, [&](long j) {
+            for (long l = 0; l < k; l++)
+                temp[(size_t)(l + j * k)] = alpha * opb(l, j);
+        });
+        blk_update<K, Context>(BLK_ADD, m, n, k, C, ldc, [&](long i, long l) -> const T & { return A[i + l * lda]; }, [&](long l, long j) -> const T & { return temp[(size_t)(l + j * k)]; }, blk_no_skip(), false, par);
+        return true;
+    }
+    // op(a)(l,i) and op(b)(l,j) as matrices (conjugates copied; copies keep
+    // the precision)
+    std::vector<T> ac, bc;
+    if (conja) {
+        ac.reserve((size_t)(k * m));
+        for (long i = 0; i < m; i++)
+            for (long l = 0; l < k; l++)
+                ac.push_back(T(conj(A[l + i * lda])));
+    }
+    if (!notb) {
+        bc.reserve((size_t)(k * n));
+        for (long j = 0; j < n; j++)
+            for (long l = 0; l < k; l++)
+                bc.push_back(opb(l, j));
+    }
+    std::vector<T> temp((size_t)(m * n), zero); // temp = zero
+    blk_update<K, Context>(
+        BLK_DOT, m, n, k, temp.data(), m, [&](long i, long l) -> const T & { return conja ? ac[(size_t)(l + i * k)] : A[l + i * lda]; }, [&](long l, long j) -> const T & { return notb ? B[l + j * ldb] : bc[(size_t)(l + j * k)]; }, blk_no_skip(), false, par);
+    blk_columns<Context>(n, par, [&](long j) {
+        for (long i = 0; i < m; i++) {
+            if (beta == zero)
+                C[i + j * ldc] = alpha * temp[(size_t)(i + j * m)];
+            else
+                C[i + j * ldc] = alpha * temp[(size_t)(i + j * m)] + beta * C[i + j * ldc];
+        }
+    });
+    return true;
+}
+
 // f(i0, i1) for blocks of 64 rows of [0, m), in parallel when par.
 template <class Context, class F> void blk_rows(long m, bool par, F f)
 {
@@ -609,7 +762,7 @@ template <class Context, class T> struct blk_trsm_run {
                 for (long t = 0; t < p1 - p0; t++) {
                     const long k = upper ? p1 - 1 - t : p0 + t;
                     unsigned char &f = nz[(size_t)(k + j * m)];
-                    f = b(k, j) != 0.0;
+                    f = b(k, j) != T(0.0);
                     if (!f)
                         continue;
                     if (nounit)
@@ -634,7 +787,7 @@ template <class Context, class T> struct blk_trsm_run {
             blk_rows<Context>(m, par, [&](long r0, long r1) {
                 for (long j = p0; j < p1; j++) {
                     for (long k = p0; k < j; k++)
-                        if (a(k, j) != 0.0)
+                        if (a(k, j) != T(0.0))
                             for (long i = r0; i < r1; i++)
                                 b(i, j) = b(i, j) - a(k, j) * b(i, k);
                     if (nounit) {
@@ -655,7 +808,7 @@ template <class Context, class T> struct blk_trsm_run {
                     }
                     const long c0 = upper ? p0 : k + 1, c1 = upper ? k : p1;
                     for (long j = c0; j < c1; j++)
-                        if (a(j, k) != 0.0)
+                        if (a(j, k) != T(0.0))
                             for (long i = r0; i < r1; i++)
                                 b(i, j) = b(i, j) - a(j, k) * b(i, k);
                 }
@@ -706,17 +859,38 @@ template <class Context, class T> struct blk_trsm_run {
     }
 };
 
-template <class Context, class T> bool blk_trsm(bool left, bool upper, bool trans, bool nounit, long m, long n, const T &alpha, const T *A, long lda, T *B, long ldb)
+// Whether blk_trsm takes the call.
+template <class T> bool blk_trsm_takes(bool left, bool upper, bool trans, long m, long n)
 {
     const long use = blk_env("MPLAPACK_BLAS_BLOCK", 1);
     const long na = left ? m : n;
-    if (!blk_trsm_case(left, upper, trans) || use == 0 || (use == 1 && !blk_profitable_l3<T>::value) || (double)m * n * na / 2 < (double)blk_env("MPLAPACK_BLAS_BLOCK_MIN", 32768))
+    return blk_trsm_case(left, upper, trans) && use != 0 && (use != 1 || blk_profitable_l3<T>::value) && (double)m * n * na / 2 >= (double)blk_env("MPLAPACK_BLAS_BLOCK_MIN", 32768);
+}
+
+// Complex Ctrsm with transa = C: the reference uses conj(a) where Rtrsm
+// uses a (conj(a) != 0 exactly when a != 0), so it is blk_trsm with
+// transa = T on a conjugated copy of A; Ctrsm with N or T is blk_trsm.
+template <class T> struct blk_conj_copy {
+    std::vector<T> v;
+    blk_conj_copy(const T *A, long lda, long na)
+    {
+        v.reserve((size_t)(na * na));
+        for (long j = 0; j < na; j++)
+            for (long i = 0; i < na; i++)
+                v.push_back(T(conj(A[i + j * lda]))); // copies keep the precision
+    }
+};
+
+template <class Context, class T> bool blk_trsm(bool left, bool upper, bool trans, bool nounit, long m, long n, const T &alpha, const T *A, long lda, T *B, long ldb)
+{
+    const long na = left ? m : n;
+    if (!blk_trsm_takes<T>(left, upper, trans, m, n))
         return false;
     blk_trsm_run<Context, T> r;
     r.left = left, r.upper = upper, r.trans = trans, r.nounit = nounit, r.par = blk_parallel();
     r.m = m, r.n = n, r.lda = lda, r.ldb = ldb, r.A = A, r.B = B;
     r.NB = blk_env("MPLAPACK_BLAS_BLOCK_NB", blk_kernel_of<T>::type::W > 1 ? 16 : 64);
-    const bool alpha_one = alpha == 1.0;
+    const bool alpha_one = alpha == T(1.0);
     if (left && trans) {
         // temp = alpha*b(i,j)
         r.temp.resize((size_t)(m * n));
@@ -737,7 +911,7 @@ template <class Context, class T> bool blk_trsm(bool left, bool upper, bool tran
         r.az.resize((size_t)(n * n));
         blk_columns<Context>(n, r.par, [&](long j) {
             for (long i = 0; i < n; i++)
-                r.az[(size_t)(i + j * n)] = A[i + j * lda] == 0.0;
+                r.az[(size_t)(i + j * n)] = A[i + j * lda] == T(0.0);
         });
     }
     r.solve(0, na);

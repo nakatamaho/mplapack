@@ -42,6 +42,7 @@ depends on the type:
 | Type | Kernel | MR x NR | Rgemm, n = 400..1000, vs `Rgemm_*_omp` (1 / 4 threads) |
 |---|---|---|---|
 | double | values, AVX2 multiply and add (no FMA contraction) | 16 x 4 | 3.5-6.9x / 2.0-7.0x |
+| complex double | real and imaginary planes, the products of `std::complex` (lanes whose parts are both NaN recomputed with the operator, as its C99 recovery) | 16 x 4 | `Cgemm` 2.0x / 1.8x, `Ctrsm` 2.4x / 2.1x (n = 1000) |
 | dd, td, qd | words in planes, BF arithmetic, AVX2 | 4 x 4, 4 x 2, 4 x 2 | 3.8-6.6x / 2.7-4.5x |
 | long double, binary128 | values | 4 x 4 | 0.5-1.0x: not used by default |
 | MPFR, GMP | pointers (no copy, the precision is kept) | 4 x 4 | 0.7-0.9x: not used by default |
@@ -68,6 +69,12 @@ operations of the reference routines in their order:
   parallel engine loop, the diagonal tiles on the engine on a copy (trans = N)
   or into the dot-product buffer (trans = T); all the terms of an element are
   added in one place.
+
+`Cgemm` (`blk_cgemm`, the operations of the reference `Cgemm`) and `Ctrsm`
+(`blk_trsm`; transa = C on a conjugated copy of A, since the reference uses
+conj(a) where `Rtrsm` uses a) run on the engine as well, by default for
+complex double; on 4 cores (n = 1000) `Cgetrf` and `Cpotrf` become 1.7x and
+1.4x faster. `Cherk` keeps the split reference.
 
 They are used by default for double: on 4 cores, n = 1500, `Rsyrk` 61x,
 `Rtrsm` 2.1x, `Rpotrf` 1.2x, `Rgetrf` 1.1x over the lanes (1 core: 4.1x,

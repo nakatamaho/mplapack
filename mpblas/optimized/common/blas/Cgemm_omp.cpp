@@ -36,6 +36,7 @@
 
 #include <algorithm>
 #include "../Rblas_split_common.h"
+#include "../Rblas_cpu_common.h"
 #if defined(MPLAPACK_BUILD_WITH_DD) || defined(MPLAPACK_BUILD_WITH_TD) || defined(MPLAPACK_BUILD_WITH_QD)
 #include "../Cblas_simd_common.h"
 #endif
@@ -52,6 +53,9 @@ bool Cgemm_omp(const char *transa, const char *transb, INTEGER const m, INTEGER 
         return false;
     if (lda < std::max((INTEGER)1, nota ? m : k) || ldb < std::max((INTEGER)1, notb ? k : n) || ldc < std::max((INTEGER)1, m))
         return false;
+    // the small-block engine where it is faster (../Rblas_block_common.h)
+    if (!(alpha == COMPLEX(0.0, 0.0)) && blk_cgemm<blas_thread_context>(nota, ls(transa, "C"), notb, ls(transb, "C"), m, n, k, alpha, a, lda, b, ldb, beta, c, ldc))
+        return true;
 #ifdef MPLAPACK_CBLAS_SIMD_AVAILABLE
     if (nota ? cgemm_simd<COMPLEX>(notb, ls(transb, "C"), m, n, k, alpha, a, lda, b, ldb, beta, c, ldc) : cgemm_t_simd<COMPLEX>(ls(transa, "C"), notb, ls(transb, "C"), m, n, k, alpha, a, lda, b, ldb, beta, c, ldc))
         return true;

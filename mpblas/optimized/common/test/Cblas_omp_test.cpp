@@ -177,6 +177,9 @@ std::string tag(const char *r, std::initializer_list<const char *> opts, std::in
 int main()
 {
     setenv("MPLAPACK_BLAS_OMP_MIN", "1", 1);
+    // the small-block engine (Rblas_block_common.h) for every type and size
+    setenv("MPLAPACK_BLAS_BLOCK_MIN", "1", 1);
+    setenv("MPLAPACK_BLAS_BLOCK", "2", 1);
 #ifdef RBLAS_TEST_GPU
     // Cblas_gpu_test.cpp: every call, Level 1 and 2 included, on the GPU
     rblas_test_gpu_setup();
@@ -186,12 +189,15 @@ int main()
     }
 #endif
     const char *ul[] = {"U", "L"}, *tr[] = {"N", "T", "C"}, *sd[] = {"L", "R"}, *dg[] = {"N", "U"};
-    const long sizes[][3] = {{1, 1, 1}, {7, 5, 3}, {19, 23, 6}};
+    // {150, 70, 40}: several blocks of the engine (alpha, beta general only)
+    const long sizes[][3] = {{1, 1, 1}, {7, 5, 3}, {19, 23, 6}, {150, 70, 40}};
     const long incs[] = {1, 2, -2};
     for (auto &z : sizes) {
         const long m = z[0], n = z[1], k = z[2];
         for (int ak = 0; ak < 3; ak++)
             for (int bk = 0; bk < 3; bk++) {
+                if (m > 100 && (ak != 2 || bk == 1))
+                    continue;
                 const COMPLEX alpha = scalar(ak), beta = scalar(bk);
                 for (const char *ta : tr)
                     for (const char *tb : tr) {
@@ -462,6 +468,26 @@ int main()
                 }
             }
     }
+
+#if defined(MPLAPACK_BUILD_WITH_DOUBLE) && !defined(RBLAS_TEST_GPU)
+    // complex products whose parts are both NaN: the C99 recovery
+    // of the operator, which the kernel of std::complex<double> reproduces
+    for (const char *ta : tr) {
+        const long m = 37, n = 21, k = 19;
+        std::vector<COMPLEX> A(m * k + k * m), B(k * n + n * k), C(m * n);
+        fill(A), fill(B), fill(C);
+        // (inf, nan)*(x, y): both parts NaN, the recovery gives infinities
+        A[3] = COMPLEX(INFINITY, NAN), A[40] = COMPLEX(NAN, -INFINITY);
+        for (size_t t = 0; t < B.size(); t += 5)
+            B[t] = COMPLEX(0.0, 0.0);
+        std::vector<COMPLEX> R(C), G(C);
+        const long lda = ta[0] == 'N' ? m : k;
+        const COMPLEX alpha(1.5, -0.5), beta(0.5, 0.25);
+        Cgemm_reference_cpu(ta, "N", m, n, k, alpha, A.data(), lda, B.data(), k, beta, R.data(), m);
+        Cgemm(ta, "N", m, n, k, alpha, A.data(), lda, B.data(), k, beta, G.data(), m);
+        compare(tag("Cgemm nan", {ta}, {m, n, k}), R, G);
+    }
+#endif
 #ifdef RBLAS_TEST_GPU
     std::printf("complex BLAS (GPU): %ld checks, %ld failures, %ld zeros differing only in sign\n", checks, failures, zero_signs);
 #else
