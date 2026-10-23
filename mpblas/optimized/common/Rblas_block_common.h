@@ -764,14 +764,51 @@ template <class T> struct blk_planes {
 // blk_small for double and its complex; p1, pN for dd, td, qd, where the
 // engine is faster than the planes only in some forms (0: never), from the
 // measurements on 4 cores with n = 100, 300, 600.
-template <class T> bool blk_l3_ok(long use, double vol, double n1, double nN, double p1, double pN)
+// binary80, binary128, MPFR, GMP (real): the forms where the engine beat
+// the lanes (only right-side forms and syrk/syr2k N, mostly with threads,
+// where the lanes run the columns of B one after another), measured on 4
+// cores with n = 64..600; n1 / nN as in blk_small, 0: never.
+enum { BLK_OF_NONE, BLK_OF_TRSM_RLN, BLK_OF_TRSM_RT, BLK_OF_TRMM_RN, BLK_OF_TRMM_RT, BLK_OF_SYRK_N, BLK_OF_SYR2K_N };
+inline void blk_other_n(int form, double &n1, double &nN)
+{
+    n1 = nN = 0;
+#if defined(MPLAPACK_BUILD_WITH_BINARY80)
+    if (form == BLK_OF_TRSM_RLN)
+        n1 = nN = 100;
+    else if (form == BLK_OF_TRSM_RT || form == BLK_OF_TRMM_RT)
+        nN = 100;
+    else if (form == BLK_OF_TRMM_RN || form == BLK_OF_SYR2K_N)
+        nN = 600;
+#elif defined(MPLAPACK_BUILD_WITH_BINARY128)
+    if (form == BLK_OF_TRMM_RN || form == BLK_OF_TRMM_RT)
+        nN = 300;
+#elif defined(MPLAPACK_BUILD_WITH_GMP)
+    if (form == BLK_OF_TRSM_RLN || form == BLK_OF_TRSM_RT || form == BLK_OF_TRMM_RT)
+        nN = 128;
+    else if (form == BLK_OF_TRMM_RN)
+        nN = 200;
+#elif defined(MPLAPACK_BUILD_WITH_MPFR)
+    if (form == BLK_OF_TRMM_RT)
+        nN = 128;
+    else if (form == BLK_OF_TRMM_RN || form == BLK_OF_SYRK_N || form == BLK_OF_SYR2K_N)
+        nN = 200;
+#endif
+    (void)form;
+}
+
+template <class T> bool blk_l3_ok(long use, double vol, double n1, double nN, double p1, double pN, int oform = BLK_OF_NONE)
 {
     if (use == 0)
         return false;
     if (use == 1 && !blk_profitable_l3<T>::value) {
-        if (!blk_planes<T>::value || (blk_parallel() ? pN : p1) <= 0)
+        if (blk_planes<T>::value)
+            n1 = p1, nN = pN;
+        else if (!blk_is_cplx<T>::value)
+            blk_other_n(oform, n1, nN);
+        else
             return false;
-        n1 = p1, nN = pN;
+        if ((blk_parallel() ? nN : n1) <= 0)
+            return false;
     }
     return !blk_small(use, vol, n1, nN);
 }
@@ -1208,7 +1245,8 @@ template <class T> bool blk_trsm_takes(bool left, bool upper, bool trans, long m
     // dd, td, qd: left with transa = N and right, lower, transa = N stay on
     // the planes; the lanes of left, lower, transa = T only with threads
     const double p1 = (left && !trans) || lane ? 0 : 300, pN = left && !trans ? 0 : (lane ? (left ? 64 : 0) : 600);
-    return (blk_trsm_case(left, upper, trans) || lane) && blk_l3_ok<T>(use, (double)m * n * na, n1, nN, p1, pN);
+    const int of = left ? BLK_OF_NONE : (lane ? BLK_OF_TRSM_RLN : (trans ? BLK_OF_TRSM_RT : BLK_OF_NONE));
+    return (blk_trsm_case(left, upper, trans) || lane) && blk_l3_ok<T>(use, (double)m * n * na, n1, nN, p1, pN, of);
 }
 
 // Complex Ctrsm with transa = C: the reference uses conj(a) where Rtrsm
@@ -1390,7 +1428,7 @@ template <class T> bool blk_trmm_takes(long m, long n, bool left, bool trans)
     const double n1 = blk_is_cplx<T>::value ? (left ? 150 : 300) : (left ? (trans ? 100 : 150) : 300);
     const double nN = blk_is_cplx<T>::value ? (left ? 600 : (trans ? 64 : 500)) : (left ? (trans ? 300 : 400) : 64);
     // dd, td, qd: left with transa = N stays on the planes
-    return blk_l3_ok<T>(use, (double)m * n * na, n1, nN, left && !trans ? 0 : 300, left && !trans ? 0 : 600);
+    return blk_l3_ok<T>(use, (double)m * n * na, n1, nN, left && !trans ? 0 : 300, left && !trans ? 0 : 600, left ? BLK_OF_NONE : (trans ? BLK_OF_TRMM_RT : BLK_OF_TRMM_RN));
 }
 
 template <class Context, class T> bool blk_trmm(bool left, bool upper, bool trans, bool nounit, long m, long n, const T &alpha, const T *A, long lda, T *B, long ldb)
@@ -1714,7 +1752,7 @@ template <class Context, class T> bool blk_syrk(bool upper, bool trans, long n, 
 {
     typedef typename blk_kernel_of<T>::type K;
     const long use = blk_env("MPLAPACK_BLAS_BLOCK", 1);
-    if (!blk_l3_ok<T>(use, (double)n * n * k, trans ? (blk_is_cplx<T>::value ? 100 : 64) : 200, 400, trans ? 300 : 0, trans ? 600 : 0))
+    if (!blk_l3_ok<T>(use, (double)n * n * k, trans ? (blk_is_cplx<T>::value ? 100 : 64) : 200, 400, trans ? 300 : 0, trans ? 600 : 0, trans ? BLK_OF_NONE : BLK_OF_SYRK_N))
         return false;
     const bool par = blk_parallel((double)n * n * k);
     const long NB = K::MC, nb = (n + NB - 1) / NB;
@@ -1804,7 +1842,7 @@ template <class Context, class T> bool blk_syr2k(bool upper, bool trans, long n,
 {
     typedef typename blk_kernel_of<T>::type K;
     const long use = blk_env("MPLAPACK_BLAS_BLOCK", 1);
-    if (k <= 0 || !blk_l3_ok<T>(use, (double)n * n * k, trans ? (blk_is_cplx<T>::value ? 150 : 64) : 200, 400, trans ? 300 : 0, trans ? 600 : 0))
+    if (k <= 0 || !blk_l3_ok<T>(use, (double)n * n * k, trans ? (blk_is_cplx<T>::value ? 150 : 64) : 200, 400, trans ? 300 : 0, trans ? 600 : 0, trans ? BLK_OF_NONE : BLK_OF_SYR2K_N))
         return false;
     const bool par = blk_parallel((double)n * n * k);
     const long NB = K::MC, nb = (n + NB - 1) / NB;
@@ -1900,7 +1938,7 @@ template <class Context, class T, class R> bool blk_her2k(bool upper, bool trans
 {
     typedef typename blk_kernel_of<T>::type K;
     const long use = blk_env("MPLAPACK_BLAS_BLOCK", 1);
-    if (k <= 0 || !blk_l3_ok<T>(use, (double)n * n * k, trans ? (blk_is_cplx<T>::value ? 150 : 64) : 200, 400, trans ? 300 : 0, trans ? 600 : 0))
+    if (k <= 0 || !blk_l3_ok<T>(use, (double)n * n * k, trans ? (blk_is_cplx<T>::value ? 150 : 64) : 200, 400, trans ? 300 : 0, trans ? 600 : 0, trans ? BLK_OF_NONE : BLK_OF_SYR2K_N))
         return false;
     const bool par = blk_parallel((double)n * n * k);
     const long NB = K::MC, nb = (n + NB - 1) / NB;
@@ -2019,7 +2057,7 @@ template <class Context, class T, class R> bool blk_herk(bool upper, bool trans,
 {
     typedef typename blk_kernel_of<T>::type K;
     const long use = blk_env("MPLAPACK_BLAS_BLOCK", 1);
-    if (k <= 0 || !blk_l3_ok<T>(use, (double)n * n * k, trans ? (blk_is_cplx<T>::value ? 100 : 64) : 200, 400, trans ? 300 : 0, trans ? 600 : 0))
+    if (k <= 0 || !blk_l3_ok<T>(use, (double)n * n * k, trans ? (blk_is_cplx<T>::value ? 100 : 64) : 200, 400, trans ? 300 : 0, trans ? 600 : 0, trans ? BLK_OF_NONE : BLK_OF_SYRK_N))
         return false;
     const bool par = blk_parallel((double)n * n * k);
     const long NB = K::MC, nb = (n + NB - 1) / NB;

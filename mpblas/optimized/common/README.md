@@ -130,7 +130,26 @@ n = 32..1000 and 1 and 4 threads, the two paths interleaved in one process:
 | `Rsyr2k`, `Cher2k` T | 64 / 400 | 150 / 400 | 300 / 600 |
 
 ("planes": the column forms on planes of `Rblas_simd_common.h` stay, being
-faster.) With these the default is not slower than the former path in any
+faster.) For binary80, binary128, MPFR and GMP the engine is slower than the
+lanes in most forms (its blocking does not pay when the arithmetic
+dominates) and is used only where it measured faster, the right-side forms
+whose lanes run the columns of B one after another, with threads
+(`blk_other_n`; 1 / 4 threads):
+
+| | binary80 | binary128 | GMP | MPFR |
+|---|---|---|---|---|
+| `Rtrsm` R lower, N (lanes) | 100 / 100 | - | - / 128 | - |
+| `Rtrsm` R, T | - / 100 | - | - / 128 | - |
+| `Rtrmm` R, N | - / 600 | - / 300 | - / 200 | - / 200 |
+| `Rtrmm` R, T | - / 100 | - / 300 | - / 128 | - / 128 |
+| `Rsyrk` N | - | - | - | - / 200 |
+| `Rsyr2k` N | - / 600 | - | - | - / 200 |
+
+There, on 4 cores: binary80 `Rtrsm` R 2.0-2.8x, `Rtrmm` R T 1.7-2.6x,
+`Rsyr2k` N 2.3-2.6x (n = 600), `Rtrsm` R lower N 1.6x with one thread;
+binary128 `Rtrmm` R 1.15x (n = 300); GMP `Rtrsm` R 1.3-1.5x, `Rtrmm` R
+1.1-1.8x (n = 128-200); MPFR `Rtrmm` R 1.1-1.9x, `Rsyrk`, `Rsyr2k` N
+1.1-1.2x (n = 128-200). With these the default is not slower than the former path in any
 measured case beyond the noise (0.9-1.1 between runs of the same path), and
 faster above the sizes: double at n = 1000 on 4 cores `Rtrsm` 2.4-64x,
 `Rtrmm` 2.1-40x, `Rsymm` 2.2-15x, `Rsyrk` 7.5-13x, `Rsyr2k` 3.9-63x,
@@ -181,9 +200,12 @@ Measured on 4 cores, 4 threads, NN, seconds (cutoff 0: conventional):
 | binary128, n = 768 | 5.23 / 21.1 | 4.47 / 17.0 | 4.49 / 18.4 | 4.76 / 19.7 |
 | dd, n = 1024 | 0.40 / 1.52 | 0.44 / 1.53 | 0.37 / 1.51 | 0.37 / 1.39 |
 | qd, n = 512 | 0.38 / 1.48 | 0.39 / 1.43 | 0.35 / 1.37 | 0.37 / 1.45 |
+| GMP, n = 512 | 2.87 / 10.6 | 2.98 / 10.9 | 3.11 / 10.4 | |
+| MPFR, n = 512 | 4.77 / 20.5 | 4.61 / 18.3 | 4.49 / 18.6 | |
 
 At these sizes Winograd gains 1.1-1.3x for binary80, binary128, dd and qd
-and loses for double, where the engine is close to the machine's speed and
+(MPFR 1.06x / 1.12x, GMP none: their additions cost about as much as their
+products) and loses for double, where the engine is close to the machine's speed and
 the additions of Winograd are bound by memory. It pays more for larger n
 (one level saves 1/8 of the products).
 
