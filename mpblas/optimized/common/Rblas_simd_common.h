@@ -28,9 +28,9 @@
 
 /*
  * dd/td/qd Level 1/2/3 BLAS on the CPU with AVX2 (Rblas_cpu_common.h):
- * instead of one lane per element, a unit of work is a column of the result
- * (Rsyrk/Rsyr2k, Rsymm, Rtrmm/Rtrsm with side L and transa = N, Rger, Rsyr,
- * Rsyr2), a block of rows (Rsymm/Rtrmm/Rtrsm with side R, Rgemv with
+ * instead of one lane per element, a unit of work is a group of columns of
+ * the result (Rsyrk/Rsyr2k, Rsymm, Rtrmm/Rtrsm with side L and transa = N;
+ * bk_units), a column (Rger, Rsyr, Rsyr2), a block of rows (Rsymm/Rtrmm/Rtrsm with side R, Rgemv with
  * trans = N, Level 1) or a block of columns (Rtrmm/Rtrsm with side L and
  * transa = T, on a transposed copy), and the loops over the rows of a column
  * (the columns of a row) are vectorized; Rsyrk/Rsyr2k with trans = T
@@ -41,7 +41,8 @@
  * order, so the result is the reference result bit for bit.  The other
  * routines and cases keep the lanes of Rblas_lanes_common.h.
  *
- *   MPLAPACK_BLAS_SIMD=0   use the lanes instead
+ *   MPLAPACK_BLAS_SIMD=0        use the lanes instead
+ *   MPLAPACK_BLAS_SIMD_COLS=N   columns per group (8)
  */
 
 #ifndef _MPLAPACK_RBLAS_SIMD_COMMON_H_
@@ -363,19 +364,23 @@ template <class T> inline bk_mat<T> bk_of(const blas_operand<T> &o)
 }
 
 // Number of units of a call in this mode, 0 if the call keeps the lanes.
-template <class T> long bk_units(const blas_call<T> &c, long rb)
+// Units over columns take groups of cb columns: the columns of a group are
+// independent and each goes through its own operations in the reference
+// order, the steps of the group interleaved so that a column of A is used
+// by the cb columns while it is in the cache.
+template <class T> long bk_units(const blas_call<T> &c, long rb, long cb)
 {
     const blas_shape &s = c.s;
     switch (s.op) {
     case L3_SYRK:
     case L3_SYR2K:
-        return s.n; // columns of C
+        return (s.n + cb - 1) / cb; // groups of columns of C
     case L3_SYMM:
-        return s.left ? s.n : (s.m + rb - 1) / rb;
+        return s.left ? (s.n + cb - 1) / cb : (s.m + rb - 1) / rb;
     case L3_TRMM:
     case L3_TRSM:
-        if (s.left) // columns of B; transa = T: blocks of rb columns
-            return s.trans ? (s.n + rb - 1) / rb : s.n;
+        if (s.left) // groups of columns of B; transa = T: blocks of rb columns
+            return s.trans ? (s.n + rb - 1) / rb : (s.n + cb - 1) / cb;
         return (s.m + rb - 1) / rb;
     case L2_GEMV:
         return s.trans ? 0 : (s.m + rb - 1) / rb;
@@ -392,25 +397,13 @@ template <class T> long bk_units(const blas_call<T> &c, long rb)
     }
 }
 
-// syrk/syr2k with trans = T: c(i,j) is the sum over l of a(l,i)*a(l,j)
-// (syr2k: a(l,i)*b(l,j) and b(l,i)*a(l,j)), accumulated for the rows of
-// column j at once over the transposed copies At, Bt (n x k, leading
-// dimension n) of A and B; the final combination is the reference one.
-template <class T> void bk_syrk_t(const blas_call<T> &c, long j, const T *At, const T *Bt)
+// syrk/syr2k with trans = T: c(i,j) from the sums temp(1,2) of column j
+template <class T> void bk_syrk_t_finish(const blas_call<T> &c, long j, const std::vector<T> &t1, const std::vector<T> &t2)
 {
     const blas_shape &s = c.s;
-    const bk_mat<T> A = bk_of(c.a), B = bk_of(c.b), C = bk_of(c.c);
+    const bk_mat<T> C = bk_of(c.c);
     const T &al = c.alpha;
-    const long n = s.n, r0 = s.upper ? 0 : j, r1 = s.upper ? j + 1 : n, cnt = r1 - r0;
-    std::vector<T> t1((size_t)cnt), t2((size_t)(s.op == L3_SYR2K ? cnt : 0)); // temp(1,2) = zero
-    for (long l = 0; l < s.k; l++) {
-        if (s.op == L3_SYRK) {
-            bk_axpy(cnt, t1.data(), 1, A(l, j), At + r0 + l * n, 1, false); // temp += a(l,i)*a(l,j)
-        } else {
-            bk_axpy(cnt, t1.data(), 1, B(l, j), At + r0 + l * n, 1, false); // temp1 += a(l,i)*b(l,j)
-            bk_axpy(cnt, t2.data(), 1, A(l, j), Bt + r0 + l * n, 1, false); // temp2 += b(l,i)*a(l,j)
-        }
-    }
+    const long r0 = s.upper ? 0 : j, cnt = (long)t1.size();
     for (long t = 0; t < cnt; t++) {
         T &cij = C(r0 + t, j);
         if (s.op == L3_SYRK) {
@@ -425,6 +418,39 @@ template <class T> void bk_syrk_t(const blas_call<T> &c, long j, const T *At, co
                 cij = c.beta * cij + al * t1[(size_t)t] + al * t2[(size_t)t];
         }
     }
+}
+
+// syrk/syr2k with trans = T: c(i,j) is the sum over l of a(l,i)*a(l,j)
+// (syr2k: a(l,i)*b(l,j) and b(l,i)*a(l,j)), accumulated for the rows of
+// column j at once over the transposed copies At, Bt (n x k, leading
+// dimension n) of A and B, for the columns [j0, j1); the final combination
+// is the reference one.
+template <class T> void bk_syrk_t(const blas_call<T> &c, long j0, long j1, const T *At, const T *Bt)
+{
+    const blas_shape &s = c.s;
+    const bk_mat<T> A = bk_of(c.a), B = bk_of(c.b);
+    const long n = s.n, g = j1 - j0;
+    // temp(1,2) = zero for the rows [r0, r1) of every column of the group
+    std::vector<std::vector<T> > t1v((size_t)g), t2v((size_t)g);
+    for (long j = j0; j < j1; j++) {
+        const long cnt = s.upper ? j + 1 : n - j;
+        t1v[(size_t)(j - j0)].resize((size_t)cnt);
+        if (s.op == L3_SYR2K)
+            t2v[(size_t)(j - j0)].resize((size_t)cnt);
+    }
+    for (long l = 0; l < s.k; l++)
+        for (long j = j0; j < j1; j++) {
+            const long r0 = s.upper ? 0 : j, cnt = s.upper ? j + 1 : n - j;
+            T *t1 = t1v[(size_t)(j - j0)].data();
+            if (s.op == L3_SYRK) {
+                bk_axpy(cnt, t1, 1, A(l, j), At + r0 + l * n, 1, false); // temp += a(l,i)*a(l,j)
+            } else {
+                bk_axpy(cnt, t1, 1, B(l, j), At + r0 + l * n, 1, false);                          // temp1 += a(l,i)*b(l,j)
+                bk_axpy(cnt, t2v[(size_t)(j - j0)].data(), 1, A(l, j), Bt + r0 + l * n, 1, false); // temp2 += b(l,i)*a(l,j)
+            }
+        }
+    for (long j = j0; j < j1; j++)
+        bk_syrk_t_finish(c, j, t1v[(size_t)(j - j0)], t2v[(size_t)(j - j0)]);
 }
 
 // trmm/trsm with side = L and transa = T on the columns [j0, j0 + w) of B:
@@ -479,14 +505,16 @@ template <class T> void bk_trxm_lt(const blas_call<T> &c, long u, long rb)
             C(i, j0 + t) = Bt[(size_t)(t + i * w)];
 }
 
-template <class T> void bk_unit(const blas_call<T> &c, long u, long rb, const T *At = 0, const T *Bt = 0)
+template <class T> void bk_unit(const blas_call<T> &c, long u, long rb, long cb, const T *At = 0, const T *Bt = 0)
 {
     const blas_shape &s = c.s;
     const bk_mat<T> A = bk_of(c.a), B = bk_of(c.b), C = bk_of(c.c);
     const T &al = c.alpha;
     const long m = s.m, n = s.n;
+    // the group of columns [g0, g1) of a unit over columns
+    const long g0 = u * cb, g1 = std::min(g0 + cb, n);
     if ((s.op == L3_SYRK || s.op == L3_SYR2K) && s.trans) {
-        bk_syrk_t(c, u, At, Bt);
+        bk_syrk_t(c, g0, g1, At, Bt);
         return;
     }
     if ((s.op == L3_TRMM || s.op == L3_TRSM) && s.left && s.trans) {
@@ -495,48 +523,53 @@ template <class T> void bk_unit(const blas_call<T> &c, long u, long rb, const T 
     }
     switch (s.op) {
     case L3_SYRK:
-    case L3_SYR2K: { // column j, trans = N
-        const long j = u, r0 = s.upper ? 0 : j, r1 = s.upper ? j + 1 : n;
-        T *cj = C.col(r0, j);
-        bk_beta(r1 - r0, cj, 1, c);
-        for (long l = 0; l < s.k; l++) {
-            if (s.op == L3_SYRK) {
-                if (A(j, l) == 0.0)
-                    continue;
-                const T t = al * A(j, l); // temp = alpha * a(j,l)
-                bk_axpy(r1 - r0, cj, 1, t, A.col(r0, l), 1, false);
-            } else {
-                if (A(j, l) == 0.0 && B(j, l) == 0.0)
-                    continue;
-                const T t1 = al * B(j, l), t2 = al * A(j, l);
-                bk_axpy2(r1 - r0, cj, 1, A.col(r0, l), 1, t1, B.col(r0, l), 1, t2);
-            }
+    case L3_SYR2K: { // columns [g0, g1), trans = N
+        for (long j = g0; j < g1; j++) {
+            const long r0 = s.upper ? 0 : j, r1 = s.upper ? j + 1 : n;
+            bk_beta(r1 - r0, C.col(r0, j), 1, c);
         }
+        for (long l = 0; l < s.k; l++)
+            for (long j = g0; j < g1; j++) {
+                const long r0 = s.upper ? 0 : j, r1 = s.upper ? j + 1 : n;
+                T *cj = C.col(r0, j);
+                if (s.op == L3_SYRK) {
+                    if (A(j, l) == 0.0)
+                        continue;
+                    const T t = al * A(j, l); // temp = alpha * a(j,l)
+                    bk_axpy(r1 - r0, cj, 1, t, A.col(r0, l), 1, false);
+                } else {
+                    if (A(j, l) == 0.0 && B(j, l) == 0.0)
+                        continue;
+                    const T t1 = al * B(j, l), t2 = al * A(j, l);
+                    bk_axpy2(r1 - r0, cj, 1, A.col(r0, l), 1, t1, B.col(r0, l), 1, t2);
+                }
+            }
         break;
     }
     case L3_SYMM:
-        if (s.left) { // column j
-            const long j = u;
+        if (s.left) { // columns [g0, g1)
             for (long ii = 0; ii < m; ii++) {
-                const long i = s.upper ? ii : m - 1 - ii;
-                const T t1 = al * B(i, j); // temp1 = alpha * b(i,j)
-                T t2 = 0.0;
-                const long k0 = s.upper ? 0 : i + 1, k1 = s.upper ? i : m;
-                bk_axpy(k1 - k0, C.col(k0, j), 1, t1, A.col(k0, i), 1, false); // c(k,j) += temp1*a(k,i)
-                for (long k = k0; k < k1; k++) {
-                    const T p = B(k, j) * A(k, i); // temp2 += b(k,j)*a(k,i)
-                    t2 = t2 + p;
+                for (long j = g0; j < g1; j++) {
+                    const long i = s.upper ? ii : m - 1 - ii;
+                    const T t1 = al * B(i, j); // temp1 = alpha * b(i,j)
+                    T t2 = 0.0;
+                    const long k0 = s.upper ? 0 : i + 1, k1 = s.upper ? i : m;
+                    bk_axpy(k1 - k0, C.col(k0, j), 1, t1, A.col(k0, i), 1, false); // c(k,j) += temp1*a(k,i)
+                    for (long k = k0; k < k1; k++) {
+                        const T p = B(k, j) * A(k, i); // temp2 += b(k,j)*a(k,i)
+                        t2 = t2 + p;
+                    }
+                    T v;
+                    if (s.beta_zero) {
+                        v = t1 * A(i, i);
+                    } else {
+                        v = c.beta * C(i, j);
+                        const T p = t1 * A(i, i);
+                        v = v + p;
+                    }
+                    const T p = al * t2;
+                    C(i, j) = v + p;
                 }
-                T v;
-                if (s.beta_zero) {
-                    v = t1 * A(i, i);
-                } else {
-                    v = c.beta * C(i, j);
-                    const T p = t1 * A(i, i);
-                    v = v + p;
-                }
-                const T p = al * t2;
-                C(i, j) = v + p;
             }
         } else { // rows [i0, i1)
             const long i0 = u * rb, cnt = std::min(rb, m - i0);
@@ -555,24 +588,25 @@ template <class T> void bk_unit(const blas_call<T> &c, long u, long rb, const T 
         }
         break;
     case L3_TRMM: // B is C
-        if (s.left) { // column j, transa = N
-            const long j = u;
+        if (s.left) { // columns [g0, g1), transa = N
             for (long kk = 0; kk < m; kk++) {
-                const long k = s.upper ? kk : m - 1 - kk;
-                if (C(k, j) == 0.0)
-                    continue;
-                T t = al * C(k, j); // temp = alpha * b(k,j)
-                if (s.upper) {
-                    bk_axpy(k, C.col(0, j), 1, t, A.col(0, k), 1, false);
-                    if (s.nounit)
-                        t = t * A(k, k);
-                    C(k, j) = t;
-                } else {
-                    if (s.nounit)
-                        C(k, j) = t * A(k, k);
-                    else
+                for (long j = g0; j < g1; j++) {
+                    const long k = s.upper ? kk : m - 1 - kk;
+                    if (C(k, j) == 0.0)
+                        continue;
+                    T t = al * C(k, j); // temp = alpha * b(k,j)
+                    if (s.upper) {
+                        bk_axpy(k, C.col(0, j), 1, t, A.col(0, k), 1, false);
+                        if (s.nounit)
+                            t = t * A(k, k);
                         C(k, j) = t;
-                    bk_axpy(m - k - 1, C.col(k + 1, j), 1, t, A.col(k + 1, k), 1, false);
+                    } else {
+                        if (s.nounit)
+                            C(k, j) = t * A(k, k);
+                        else
+                            C(k, j) = t;
+                        bk_axpy(m - k - 1, C.col(k + 1, j), 1, t, A.col(k + 1, k), 1, false);
+                    }
                 }
             }
         } else { // rows [i0, i1)
@@ -610,21 +644,23 @@ template <class T> void bk_unit(const blas_call<T> &c, long u, long rb, const T 
         }
         break;
     case L3_TRSM: // B is C
-        if (s.left) { // column j, transa = N
-            const long j = u;
+        if (s.left) { // columns [g0, g1), transa = N
             if (!s.alpha_one)
-                bk_scale(m, C.col(0, j), 1, al);
+                for (long j = g0; j < g1; j++)
+                    bk_scale(m, C.col(0, j), 1, al);
             for (long kk = 0; kk < m; kk++) {
-                const long k = s.upper ? m - 1 - kk : kk;
-                if (C(k, j) == 0.0)
-                    continue;
-                if (s.nounit)
-                    C(k, j) = C(k, j) / A(k, k);
-                const T bk = C(k, j);
-                if (s.upper)
-                    bk_axpy(k, C.col(0, j), 1, bk, A.col(0, k), 1, true);
-                else
-                    bk_axpy(m - k - 1, C.col(k + 1, j), 1, bk, A.col(k + 1, k), 1, true);
+                for (long j = g0; j < g1; j++) {
+                    const long k = s.upper ? m - 1 - kk : kk;
+                    if (C(k, j) == 0.0)
+                        continue;
+                    if (s.nounit)
+                        C(k, j) = C(k, j) / A(k, k);
+                    const T bk = C(k, j);
+                    if (s.upper)
+                        bk_axpy(k, C.col(0, j), 1, bk, A.col(0, k), 1, true);
+                    else
+                        bk_axpy(m - k - 1, C.col(k + 1, j), 1, bk, A.col(k + 1, k), 1, true);
+                }
             }
         } else { // rows [i0, i1)
             const long i0 = u * rb, cnt = std::min(rb, m - i0);
@@ -725,7 +761,8 @@ template <class T> bool blas_simd_cpu(blas_call<T> &c, bool parallel)
     static const long rb = 64;
     if (blas_env_long("MPLAPACK_BLAS_SIMD", 1) == 0)
         return false;
-    const long units = bk_units(c, rb);
+    const long cb = std::max(1L, blas_env_long("MPLAPACK_BLAS_SIMD_COLS", 8));
+    const long units = bk_units(c, rb, cb);
     if (units <= 0)
         return false;
     // syrk/syr2k with trans = T: A and B transposed (n x k), shared by the units
@@ -748,13 +785,13 @@ template <class T> bool blas_simd_cpu(blas_call<T> &c, bool parallel)
     if (parallel) {
 #pragma omp parallel for schedule(dynamic, 1)
         for (long u = 0; u < units; u++)
-            bk_unit(c, u, rb, at, bt);
+            bk_unit(c, u, rb, cb, at, bt);
         return true;
     }
 #endif
     (void)parallel;
     for (long u = 0; u < units; u++)
-        bk_unit(c, u, rb, at, bt);
+        bk_unit(c, u, rb, cb, at, bt);
     return true;
 }
 
