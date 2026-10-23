@@ -39,6 +39,7 @@
 
 #include <algorithm>
 #include "../Rblas_split_common.h"
+#include "../Rblas_cpu_common.h"
 
 namespace {
 bool ls(const char *a, const char *b) { return Mlsame(a, b) != 0; }
@@ -50,5 +51,8 @@ bool Cher2k_omp(const char *uplo, const char *trans, INTEGER const n, INTEGER co
     const bool notr = ls(trans, "N");
     if ((!ls(uplo, "U") && !ls(uplo, "L")) || (!notr && !ls(trans, "C")) || n <= 0 || k < 0 || lda < std::max((INTEGER)1, notr ? n : k) || ldb < std::max((INTEGER)1, notr ? n : k) || ldc < std::max((INTEGER)1, n))
         return false;
+    // the small-block engine where it is faster (../Rblas_block_common.h)
+    if (k > 0 && !(alpha == COMPLEX(0.0, 0.0)) && blk_her2k<blas_thread_context>(ls(uplo, "U"), !notr, n, k, alpha, a, lda, b, ldb, beta, c, ldc))
+        return true;
     return blas_split(4.0 * n * n * k, n, [&](long p0, long p1) { Cher2k_columns(uplo, trans, n, k, alpha, a, lda, b, ldb, beta, c, ldc, p0, p1); });
 }

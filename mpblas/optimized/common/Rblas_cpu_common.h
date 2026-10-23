@@ -143,8 +143,14 @@ template <class T> bool blas_cpu(blas_call<T> &c)
 #else
     const bool omp = false;
 #endif
-    // Rtrsm, Rsyrk: blocks on the small-block engine (Rblas_block_common.h)
+    // Rtrsm, Rtrmm, Rsymm, Rsyrk, Rsyr2k: blocks on the small-block engine (Rblas_block_common.h)
     if (c.s.op == L3_TRSM && blk_trsm<blas_thread_context>(c.s.left, c.s.upper, c.s.trans, c.s.nounit, c.s.m, c.s.n, c.alpha, c.a.X, c.a.ld, c.c.X, c.c.ld))
+        return true;
+    if (c.s.op == L3_TRMM && blk_trmm<blas_thread_context>(c.s.left, c.s.upper, c.s.trans, c.s.nounit, c.s.m, c.s.n, c.alpha, c.a.X, c.a.ld, c.c.X, c.c.ld))
+        return true;
+    if (c.s.op == L3_SYMM && blk_symm<blas_thread_context>(c.s.left, c.s.upper, c.s.m, c.s.n, c.alpha, c.a.X, c.a.ld, c.b.X, c.b.ld, c.beta, c.c.X, c.c.ld))
+        return true;
+    if (c.s.op == L3_SYR2K && blk_syr2k<blas_thread_context>(c.s.upper, c.s.trans, c.s.n, c.s.k, c.alpha, c.a.X, c.a.ld, c.b.X, c.b.ld, c.beta, c.c.X, c.c.ld))
         return true;
     if (c.s.op == L3_SYRK && blk_syrk<blas_thread_context>(c.s.upper, c.s.trans, c.s.n, c.s.k, c.alpha, c.a.X, c.a.ld, c.beta, c.c.X, c.c.ld))
         return true;

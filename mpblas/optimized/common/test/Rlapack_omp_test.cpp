@@ -68,7 +68,7 @@ bool same(const REAL &a, const REAL &b)
 #elif defined(MPLAPACK_BUILD_WITH_GMP)
     return mpf_cmp(a.get_mpf_t(), b.get_mpf_t()) == 0;
 #elif defined(MPLAPACK_BUILD_WITH_BINARY80)
-    return (a == b && std::signbit((long double)a) == std::signbit((long double)b)) || (a != a && b != b);
+    return (a == b && std::signbit(a) == std::signbit(b)) || (a != a && b != b);
 #else
     return std::memcmp(&a, &b, sizeof(REAL)) == 0;
 #endif

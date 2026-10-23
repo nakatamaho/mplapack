@@ -134,7 +134,7 @@ bool same(const REAL &a, const REAL &b)
 #elif defined(MPLAPACK_BUILD_WITH_GMP)
     return mpf_cmp(a.get_mpf_t(), b.get_mpf_t()) == 0;
 #elif defined(MPLAPACK_BUILD_WITH_BINARY80)
-    return (a == b && std::signbit((long double)a) == std::signbit((long double)b)) || (a != a && b != b);
+    return (a == b && std::signbit(a) == std::signbit(b)) || (a != a && b != b);
 #else
     return std::memcmp(&a, &b, sizeof(REAL)) == 0;
 #endif
@@ -471,7 +471,7 @@ int main()
 
 #if defined(MPLAPACK_BUILD_WITH_DOUBLE) && !defined(RBLAS_TEST_GPU)
     // complex products whose parts are both NaN: the C99 recovery
-    // of the operator, which the kernel of std::complex<double> reproduces
+    // of the operator, which the COMPLEX kernel of the double library reproduces
     for (const char *ta : tr) {
         const long m = 37, n = 21, k = 19;
         std::vector<COMPLEX> A(m * k + k * m), B(k * n + n * k), C(m * n);

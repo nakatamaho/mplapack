@@ -36,6 +36,7 @@
 
 #include <algorithm>
 #include "../Rblas_split_common.h"
+#include "../Rblas_cpu_common.h"
 #if defined(MPLAPACK_BUILD_WITH_DD) || defined(MPLAPACK_BUILD_WITH_TD) || defined(MPLAPACK_BUILD_WITH_QD)
 #include "../Cblas_simd_common.h"
 #endif
@@ -52,6 +53,15 @@ bool Ctrmm_omp(const char *side, const char *uplo, const char *transa, const cha
         return false;
     if (lda < std::max((INTEGER)1, left ? m : n) || ldb < std::max((INTEGER)1, m))
         return false;
+    // the small-block engine where it is faster (../Rblas_block_common.h)
+    if (!(alpha == COMPLEX(0.0, 0.0)) && blk_trmm_takes<COMPLEX>(m, n, left)) {
+        const bool upper = ls(uplo, "U"), notr = ls(transa, "N"), nounit = ls(diag, "N");
+        if (ls(transa, "C")) {
+            const blk_conj_copy<COMPLEX> ac(a, lda, left ? m : n);
+            return blk_trmm<blas_thread_context>(left, upper, true, nounit, m, n, alpha, ac.v.data(), left ? m : n, b, ldb);
+        }
+        return blk_trmm<blas_thread_context>(left, upper, !notr, nounit, m, n, alpha, a, lda, b, ldb);
+    }
 #ifdef MPLAPACK_CBLAS_SIMD_AVAILABLE
     if (ctrxm_simd<COMPLEX>(false, left, ls(uplo, "U"), ls(transa, "N"), ls(transa, "T"), ls(diag, "N"), m, n, alpha, a, lda, b, ldb))
         return true;

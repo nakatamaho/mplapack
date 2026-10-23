@@ -80,6 +80,20 @@ real parts; 2.0x). On 4 cores (n = 1000-2000) `Cgetrf` and `Cpotrf` become
 (the small calls of the factorizations) keep the column forms, which run in
 parallel.
 
+`Rtrmm` (all eight forms: every term comes from the original B in a fixed
+order of k; left forms split the rows recursively, right forms take tiles
+of columns over a copy of B), `Rsymm` (temp2 by tiles, then the reference
+expression, then the terms of the later rows; right side per column),
+`Rsyr2k` (N: the pairs `a(i,l)*temp1 + b(i,l)*temp2` of the engine's
+`BLK_ADD2` mode; T: two dot-product buffers) and the complex `Ctrmm`
+(transa = C on a conjugated copy of A), `Csymm`, `Chemm`, `Csyrk`, `Csyr2k`,
+`Cher2k` (conj and the real diagonal as in the reference) run on the engine
+as well, by default for the double library (REAL and COMPLEX of
+`mpblas.h`). On 4 cores (n = 800) against the former paths: `Rtrmm`
+1.2-30x, `Rsymm` 1.0-5.5x, `Rsyr2k` 2.9-21x, the complex ones 1.3-2.0x (1
+core: 1.6-2.8x). The types are those of the library (`REAL`, `COMPLEX`,
+`mplapack_binary80_t`, `mplapack_binary128_t`), not the machine types.
+
 They are used by default for double: on 4 cores, n = 1500, `Rsyrk` 61x,
 `Rtrsm` 2.1x, `Rpotrf` 1.2x, `Rgetrf` 1.1x over the lanes (1 core: 4.1x,
 4.6x, 1.4x, 1.0x). For dd, td and qd the column forms on planes of

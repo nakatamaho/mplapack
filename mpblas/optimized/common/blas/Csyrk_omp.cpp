@@ -39,6 +39,7 @@
 
 #include <algorithm>
 #include "../Rblas_split_common.h"
+#include "../Rblas_cpu_common.h"
 #if defined(MPLAPACK_BUILD_WITH_DD) || defined(MPLAPACK_BUILD_WITH_TD) || defined(MPLAPACK_BUILD_WITH_QD)
 #include "../Cblas_simd_common.h"
 #endif
@@ -53,6 +54,9 @@ bool Csyrk_omp(const char *uplo, const char *trans, INTEGER const n, INTEGER con
     const bool notr = ls(trans, "N");
     if ((!ls(uplo, "U") && !ls(uplo, "L")) || (!notr && !ls(trans, "T")) || n <= 0 || k < 0 || lda < std::max((INTEGER)1, notr ? n : k) || ldc < std::max((INTEGER)1, n))
         return false;
+    // the small-block engine where it is faster (../Rblas_block_common.h)
+    if (k > 0 && !(alpha == COMPLEX(0.0, 0.0)) && blk_syrk<blas_thread_context>(ls(uplo, "U"), !notr, n, k, alpha, a, lda, beta, c, ldc))
+        return true;
 #ifdef MPLAPACK_CBLAS_SIMD_AVAILABLE
     if (notr ? csyrk_simd<COMPLEX>(ls(uplo, "U"), n, k, alpha, a, lda, beta, c, ldc) : csyrk_t_simd<COMPLEX>(ls(uplo, "U"), n, k, alpha, a, lda, beta, c, ldc))
         return true;

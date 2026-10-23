@@ -36,6 +36,7 @@
 
 #include <algorithm>
 #include "../Rblas_split_common.h"
+#include "../Rblas_cpu_common.h"
 
 namespace {
 bool ls(const char *a, const char *b) { return Mlsame(a, b) != 0; }
@@ -49,6 +50,9 @@ bool Csymm_omp(const char *side, const char *uplo, INTEGER const m, INTEGER cons
         return false;
     if (lda < std::max((INTEGER)1, left ? m : n) || ldb < std::max((INTEGER)1, m) || ldc < std::max((INTEGER)1, m))
         return false;
+    // the small-block engine where it is faster (../Rblas_block_common.h)
+    if (!(alpha == COMPLEX(0.0, 0.0)) && blk_symm<blas_thread_context>(left, upper, m, n, alpha, a, lda, b, ldb, beta, c, ldc))
+        return true;
     const double work = 4.0 * m * n * (left ? m : n);
     if (left) // columns of C
         return blas_split(work, n, [&](long p0, long p1) { Csymm_reference_cpu(side, uplo, m, p1 - p0, alpha, a, lda, b + p0 * ldb, ldb, beta, c + p0 * ldc, ldc); });

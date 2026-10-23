@@ -130,7 +130,7 @@ bool same(const REAL &a, const REAL &b)
 #elif defined(MPLAPACK_BUILD_WITH_GMP)
     return mpf_cmp(a.get_mpf_t(), b.get_mpf_t()) == 0;
 #elif defined(MPLAPACK_BUILD_WITH_BINARY80)
-    return (a == b && std::signbit((long double)a) == std::signbit((long double)b)) || (a != a && b != b);
+    return (a == b && std::signbit(a) == std::signbit(b)) || (a != a && b != b);
 #else
     return std::memcmp(&a, &b, sizeof(REAL)) == 0;
 #endif
@@ -187,8 +187,8 @@ int main()
     }
 #endif
     const char *ul[] = {"U", "L"}, *tr[] = {"N", "T"}, *sd[] = {"L", "R"}, *dg[] = {"N", "U"};
-    // {150, 70}: several blocks of the engine (alpha general only)
-    const long sizes[][2] = {{1, 1}, {7, 5}, {19, 23}, {150, 70}};
+    // {150, 70}, {40, 150}: several blocks of the engine (alpha general only)
+    const long sizes[][2] = {{1, 1}, {7, 5}, {19, 23}, {150, 70}, {40, 150}};
     const long incs[] = {1, 2, -2};
     for (auto &z : sizes) {
         const long m = z[0], n = z[1];
