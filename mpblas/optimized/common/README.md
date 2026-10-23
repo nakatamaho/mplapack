@@ -73,8 +73,12 @@ operations of the reference routines in their order:
 `Cgemm` (`blk_cgemm`, the operations of the reference `Cgemm`) and `Ctrsm`
 (`blk_trsm`; transa = C on a conjugated copy of A, since the reference uses
 conj(a) where `Rtrsm` uses a) run on the engine as well, by default for
-complex double; on 4 cores (n = 1000) `Cgetrf` and `Cpotrf` become 1.7x and
-1.4x faster. `Cherk` keeps the split reference.
+complex double, and so does `Cherk` (`blk_herk`: the elements off the
+diagonal as `Rsyrk`, the diagonal with the reference expressions on the
+real parts; 2.0x). On 4 cores (n = 1000-2000) `Cgetrf` and `Cpotrf` become
+1.7-1.8x and 1.4-1.5x faster. `Rsyrk` and `Cherk` with fewer than 4 tiles
+(the small calls of the factorizations) keep the column forms, which run in
+parallel.
 
 They are used by default for double: on 4 cores, n = 1500, `Rsyrk` 61x,
 `Rtrsm` 2.1x, `Rpotrf` 1.2x, `Rgetrf` 1.1x over the lanes (1 core: 4.1x,

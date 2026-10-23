@@ -940,6 +940,8 @@ template <class Context, class T> bool blk_syrk(bool upper, bool trans, long n, 
         return false;
     const bool par = blk_parallel();
     const long NB = K::MC, nb = (n + NB - 1) / NB;
+    if (par && nb < 4) // too few tiles for the threads: the column forms
+        return false;
     std::vector<T> temp;           // trans = N: alpha*a(j,l); T: the dot products
     std::vector<unsigned char> az; // trans = N: a(j,l) == 0
 #define MPLAPACK_BLK_A(i, j) A[(i) + (j) * lda]
@@ -1005,6 +1007,114 @@ template <class Context, class T> bool blk_syrk(bool upper, bool trans, long n, 
                 else
                     MPLAPACK_BLK_C(i, j) = alpha * temp[(size_t)(i + j * n)] + beta * MPLAPACK_BLK_C(i, j);
             }
+        });
+    }
+#undef MPLAPACK_BLK_A
+#undef MPLAPACK_BLK_C
+    return true;
+}
+
+// ---- Cherk ----
+// C := alpha*A*A^H + beta*C or alpha*A^H*A + beta*C (alpha, beta real) on
+// the triangle, with the operations of the reference Cherk in their order:
+// as blk_syrk for the elements off the diagonal (trans = N: temp =
+// alpha*conj(a(j,l)), c(i,j) += temp*a(i,l); C: temp += conj(a(l,i))*a(l,j)),
+// and the reference expressions for the diagonal (N: c(j,j) =
+// real(c(j,j)) + real(temp*a(j,l)); C: rtemp += real(conj(a(l,j))*a(l,j))).
+// alpha != 0, n > 0, k > 0.
+template <class Context, class T, class R> bool blk_herk(bool upper, bool trans, long n, long k, const R &alpha, const T *A, long lda, const R &beta, T *C, long ldc)
+{
+    typedef typename blk_kernel_of<T>::type K;
+    const long use = blk_env("MPLAPACK_BLAS_BLOCK", 1);
+    if (k <= 0 || use == 0 || (use == 1 && !blk_profitable_l3<T>::value) || (double)n * n * k / 2 < (double)blk_env("MPLAPACK_BLAS_BLOCK_MIN", 32768))
+        return false;
+    const bool par = blk_parallel();
+    const long NB = K::MC, nb = (n + NB - 1) / NB;
+    if (par && nb < 4) // too few tiles for the threads: the column forms
+        return false;
+    const R zero(0.0), one(1.0);
+    const T czero(0.0, 0.0);
+    std::vector<T> temp, ac;       // N: alpha*conj(a(j,l)); C: the dot products, conj(a(l,i))
+    std::vector<unsigned char> az; // N: a(j,l) == 0
+#define MPLAPACK_BLK_A(i, j) A[(i) + (j) * lda]
+#define MPLAPACK_BLK_C(i, j) C[(i) + (j) * ldc]
+    const auto off = [&](long bi, long bj) { return upper ? bi < bj : bi > bj; };
+    // the elements off the diagonal of the diagonal tile d
+    const auto diag = [&](long d) {
+        const long p0 = d * NB, p1 = std::min(n, p0 + NB), w = p1 - p0;
+        if (!trans) {
+            std::vector<T> D;
+            D.reserve((size_t)(w * w));
+            for (long j = p0; j < p1; j++)
+                for (long i = p0; i < p1; i++)
+                    D.push_back(MPLAPACK_BLK_C(i, j)); // copies keep the precision
+            blk_update<K, Context>(
+                BLK_ADD, w, w, k, D.data(), w, [&](long i, long l) -> const T & { return MPLAPACK_BLK_A(p0 + i, l); }, [&](long l, long j) -> const T & { return temp[(size_t)(l + (p0 + j) * k)]; }, [&](long l, long j) { return az[(size_t)(l + (p0 + j) * k)] != 0; }, true, false);
+            for (long j = p0; j < p1; j++) {
+                const long i0 = upper ? p0 : j + 1, i1 = upper ? j : p1;
+                for (long i = i0; i < i1; i++)
+                    MPLAPACK_BLK_C(i, j) = D[(size_t)((i - p0) + (j - p0) * w)];
+            }
+        } else {
+            blk_update<K, Context>(
+                BLK_DOT, w, w, k, temp.data() + p0 + p0 * n, n, [&](long i, long l) -> const T & { return ac[(size_t)(l + (p0 + i) * k)]; }, [&](long l, long j) -> const T & { return MPLAPACK_BLK_A(l, p0 + j); }, blk_no_skip(), false, false);
+        }
+    };
+    if (!trans) {
+        temp.resize((size_t)(k * n));
+        az.resize((size_t)(k * n));
+        blk_columns<Context>(n, par, [&](long j) {
+            const long i0 = upper ? 0 : j + 1, i1 = upper ? j : n; // off the diagonal
+            T &cjj = MPLAPACK_BLK_C(j, j);
+            if (beta == zero) {
+                for (long i = i0; i < i1; i++)
+                    MPLAPACK_BLK_C(i, j) = czero;
+                cjj = czero;
+            } else if (beta != one) {
+                for (long i = i0; i < i1; i++)
+                    MPLAPACK_BLK_C(i, j) = beta * MPLAPACK_BLK_C(i, j);
+                cjj = beta * cjj.real();
+            } else {
+                cjj = cjj.real();
+            }
+            for (long l = 0; l < k; l++) {
+                az[(size_t)(l + j * k)] = MPLAPACK_BLK_A(j, l) == czero;
+                if (!az[(size_t)(l + j * k)])
+                    temp[(size_t)(l + j * k)] = alpha * conj(MPLAPACK_BLK_A(j, l));
+            }
+            // the diagonal element
+            for (long l = 0; l < k; l++)
+                if (!az[(size_t)(l + j * k)])
+                    cjj = cjj.real() + (temp[(size_t)(l + j * k)] * MPLAPACK_BLK_A(j, l)).real();
+        });
+        blk_update<K, Context>(
+            BLK_ADD, n, n, k, C, ldc, [&](long i, long l) -> const T & { return MPLAPACK_BLK_A(i, l); }, [&](long l, long j) -> const T & { return temp[(size_t)(l + j * k)]; }, [&](long l, long j) { return az[(size_t)(l + j * k)] != 0; }, true, par, NB, off);
+        blk_columns<Context>(nb, par, diag);
+    } else {
+        temp.assign((size_t)(n * n), czero); // temp = zero
+        ac.reserve((size_t)(k * n));
+        for (long i = 0; i < n; i++)
+            for (long l = 0; l < k; l++)
+                ac.push_back(T(conj(MPLAPACK_BLK_A(l, i))));
+        blk_update<K, Context>(
+            BLK_DOT, n, n, k, temp.data(), n, [&](long i, long l) -> const T & { return ac[(size_t)(l + i * k)]; }, [&](long l, long j) -> const T & { return MPLAPACK_BLK_A(l, j); }, blk_no_skip(), false, par, NB, off);
+        blk_columns<Context>(nb, par, diag);
+        blk_columns<Context>(n, par, [&](long j) {
+            const long i0 = upper ? 0 : j + 1, i1 = upper ? j : n;
+            for (long i = i0; i < i1; i++) {
+                if (beta == zero)
+                    MPLAPACK_BLK_C(i, j) = alpha * temp[(size_t)(i + j * n)];
+                else
+                    MPLAPACK_BLK_C(i, j) = alpha * temp[(size_t)(i + j * n)] + beta * MPLAPACK_BLK_C(i, j);
+            }
+            R rtemp = zero;
+            for (long l = 0; l < k; l++)
+                rtemp += (conj(MPLAPACK_BLK_A(l, j)) * MPLAPACK_BLK_A(l, j)).real();
+            T &cjj = MPLAPACK_BLK_C(j, j);
+            if (beta == zero)
+                cjj = alpha * rtemp;
+            else
+                cjj = alpha * rtemp + beta * cjj.real();
         });
     }
 #undef MPLAPACK_BLK_A

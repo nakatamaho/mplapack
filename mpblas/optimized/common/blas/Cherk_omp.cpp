@@ -39,6 +39,7 @@
 
 #include <algorithm>
 #include "../Rblas_split_common.h"
+#include "../Rblas_cpu_common.h"
 #if defined(MPLAPACK_BUILD_WITH_DD) || defined(MPLAPACK_BUILD_WITH_TD) || defined(MPLAPACK_BUILD_WITH_QD)
 #include "../Cblas_simd_common.h"
 #endif
@@ -53,6 +54,9 @@ bool Cherk_omp(const char *uplo, const char *trans, INTEGER const n, INTEGER con
     const bool notr = ls(trans, "N");
     if ((!ls(uplo, "U") && !ls(uplo, "L")) || (!notr && !ls(trans, "C")) || n <= 0 || k < 0 || lda < std::max((INTEGER)1, notr ? n : k) || ldc < std::max((INTEGER)1, n))
         return false;
+    // the small-block engine where it is faster (../Rblas_block_common.h)
+    if (!(alpha == REAL(0.0)) && blk_herk<blas_thread_context>(ls(uplo, "U"), !notr, n, k, alpha, a, lda, beta, c, ldc))
+        return true;
 #ifdef MPLAPACK_CBLAS_SIMD_AVAILABLE
     if (notr ? cherk_simd<COMPLEX, REAL>(ls(uplo, "U"), n, k, alpha, a, lda, beta, c, ldc) : cherk_c_simd<COMPLEX, REAL>(ls(uplo, "U"), n, k, alpha, a, lda, beta, c, ldc))
         return true;
