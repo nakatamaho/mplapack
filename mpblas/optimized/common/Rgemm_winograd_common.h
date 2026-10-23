@@ -42,7 +42,9 @@
  *
  * The recursion stops when m, n or k is at most `cutoff` and computes the
  * block with the conventional product (backend leaf).  An odd dimension is
- * padded with a zero row or column at that level.
+ * peeled at that level (dynamic peeling): the even part recurses on views of
+ * the operands (pointer redirection, no padded copies), the last row, column
+ * and step of k are added by the leaf on views.
  *
  * The result is not the one of the conventional Rgemm (different operations
  * and rounding); its error is bounded normwise, not elementwise.
@@ -74,20 +76,24 @@ template <class F, class Backend> void winograd(Backend &be, long m, long n, lon
         return;
     }
     if ((m | n | k) & 1) {
-        // Pad the odd dimensions with zeros and continue on even sizes.
-        const long m2 = m + (m & 1), n2 = n + (n & 1), k2 = k + (k & 1);
-        F *Ap = be.alloc((size_t)m2 * k2), *Bp = be.alloc((size_t)k2 * n2), *Cp = be.alloc((size_t)m2 * n2);
-        if (!be.failed()) {
-            be.zero(m2, k2, Ap, m2);
-            be.zero(k2, n2, Bp, k2);
-            be.copy(m, k, Ap, m2, A, lda);
-            be.copy(k, n, Bp, k2, B, ldb);
-            winograd<F>(be, m2, n2, k2, Ap, m2, Bp, k2, Cp, m2, cutoff);
-            be.copy(m, n, C, ldc, Cp, m2);
+        // Dynamic peeling with pointer redirection: the even part runs on
+        // views of A, B and C (pointers and leading dimensions, no copies);
+        // then the peeled step of k (a rank-1 update of that part), the last
+        // column and the last row, by the leaf on views as well.
+        const long me = m & ~1L, ne = n & ~1L, ke = k & ~1L;
+        winograd<F>(be, me, ne, ke, A, lda, B, ldb, C, ldc, cutoff);
+        if (k & 1) { // C(0:me, 0:ne) += A(0:me, k-1) B(k-1, 0:ne)
+            F *Tp = be.alloc((size_t)me * ne);
+            if (!be.failed()) {
+                be.leaf(me, ne, 1, Tp, me, A + (k - 1) * lda, lda, B + (k - 1), ldb);
+                be.addsub(me, ne, C, ldc, C, ldc, Tp, me, 0);
+            }
+            be.release(Tp);
         }
-        be.release(Ap);
-        be.release(Bp);
-        be.release(Cp);
+        if (!be.failed() && (n & 1)) // C(0:m, n-1) = A B(0:k, n-1)
+            be.leaf(m, 1, k, C + (n - 1) * ldc, ldc, A, lda, B + (n - 1) * ldb, ldb);
+        if (!be.failed() && (m & 1)) // C(m-1, 0:ne) = A(m-1, 0:k) B(0:k, 0:ne)
+            be.leaf(1, ne, k, C + (m - 1), ldc, A + (m - 1), lda, B, ldb);
         return;
     }
     const long mh = m / 2, nh = n / 2, kh = k / 2;

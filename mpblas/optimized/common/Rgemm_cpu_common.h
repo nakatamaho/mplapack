@@ -43,6 +43,14 @@
  * conventional Rgemm and their errors are bounded normwise only.  Ozaki takes
  * precedence over Winograd and falls back to the other paths when it is not
  * applicable (non-finite or out-of-range entries).
+ *
+ * The other libraries (double, binary80, MPFR, GMP; <P> = MPLAPACK_DOUBLE,
+ * MPLAPACK_BINARY80, MPLAPACK_MPFR, MPLAPACK_GMP) take only the Winograd
+ * variant (gemm_winograd_env, MPLAPACK_GEMM_NO_OZAKI before the include),
+ * with the leaves of their own Rgemm, and so do the complex Cgemm of every
+ * library (<P>_CGEMM_WINOGRAD_CUTOFF).  The temporaries are made and
+ * computed in threads with the caller's context (the MPFR and GMP default
+ * precision), the packed copies keep the precision of their sources.
  */
 
 #ifndef _MPLAPACK_RGEMM_CPU_COMMON_H_
@@ -53,67 +61,130 @@
 #include "Rgemm_blocked_common.h"
 #include "Rblas_cpu_common.h"
 #include "Rgemm_winograd_common.h"
+#ifndef MPLAPACK_GEMM_NO_OZAKI
 #include "Rgemm_ozaki_common.h"
+#endif
 
 namespace mplapack_gemm {
 
 inline long env_param(const char *prefix, const char *name, long dflt) { return env_long((std::string(prefix) + name).c_str(), dflt); }
 
-// C = A*B with the small-block engine (Winograd leaves).
+// C = A*B with the small-block engine (Winograd leaves); where the engine is
+// not used for T (binary128), Rgemm of the library (the leaves are at most
+// the cutoff in one dimension, so it does not recurse).
 template <class T> struct blocked_leaf {
     void product(long m, long n, long k, T *C, long ldc, const T *A, long lda, const T *B, long ldb) {
-        if (mplapack_blas::blk_gemm<mplapack_blas::blas_thread_context>(true, true, m, n, k, T(1.0), A, lda, B, ldb, T(0.0), C, ldc))
+        if (mplapack_blas::blk_gemm<mplapack_blas::blas_thread_context>(true, true, m, n, k, T(1.0), A, lda, B, ldb, T(0.0), C, ldc, 0.0))
             return;
-        for (long j = 0; j < n; j++)
-            for (long i = 0; i < m; i++) {
-                T c = 0.0;
-                for (long l = 0; l < k; l++)
-                    c += B[l + j * ldb] * A[i + l * lda];
-                C[i + j * ldc] = c;
-            }
+        const T one = 1.0, zero = 0.0;
+        Rgemm("N", "N", (INTEGER)m, (INTEGER)n, (INTEGER)k, one, const_cast<T *>(A), (INTEGER)lda, const_cast<T *>(B), (INTEGER)ldb, zero, C, (INTEGER)ldc);
     }
 };
 
-template <class T> bool gemm_winograd_cpu(const shape &s, const T &alpha, const T &beta, const T *A, const T *B, T *C, long cutoff) {
+// conj(x) for the complex types, x otherwise.
+template <class T> inline T winograd_conj(const T &x) {
+    if constexpr (mplapack_blas::blk_is_cplx<T>::value)
+        return T(conj(x));
+    else
+        return x;
+}
+
+// The Winograd backend of the CPU: element loops over the columns in
+// threads with the caller's context; zero is the zero of F (complex types
+// pass their own).
+template <class F, class Leaf> class winograd_ctx_backend {
+  public:
+    winograd_ctx_backend(Leaf &leaf, const F &zero) : leaf_(leaf), zero_(zero), failed_(false) {}
+    F *alloc(size_t count) {
+        F *p = new (std::nothrow) F[count ? count : 1];
+        if (p == NULL)
+            failed_ = true;
+        return p;
+    }
+    void release(F *p) { delete[] p; }
+    bool failed() const { return failed_; }
+    void zero(long r, long c, F *X, long ldx) {
+        cols(r, c, [&](long j) {
+            for (long i = 0; i < r; i++)
+                X[i + j * ldx] = zero_;
+        });
+    }
+    void copy(long r, long c, F *D, long ldd, const F *S, long lds) {
+        cols(r, c, [&](long j) {
+            for (long i = 0; i < r; i++)
+                D[i + j * ldd] = S[i + j * lds];
+        });
+    }
+    void addsub(long r, long c, F *Z, long ldz, const F *X, long ldx, const F *Y, long ldy, int sub) {
+        cols(r, c, [&](long j) {
+            for (long i = 0; i < r; i++)
+                if (sub)
+                    Z[i + j * ldz] = X[i + j * ldx] - Y[i + j * ldy];
+                else
+                    Z[i + j * ldz] = X[i + j * ldx] + Y[i + j * ldy];
+        });
+    }
+    void leaf(long m, long n, long k, F *C, long ldc, const F *A, long lda, const F *B, long ldb) { leaf_.product(m, n, k, C, ldc, A, lda, B, ldb); }
+
+  private:
+    template <class G> void cols(long r, long c, G g) { mplapack_blas::blk_columns<mplapack_blas::blas_thread_context>(c, mplapack_blas::blk_parallel((double)r * c * 16), g); }
+    Leaf &leaf_;
+    F zero_;
+    bool failed_;
+};
+
+// C := alpha*P + beta*C with P = op(A)*op(B) by the Winograd recursion (leaf:
+// C = A*B of the library, conj: op(x) = x^H for a transposed x); op(A) and
+// op(B) are packed into copies first.
+template <class T, class Leaf> bool gemm_winograd_cpu(const shape &s, const T &alpha, const T &beta, const T *A, const T *B, T *C, long cutoff, Leaf &leaf, const T &zero, const T &one, bool conja = false, bool conjb = false) {
     const long m = s.m, n = s.n, k = s.k;
     std::vector<T> Ab, Bb, P((size_t)m * n);
     const T *Ap = A, *Bp = B;
     long lda = s.lda, ldb = s.ldb;
     if (!s.nota) {
-        Ab.resize((size_t)m * k);
+        Ab.reserve((size_t)m * k);
         for (long l = 0; l < k; l++)
             for (long i = 0; i < m; i++)
-                Ab[i + l * m] = A[l + i * s.lda];
+                Ab.push_back(conja ? winograd_conj(A[l + i * s.lda]) : T(A[l + i * s.lda])); // copies keep the precision
         Ap = Ab.data();
         lda = m;
     }
     if (!s.notb) {
-        Bb.resize((size_t)k * n);
+        Bb.reserve((size_t)k * n);
         for (long j = 0; j < n; j++)
             for (long l = 0; l < k; l++)
-                Bb[l + j * k] = B[j + l * s.ldb];
+                Bb.push_back(conjb ? winograd_conj(B[j + l * s.ldb]) : T(B[j + l * s.ldb]));
         Bp = Bb.data();
         ldb = k;
     }
-    blocked_leaf<T> leaf;
-    winograd_cpu_backend<T, blocked_leaf<T> > be(leaf);
+    winograd_ctx_backend<T, Leaf> be(leaf, zero);
     winograd<T>(be, m, n, k, Ap, lda, Bp, ldb, P.data(), m, cutoff);
     if (be.failed())
         return false;
-#ifdef _OPENMP
-#pragma omp parallel for
-#endif
-    for (long j = 0; j < n; j++)
+    const bool beta_zero = beta == zero, beta_one = beta == one;
+    mplapack_blas::blk_columns<mplapack_blas::blas_thread_context>(n, mplapack_blas::blk_parallel((double)m * n * 64), [&](long j) {
         for (long i = 0; i < m; i++) {
             T &c = C[i + j * s.ldc];
             T r = alpha * P[i + j * m];
-            if (beta != 0.0)
-                r += (beta == 1.0) ? c : beta * c;
+            if (beta_one)
+                r += c;
+            else if (!beta_zero)
+                r += beta * c;
             c = r;
         }
+    });
     return true;
 }
 
+// The Winograd variant when <prefix><var> = N > 0 and min(m,n,k) > N.
+template <class T, class Leaf> bool gemm_winograd_env(const char *prefix, const char *var, const shape &s, const T &alpha, const T &beta, const T *A, const T *B, T *C, Leaf &leaf, const T &zero, const T &one, bool conja = false, bool conjb = false) {
+    const long cutoff = env_param(prefix, var, 0);
+    if (s.k <= 0 || cutoff <= 0 || s.m <= cutoff || s.n <= cutoff || s.k <= cutoff)
+        return false;
+    return gemm_winograd_cpu<T, Leaf>(s, alpha, beta, A, B, C, cutoff, leaf, zero, one, conja, conjb);
+}
+
+#ifndef MPLAPACK_GEMM_NO_OZAKI
 // Returns false when the call is left to the caller (small sizes or the
 // blocked engine disabled).  alpha != 0 and m, n > 0 are assumed.
 template <class T> bool gemm_cpu(const char *prefix, const shape &s, const T &alpha, const T &beta, const T *A, const T *B, T *C) {
@@ -121,17 +192,16 @@ template <class T> bool gemm_cpu(const char *prefix, const shape &s, const T &al
         if (gemm_ozaki_cpu<T>(s, alpha, beta, A, B, C, (int)env_param(prefix, "_GEMM_OZAKI_SLICES", 0)))
             return true;
     }
-    const long cutoff = env_param(prefix, "_GEMM_WINOGRAD_CUTOFF", 0);
-    if (cutoff > 0 && s.m > cutoff && s.n > cutoff && s.k > cutoff) {
-        if (gemm_winograd_cpu<T>(s, alpha, beta, A, B, C, cutoff))
-            return true;
-    }
+    blocked_leaf<T> leaf;
+    if (gemm_winograd_env<T>(prefix, "_GEMM_WINOGRAD_CUTOFF", s, alpha, beta, A, B, C, leaf, T(0.0), T(1.0)))
+        return true;
     if (env_param(prefix, "_GEMM_BLOCKED", 1) == 0)
         return false;
     if ((double)s.m * s.n * s.k < (double)env_param(prefix, "_GEMM_MIN_MNK", 32768))
         return false;
     return mplapack_blas::blk_gemm<mplapack_blas::blas_thread_context>(s.nota, s.notb, s.m, s.n, s.k, alpha, A, s.lda, B, s.ldb, beta, C, s.ldc, 0.0);
 }
+#endif
 
 } // namespace mplapack_gemm
 

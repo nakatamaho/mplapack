@@ -30,8 +30,9 @@
 // the small-block engine (../Rblas_block_common.h) with the operations of
 // <type>/openmp/Rgemm_{NN,NT,TN,TT}_omp.cpp, so the result is theirs bit for
 // bit; for dd, td, qd and binary128 also the opt-in Winograd and Ozaki
-// variants (../Rgemm_cpu_common.h).  Returns false when the caller is to run
-// its own code (small calls, MPLAPACK_BLAS_BLOCK=0).
+// variants (../Rgemm_cpu_common.h), for the other libraries the opt-in
+// Winograd variant (<P>_GEMM_WINOGRAD_CUTOFF, leaves by Rgemm).  Returns false
+// when the caller is to run its own code (small calls, MPLAPACK_BLAS_BLOCK=0).
 
 #include <mpblas.h>
 #include "../Rblas_cpu_common.h"
@@ -59,6 +60,39 @@ template <> struct ozaki_traits<REAL> {
 #define MPLAPACK_GEMM_PREFIX "MPLAPACK_BINARY128"
 #endif
 } // namespace mplapack_gemm
+#else
+#define MPLAPACK_GEMM_NO_OZAKI
+#include "../Rgemm_cpu_common.h"
+#if defined(MPLAPACK_BUILD_WITH_DOUBLE)
+#define MPLAPACK_GEMM_WINOGRAD_PREFIX "MPLAPACK_DOUBLE"
+#elif defined(MPLAPACK_BUILD_WITH_BINARY80)
+#define MPLAPACK_GEMM_WINOGRAD_PREFIX "MPLAPACK_BINARY80"
+#elif defined(MPLAPACK_BUILD_WITH_MPFR)
+#define MPLAPACK_GEMM_WINOGRAD_PREFIX "MPLAPACK_MPFR"
+#elif defined(MPLAPACK_BUILD_WITH_GMP)
+#define MPLAPACK_GEMM_WINOGRAD_PREFIX "MPLAPACK_GMP"
+#endif
+namespace {
+// The Winograd leaves: C = A*B by Rgemm of the library (the leaves are at
+// most the cutoff in one dimension, so Rgemm does not recurse).
+struct rgemm_leaf {
+    void product(long m, long n, long k, REAL *C, long ldc, const REAL *A, long lda, const REAL *B, long ldb)
+    {
+        const REAL one = 1.0, zero = 0.0;
+        if ((double)m * n * k < 32768.0) { // small leaves serially (a fork costs more)
+            for (long j = 0; j < n; j++) {
+                for (long i = 0; i < m; i++)
+                    C[i + j * ldc] = zero;
+                for (long l = 0; l < k; l++)
+                    for (long i = 0; i < m; i++)
+                        C[i + j * ldc] += B[l + j * ldb] * A[i + l * lda];
+            }
+            return;
+        }
+        Rgemm("N", "N", (INTEGER)m, (INTEGER)n, (INTEGER)k, one, const_cast<REAL *>(A), (INTEGER)lda, const_cast<REAL *>(B), (INTEGER)ldb, zero, C, (INTEGER)ldc);
+    }
+};
+} // namespace
 #endif
 
 bool Rgemm_blocked_omp(bool nota, bool notb, INTEGER m, INTEGER n, INTEGER k, REAL alpha, REAL *A, INTEGER lda, REAL *B, INTEGER ldb, REAL beta, REAL *C, INTEGER ldc)
@@ -67,6 +101,12 @@ bool Rgemm_blocked_omp(bool nota, bool notb, INTEGER m, INTEGER n, INTEGER k, RE
     const mplapack_gemm::shape s = {nota, notb, (long)m, (long)n, (long)k, (long)lda, (long)ldb, (long)ldc};
     return mplapack_gemm::gemm_cpu<REAL>(MPLAPACK_GEMM_PREFIX, s, alpha, beta, A, B, C);
 #else
+#ifdef MPLAPACK_GEMM_WINOGRAD_PREFIX
+    const mplapack_gemm::shape s = {nota, notb, (long)m, (long)n, (long)k, (long)lda, (long)ldb, (long)ldc};
+    rgemm_leaf leaf;
+    if (mplapack_gemm::gemm_winograd_env<REAL>(MPLAPACK_GEMM_WINOGRAD_PREFIX, "_GEMM_WINOGRAD_CUTOFF", s, alpha, beta, A, B, C, leaf, REAL(0.0), REAL(1.0)))
+        return true;
+#endif
     return mplapack_blas::blk_gemm<mplapack_blas::blas_thread_context>(nota, notb, (long)m, (long)n, (long)k, alpha, A, (long)lda, B, (long)ldb, beta, C, (long)ldc);
 #endif
 }

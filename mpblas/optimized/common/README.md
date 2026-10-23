@@ -66,7 +66,9 @@ operations of the reference routines in their order:
   there the columns (left) or the rows (right) of B, which are independent,
   are the lanes of a vector: 32 (double) or 16 of them run the reference loops
   together in registers, each lane with the operations of the reference in
-  their order (`blk_trsm_lane`; left packs its columns by rows). On 4 cores,
+  their order (`blk_trsm_lane`; left packs its columns by rows); the lanes
+  past the last full chunk are peeled in chunks of W/2, W/4, ..., 1 (no padded
+  lanes, each chunk on its part of B through pointers). On 4 cores,
   n = 1000: 4.7x and 16x over the former path (1 core: 4.6x, 1.6x).
 - `Rsyrk`: the triangle in tiles of MC x MC, the tiles off the diagonal in one
   parallel engine loop, the diagonal tiles on the engine on a copy (trans = N)
@@ -143,6 +145,48 @@ Winograd and Ozaki are opt-in. Their results differ
 from the conventional ones in rounding, and their errors are bounded normwise,
 not elementwise.
 
+## Winograd (every CPU type, real and complex)
+
+`Rgemm_winograd_common.h` is the Winograd variant of Strassen's algorithm
+(BNCmatmul's schedule, 7 block products per level) for the CPU and the GPU.
+An odd dimension is peeled at its level (dynamic peeling with pointer
+redirection): the even part recurses on views of A, B and C (pointers and
+leading dimensions, no padded copies), then the peeled step of k (a rank-1
+update of that part), the last column and the last row are added by the
+leaf product on views. The leaves (a dimension at most the cutoff) are the
+library's conventional product: the small-block engine, else `Rgemm`
+(`Cgemm_omp` for complex); leaves below 32768 (complex 8192) multiply-adds
+run serially. The temporaries are computed in threads with the caller's
+context (the MPFR and GMP precision); the packed op(A), op(B) keep the
+precision of their sources.
+
+| Library | Rgemm | Cgemm |
+|---|---|---|
+| dd, td, qd, binary128 | `<P>_GEMM_WINOGRAD_CUTOFF=N` (with Ozaki) | `<P>_CGEMM_WINOGRAD_CUTOFF=N` |
+| double, binary80, MPFR, GMP | `<P>_GEMM_WINOGRAD_CUTOFF=N` | `<P>_CGEMM_WINOGRAD_CUTOFF=N` |
+
+`<P>` = `MPLAPACK_DOUBLE`, `MPLAPACK_BINARY80`, `MPLAPACK_BINARY128`,
+`MPLAPACK_DD`, `MPLAPACK_TD`, `MPLAPACK_QD`, `MPLAPACK_MPFR`, `MPLAPACK_GMP`;
+Winograd runs when `min(m,n,k) > N`. `{type}_opt_Rgemm_winograd_omp` tests
+every library: all transposes and conjugates, odd sizes, cutoffs 1, 2, 3, 8;
+integers exact, random matrices within `2^(20-p) (2k|alpha| max|A| max|B| +
+|beta| max|C|)`.
+
+Measured on 4 cores, 4 threads, NN, seconds (cutoff 0: conventional):
+
+| | cutoff 0 | 128 | 256 | 512 |
+|---|---|---|---|---|
+| double, n = 2048, Rgemm / Cgemm | 0.23 / 1.57 | 0.91 / 2.94 | 0.38 / 1.85 | 0.34 / 1.78 |
+| binary80, n = 1024 | 1.05 / 2.17 | 0.83 / 2.06 | 1.05 / 2.13 | 1.01 / 2.24 |
+| binary128, n = 768 | 5.23 / 21.1 | 4.47 / 17.0 | 4.49 / 18.4 | 4.76 / 19.7 |
+| dd, n = 1024 | 0.40 / 1.52 | 0.44 / 1.53 | 0.37 / 1.51 | 0.37 / 1.39 |
+| qd, n = 512 | 0.38 / 1.48 | 0.39 / 1.43 | 0.35 / 1.37 | 0.37 / 1.45 |
+
+At these sizes Winograd gains 1.1-1.3x for binary80, binary128, dd and qd
+and loses for double, where the engine is close to the machine's speed and
+the additions of Winograd are bound by memory. It pays more for larger n
+(one level saves 1/8 of the products).
+
 ## Files
 
 | File | Contents |
@@ -151,7 +195,7 @@ not elementwise.
 | `Rgemm_blocked_common.h` | shape of an Rgemm call, helpers of Winograd, Ozaki and CUDA |
 | `Rgemm_simd_common.h` | AVX2 / baseline function multiversioning (x86-64 ELF), `omp simd` |
 | `Rgemm_qd_ops_common.h` | dd/td/qd branch-free arithmetic on doubles for host and device, identical to libQD3 built with `QD_BF` |
-| `Rgemm_winograd_common.h` | Winograd recursion (BNCmatmul's schedule), CPU backend |
+| `Rgemm_winograd_common.h` | Winograd recursion (BNCmatmul's schedule, dynamic peeling on views) |
 | `Rgemm_ozaki_common.h` | Ozaki splitting, exact integer DGEMM, accumulation |
 | `Rgemm_cpu_common.h` | CPU driver: environment variables, choice of algorithm |
 | `Rgemm_cuda_ops_common.h`, `Rgemm_cuda_common.cuh` | GPU kernels, and their host emulation |

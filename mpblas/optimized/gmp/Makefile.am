@@ -111,7 +111,7 @@ endif
 
 # Parallel Level 1/2/3 BLAS (../common/blas), real and complex:
 # bit-identical to the reference routines.
-check_PROGRAMS = Rblas_omp_test_gmp Cblas_omp_test_gmp Rlapack_omp_test_gmp
+check_PROGRAMS = Rblas_omp_test_gmp Cblas_omp_test_gmp Rlapack_omp_test_gmp Rgemm_winograd_omp_test_gmp
 Rblas_omp_test_gmp_SOURCES = ../common/test/Rblas_omp_test.cpp
 Rblas_omp_test_gmp_CPPFLAGS = $(libmplapack_gmp_opt_la_CPPFLAGS)
 Rblas_omp_test_gmp_LDFLAGS = -static
@@ -126,4 +126,8 @@ Rlapack_omp_test_gmp_SOURCES = ../common/test/Rlapack_omp_test.cpp
 Rlapack_omp_test_gmp_CPPFLAGS = $(libmplapack_gmp_opt_la_CPPFLAGS)
 Rlapack_omp_test_gmp_LDFLAGS = -static
 Rlapack_omp_test_gmp_LDADD = libmplapack_gmp_opt.la $(libmplapack_gmp_opt_la_LIBADD)
-TESTS = Rblas_omp_test_gmp Cblas_omp_test_gmp Rlapack_omp_test_gmp
+Rgemm_winograd_omp_test_gmp_SOURCES = ../common/test/Rgemm_winograd_omp_test.cpp
+Rgemm_winograd_omp_test_gmp_CPPFLAGS = $(libmplapack_gmp_opt_la_CPPFLAGS)
+Rgemm_winograd_omp_test_gmp_LDFLAGS = -static
+Rgemm_winograd_omp_test_gmp_LDADD = libmplapack_gmp_opt.la $(libmplapack_gmp_opt_la_LIBADD)
+TESTS = Rblas_omp_test_gmp Cblas_omp_test_gmp Rlapack_omp_test_gmp Rgemm_winograd_omp_test_gmp

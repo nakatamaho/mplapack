@@ -82,6 +82,7 @@
 #include <complex>
 #include <type_traits>
 #include <vector>
+#include <utility>
 #ifdef _OPENMP
 #include <omp.h>
 #endif
@@ -1127,24 +1128,53 @@ template <class T> struct blk_trsm_lanes {
     static const int W = std::is_trivially_copyable<T>::value ? (sizeof(T) <= 8 ? 32 : 16) : 4;
 };
 
+// f(std::integral_constant<int, WW>()) for the lane width w, a power of two
+// up to W.
+template <int WW, class F> void blk_lane_width(int w, F f)
+{
+    if (w == WW)
+        f(std::integral_constant<int, WW>());
+    else if constexpr (WW > 1)
+        blk_lane_width<WW / 2>(w, f);
+}
+
+// The lanes of n in chunks of W, then the rest peeled in chunks of W/2, W/4,
+// ..., 1 (dynamic peeling: no padded lanes; every chunk works on its part of
+// B through pointers, the left forms pack exactly its columns).
+inline std::vector<std::pair<long, int>> blk_lane_chunks(long n, int W)
+{
+    std::vector<std::pair<long, int>> c;
+    long p = 0;
+    for (; p + W <= n; p += W)
+        c.push_back(std::make_pair(p, W));
+    for (int w = W / 2; w >= 1; w /= 2)
+        if (p + w <= n) {
+            c.push_back(std::make_pair(p, w));
+            p += w;
+        }
+    return c;
+}
+
 template <class Context, class T> void blk_trsm_lane(bool left, bool nounit, long m, long n, const T &alpha, const T *A, long lda, T *B, long ldb, bool par)
 {
     const int W = blk_trsm_lanes<T>::W;
     if (left) {
-        // W columns at a time, packed by rows (the copies keep the precision);
-        // the lanes past n are zero and not stored
-        const long nb = (n + W - 1) / W;
-        blk_columns<Context>(nb, par, [&](long u) {
-            const long j0 = u * W, w = std::min<long>(W, n - j0);
-            std::vector<T> P;
-            P.reserve((size_t)(m * W));
-            for (long k = 0; k < m; k++)
-                for (long l = 0; l < W; l++)
-                    P.push_back(l < w ? B[k + (j0 + l) * ldb] : T(0.0));
-            blk_trsm_lane_llt<T, W>(m, A, lda, alpha, nounit, P.data());
-            for (long l = 0; l < w; l++)
+        // chunks of columns, packed by rows (the copies keep the precision)
+        const std::vector<std::pair<long, int>> ch = blk_lane_chunks(n, W);
+        blk_columns<Context>((long)ch.size(), par, [&](long u) {
+            const long j0 = ch[(size_t)u].first;
+            blk_lane_width<W>(ch[(size_t)u].second, [&](auto c) {
+                constexpr int WW = decltype(c)::value;
+                std::vector<T> P;
+                P.reserve((size_t)(m * WW));
                 for (long k = 0; k < m; k++)
-                    B[k + (j0 + l) * ldb] = P[(size_t)(k * W + l)];
+                    for (long l = 0; l < WW; l++)
+                        P.push_back(B[k + (j0 + l) * ldb]);
+                blk_trsm_lane_llt<T, WW>(m, A, lda, alpha, nounit, P.data());
+                for (long l = 0; l < WW; l++)
+                    for (long k = 0; k < m; k++)
+                        B[k + (j0 + l) * ldb] = P[(size_t)(k * WW + l)];
+            });
         });
     } else {
         std::vector<unsigned char> az((size_t)(n * n));
@@ -1152,13 +1182,14 @@ template <class Context, class T> void blk_trsm_lane(bool left, bool nounit, lon
             for (long i = 0; i < n; i++)
                 az[(size_t)(i + j * n)] = A[i + j * lda] == T(0.0);
         const bool alpha_one = alpha == T(1.0);
-        // W rows at a time; the rows past the last full block one by one
-        const long nf = m / W, nb = nf + (m - nf * W);
-        blk_columns<Context>(nb, par, [&](long u) {
-            if (u < nf)
-                blk_trsm_lane_rln<T, W>(n, A, lda, az.data(), alpha, alpha_one, nounit, B + u * W, ldb);
-            else
-                blk_trsm_lane_rln<T, 1>(n, A, lda, az.data(), alpha, alpha_one, nounit, B + nf * W + (u - nf), ldb);
+        // chunks of rows, in place in B
+        const std::vector<std::pair<long, int>> ch = blk_lane_chunks(m, W);
+        blk_columns<Context>((long)ch.size(), par, [&](long u) {
+            const long r0 = ch[(size_t)u].first;
+            blk_lane_width<W>(ch[(size_t)u].second, [&](auto c) {
+                constexpr int WW = decltype(c)::value;
+                blk_trsm_lane_rln<T, WW>(n, A, lda, az.data(), alpha, alpha_one, nounit, B + r0, ldb);
+            });
         });
     }
 }

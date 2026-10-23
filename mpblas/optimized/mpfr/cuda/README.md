@@ -34,8 +34,10 @@ operation, which may make the `cu_mpfr` kernels
 With `MPLAPACK_MPFR_CUDA_WINOGRAD_CUTOFF=N` (N > 0), fixed-precision calls with
 `min(m, n, k) > N` use the Winograd variant of Strassen's algorithm
 (`Rgemm_winograd_cuda.h`), 7 block products instead of 8 per level, recursing
-until a dimension is at most N; odd dimensions are padded with a zero row or
-column at that level. The schedule follows `mul_mpfmatrix_winograd_even()` of
+until a dimension is at most N; an odd dimension is peeled at that level (the
+even part recurses on views of the operands, pointers and leading dimensions,
+without padded copies; the last row, column and step of k are added by the
+conventional product on views). The schedule follows `mul_mpfmatrix_winograd_even()` of
 [BNCmatmul](https://github.com/tkouya/bncmatmul). It is off by default: the
 result differs from the conventional `Rgemm` in rounding, and its error is
 bounded normwise rather than elementwise. All temporaries stay on the GPU.

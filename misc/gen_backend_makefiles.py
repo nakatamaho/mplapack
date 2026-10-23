@@ -116,7 +116,7 @@ def values(name, traits, conf):
     v["opt_rgemm_sources"] = ""
     # Program names carry the backend: their objects of ../common/test/*.cpp
     # are built in that shared directory.
-    programs = ["Rblas_omp_test_%%b%%", "Cblas_omp_test_%%b%%", "Rlapack_omp_test_%%b%%"]
+    programs = ["Rblas_omp_test_%%b%%", "Cblas_omp_test_%%b%%", "Rlapack_omp_test_%%b%%", "Rgemm_winograd_omp_test_%%b%%"]
     tests = ["",
              "# Parallel Level 1/2/3 BLAS (../common/blas), real and complex:",
              "# bit-identical to the reference routines.",
@@ -133,7 +133,11 @@ def values(name, traits, conf):
              "Rlapack_omp_test_%%b%%_SOURCES = ../common/test/Rlapack_omp_test.cpp",
              "Rlapack_omp_test_%%b%%_CPPFLAGS = $(libmplapack_%%b%%_opt_la_CPPFLAGS)",
              "Rlapack_omp_test_%%b%%_LDFLAGS = -static" + (" $(QD_RPATH_LDFLAGS)" if qd else ""),
-             "Rlapack_omp_test_%%b%%_LDADD = libmplapack_%%b%%_opt.la $(libmplapack_%%b%%_opt_la_LIBADD)"]
+             "Rlapack_omp_test_%%b%%_LDADD = libmplapack_%%b%%_opt.la $(libmplapack_%%b%%_opt_la_LIBADD)",
+             "Rgemm_winograd_omp_test_%%b%%_SOURCES = ../common/test/Rgemm_winograd_omp_test.cpp",
+             "Rgemm_winograd_omp_test_%%b%%_CPPFLAGS = $(libmplapack_%%b%%_opt_la_CPPFLAGS)",
+             "Rgemm_winograd_omp_test_%%b%%_LDFLAGS = -static" + (" $(QD_RPATH_LDFLAGS)" if qd else ""),
+             "Rgemm_winograd_omp_test_%%b%%_LDADD = libmplapack_%%b%%_opt.la $(libmplapack_%%b%%_opt_la_LIBADD)"]
     if c.get("qd_ops_test", "no") == "yes":
         programs.append("Rqd_ops_test")
         tests += ["# The dd/td/qd arithmetic of the SIMD and GPU kernels against libQD3's",
