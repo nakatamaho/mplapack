@@ -54,7 +54,7 @@ bool Ctrmm_omp(const char *side, const char *uplo, const char *transa, const cha
     if (lda < std::max((INTEGER)1, left ? m : n) || ldb < std::max((INTEGER)1, m))
         return false;
     // the small-block engine where it is faster (../Rblas_block_common.h)
-    if (!(alpha == COMPLEX(0.0, 0.0)) && blk_trmm_takes<COMPLEX>(m, n, left)) {
+    if (!(alpha == COMPLEX(0.0, 0.0)) && blk_trmm_takes<COMPLEX>(m, n, left, !ls(transa, "N"))) {
         const bool upper = ls(uplo, "U"), notr = ls(transa, "N"), nounit = ls(diag, "N");
         if (ls(transa, "C")) {
             const blk_conj_copy<COMPLEX> ac(a, lda, left ? m : n);

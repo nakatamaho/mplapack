@@ -49,7 +49,6 @@ depends on the type:
 
 For the last two rows the arithmetic dominates and blocking does not pay;
 `MPLAPACK_BLAS_BLOCK=2` uses the engine anyway (the tests do), `=0` never.
-`MPLAPACK_BLAS_BLOCK_MIN=N` is the smallest m*n*k (32768).
 
 `Rtrsm` and `Rsyrk` (`Rblas_cpu_common.h`) also run on the engine, with the
 operations of the reference routines in their order:
@@ -62,9 +61,13 @@ operations of the reference routines in their order:
   This applies to side L with transa = N, side L upper with transa = T, side
   R upper with transa = N and side R with transa = T (alpha applied at the
   end, which the reference allows since a column is not changed after its
-  scaling). Side L lower with transa = T and side R lower with transa = N add
-  the terms of the block before those of the solved part and keep the lanes.
-  The LU and Cholesky drivers use only the covered forms.
+  scaling). Side L lower with transa = T and side R lower with transa = N take
+  the terms of an element from the diagonal on, so the solved part comes last;
+  there the columns (left) or the rows (right) of B, which are independent,
+  are the lanes of a vector: 32 (double) or 16 of them run the reference loops
+  together in registers, each lane with the operations of the reference in
+  their order (`blk_trsm_lane`; left packs its columns by rows). On 4 cores,
+  n = 1000: 4.7x and 16x over the former path (1 core: 4.6x, 1.6x).
 - `Rsyrk`: the triangle in tiles of MC x MC, the tiles off the diagonal in one
   parallel engine loop, the diagonal tiles on the engine on a copy (trans = N)
   or into the dot-product buffer (trans = T); all the terms of an element are
@@ -94,11 +97,47 @@ as well, by default for the double library (REAL and COMPLEX of
 core: 1.6-2.8x). The types are those of the library (`REAL`, `COMPLEX`,
 `mplapack_binary80_t`, `mplapack_binary128_t`), not the machine types.
 
-They are used by default for double: on 4 cores, n = 1500, `Rsyrk` 61x,
-`Rtrsm` 2.1x, `Rpotrf` 1.2x, `Rgetrf` 1.1x over the lanes (1 core: 4.1x,
-4.6x, 1.4x, 1.0x). For dd, td and qd the column forms on planes of
-`Rblas_simd_common.h` are as fast or faster (0.76 to 1.05 times on the
-engine) and stay the default.
+`Rsymm` with side L runs on slabs of columns, one per thread, each with the
+engine in its thread (the columns of C are independent), in row tiles of
+`MPLAPACK_BLAS_SYMM_NB` (32).
+
+When the engine is used. The packing buffers of a thread are kept between the
+calls and sized to the call; a thread takes at least
+`MPLAPACK_BLAS_BLOCK_WORK` (2^18) multiply-adds and a column block at least
+`MPLAPACK_BLAS_BLOCK_NCMIN` (64) columns. Each routine and form has a size
+n (cube root of m*n*k, or of m*n*na) below which the former path (the lanes,
+the split-parallel complex forms) is as fast, measured on 4 cores (AVX2) with
+n = 32..1000 and 1 and 4 threads, the two paths interleaved in one process:
+
+| | double, 1 / 4 threads | complex double, 1 / 4 | dd, td, qd, 1 / 4 |
+|---|---|---|---|
+| `Rgemm`, `Cgemm` | all / 150 | all / 150 | all |
+| `Rtrsm` L, N | 150 / 400 | 150 / 400 | planes |
+| `Rtrsm` L upper, T | 100 / 200 | 100 / 500 | 300 / 600 |
+| `Rtrsm` L lower, T (lanes) | 64 / 64 | 150 / 1000 | planes / 64 |
+| `Rtrsm` R lower, N (lanes) | 64 / 64 | 150 / 400 | planes |
+| `Rtrsm` R, other | 150 / 64 | 150 / 64 (T), 400 (N) | 300 / 600 |
+| `Rtrmm` L, N | 150 / 400 | 150 / 600 | planes |
+| `Rtrmm` L, T | 100 / 300 | 150 / 600 | 300 / 600 |
+| `Rtrmm` R | 300 / 64 | 300 / 64 (T), 500 (N) | 300 / 600 |
+| `Rsymm` L | 200 / 400 | 200 / 400 | 64 / 100 |
+| `Rsymm` R | 100 / 300 | 100 / 300 | 300 / 600 |
+| `Rsyrk`, `Cherk` N | 200 / 400 | 200 / 400 | planes |
+| `Rsyrk`, `Cherk` T | 64 / 400 | 100 / 400 | 300 / 600 |
+| `Rsyr2k`, `Cher2k` N | 200 / 400 | 200 / 400 | planes |
+| `Rsyr2k`, `Cher2k` T | 64 / 400 | 150 / 400 | 300 / 600 |
+
+("planes": the column forms on planes of `Rblas_simd_common.h` stay, being
+faster.) With these the default is not slower than the former path in any
+measured case beyond the noise (0.9-1.1 between runs of the same path), and
+faster above the sizes: double at n = 1000 on 4 cores `Rtrsm` 2.4-64x,
+`Rtrmm` 2.1-40x, `Rsymm` 2.2-15x, `Rsyrk` 7.5-13x, `Rsyr2k` 3.9-63x,
+`Rgemm` 3.5-7.2x; dd, td, qd at n = 600 `Rsymm` L 2.4-3.6x, the other forms
+on the engine 1.15-1.7x, `Rgemm` 3.8-7.7x; the factorizations on 4 cores,
+n = 1000: double `Rgetrf` 1.2x, `Rpotrf` 2.0-5.5x, `Cpotrf` 1.45x; dd
+`Rgetrf` 3.3x, `Rpotrf` 2.5-4.2x. `MPLAPACK_BLAS_BLOCK_MIN=N` replaces the
+table by m*n*na >= N; `MPLAPACK_BLAS_BLOCK=2` uses the engine for every
+type and size (the tests do), `=0` never.
 
 Winograd and Ozaki are opt-in. Their results differ
 from the conventional ones in rounding, and their errors are bounded normwise,

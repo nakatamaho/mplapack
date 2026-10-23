@@ -64,9 +64,13 @@
  *   plane kernels (dd, td, qd): the panels hold the words plane by plane and
  *     the tile is held word by word, with libQD3's branch-free operations.
  *
- *   MPLAPACK_BLAS_BLOCK=0       do not use the engine
- *   MPLAPACK_BLAS_BLOCK=2       use it for every type (default: blk_profitable)
- *   MPLAPACK_BLAS_BLOCK_MIN=N   smallest m*n*k (32768)
+ *   MPLAPACK_BLAS_BLOCK=0        do not use the engine
+ *   MPLAPACK_BLAS_BLOCK=2        use it for every type and size (default:
+ *                                blk_profitable, blk_l3_ok and blk_small)
+ *   MPLAPACK_BLAS_BLOCK_MIN=N    smallest m*n*k instead of the table of sizes
+ *   MPLAPACK_BLAS_BLOCK_WORK=N   multiply-adds per thread (2^18)
+ *   MPLAPACK_BLAS_BLOCK_NCMIN=N  narrowest column block (64)
+ *   MPLAPACK_BLAS_SYMM_NB=N      row tiles of Rsymm, side L (32)
  */
 
 #ifndef _MPLAPACK_RBLAS_BLOCK_COMMON_H_
@@ -91,6 +95,13 @@ namespace mplapack_blas {
 
 enum { BLK_ADD = 0, BLK_SUB = 1, BLK_DOT = 2, BLK_SUBDOT = 3, BLK_ADD2 = 4 };
 
+// A setting from the environment, dflt when unset or empty.
+inline long blk_env(const char *name, long dflt)
+{
+    const char *v = std::getenv(name);
+    return (v == 0 || *v == '\0') ? dflt : std::strtol(v, 0, 10);
+}
+
 // Page-aligned scratch memory of one thread.
 struct blk_buffer {
     void *p;
@@ -107,6 +118,15 @@ struct blk_buffer {
         return p;
     }
 };
+
+// The packing buffers of the calling thread, kept between the calls (a new
+// page-aligned allocation per call costs more than a small product).  The
+// engine calls of a thread run one after another, so one set suffices.
+inline blk_buffer &blk_thread_buffer(int i)
+{
+    static thread_local blk_buffer b[3];
+    return b[i];
+}
 
 // ---- value kernel ----
 
@@ -522,21 +542,29 @@ template <class K, class Context, class T, class FX, class FB, class FS, class F
     long MC = tile > 0 ? tile : K::MC, NC = tile > 0 ? tile : K::NC;
     const long KC = K::KC;
     const long nbi = (m + MC - 1) / MC;
-    // narrower column blocks when there are too few blocks for the threads
-    while (tile <= 0 && NC > NR && nbi * ((n + NC - 1) / NC) < 2L * nthreads)
-        NC = std::max((long)NR, (NC / 2 + NR - 1) / NR * NR);
+    // at least BLK_WORK multiply-adds per thread: a thread packs its blocks
+    // of A and B, which costs more than the products of a small block
+    const long work = blk_env("MPLAPACK_BLAS_BLOCK_WORK", 1L << 18);
+    nthreads = (int)std::max(1L, std::min<long>(nthreads, (long)((double)m * n * k / work)));
+    // narrower column blocks when there are too few blocks for the threads,
+    // not narrower than NCMIN columns (each block packs its rows of A again)
+    const long NCMIN = std::max((long)NR, blk_env("MPLAPACK_BLAS_BLOCK_NCMIN", 64) / NR * NR);
+    while (tile <= 0 && NC > NCMIN && nbi * ((n + NC - 1) / NC) < 2L * nthreads)
+        NC = std::max(NCMIN, (NC / 2 + NR - 1) / NR * NR);
     const long nbj = (n + NC - 1) / NC;
+    // the buffers for the blocks of this call
+    const long MCb = std::min(MC, m), NCb = std::min(NC, n), KCb = std::min(KC, k);
+    const int team = (int)std::min<long>(nthreads, nbi * nbj);
     const Context ctx;
 #ifdef _OPENMP
-#pragma omp parallel if (parallel && nthreads > 1)
+#pragma omp parallel if (parallel && team > 1) num_threads(team > 1 ? team : 1)
 #endif
     {
         const typename Context::scope sc(ctx);
-        blk_buffer abuf, bbuf, mbuf;
-        S *Ap = static_cast<S *>(abuf.get(sizeof(S) * (size_t)(W * ((MC + MR - 1) / MR * MR) * KC)));
-        S *Bp = static_cast<S *>(bbuf.get(sizeof(S) * (size_t)(W * ((NC + NR - 1) / NR * NR) * KC)));
-        unsigned char *Mp = use_skip ? static_cast<unsigned char *>(mbuf.get((size_t)(((NC + NR - 1) / NR * NR) * KC))) : 0;
-        std::vector<unsigned char> anyskip((size_t)((NC + NR - 1) / NR));
+        S *Ap = static_cast<S *>(blk_thread_buffer(0).get(sizeof(S) * (size_t)(W * ((MCb + MR - 1) / MR * MR) * KCb)));
+        S *Bp = static_cast<S *>(blk_thread_buffer(1).get(sizeof(S) * (size_t)(W * ((NCb + NR - 1) / NR * NR) * KCb)));
+        unsigned char *Mp = use_skip ? static_cast<unsigned char *>(blk_thread_buffer(2).get((size_t)(((NCb + NR - 1) / NR * NR) * KCb))) : 0;
+        std::vector<unsigned char> anyskip((size_t)((NCb + NR - 1) / NR));
 #ifdef _OPENMP
 #pragma omp for schedule(dynamic, 1)
 #endif
@@ -677,9 +705,9 @@ template <> struct blk_profitable<qd_real> {
 };
 #endif
 
-// The same for Rtrsm and Rsyrk: double only.  For dd, td and qd the
-// column forms on planes of Rblas_simd_common.h measured as fast or faster
-// (0.76 to 1.05 times on the engine, slower on the small calls of Rpotrf).
+// The same for the other Level 3 routines: double and its complex.  For
+// dd, td and qd blk_l3_ok takes the forms where the engine measured faster
+// than the column forms on planes of Rblas_simd_common.h.
 template <class T> struct blk_profitable_l3 {
     static const bool value = false;
 };
@@ -692,12 +720,6 @@ template <> struct blk_profitable_l3<COMPLEX> {
 };
 #endif
 
-inline long blk_env(const char *name, long dflt)
-{
-    const char *v = std::getenv(name);
-    return (v == 0 || *v == '\0') ? dflt : std::strtol(v, 0, 10);
-}
-
 // Whether the calls run in parallel.
 inline bool blk_parallel()
 {
@@ -706,6 +728,51 @@ inline bool blk_parallel()
 #else
     return false;
 #endif
+}
+
+// Whether a call of about work multiply-adds runs in parallel: the fork of
+// the threads costs more than the loops of a small call.
+inline bool blk_parallel(double work) { return blk_parallel() && work >= 2.0 * (double)blk_env("MPLAPACK_BLAS_BLOCK_WORK", 1L << 18); }
+
+// Whether a call of vol = m*n*na is left to the lanes: below the size n
+// where the engine became faster than the lanes for double (4 cores,
+// AVX2), n1 for one thread and nN with threads; vol < MPLAPACK_BLAS_BLOCK_MIN
+// instead when it is set, and only vol < 32768 with MPLAPACK_BLAS_BLOCK=2.
+inline bool blk_small(long use, double vol, double n1, double nN)
+{
+    const long mn = blk_env("MPLAPACK_BLAS_BLOCK_MIN", -1);
+    if (mn >= 0)
+        return vol < (double)mn;
+    if (use == 2)
+        return vol < 32768.0;
+    const double c = blk_parallel() ? nN : n1;
+    return vol < std::max(32768.0, c * c * c);
+}
+
+// Whether T is a complex type (its crossovers differ: the complex lanes
+// split the work between the threads well).
+template <class T, class = void> struct blk_is_cplx : std::false_type {};
+template <class T> struct blk_is_cplx<T, decltype((void)std::declval<const T &>().imag())> : std::true_type {};
+
+// dd, td, qd: real types on planes of W > 1 words.
+template <class T> struct blk_planes {
+    static const bool value = blk_kernel_of<T>::type::W > 1 && !blk_is_cplx<T>::value;
+};
+
+// Whether the engine takes a Level 3 call of vol = m*n*na: n1, nN as in
+// blk_small for double and its complex; p1, pN for dd, td, qd, where the
+// engine is faster than the planes only in some forms (0: never), from the
+// measurements on 4 cores with n = 100, 300, 600.
+template <class T> bool blk_l3_ok(long use, double vol, double n1, double nN, double p1, double pN)
+{
+    if (use == 0)
+        return false;
+    if (use == 1 && !blk_profitable_l3<T>::value) {
+        if (!blk_planes<T>::value || (blk_parallel() ? pN : p1) <= 0)
+            return false;
+        n1 = p1, nN = pN;
+    }
+    return !blk_small(use, vol, n1, nN);
 }
 
 // f(j) for j < n, in parallel when par, with the caller's context.
@@ -737,12 +804,10 @@ template <class Context, class F> void blk_columns(long n, bool par, F f)
 template <class Context, class T> bool blk_gemm(bool nota, bool notb, long m, long n, long k, const T &alpha, const T *A, long lda, const T *B, long ldb, const T &beta, T *C, long ldc, double min_mnk = -1.0)
 {
     typedef typename blk_kernel_of<T>::type K;
-    if (min_mnk < 0.0)
-        min_mnk = (double)blk_env("MPLAPACK_BLAS_BLOCK_MIN", 32768);
     const long use = blk_env("MPLAPACK_BLAS_BLOCK", 1);
-    if (use == 0 || (use == 1 && !blk_profitable<T>::value) || (double)m * n * k < min_mnk)
+    if (use == 0 || (use == 1 && !blk_profitable<T>::value) || (min_mnk < 0.0 ? blk_small(use, (double)m * n * k, 0, 150) : (double)m * n * k < min_mnk))
         return false;
-    const bool par = blk_parallel();
+    const bool par = blk_parallel((double)m * n * k);
     blk_columns<Context>(n, par, [&](long j) {
         if (beta == 0.0) {
             for (long i = 0; i < m; i++)
@@ -782,9 +847,9 @@ template <class Context, class T> bool blk_cgemm(bool nota, bool conja, bool not
 {
     typedef typename blk_kernel_of<T>::type K;
     const long use = blk_env("MPLAPACK_BLAS_BLOCK", 1);
-    if (use == 0 || (use == 1 && !blk_profitable<T>::value) || (double)m * n * k < (double)blk_env("MPLAPACK_BLAS_BLOCK_MIN", 32768))
+    if (use == 0 || (use == 1 && !blk_profitable<T>::value) || blk_small(use, (double)m * n * k, 0, 150))
         return false;
-    const bool par = blk_parallel();
+    const bool par = blk_parallel((double)m * n * k);
     const T zero(0.0, 0.0), one(1.0, 0.0);
     // op(b)(l,j)
     const auto opb = [&](long l, long j) -> T { return notb ? B[l + j * ldb] : (conjb ? T(conj(B[j + l * ldb])) : B[j + l * ldb]); };
@@ -976,12 +1041,143 @@ template <class Context, class T> struct blk_trsm_run {
     }
 };
 
+// Left, lower, transa = T and right, lower, transa = N: the reference takes
+// the terms of an element in the order of the triangular index from the
+// diagonal on, so the solved block comes last and cannot be applied first.
+// The columns (left) or the rows (right) of B are independent, so they are
+// the lanes of a vector: W of them run the reference loops together, each
+// lane with the operations of the reference in their order.
+inline bool blk_trsm_lane_case(bool left, bool upper, bool trans) { return !upper && left == trans; }
+
+// The accumulators of W lanes: an array for the trivially copyable types,
+// copies of their sources otherwise (the copies keep the precision).
+template <class T, int W, bool TRIVIAL = std::is_trivially_copyable<T>::value> struct blk_lane_acc {
+    T v[W];
+    void copy(const T *src)
+    {
+        for (int l = 0; l < W; l++)
+            v[l] = src[l];
+    }
+};
+template <class T, int W> struct blk_lane_acc<T, W, false> {
+    std::vector<T> v;
+    blk_lane_acc() : v(W) {}
+    void copy(const T *src) { v.assign(src, src + W); }
+};
+
+// Left, lower, transa = T on W packed columns P (row k of the m rows at
+// P + k*W): temp = alpha*b(i); temp = temp - a(k,i)*b(k) for k > i
+// ascending; temp = temp/a(i,i); b(i) = temp, for i descending.
+template <class T, int W> MPLAPACK_GEMM_CLONES MPLAPACK_BLK_NO_CONTRACT static void blk_trsm_lane_llt(long m, const T *A, long lda, const T &alpha, bool nounit, T *P)
+{
+    blk_lane_acc<T, W> t; // the temp of the reference: default construction
+    for (long i = m - 1; i >= 0; i--) {
+        const T *a = A + i * lda;
+        for (int l = 0; l < W; l++)
+            t.v[l] = alpha * P[i * W + l];
+        for (long k = i + 1; k < m; k++) {
+            const T &c = a[k];
+            const T *p = P + k * W;
+            for (int l = 0; l < W; l++)
+                t.v[l] = t.v[l] - c * p[l];
+        }
+        if (nounit)
+            for (int l = 0; l < W; l++)
+                t.v[l] = t.v[l] / a[i];
+        for (int l = 0; l < W; l++)
+            P[i * W + l] = t.v[l];
+    }
+}
+
+// Right, lower, transa = N on W consecutive rows of B: for j descending,
+// b(j) = alpha*b(j) (alpha != 1); b(j) = b(j) - a(k,j)*b(k) for k > j
+// ascending with a(k,j) != 0; b(j) = (1/a(j,j))*b(j).
+template <class T, int W> MPLAPACK_GEMM_CLONES MPLAPACK_BLK_NO_CONTRACT static void blk_trsm_lane_rln(long n, const T *A, long lda, const unsigned char *az, const T &alpha, bool alpha_one, bool nounit, T *B, long ldb)
+{
+    const T one(1.0);
+    blk_lane_acc<T, W> t;
+    for (long j = n - 1; j >= 0; j--) {
+        const T *a = A + j * lda;
+        T *bj = B + j * ldb;
+        t.copy(bj);
+        if (!alpha_one)
+            for (int l = 0; l < W; l++)
+                t.v[l] = alpha * t.v[l];
+        for (long k = j + 1; k < n; k++) {
+            if (az[k + j * n])
+                continue;
+            const T &c = a[k];
+            const T *p = B + k * ldb;
+            for (int l = 0; l < W; l++)
+                t.v[l] = t.v[l] - c * p[l];
+        }
+        if (nounit) {
+            const T tmp = one / a[j];
+            for (int l = 0; l < W; l++)
+                t.v[l] = tmp * t.v[l];
+        }
+        for (int l = 0; l < W; l++)
+            bj[l] = t.v[l];
+    }
+}
+
+// The lanes per kernel call: 8 AVX2 registers of accumulators for the
+// value types, 4 lanes for the others.
+template <class T> struct blk_trsm_lanes {
+    static const int W = std::is_trivially_copyable<T>::value ? (sizeof(T) <= 8 ? 32 : 16) : 4;
+};
+
+template <class Context, class T> void blk_trsm_lane(bool left, bool nounit, long m, long n, const T &alpha, const T *A, long lda, T *B, long ldb, bool par)
+{
+    const int W = blk_trsm_lanes<T>::W;
+    if (left) {
+        // W columns at a time, packed by rows (the copies keep the precision);
+        // the lanes past n are zero and not stored
+        const long nb = (n + W - 1) / W;
+        blk_columns<Context>(nb, par, [&](long u) {
+            const long j0 = u * W, w = std::min<long>(W, n - j0);
+            std::vector<T> P;
+            P.reserve((size_t)(m * W));
+            for (long k = 0; k < m; k++)
+                for (long l = 0; l < W; l++)
+                    P.push_back(l < w ? B[k + (j0 + l) * ldb] : T(0.0));
+            blk_trsm_lane_llt<T, W>(m, A, lda, alpha, nounit, P.data());
+            for (long l = 0; l < w; l++)
+                for (long k = 0; k < m; k++)
+                    B[k + (j0 + l) * ldb] = P[(size_t)(k * W + l)];
+        });
+    } else {
+        std::vector<unsigned char> az((size_t)(n * n));
+        for (long j = 0; j < n; j++)
+            for (long i = 0; i < n; i++)
+                az[(size_t)(i + j * n)] = A[i + j * lda] == T(0.0);
+        const bool alpha_one = alpha == T(1.0);
+        // W rows at a time; the rows past the last full block one by one
+        const long nf = m / W, nb = nf + (m - nf * W);
+        blk_columns<Context>(nb, par, [&](long u) {
+            if (u < nf)
+                blk_trsm_lane_rln<T, W>(n, A, lda, az.data(), alpha, alpha_one, nounit, B + u * W, ldb);
+            else
+                blk_trsm_lane_rln<T, 1>(n, A, lda, az.data(), alpha, alpha_one, nounit, B + nf * W + (u - nf), ldb);
+        });
+    }
+}
+
 // Whether blk_trsm takes the call.
 template <class T> bool blk_trsm_takes(bool left, bool upper, bool trans, long m, long n)
 {
     const long use = blk_env("MPLAPACK_BLAS_BLOCK", 1);
     const long na = left ? m : n;
-    return blk_trsm_case(left, upper, trans) && use != 0 && (use != 1 || blk_profitable_l3<T>::value) && (double)m * n * na / 2 >= (double)blk_env("MPLAPACK_BLAS_BLOCK_MIN", 32768);
+    const bool lane = blk_trsm_lane_case(left, upper, trans);
+    double n1, nN;
+    if (!blk_is_cplx<T>::value)
+        n1 = lane ? 64 : (left && trans ? 100 : 150), nN = lane ? 64 : (left ? (trans ? 200 : 400) : 64);
+    else
+        n1 = left && trans && !lane ? 100 : 150, nN = lane ? 1000 : (left ? (trans ? 500 : 400) : (trans ? 64 : 400));
+    // dd, td, qd: left with transa = N and right, lower, transa = N stay on
+    // the planes; the lanes of left, lower, transa = T only with threads
+    const double p1 = (left && !trans) || lane ? 0 : 300, pN = left && !trans ? 0 : (lane ? (left ? 64 : 0) : 600);
+    return (blk_trsm_case(left, upper, trans) || lane) && blk_l3_ok<T>(use, (double)m * n * na, n1, nN, p1, pN);
 }
 
 // Complex Ctrsm with transa = C: the reference uses conj(a) where Rtrsm
@@ -1003,8 +1199,12 @@ template <class Context, class T> bool blk_trsm(bool left, bool upper, bool tran
     const long na = left ? m : n;
     if (!blk_trsm_takes<T>(left, upper, trans, m, n))
         return false;
+    if (blk_trsm_lane_case(left, upper, trans)) {
+        blk_trsm_lane<Context>(left, nounit, m, n, alpha, A, lda, B, ldb, blk_parallel((double)m * n * na));
+        return true;
+    }
     blk_trsm_run<Context, T> r;
-    r.left = left, r.upper = upper, r.trans = trans, r.nounit = nounit, r.par = blk_parallel();
+    r.left = left, r.upper = upper, r.trans = trans, r.nounit = nounit, r.par = blk_parallel((double)m * n * na);
     r.m = m, r.n = n, r.lda = lda, r.ldb = ldb, r.A = A, r.B = B;
     r.NB = blk_env("MPLAPACK_BLAS_BLOCK_NB", blk_kernel_of<T>::type::W > 1 ? 16 : 64);
     const bool alpha_one = alpha == T(1.0);
@@ -1152,19 +1352,22 @@ template <class Context, class T> struct blk_trmm_run {
     }
 };
 
-template <class T> bool blk_trmm_takes(long m, long n, bool left)
+template <class T> bool blk_trmm_takes(long m, long n, bool left, bool trans)
 {
     const long use = blk_env("MPLAPACK_BLAS_BLOCK", 1);
     const long na = left ? m : n;
-    return use != 0 && (use != 1 || blk_profitable_l3<T>::value) && (double)m * n * na / 2 >= (double)blk_env("MPLAPACK_BLAS_BLOCK_MIN", 32768);
+    const double n1 = blk_is_cplx<T>::value ? (left ? 150 : 300) : (left ? (trans ? 100 : 150) : 300);
+    const double nN = blk_is_cplx<T>::value ? (left ? 600 : (trans ? 64 : 500)) : (left ? (trans ? 300 : 400) : 64);
+    // dd, td, qd: left with transa = N stays on the planes
+    return blk_l3_ok<T>(use, (double)m * n * na, n1, nN, left && !trans ? 0 : 300, left && !trans ? 0 : 600);
 }
 
 template <class Context, class T> bool blk_trmm(bool left, bool upper, bool trans, bool nounit, long m, long n, const T &alpha, const T *A, long lda, T *B, long ldb)
 {
     typedef typename blk_kernel_of<T>::type K;
-    if (!blk_trmm_takes<T>(m, n, left))
+    if (!blk_trmm_takes<T>(m, n, left, trans))
         return false;
-    const bool par = blk_parallel();
+    const bool par = blk_parallel((double)m * n * (left ? m : n));
     const long NB = blk_env("MPLAPACK_BLAS_BLOCK_NB", blk_kernel_of<T>::type::W > 1 ? 16 : 64);
     const T one(1.0), zero(0.0);
     if (left) {
@@ -1299,10 +1502,10 @@ template <class Context, class T, bool HERM = false> bool blk_symm(bool left, bo
 {
     typedef typename blk_kernel_of<T>::type K;
     const long use = blk_env("MPLAPACK_BLAS_BLOCK", 1), na = left ? m : n;
-    if (use == 0 || (use == 1 && !blk_profitable_l3<T>::value) || (double)m * n * na < (double)blk_env("MPLAPACK_BLAS_BLOCK_MIN", 32768))
+    if (!blk_l3_ok<T>(use, (double)m * n * na, left ? 200 : 100, left ? 400 : 300, left ? 64 : 300, left ? 100 : 600))
         return false;
-    const bool par = blk_parallel();
-    const long NB = K::MC;
+    const bool par = blk_parallel((double)m * n * na);
+    const long NB = blk_env("MPLAPACK_BLAS_SYMM_NB", 32);
     const T zero(0.0);
     const bool beta_zero = beta == zero;
 #define MPLAPACK_BLK_A(i, j) A[(i) + (j) * lda]
@@ -1324,86 +1527,103 @@ template <class Context, class T, bool HERM = false> bool blk_symm(bool left, bo
         return HERM ? ah[(size_t)(r + c * na)] : MPLAPACK_BLK_A(r, c);
     };
     if (left) {
-        std::vector<T> t1((size_t)(m * n)), t2((size_t)(m * n), zero); // temp1 = alpha*b, temp2 = zero
-        blk_columns<Context>(n, par, [&](long j) {
-            for (long i = 0; i < m; i++)
-                t1[(size_t)(i + j * m)] = alpha * MPLAPACK_BLK_B(i, j);
-        });
-        // temp2(i) += b(k)*a(k,i) over the k before (upper: k < i) or after
-        // (lower: k > i) the row, ascending: coef b(k,j), x a(k,i)
-        for (long i0 = 0; i0 < m; i0 += NB) {
-            const long i1 = std::min(m, i0 + NB), ib = i1 - i0;
-            const auto outside = [&](long k0, long k1) {
-                if (k1 > k0)
-                    blk_update<K, Context>(
-                        BLK_ADD, ib, n, k1 - k0, t2.data() + i0, m, [&](long i, long t) -> const T & { return a2(k0 + t, i0 + i); }, [&](long t, long j) -> const T & { return MPLAPACK_BLK_B(k0 + t, j); }, blk_no_skip(), false, par);
-            };
-            const auto inside = [&]() {
-                blk_columns<Context>(n, par, [&](long j) {
-                    for (long i = i0; i < i1; i++) {
-                        T &tp = t2[(size_t)(i + j * m)];
-                        const long k0 = upper ? i0 : i + 1, k1 = upper ? i : i1;
-                        for (long k = k0; k < k1; k++)
-                            tp += MPLAPACK_BLK_B(k, j) * a2(k, i);
-                    }
-                });
-            };
-            if (upper) {
-                outside(0, i0);
-                inside();
-            } else {
-                inside();
-                outside(i1, m);
-            }
-        }
-        // c(i) = [beta*c(i) +] temp1*a(i,i) + alpha*temp2
-        blk_columns<Context>(n, par, [&](long j) {
-            for (long i = 0; i < m; i++) {
-                T &cij = MPLAPACK_BLK_C(i, j);
-                if constexpr (HERM) {
-                    if (beta_zero)
-                        cij = t1[(size_t)(i + j * m)] * MPLAPACK_BLK_A(i, i).real() + alpha * t2[(size_t)(i + j * m)];
-                    else
-                        cij = beta * cij + t1[(size_t)(i + j * m)] * MPLAPACK_BLK_A(i, i).real() + alpha * t2[(size_t)(i + j * m)];
+        // the columns of C are independent: slabs of them, one per thread,
+        // each with the engine in the thread
+        const auto run = [&](const T *B, T *C, long n, bool par) {
+            std::vector<T> t1((size_t)(m * n)), t2((size_t)(m * n), zero); // temp1 = alpha*b, temp2 = zero
+            blk_columns<Context>(n, par, [&](long j) {
+                for (long i = 0; i < m; i++)
+                    t1[(size_t)(i + j * m)] = alpha * MPLAPACK_BLK_B(i, j);
+            });
+            // temp2(i) += b(k)*a(k,i) over the k before (upper: k < i) or after
+            // (lower: k > i) the row, ascending: coef b(k,j), x a(k,i)
+            for (long i0 = 0; i0 < m; i0 += NB) {
+                const long i1 = std::min(m, i0 + NB), ib = i1 - i0;
+                const auto outside = [&](long k0, long k1) {
+                    if (k1 > k0)
+                        blk_update<K, Context>(
+                            BLK_ADD, ib, n, k1 - k0, t2.data() + i0, m, [&](long i, long t) -> const T & { return a2(k0 + t, i0 + i); }, [&](long t, long j) -> const T & { return MPLAPACK_BLK_B(k0 + t, j); }, blk_no_skip(), false, par);
+                };
+                const auto inside = [&]() {
+                    blk_columns<Context>(n, par, [&](long j) {
+                        for (long i = i0; i < i1; i++) {
+                            T &tp = t2[(size_t)(i + j * m)];
+                            const long k0 = upper ? i0 : i + 1, k1 = upper ? i : i1;
+                            for (long k = k0; k < k1; k++)
+                                tp += MPLAPACK_BLK_B(k, j) * a2(k, i);
+                        }
+                    });
+                };
+                if (upper) {
+                    outside(0, i0);
+                    inside();
                 } else {
-                    if (beta_zero)
-                        cij = t1[(size_t)(i + j * m)] * MPLAPACK_BLK_A(i, i) + alpha * t2[(size_t)(i + j * m)];
-                    else
-                        cij = beta * cij + t1[(size_t)(i + j * m)] * MPLAPACK_BLK_A(i, i) + alpha * t2[(size_t)(i + j * m)];
+                    inside();
+                    outside(i1, m);
                 }
             }
-        });
-        // c(i) += temp1(i')*a(i,i') over the later rows: upper i' > i
-        // ascending, lower i' < i descending
-        for (long i0 = 0; i0 < m; i0 += NB) {
-            const long i1 = std::min(m, i0 + NB), ib = i1 - i0;
-            const auto outside = [&](long k0, long k1) {
-                if (k1 > k0)
-                    blk_update<K, Context>(
-                        BLK_ADD, ib, n, k1 - k0, C + i0, ldc, [&](long i, long t) -> const T & { return as(i0 + i, upper ? k0 + t : k1 - 1 - t); }, [&](long t, long j) -> const T & { return t1[(size_t)((upper ? k0 + t : k1 - 1 - t) + j * m)]; }, blk_no_skip(), false, par);
-            };
-            const auto inside = [&]() {
-                blk_columns<Context>(n, par, [&](long j) {
-                    for (long i = i0; i < i1; i++) {
-                        T &cij = MPLAPACK_BLK_C(i, j);
-                        if (upper) {
-                            for (long k = i + 1; k < i1; k++)
-                                cij += t1[(size_t)(k + j * m)] * as(i, k);
-                        } else {
-                            for (long k = i - 1; k >= i0; k--)
-                                cij += t1[(size_t)(k + j * m)] * as(i, k);
-                        }
+            // c(i) = [beta*c(i) +] temp1*a(i,i) + alpha*temp2
+            blk_columns<Context>(n, par, [&](long j) {
+                for (long i = 0; i < m; i++) {
+                    T &cij = MPLAPACK_BLK_C(i, j);
+                    if constexpr (HERM) {
+                        if (beta_zero)
+                            cij = t1[(size_t)(i + j * m)] * MPLAPACK_BLK_A(i, i).real() + alpha * t2[(size_t)(i + j * m)];
+                        else
+                            cij = beta * cij + t1[(size_t)(i + j * m)] * MPLAPACK_BLK_A(i, i).real() + alpha * t2[(size_t)(i + j * m)];
+                    } else {
+                        if (beta_zero)
+                            cij = t1[(size_t)(i + j * m)] * MPLAPACK_BLK_A(i, i) + alpha * t2[(size_t)(i + j * m)];
+                        else
+                            cij = beta * cij + t1[(size_t)(i + j * m)] * MPLAPACK_BLK_A(i, i) + alpha * t2[(size_t)(i + j * m)];
                     }
-                });
-            };
-            if (upper) {
-                inside();
-                outside(i1, m);
-            } else {
-                inside();
-                outside(0, i0);
+                }
+            });
+            // c(i) += temp1(i')*a(i,i') over the later rows: upper i' > i
+            // ascending, lower i' < i descending
+            for (long i0 = 0; i0 < m; i0 += NB) {
+                const long i1 = std::min(m, i0 + NB), ib = i1 - i0;
+                const auto outside = [&](long k0, long k1) {
+                    if (k1 > k0)
+                        blk_update<K, Context>(
+                            BLK_ADD, ib, n, k1 - k0, C + i0, ldc, [&](long i, long t) -> const T & { return as(i0 + i, upper ? k0 + t : k1 - 1 - t); }, [&](long t, long j) -> const T & { return t1[(size_t)((upper ? k0 + t : k1 - 1 - t) + j * m)]; }, blk_no_skip(), false, par);
+                };
+                const auto inside = [&]() {
+                    blk_columns<Context>(n, par, [&](long j) {
+                        for (long i = i0; i < i1; i++) {
+                            T &cij = MPLAPACK_BLK_C(i, j);
+                            if (upper) {
+                                for (long k = i + 1; k < i1; k++)
+                                    cij += t1[(size_t)(k + j * m)] * as(i, k);
+                            } else {
+                                for (long k = i - 1; k >= i0; k--)
+                                    cij += t1[(size_t)(k + j * m)] * as(i, k);
+                            }
+                        }
+                    });
+                };
+                if (upper) {
+                    inside();
+                    outside(i1, m);
+                } else {
+                    inside();
+                    outside(0, i0);
+                }
             }
-        }
+        };
+#ifdef _OPENMP
+        const long ns = par ? std::min<long>(omp_get_max_threads(), (n + K::NR - 1) / K::NR) : 1;
+#else
+        const long ns = 1;
+#endif
+        if (ns <= 1)
+            run(B, C, n, false);
+        else
+            blk_columns<Context>(ns, true, [&](long u) {
+                const long j0 = n * u / ns, j1 = n * (u + 1) / ns;
+                if (j1 > j0)
+                    run(B + j0 * ldb, C + j0 * ldc, j1 - j0, false);
+            });
     } else {
         // the coefficients alpha*a(k,j) (k != j)
         std::vector<T> co((size_t)(n * n));
@@ -1463,9 +1683,9 @@ template <class Context, class T> bool blk_syrk(bool upper, bool trans, long n, 
 {
     typedef typename blk_kernel_of<T>::type K;
     const long use = blk_env("MPLAPACK_BLAS_BLOCK", 1);
-    if (use == 0 || (use == 1 && !blk_profitable_l3<T>::value) || (double)n * n * k / 2 < (double)blk_env("MPLAPACK_BLAS_BLOCK_MIN", 32768))
+    if (!blk_l3_ok<T>(use, (double)n * n * k, trans ? (blk_is_cplx<T>::value ? 100 : 64) : 200, 400, trans ? 300 : 0, trans ? 600 : 0))
         return false;
-    const bool par = blk_parallel();
+    const bool par = blk_parallel((double)n * n * k);
     const long NB = K::MC, nb = (n + NB - 1) / NB;
     if (use == 1 && par && nb < 4) // too few tiles for the threads: the column forms
         return false;
@@ -1553,9 +1773,9 @@ template <class Context, class T> bool blk_syr2k(bool upper, bool trans, long n,
 {
     typedef typename blk_kernel_of<T>::type K;
     const long use = blk_env("MPLAPACK_BLAS_BLOCK", 1);
-    if (k <= 0 || use == 0 || (use == 1 && !blk_profitable_l3<T>::value) || (double)n * n * k < (double)blk_env("MPLAPACK_BLAS_BLOCK_MIN", 32768))
+    if (k <= 0 || !blk_l3_ok<T>(use, (double)n * n * k, trans ? (blk_is_cplx<T>::value ? 150 : 64) : 200, 400, trans ? 300 : 0, trans ? 600 : 0))
         return false;
-    const bool par = blk_parallel();
+    const bool par = blk_parallel((double)n * n * k);
     const long NB = K::MC, nb = (n + NB - 1) / NB;
     if (use == 1 && par && nb < 4) // too few tiles for the threads: the column forms
         return false;
@@ -1649,9 +1869,9 @@ template <class Context, class T, class R> bool blk_her2k(bool upper, bool trans
 {
     typedef typename blk_kernel_of<T>::type K;
     const long use = blk_env("MPLAPACK_BLAS_BLOCK", 1);
-    if (k <= 0 || use == 0 || (use == 1 && !blk_profitable_l3<T>::value) || (double)n * n * k < (double)blk_env("MPLAPACK_BLAS_BLOCK_MIN", 32768))
+    if (k <= 0 || !blk_l3_ok<T>(use, (double)n * n * k, trans ? (blk_is_cplx<T>::value ? 150 : 64) : 200, 400, trans ? 300 : 0, trans ? 600 : 0))
         return false;
-    const bool par = blk_parallel();
+    const bool par = blk_parallel((double)n * n * k);
     const long NB = K::MC, nb = (n + NB - 1) / NB;
     if (use == 1 && par && nb < 4) // too few tiles for the threads: the column forms
         return false;
@@ -1768,9 +1988,9 @@ template <class Context, class T, class R> bool blk_herk(bool upper, bool trans,
 {
     typedef typename blk_kernel_of<T>::type K;
     const long use = blk_env("MPLAPACK_BLAS_BLOCK", 1);
-    if (k <= 0 || use == 0 || (use == 1 && !blk_profitable_l3<T>::value) || (double)n * n * k / 2 < (double)blk_env("MPLAPACK_BLAS_BLOCK_MIN", 32768))
+    if (k <= 0 || !blk_l3_ok<T>(use, (double)n * n * k, trans ? (blk_is_cplx<T>::value ? 100 : 64) : 200, 400, trans ? 300 : 0, trans ? 600 : 0))
         return false;
-    const bool par = blk_parallel();
+    const bool par = blk_parallel((double)n * n * k);
     const long NB = K::MC, nb = (n + NB - 1) / NB;
     if (use == 1 && par && nb < 4) // too few tiles for the threads: the column forms
         return false;
