@@ -26,8 +26,9 @@ MPFR_CBLAS_DEVICE_LO = Cblas_mpfr_device_cuda.lo Cblas_mpfr_device_rt_cuda.lo Cb
 Rgemm_dlink_cuda.lo: Rgemm_device_cuda.lo Rgemm_rt_cuda.lo blas3_device_cuda.lo $(MPFR_CBLAS_DEVICE_LO)
 	$(top_srcdir)/misc/cudalt.py $@ $(NVCC) $(MPFR_CUDA_GENCODE) -dlink .libs/Rgemm_device_cuda.o .libs/Rgemm_rt_cuda.o .libs/blas3_device_cuda.o $(MPFR_CBLAS_DEVICE_LO:%.lo=.libs/%.o) $(MPC_CUDA_LIBRARY)
 
-# Must match the architecture libmpc_cuda.a was built for (--with-mpfr-cuda-arch).
-MPFR_CUDA_GENCODE = -gencode arch=compute_$(MPFR_CUDA_ARCH),code=sm_$(MPFR_CUDA_ARCH) -m64 -O3
+# Must match the architectures libmpc_cuda.a was built for (--with-mpfr-cuda-arch,
+# e.g. 80,90 for A100 and H100).
+MPFR_CUDA_GENCODE = $(MPFR_CUDA_GENCODES) -m64 -O3
 NVCC_GLIBC_FEATURE_FLAGS = -U_GNU_SOURCE -D_XOPEN_SOURCE=700
 
 MPLAPACK_MPFR_CUDA_CPPFLAGS = $(GMPFRXX_MKII_CPPFLAGS) -I. -I$(srcdir) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR) -I$(MPC_CUDA_INCLUDEDIR) $(OPENMP_CXXFLAGS) -DMPLAPACK_BUILD_WITH_MPFR

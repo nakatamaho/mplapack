@@ -136,14 +136,16 @@ when:
 ## Building
 
 mpc_cuda needs CUDA 13 (nvcc 12.0 rejects its early-clobber `"=&l"` asm
-constraints) and is built for a single GPU architecture.
+constraints). The bundled one is built for the GPU architectures given
+(several give fat binaries, e.g. 80 and 90 for A100 and H100); an installed
+libmpc_cuda.a must have been built for the same ones.
 
 CMake (builds `external/mpc_cuda` unless `MPLAPACK_MPC_CUDA_INCLUDE_DIR` names
 an installed mpc_cuda):
 
     cmake -B build -DMPLAPACK_ENABLE_MPFR=ON -DMPLAPACK_ENABLE_OPT=ON \
           -DMPLAPACK_ENABLE_MPFR_CUDA=ON \
-          -DMPLAPACK_CUDA_ARCHITECTURES=121        # one value, e.g. 121 for GB10
+          -DMPLAPACK_CUDA_ARCHITECTURES=121        # e.g. 121 for GB10, "80;90" for A100 and H100
     # installed mpc_cuda instead of the bundled one:
     #     -DMPLAPACK_MPC_CUDA_INCLUDE_DIR=/opt/mpc_cuda/include
     #     [-DMPLAPACK_MPC_CUDA_LIBRARY=/opt/mpc_cuda/lib/libmpc_cuda.a]
@@ -153,6 +155,7 @@ names an installed mpc_cuda):
 
     ./configure --enable-mpfr --enable-mpfr-cuda --with-mpfr-cuda-arch=121 \
                 --with-cudatoolkithome=/usr/local/cuda
+    # A100 and H100 (fat binaries): --with-mpfr-cuda-arch=80,90
     # installed mpc_cuda instead of the bundled one:
     #     --with-mpc-cuda-includedir=/opt/mpc_cuda/include
     #     [--with-mpc-cuda-library=/opt/mpc_cuda/lib/libmpc_cuda.a]

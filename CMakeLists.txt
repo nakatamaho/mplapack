@@ -227,14 +227,16 @@ if(MPLAPACK_ENABLE_MPFR_CUDA)
         "MPLAPACK_MPC_CUDA_LIBRARY must point to libmpc_cuda.a built for MPLAPACK_CUDA_ARCHITECTURES")
     endif()
   else()
-    # Build the bundled mpc_cuda (external/mpc_cuda); it targets one architecture.
-    list(LENGTH MPLAPACK_CUDA_ARCHITECTURES _mplapack_cuda_arch_count)
-    if(NOT _mplapack_cuda_arch_count EQUAL 1)
-      message(FATAL_ERROR
-        "The bundled mpc_cuda is built for one GPU architecture: set "
-        "MPLAPACK_CUDA_ARCHITECTURES to a single value (e.g. 90 or 121), or give an "
-        "installed mpc_cuda with MPLAPACK_MPC_CUDA_INCLUDE_DIR")
-    endif()
+    # Build the bundled mpc_cuda (external/mpc_cuda) for every architecture of
+    # MPLAPACK_CUDA_ARCHITECTURES (e.g. "80;90" for A100 and H100): the first
+    # is its --with-cuda-arch, the others are added to its NVCC as -gencode.
+    foreach(_arch IN LISTS MPLAPACK_CUDA_ARCHITECTURES)
+      if(NOT _arch MATCHES "^[0-9]+[a-z]?$")
+        message(FATAL_ERROR
+          "The bundled mpc_cuda needs plain compute capabilities in "
+          "MPLAPACK_CUDA_ARCHITECTURES (e.g. 80;90), not '${_arch}'")
+      endif()
+    endforeach()
     set(_mplapack_mpc_cuda_bundled ON)
     set(_mplapack_mpc_cuda_root "${CMAKE_CURRENT_BINARY_DIR}/external/i/MPC_CUDA")
     set(MPLAPACK_MPC_CUDA_INCLUDE_DIR "${_mplapack_mpc_cuda_root}/include")
@@ -406,6 +408,18 @@ if(_mplapack_mpc_cuda_bundled)
   if(CMAKE_CUDA_HOST_COMPILER)
     string(APPEND _mplapack_mpc_cuda_nvcc " -ccbin ${CMAKE_CUDA_HOST_COMPILER}")
   endif()
+  if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    # the glibc 2.42 / CUDA 13.1 rsqrt conflict, as for CMAKE_CUDA_FLAGS_INIT
+    string(APPEND _mplapack_mpc_cuda_nvcc " -U_GNU_SOURCE -D_XOPEN_SOURCE=700")
+  endif()
+  list(GET MPLAPACK_CUDA_ARCHITECTURES 0 _mplapack_mpc_cuda_arch)
+  set(_mplapack_mpc_cuda_extra_archs ${MPLAPACK_CUDA_ARCHITECTURES})
+  list(REMOVE_AT _mplapack_mpc_cuda_extra_archs 0)
+  foreach(_arch IN LISTS _mplapack_mpc_cuda_extra_archs)
+    string(APPEND _mplapack_mpc_cuda_nvcc " -gencode arch=compute_${_arch},code=sm_${_arch}")
+  endforeach()
+  # mpc_cuda derives the CUDA library directory from NVCC, which now has flags
+  set(_mplapack_mpc_cuda_libdir "${CUDAToolkit_LIBRARY_DIR}")
   # mpc_cuda builds from the GMP/MPFR/MPC sources of external/{gmp,mpfr,mpc}
   # and must not be built in parallel.
   ExternalProject_Add(mpc_cuda_bundled
@@ -417,9 +431,9 @@ if(_mplapack_mpc_cuda_bundled)
       COMMAND ${CMAKE_COMMAND} -E tar xf "${_mplapack_external}/mpfr/download/mpfr-4.2.2.tar.bz2"
       COMMAND ${CMAKE_COMMAND} -E tar xf "${_mplapack_external}/mpc/download/mpc-1.4.1.tar.xz"
     CONFIGURE_COMMAND <SOURCE_DIR>/configure "--prefix=${_mplapack_mpc_cuda_root}"
-      "--with-cuda-arch=sm_${MPLAPACK_CUDA_ARCHITECTURES}" "NVCC=${_mplapack_mpc_cuda_nvcc}"
+      "--with-cuda-arch=sm_${_mplapack_mpc_cuda_arch}" "NVCC=${_mplapack_mpc_cuda_nvcc}"
     BUILD_IN_SOURCE ON
-    BUILD_COMMAND ${CMAKE_COMMAND} -E env MAKEFLAGS= make -j1
+    BUILD_COMMAND ${CMAKE_COMMAND} -E env MAKEFLAGS= "CUDA_LIBDIR=${_mplapack_mpc_cuda_libdir}" make -j1
     INSTALL_COMMAND ${CMAKE_COMMAND} -E env MAKEFLAGS= make -j1 install
     BUILD_BYPRODUCTS "${MPLAPACK_MPC_CUDA_LIBRARY}")
 endif()

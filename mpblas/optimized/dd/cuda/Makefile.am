@@ -16,7 +16,7 @@ MPLAPACK_DD_CUDA_LAPACK_OPTIMIZED_SOURCES =
 NVCC_DD_CUDA_FLAGS = -std=c++17 -fmad=false -I$(srcdir) -I$(top_builddir)/include -I$(top_srcdir)/include -I$(QD_INCLUDEDIR)
 
 .cu.o:
-	$(NVCC) $(NVCC_GLIBC_FEATURE_FLAGS) $(NVCC_DD_CUDA_FLAGS) $(HOPPER_FLAGS) -o $@ -c $< $(CUDA_CFLAGS)
+	$(NVCC) $(NVCC_GLIBC_FEATURE_FLAGS) $(NVCC_DD_CUDA_FLAGS) $(AMPERE_FLAGS) $(HOPPER_FLAGS) -o $@ -c $< $(CUDA_CFLAGS)
 
 .cu.lo:
 	$(top_srcdir)/misc/cudalt.py $@ $(NVCC) $(NVCC_GLIBC_FEATURE_FLAGS) $(NVCC_DD_CUDA_FLAGS) --compiler-options=\"$(CFLAGS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) \" $(AMPERE_FLAGS) $(HOPPER_FLAGS) -c $<

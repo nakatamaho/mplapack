@@ -493,13 +493,36 @@ AC_ARG_WITH(mpc-cuda-library,
 AS_HELP_STRING([--with-mpc-cuda-library=FILE], [mpc_cuda static library (default: DIR/../lib/libmpc_cuda.a for --with-mpc-cuda-includedir=DIR)]),
 [MPC_CUDA_LIBRARY="$withval"], [MPC_CUDA_LIBRARY=""])
 AC_ARG_WITH(mpfr-cuda-arch,
-AS_HELP_STRING([--with-mpfr-cuda-arch=N], [CUDA compute capability for libmplapack_mpfr_opt_cuda, the one libmpc_cuda.a was built for (e.g. 90, 121; default 90)]),
-[MPFR_CUDA_ARCH="$withval"], [MPFR_CUDA_ARCH=90])
+AS_HELP_STRING([--with-mpfr-cuda-arch=N[,N...]], [CUDA compute capabilities for libmplapack_mpfr_opt_cuda, those libmpc_cuda.a was built for (e.g. 90, 121, or 80,90 for A100 and H100; default 90)]),
+[MPFR_CUDA_ARCHS="$withval"], [MPFR_CUDA_ARCHS=90])
+dnl MPFR_CUDA_ARCH is the first capability (mpc_cuda --with-cuda-arch);
+dnl MPC_CUDA_EXTRA_GENCODE adds the others to the bundled mpc_cuda, and
+dnl MPFR_CUDA_GENCODES lists them all for libmplapack_mpfr_opt_cuda.
+MPFR_CUDA_ARCH=
+MPFR_CUDA_GENCODES=
+MPC_CUDA_EXTRA_GENCODE=
+for _mpfr_cuda_arch in `echo "$MPFR_CUDA_ARCHS" | tr ',;' '  '`; do
+  case $_mpfr_cuda_arch in
+    *[[!0-9a-z]]*) AC_MSG_ERROR([--with-mpfr-cuda-arch: invalid compute capability $_mpfr_cuda_arch]) ;;
+  esac
+  _mpfr_cuda_gencode="-gencode arch=compute_$_mpfr_cuda_arch,code=sm_$_mpfr_cuda_arch"
+  if test -z "$MPFR_CUDA_ARCH"; then
+    MPFR_CUDA_ARCH=$_mpfr_cuda_arch
+  else
+    MPC_CUDA_EXTRA_GENCODE="$MPC_CUDA_EXTRA_GENCODE $_mpfr_cuda_gencode"
+  fi
+  MPFR_CUDA_GENCODES="$MPFR_CUDA_GENCODES $_mpfr_cuda_gencode"
+done
+if test -z "$MPFR_CUDA_ARCH"; then
+  AC_MSG_ERROR([--with-mpfr-cuda-arch needs at least one compute capability])
+fi
 MPC_CUDA_DIR=
 AC_SUBST(MPC_CUDA_DIR)
 AC_SUBST(MPC_CUDA_INCLUDEDIR)
 AC_SUBST(MPC_CUDA_LIBRARY)
 AC_SUBST(MPFR_CUDA_ARCH)
+AC_SUBST(MPFR_CUDA_GENCODES)
+AC_SUBST(MPC_CUDA_EXTRA_GENCODE)
 
 AC_ARG_WITH(cudatoolkithome,
 AS_HELP_STRING([--with-cudatoolkithome], [Specify path to CUDA Toolkit (default: /usr/local/cuda)]),
@@ -759,7 +782,7 @@ if test x$enable_mpfr_cuda = xyes; then
     MPC_CUDA_DIR=mpc_cuda
     MPC_CUDA_INCLUDEDIR="`pwd`/external/i/MPC_CUDA/include"
     MPC_CUDA_LIBRARY="`pwd`/external/i/MPC_CUDA/lib/libmpc_cuda.a"
-    AC_MSG_NOTICE([MPFR CUDA: using the bundled mpc_cuda for sm_$MPFR_CUDA_ARCH])
+    AC_MSG_NOTICE([MPFR CUDA: using the bundled mpc_cuda for compute capabilities $MPFR_CUDA_ARCHS])
   else
     if test ! -f "$MPC_CUDA_INCLUDEDIR/mpc_cuda.cuh"; then
       AC_MSG_ERROR([--with-mpc-cuda-includedir=DIR must contain mpc_cuda.cuh (https://github.com/tkouya/mpc_cuda)])

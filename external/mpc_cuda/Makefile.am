@@ -6,7 +6,8 @@
 # configure.  mpc_cuda builds from the GMP/MPFR/MPC sources, taken from the
 # distfiles of ../gmp, ../mpfr and ../mpc.  It needs CUDA 13 (older nvcc
 # rejects the early-clobber asm constraints) and builds for one GPU
-# architecture, sm_$(MPFR_CUDA_ARCH).
+# architecture, sm_$(MPFR_CUDA_ARCH), to which MPC_CUDA_EXTRA_GENCODE adds the
+# other architectures of --with-mpfr-cuda-arch (e.g. 80,90: sm_80 and sm_90).
 MPC_CUDA_VERSION=0.0.1-abd9407
 MPC_CUDA_DISTFILE=mpc_cuda/download/mpc_cuda-$(MPC_CUDA_VERSION).tar.xz
 GMP_DISTFILE=gmp/download/gmp-6.3.0.tar.xz
@@ -59,7 +60,7 @@ work/$(EXTRACT_STAMP):
 NVCC_GLIBC_FEATURE_FLAGS = -U_GNU_SOURCE -D_XOPEN_SOURCE=700
 
 work/$(CONFIGURE_STAMP): work/$(EXTRACT_STAMP)
-	cd $(SRCDIR) ; ./configure --prefix=$(PREFIX) --with-cuda-arch=sm_$(MPFR_CUDA_ARCH) "NVCC=$(NVCC) $(NVCC_GLIBC_FEATURE_FLAGS)"
+	cd $(SRCDIR) ; ./configure --prefix=$(PREFIX) --with-cuda-arch=sm_$(MPFR_CUDA_ARCH) "NVCC=$(NVCC) $(NVCC_GLIBC_FEATURE_FLAGS) $(MPC_CUDA_EXTRA_GENCODE)"
 	touch $(abs_builddir)/work/$(CONFIGURE_STAMP)
 
 # mpc_cuda must not be built in parallel: its steps share one build directory.
