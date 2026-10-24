@@ -52,13 +52,19 @@ work/$(EXTRACT_STAMP):
 	cd $(SRCDIR); tar xfJ $(abs_srcdir)/../$(MPC_DISTFILE)
 	touch $(abs_builddir)/work/$(EXTRACT_STAMP)
 
+# glibc 2.42 exposes C23 rsqrt declarations that conflict with CUDA 13.1;
+# X/Open keeps the POSIX declarations (as NVCC_GLIBC_FEATURE_FLAGS of
+# mpblas/optimized/mpfr/cuda).  mpc_cuda takes them as part of NVCC; it then
+# cannot derive the CUDA library directory from NVCC, so it is given.
+NVCC_GLIBC_FEATURE_FLAGS = -U_GNU_SOURCE -D_XOPEN_SOURCE=700
+
 work/$(CONFIGURE_STAMP): work/$(EXTRACT_STAMP)
-	cd $(SRCDIR) ; ./configure --prefix=$(PREFIX) --with-cuda-arch=sm_$(MPFR_CUDA_ARCH) "NVCC=$(NVCC)"
+	cd $(SRCDIR) ; ./configure --prefix=$(PREFIX) --with-cuda-arch=sm_$(MPFR_CUDA_ARCH) "NVCC=$(NVCC) $(NVCC_GLIBC_FEATURE_FLAGS)"
 	touch $(abs_builddir)/work/$(CONFIGURE_STAMP)
 
 # mpc_cuda must not be built in parallel: its steps share one build directory.
 work/$(BUILD_STAMP): work/$(CONFIGURE_STAMP)
-	cd $(SRCDIR) ; env MAKEFLAGS= $(MAKE) -j1
+	cd $(SRCDIR) ; env MAKEFLAGS= CUDA_LIBDIR=$(CUDATOOLKITHOME)/lib64 $(MAKE) -j1
 	touch $(abs_builddir)/work/$(BUILD_STAMP)
 
 work/$(INSTALL_INTERNAL_STAMP): work/$(BUILD_STAMP)
