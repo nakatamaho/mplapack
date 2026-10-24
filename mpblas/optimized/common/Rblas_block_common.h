@@ -146,7 +146,7 @@ template <class T, int MR, int NR, int MODE, bool HM> MPLAPACK_GEMM_CLONES MPLAP
     T acc[NR][MR];
     for (int jj = 0; jj < NR; jj++)
         for (int ii = 0; ii < MR; ii++)
-            acc[jj][ii] = (ii < mr && jj < nr) ? C[ii + jj * ldc] : T(0.0);
+            acc[jj][ii] = C[ii + jj * ldc];
     if (MODE == BLK_ADD2) {
         for (long l = 0; l + 1 < kc; l += 2) {
             const T *a1 = A + l * MR, *a2 = a1 + MR, *b1 = B + l * NR, *b2 = b1 + NR;
@@ -185,11 +185,32 @@ template <class T, int MR, int NR, int MODE, bool HM> MPLAPACK_GEMM_CLONES MPLAP
             }
         }
     }
-    for (int jj = 0; jj < nr; jj++)
-        for (int ii = 0; ii < mr; ii++)
+    for (int jj = 0; jj < NR; jj++)
+        for (int ii = 0; ii < MR; ii++)
             C[ii + jj * ldc] = acc[jj][ii];
 }
 
+
+// Edge tiles by pointer redirection: the micro-kernels compute full MR x NR
+// tiles without tests; a tile of C with mr < MR or nr < NR is copied into a
+// local tile (the rest zero), computed there and its valid part copied back
+// (the packed panels are zero past the edge).  T trivially copyable.
+template <class T, int MR, int NR, class F> inline void blk_edge(T *C, long ldc, int mr, int nr, F f)
+{
+    if (mr == MR && nr == NR) {
+        f(C, ldc);
+        return;
+    }
+    T t[MR * NR];
+    std::memset(static_cast<void *>(t), 0, sizeof(t));
+    for (int jj = 0; jj < nr; jj++)
+        for (int ii = 0; ii < mr; ii++)
+            t[ii + jj * MR] = C[ii + jj * ldc];
+    f(t, (long)MR);
+    for (int jj = 0; jj < nr; jj++)
+        for (int ii = 0; ii < mr; ii++)
+            C[ii + jj * ldc] = t[ii + jj * MR];
+}
 
 template <class T, int MR_, int NR_, long MC_, long KC_, long NC_> struct blk_value_kernel {
     typedef T slot;
@@ -200,10 +221,12 @@ template <class T, int MR_, int NR_, long MC_, long KC_, long NC_> struct blk_va
     // the tile of C at (C, ldc), mr x nr valid; A: kc x MR, B: kc x NR
     template <int MODE> static void micro(long kc, const slot *A, const slot *B, const unsigned char *mask, T *C, long ldc, int mr, int nr)
     {
-        if (mask)
-            blk_value_micro<T, MR, NR, MODE, true>(kc, A, B, mask, C, ldc, mr, nr);
-        else
-            blk_value_micro<T, MR, NR, MODE, false>(kc, A, B, mask, C, ldc, mr, nr);
+        blk_edge<T, MR, NR>(C, ldc, mr, nr, [&](T *c, long l) {
+            if (mask)
+                blk_value_micro<T, MR, NR, MODE, true>(kc, A, B, mask, c, l, MR, NR);
+            else
+                blk_value_micro<T, MR, NR, MODE, false>(kc, A, B, mask, c, l, MR, NR);
+        });
     }
 };
 
@@ -268,9 +291,8 @@ template <int MR, int NR, int MODE, bool HM> MPLAPACK_GEMM_CLONES MPLAPACK_BLK_N
     REAL cr[NR][MR], ci[NR][MR];
     for (int jj = 0; jj < NR; jj++)
         for (int ii = 0; ii < MR; ii++) {
-            const bool in = ii < mr && jj < nr;
-            cr[jj][ii] = in ? C[(ii + jj * ldc) * 2] : 0.0;
-            ci[jj][ii] = in ? C[(ii + jj * ldc) * 2 + 1] : 0.0;
+            cr[jj][ii] = C[(ii + jj * ldc) * 2];
+            ci[jj][ii] = C[(ii + jj * ldc) * 2 + 1];
         }
     if (MODE == BLK_ADD2) {
         // acc += (x1*c1 + x2*c2), each product as std::complex computes it
@@ -345,8 +367,8 @@ template <int MR, int NR, int MODE, bool HM> MPLAPACK_GEMM_CLONES MPLAPACK_BLK_N
             }
         }
     }
-    for (int jj = 0; jj < nr; jj++)
-        for (int ii = 0; ii < mr; ii++) {
+    for (int jj = 0; jj < NR; jj++)
+        for (int ii = 0; ii < MR; ii++) {
             C[(ii + jj * ldc) * 2] = cr[jj][ii];
             C[(ii + jj * ldc) * 2 + 1] = ci[jj][ii];
         }
@@ -362,10 +384,12 @@ template <int MR_, int NR_, long MC_, long KC_, long NC_> struct blk_zplane_kern
     static void pad(slot *p, long stride) { p[0] = 0.0, p[stride] = 0.0; }
     template <int MODE> static void micro(long kc, const slot *A, const slot *B, const unsigned char *mask, T *C, long ldc, int mr, int nr)
     {
-        if (mask)
-            blk_zplane_micro<MR, NR, MODE, true>(kc, A, B, mask, reinterpret_cast<REAL *>(C), ldc, mr, nr);
-        else
-            blk_zplane_micro<MR, NR, MODE, false>(kc, A, B, mask, reinterpret_cast<REAL *>(C), ldc, mr, nr);
+        blk_edge<T, MR, NR>(C, ldc, mr, nr, [&](T *c, long l) {
+            if (mask)
+                blk_zplane_micro<MR, NR, MODE, true>(kc, A, B, mask, reinterpret_cast<REAL *>(c), l, MR, NR);
+            else
+                blk_zplane_micro<MR, NR, MODE, false>(kc, A, B, mask, reinterpret_cast<REAL *>(c), l, MR, NR);
+        });
     }
 };
 
@@ -479,10 +503,10 @@ template <int W, int MR, int NR, int MODE, bool HM> MPLAPACK_GEMM_CLONES static 
     for (int jj = 0; jj < NR; jj++)
         for (int ii = 0; ii < MR; ii++)
             for (int q = 0; q < W; q++)
-                acc[q][jj][ii] = (ii < mr && jj < nr) ? C[(ii + jj * ldc) * W + q] : 0.0;
+                acc[q][jj][ii] = C[(ii + jj * ldc) * W + q];
     blk_plane_steps<W, MR, NR, MODE, HM>::run(kc, A, B, mask, acc);
-    for (int jj = 0; jj < nr; jj++)
-        for (int ii = 0; ii < mr; ii++)
+    for (int jj = 0; jj < NR; jj++)
+        for (int ii = 0; ii < MR; ii++)
             for (int q = 0; q < W; q++)
                 C[(ii + jj * ldc) * W + q] = acc[q][jj][ii];
 }
@@ -504,10 +528,12 @@ template <class T, int W_, int MR_, int NR_, long MC_, long KC_, long NC_> struc
     }
     template <int MODE> static void micro(long kc, const slot *A, const slot *B, const unsigned char *mask, T *C, long ldc, int mr, int nr)
     {
-        if (mask)
-            blk_plane_micro<W, MR, NR, MODE, true>(kc, A, B, mask, reinterpret_cast<double *>(C), ldc, mr, nr);
-        else
-            blk_plane_micro<W, MR, NR, MODE, false>(kc, A, B, mask, reinterpret_cast<double *>(C), ldc, mr, nr);
+        blk_edge<T, MR, NR>(C, ldc, mr, nr, [&](T *c, long l) {
+            if (mask)
+                blk_plane_micro<W, MR, NR, MODE, true>(kc, A, B, mask, reinterpret_cast<double *>(c), l, MR, NR);
+            else
+                blk_plane_micro<W, MR, NR, MODE, false>(kc, A, B, mask, reinterpret_cast<double *>(c), l, MR, NR);
+        });
     }
 };
 

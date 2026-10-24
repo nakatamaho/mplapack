@@ -49,9 +49,11 @@ depends on the type:
 
 double uses NC = 512 (a B panel of KC x NC = 1 MB per thread stays in L2;
 4 threads, n = 2048-3000: 71-75 GFLOPS against 68-72 with NC = 1024). The
-edge tiles are zero-padded in the packed panels (no copy beyond the packing,
-which copies anyway) and only the valid part of C is read and written; their
-cost measured within 2% (1 thread, n = 1024..1047: 18.7-19.0 GFLOPS).
+micro-kernels compute full MR x NR tiles without tests; an edge tile of C
+(mr < MR or nr < NR) is redirected to a local tile (its valid part copied in,
+the rest zero), computed there and copied back, the packed panels being zero
+past the edge (no copy beyond the packing, which copies anyway). The edges
+cost within 2% (1 thread, n = 1024..1047: 18.7-19.0 GFLOPS).
 
 For the last two rows the arithmetic dominates and blocking does not pay;
 `MPLAPACK_BLAS_BLOCK=2` uses the engine anyway (the tests do), `=0` never.
