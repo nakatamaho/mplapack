@@ -382,10 +382,13 @@ struct limit_guard {
         if (cudaDeviceGetLimit(&old, w) == cudaSuccess && old < want)
             changed = cudaDeviceSetLimit(w, want) == cudaSuccess;
     }
+    // The heap limit cannot be changed once a kernel has used device malloc
+    // (cudaErrorInvalidValue); clear that error, or the next call's
+    // cudaGetLastError() after its launch reports it and falls back to the CPU.
     ~limit_guard()
     {
-        if (changed)
-            cudaDeviceSetLimit(which, old);
+        if (changed && cudaDeviceSetLimit(which, old) != cudaSuccess)
+            (void)cudaGetLastError();
     }
 };
 
