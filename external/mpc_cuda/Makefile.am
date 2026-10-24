@@ -64,8 +64,11 @@ work/$(CONFIGURE_STAMP): work/$(EXTRACT_STAMP)
 	touch $(abs_builddir)/work/$(CONFIGURE_STAMP)
 
 # mpc_cuda must not be built in parallel: its steps share one build directory.
+# Its tools/build_lib.sh prunes objects with sort | comm, which disagree in
+# some locales (ja_JP.UTF-8: most of MPFR, cu_mpfr_add etc., was dropped), so
+# it runs in the C locale.
 work/$(BUILD_STAMP): work/$(CONFIGURE_STAMP)
-	cd $(SRCDIR) ; env MAKEFLAGS= CUDA_LIBDIR=$(CUDATOOLKITHOME)/lib64 $(MAKE) -j1
+	cd $(SRCDIR) ; env MAKEFLAGS= LC_ALL=C CUDA_LIBDIR=$(CUDATOOLKITHOME)/lib64 $(MAKE) -j1
 	touch $(abs_builddir)/work/$(BUILD_STAMP)
 
 work/$(INSTALL_INTERNAL_STAMP): work/$(BUILD_STAMP)

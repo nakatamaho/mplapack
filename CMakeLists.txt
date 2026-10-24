@@ -433,7 +433,9 @@ if(_mplapack_mpc_cuda_bundled)
     CONFIGURE_COMMAND <SOURCE_DIR>/configure "--prefix=${_mplapack_mpc_cuda_root}"
       "--with-cuda-arch=sm_${_mplapack_mpc_cuda_arch}" "NVCC=${_mplapack_mpc_cuda_nvcc}"
     BUILD_IN_SOURCE ON
-    BUILD_COMMAND ${CMAKE_COMMAND} -E env MAKEFLAGS= "CUDA_LIBDIR=${_mplapack_mpc_cuda_libdir}" make -j1
+    # C locale: tools/build_lib.sh prunes objects with sort | comm (see
+    # external/mpc_cuda/Makefile.am)
+    BUILD_COMMAND ${CMAKE_COMMAND} -E env MAKEFLAGS= LC_ALL=C "CUDA_LIBDIR=${_mplapack_mpc_cuda_libdir}" make -j1
     INSTALL_COMMAND ${CMAKE_COMMAND} -E env MAKEFLAGS= make -j1 install
     BUILD_BYPRODUCTS "${MPLAPACK_MPC_CUDA_LIBRARY}")
 endif()
