@@ -47,6 +47,12 @@ depends on the type:
 | long double, binary128 | values | 4 x 4 | 0.5-1.0x: not used by default |
 | MPFR, GMP | pointers (no copy, the precision is kept) | 4 x 4 | 0.7-0.9x: not used by default |
 
+double uses NC = 512 (a B panel of KC x NC = 1 MB per thread stays in L2;
+4 threads, n = 2048-3000: 71-75 GFLOPS against 68-72 with NC = 1024). The
+edge tiles are zero-padded in the packed panels (no copy beyond the packing,
+which copies anyway) and only the valid part of C is read and written; their
+cost measured within 2% (1 thread, n = 1024..1047: 18.7-19.0 GFLOPS).
+
 For the last two rows the arithmetic dominates and blocking does not pay;
 `MPLAPACK_BLAS_BLOCK=2` uses the engine anyway (the tests do), `=0` never.
 
@@ -206,7 +212,9 @@ Measured on 4 cores, 4 threads, NN, seconds (cutoff 0: conventional):
 At these sizes Winograd gains 1.1-1.3x for binary80, binary128, dd and qd
 (MPFR 1.06x / 1.12x, GMP none: their additions cost about as much as their
 products) and loses for double, where the engine is close to the machine's speed and
-the additions of Winograd are bound by memory. It pays more for larger n
+the additions of Winograd are bound by memory: even one level at n = 4096
+(cutoff 2048) takes 1.90 s against 1.85 s (7/8 of the products would be
+1.61 s; the 18 additions of 2048 x 2048 matrices take the rest). It pays more for larger n
 (one level saves 1/8 of the products).
 
 ## Files

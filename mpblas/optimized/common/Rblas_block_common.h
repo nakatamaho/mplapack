@@ -655,7 +655,7 @@ template <class T> struct blk_kernel_of<T, typename std::enable_if<std::is_trivi
 };
 #if defined(MPLAPACK_BUILD_WITH_DOUBLE)
 template <> struct blk_kernel_of<REAL, void> {
-    typedef blk_value_kernel<REAL, 16, 4, 128, 256, 1024> type;
+    typedef blk_value_kernel<REAL, 16, 4, 128, 256, 512> type;
 };
 template <> struct blk_kernel_of<COMPLEX, void> {
     typedef blk_zplane_kernel<16, 4, 64, 256, 512> type;
