@@ -39,6 +39,9 @@
 
 namespace mplapack_gemm {
 template int gemm_cuda<td_ops>(const shape &, int, long, const ozaki_plan *, const gpu_scalars<td_ops::F> &, const td_ops::F *, const td_ops::F *, td_ops::F *);
+template int gemm_cuda<sloppy_ops<td_ops, true, false> >(const shape &, int, long, const ozaki_plan *, const gpu_scalars<td_ops::F> &, const td_ops::F *, const td_ops::F *, td_ops::F *);
+template int gemm_cuda<sloppy_ops<td_ops, false, true> >(const shape &, int, long, const ozaki_plan *, const gpu_scalars<td_ops::F> &, const td_ops::F *, const td_ops::F *, td_ops::F *);
+template int gemm_cuda<sloppy_ops<td_ops, true, true> >(const shape &, int, long, const ozaki_plan *, const gpu_scalars<td_ops::F> &, const td_ops::F *, const td_ops::F *, td_ops::F *);
 template int gpu_device_count<td_ops>();
 } // namespace mplapack_gemm
 

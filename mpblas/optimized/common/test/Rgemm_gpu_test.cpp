@@ -35,7 +35,8 @@
  *  - naive and tiled kernels: bit-identical to the conventional CPU Rgemm
  *    (k == 0 is never sent to the GPU: m*n*k is below any threshold);
  *  - Ozaki: bit-identical to the CPU Ozaki path (<P>_GEMM_OZAKI=1);
- *  - Winograd (cutoffs 1, 2, 3, 8): exact on small integer matrices, within
+ *  - Winograd (cutoffs 1, 2, 3, 8) and the sloppy arithmetic
+ *    (<P>_CUDA_SLOPPY_MUL/_ADD): exact on small integer matrices, within
  *    2^(20-p) (k |alpha| max|A| max|B| + |beta| max|C|) on random reals;
  *
  * for all transpose combinations, odd sizes, leading dimensions larger than
@@ -101,7 +102,7 @@ static void env(const char *name, const char *value) {
 }
 
 static void reset_env() {
-    const char *names[] = {"_CUDA", "_CUDA_KERNEL", "_CUDA_WINOGRAD_CUTOFF", "_CUDA_OZAKI", "_CUDA_OZAKI_SLICES", "_GEMM_OZAKI", "_GEMM_WINOGRAD_CUTOFF", "_GEMM_BLOCKED"};
+    const char *names[] = {"_CUDA", "_CUDA_KERNEL", "_CUDA_WINOGRAD_CUTOFF", "_CUDA_OZAKI", "_CUDA_OZAKI_SLICES", "_GEMM_OZAKI", "_GEMM_WINOGRAD_CUTOFF", "_GEMM_BLOCKED", "_CUDA_SLOPPY_MUL", "_CUDA_SLOPPY_ADD"};
     for (const char *nm : names)
         env(nm, NULL);
     env("_CUDA_MIN_MNK", "1");
@@ -247,6 +248,29 @@ int main() {
                                 expect_close("winograd", p, got, ref);
                         }
         }
+
+    // sloppy multiplication and/or addition: exact on small integers, within
+    // the bound of expect_close on random reals, for each kernel
+    const char *sloppy[][2] = {{"1", "0"}, {"0", "1"}, {"1", "1"}};
+    const char *kernels[] = {"tiled", "naive"};
+    for (auto &sl : sloppy)
+        for (const char *kern : kernels)
+            for (auto &z : sizes)
+                for (char ta : tr)
+                    for (char tb : tr)
+                        for (int integers = 0; integers < 2; integers++) {
+                            reset_env();
+                            const problem p = make(ta, tb, z[0], z[1], z[2], 2, integers != 0);
+                            const std::vector<T> ref = cpu(p);
+                            env("_CUDA_KERNEL", kern);
+                            env("_CUDA_SLOPPY_MUL", sl[0]);
+                            env("_CUDA_SLOPPY_ADD", sl[1]);
+                            const std::vector<T> got = gpu(p, "sloppy");
+                            if (integers)
+                                expect_identical("sloppy", p, got, ref);
+                            else
+                                expect_close("sloppy", p, got, ref);
+                        }
 
     // disabled: the call is left to the CPU
     {

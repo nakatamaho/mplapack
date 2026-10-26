@@ -114,6 +114,7 @@ int main()
         r = A + d, g = dd_add_d(x, d), check("dd + double", r.x, g.x, 2);
         r = A * d, g = dd_mul_d(x, d), check("dd * double", r.x, g.x, 2);
         r = A / B, g = dd_div(x, y), check("dd /", r.x, g.x, 2);
+        r = dd_real::sloppy_add(A, B), g = dd_sloppy_add(x, y), check("dd sloppy +", r.x, g.x, 2);
 
         td_real TA(a[0], 0.0, 0.0), TB(b[0], 0.0, 0.0);
         if (!sp)
@@ -129,6 +130,7 @@ int main()
         TD_CHECK("td + double", TA + d, td_add_d(tx, d));
         TD_CHECK("td * double", TA * d, td_mul_d(tx, d));
         TD_CHECK("td /", TA / TB, td_div(tx, ty));
+        TD_CHECK("td sloppy +", td_real::sloppy_add(TA, TB), td_sloppy_add(tx, ty));
 
         qd_real QA(a[0]), QB(b[0]);
         if (!sp)
@@ -145,7 +147,9 @@ int main()
         QD_CHECK("qd + double", QA + d, qd_add_d(qx, d));
         QD_CHECK("qd * double", QA * d, qd_mul_d(qx, d));
         QD_CHECK("qd /", QA / QB, qd_div(qx, qy));
+        QD_CHECK("qd sloppy +", qd_real::sloppy_add(QA, QB), qd_sloppy_add(qx, qy));
+        QD_CHECK("qd sloppy *", qd_real::sloppy_mul(QA, QB), qd_sloppy_mul(qx, qy));
     }
-    std::printf("dd/td/qd BF arithmetic: %ld checks, %ld failures\n", checks, failures);
+    std::printf("dd/td/qd BF and sloppy arithmetic: %ld checks, %ld failures\n", checks, failures);
     return failures == 0 ? 0 : 1;
 }

@@ -37,7 +37,14 @@
  *   <P>_CUDA_WINOGRAD_CUTOFF=N    Winograd when min(m,n,k) > N (0: off)
  *   <P>_CUDA_OZAKI=1              Ozaki scheme with cuBLAS DGEMM (off)
  *   <P>_CUDA_OZAKI_SLICES=S       number of Ozaki slices
+ *   <P>_CUDA_SLOPPY_MUL=1         sloppy multiplication (off)
+ *   <P>_CUDA_SLOPPY_ADD=1         sloppy addition and subtraction (off)
  *   <P>_CUDA_VERBOSE=1            report CUDA errors that cause a CPU fallback
+ *
+ * The sloppy variants (Rgemm_qd_ops_common.h: x_real::sloppy_add,
+ * qd_real::sloppy_mul, the td multiplication of libQD3 without QD_BF_MUL and
+ * the SLOPPY_MUL dd multiplication of the former kernels) apply to every GPU
+ * algorithm; their results differ from those of the CPU Rgemm.
  *
  * Calls that do not run on the GPU, or whose GPU run fails, return false and
  * are computed by the CPU Rgemm.
@@ -88,7 +95,17 @@ template <class T, class Ops> bool gemm_cuda_bridge(const char *prefix, const sh
     if (s.k > 0 && env_long((P + "_CUDA_OZAKI").c_str(), 0) > 0 && ozaki_split(s, A, B, (int)env_long((P + "_CUDA_OZAKI_SLICES").c_str(), 0), plan))
         algo = GPU_OZAKI;
 
-    const int rc = gemm_cuda<Ops>(s, algo, cutoff, &plan, sc, dA, dB, dC);
+    const bool sloppy_mul = env_long((P + "_CUDA_SLOPPY_MUL").c_str(), 0) > 0;
+    const bool sloppy_add = env_long((P + "_CUDA_SLOPPY_ADD").c_str(), 0) > 0;
+    int rc;
+    if (sloppy_mul && sloppy_add)
+        rc = gemm_cuda<sloppy_ops<Ops, true, true> >(s, algo, cutoff, &plan, sc, dA, dB, dC);
+    else if (sloppy_mul)
+        rc = gemm_cuda<sloppy_ops<Ops, true, false> >(s, algo, cutoff, &plan, sc, dA, dB, dC);
+    else if (sloppy_add)
+        rc = gemm_cuda<sloppy_ops<Ops, false, true> >(s, algo, cutoff, &plan, sc, dA, dB, dC);
+    else
+        rc = gemm_cuda<Ops>(s, algo, cutoff, &plan, sc, dA, dB, dC);
     if (rc != 0 && verbose)
         std::fprintf(stderr, "%s Rgemm: GPU error %d, computing on the CPU\n", prefix, rc);
     return rc == 0;

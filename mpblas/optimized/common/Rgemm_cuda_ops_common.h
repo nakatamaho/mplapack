@@ -49,6 +49,8 @@ struct dd_ops {
     typedef dd2 F;
     static MPLAPACK_GEMM_HD F add(const F &a, const F &b) { return dd_bf_add(a, b); }
     static MPLAPACK_GEMM_HD F mul(const F &a, const F &b) { return dd_bf_mul(a, b); }
+    static MPLAPACK_GEMM_HD F sloppy_add(const F &a, const F &b) { return dd_sloppy_add(a, b); }
+    static MPLAPACK_GEMM_HD F sloppy_mul(const F &a, const F &b) { return dd_sloppy_mul(a, b); }
     static MPLAPACK_GEMM_HD F sub(const F &a, const F &b) {
         F nb;
         nb.x[0] = -b.x[0];
@@ -80,6 +82,8 @@ struct qd_ops {
     typedef qd4 F;
     static MPLAPACK_GEMM_HD F add(const F &a, const F &b) { return qd_bf_add(a, b); }
     static MPLAPACK_GEMM_HD F mul(const F &a, const F &b) { return qd_bf_mul(a, b); }
+    static MPLAPACK_GEMM_HD F sloppy_add(const F &a, const F &b) { return qd_sloppy_add(a, b); }
+    static MPLAPACK_GEMM_HD F sloppy_mul(const F &a, const F &b) { return qd_sloppy_mul(a, b); }
     static MPLAPACK_GEMM_HD F sub(const F &a, const F &b) {
         F nb;
         for (int q = 0; q < 4; q++)
@@ -112,6 +116,8 @@ struct td_ops {
     typedef td3 F;
     static MPLAPACK_GEMM_HD F add(const F &a, const F &b) { return td_bf_add(a, b); }
     static MPLAPACK_GEMM_HD F mul(const F &a, const F &b) { return td_bf_mul(a, b); }
+    static MPLAPACK_GEMM_HD F sloppy_add(const F &a, const F &b) { return td_sloppy_add(a, b); }
+    static MPLAPACK_GEMM_HD F sloppy_mul(const F &a, const F &b) { return td_sloppy_mul(a, b); }
     static MPLAPACK_GEMM_HD F sub(const F &a, const F &b) { return td_bf_add(a, td_make(-b.x[0], -b.x[1], -b.x[2])); }
     static MPLAPACK_GEMM_HD F add_d(const F &a, double b) { return td_add_d(a, b); }
     static MPLAPACK_GEMM_HD F div(const F &a, const F &b) { return td_div(a, b); }
@@ -129,6 +135,17 @@ struct td_ops {
         const F d = sub(a, b);
         return d.x[0] == 0.0 && d.x[1] == 0.0 && d.x[2] == 0.0;
     }
+};
+
+// The GPU Rgemm with <P>_CUDA_SLOPPY_MUL / <P>_CUDA_SLOPPY_ADD: Base with its
+// multiplication and/or addition (and subtraction a + (-b)) replaced by the
+// sloppy ones.  Every kernel of gemm_cuda uses them; the result is no longer
+// that of the CPU Rgemm.
+template <class Base, bool SloppyMul, bool SloppyAdd> struct sloppy_ops : Base {
+    typedef typename Base::F F;
+    static MPLAPACK_GEMM_HD F add(const F &a, const F &b) { return SloppyAdd ? Base::sloppy_add(a, b) : Base::add(a, b); }
+    static MPLAPACK_GEMM_HD F mul(const F &a, const F &b) { return SloppyMul ? Base::sloppy_mul(a, b) : Base::mul(a, b); }
+    static MPLAPACK_GEMM_HD F sub(const F &a, const F &b) { return SloppyAdd ? Base::sloppy_add(a, Base::neg(b)) : Base::sub(a, b); }
 };
 
 // Scalars of a call; beta_zero / beta_one are computed on the host with the

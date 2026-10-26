@@ -315,10 +315,14 @@ GPU run fails, uses the CPU code above.
 | `<P>_CUDA_WINOGRAD_CUTOFF=N` | Winograd when `min(m,n,k) > N`, temporaries on the GPU, tiled leaves |
 | `<P>_CUDA_OZAKI=1` | Ozaki: slices made on the host, products by cuBLAS DGEMM, sums on the GPU |
 | `<P>_CUDA_OZAKI_SLICES=S` | number of slices |
+| `<P>_CUDA_SLOPPY_MUL=1` | sloppy multiplication: dd the SLOPPY_MUL `dd_mul` of the former kernels (fma, no renormalization), td the libQD3 multiplication without `QD_BF_MUL`, qd `qd_real::sloppy_mul` |
+| `<P>_CUDA_SLOPPY_ADD=1` | sloppy addition and subtraction: `dd_real`/`td_real`/`qd_real::sloppy_add` |
 | `<P>_CUDA_VERBOSE=1` | report CUDA errors that cause a CPU fallback |
 | `MPLAPACK_DD_CUDA_LEGACY=1` | dd: the former 2010-2011 kernels (`Rgemm_fermi.cu`; BF dd arithmetic, its own summation order) |
 
-The naive and tiled kernels are bit-identical to the CPU `Rgemm`. The device
+The naive and tiled kernels are bit-identical to the CPU `Rgemm` (not with
+`<P>_CUDA_SLOPPY_MUL` or `<P>_CUDA_SLOPPY_ADD`, which apply to every GPU
+algorithm and trade that for speed). The device
 functions are libQD3's BF operations, compiled with `-fmad=false`. The GPU
 Ozaki result is bit-identical to the CPU Ozaki result.
 

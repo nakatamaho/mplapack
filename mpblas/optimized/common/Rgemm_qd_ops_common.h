@@ -39,6 +39,13 @@
  *   dd_mul_d / td_mul_d / qd_mul_d          operator*(x_real, double)
  *   dd_div / td_div / qd_div                operator/(x_real, x_real) (accurate_div)
  *
+ * and, for the opt-in sloppy GPU Rgemm only (<P>_CUDA_SLOPPY_ADD/_MUL):
+ *
+ *   dd_sloppy_add / td_sloppy_add / qd_sloppy_add   x_real::sloppy_add
+ *   td_sloppy_mul  operator*(td_real, td_real) without QD_BF_MUL
+ *   qd_sloppy_mul  qd_real::sloppy_mul
+ *   dd_sloppy_mul  SLOPPY_MUL dd_mul of the former MPLAPACK CUDA kernels
+ *
  * MPLAPACK computes dd, td and qd with the branch-free (BF) arithmetic of
  * libQD3: libQD3 must be built with QD_BF (QD_BF_ADD and QD_BF_MUL), as
  * external/qd does, so that operator+, operator- (a + (-b)) and operator*
@@ -704,6 +711,187 @@ MPLAPACK_GEMM_HD qd4 qd_div(const qd4 &a, const qd4 &b) {
     return res;
 }
 
+
+// ---- sloppy arithmetic (GPU Rgemm with <P>_CUDA_SLOPPY_ADD / _MUL) ----
+// Not used by default: the results differ from the C++ types.
+
+// dd_real::sloppy_add (Cray-style error bound)
+MPLAPACK_GEMM_HD dd2 dd_sloppy_add(const dd2 &a, const dd2 &b) {
+    double s, e;
+    s = two_sum(a.x[0], b.x[0], e);
+    e += (a.x[1] + b.x[1]);
+    dd2 r;
+    r.x[0] = quick_two_sum(s, e, r.x[1]);
+    return r;
+}
+
+// The SLOPPY_MUL dd_mul of the former MPLAPACK CUDA kernels (libQD3 has no
+// sloppy dd multiplication): the low-order products are added to the fma
+// of the leading ones, without renormalization.
+MPLAPACK_GEMM_HD dd2 dd_sloppy_mul(const dd2 &a, const dd2 &b) {
+    double m1, m2, t, ph, e;
+    m1 = a.x[0] * b.x[1];
+    m2 = a.x[1] * b.x[0];
+    t = m1 + m2;
+    ph = MPLAPACK_GEMM_FMA(a.x[0], b.x[0], t);
+    e = MPLAPACK_GEMM_FMA(a.x[0], b.x[0], -ph);
+    dd2 r;
+    r.x[0] = ph;
+    r.x[1] = e + t;
+    return r;
+}
+
+// td::three_sum
+MPLAPACK_GEMM_HD void td_three_sum(double &a, double &b, double &c) {
+    double t1, t2, t3;
+    t1 = two_sum(a, b, t2);
+    a = two_sum(c, t1, t3);
+    b = two_sum(t2, t3, c);
+}
+
+// td::renorm(c0, c1, c2, c3, c4)
+MPLAPACK_GEMM_HD void td_renorm5(double &c0, double &c1, double &c2, double &c3, double &c4) {
+    double s0, s1, s2 = 0.0, s3 = 0.0;
+    if (MPLAPACK_GEMM_ISINF(c0))
+        return;
+    s0 = quick_two_sum(c3, c4, c4);
+    s0 = quick_two_sum(c2, s0, c3);
+    s0 = quick_two_sum(c1, s0, c2);
+    c0 = quick_two_sum(c0, s0, c1);
+    s0 = c0;
+    s1 = c1;
+    if (s1 != 0.0) {
+        s1 = quick_two_sum(s1, c2, s2);
+        if (s2 != 0.0) {
+            s2 = quick_two_sum(s2, c3, s3);
+            if (s3 != 0.0)
+                s3 += c4;
+            else
+                s2 = quick_two_sum(s2, c4, s3);
+        } else {
+            s1 = quick_two_sum(s1, c3, s2);
+            if (s2 != 0.0)
+                s2 = quick_two_sum(s2, c4, s3);
+            else
+                s1 = quick_two_sum(s1, c4, s2);
+        }
+    } else {
+        s0 = quick_two_sum(s0, c2, s1);
+        if (s1 != 0.0) {
+            s1 = quick_two_sum(s1, c3, s2);
+            if (s2 != 0.0)
+                s2 = quick_two_sum(s2, c4, s3);
+            else
+                s1 = quick_two_sum(s1, c4, s2);
+        } else {
+            s0 = quick_two_sum(s0, c3, s1);
+            if (s1 != 0.0)
+                s1 = quick_two_sum(s1, c4, s2);
+            else
+                s0 = quick_two_sum(s0, c4, s1);
+        }
+    }
+    c0 = s0;
+    c1 = s1;
+    c2 = s2;
+}
+
+// td_real::sloppy_add
+MPLAPACK_GEMM_HD td3 td_sloppy_add(const td3 &a, const td3 &b) {
+    double s0, s1, s2, t0, t1, t2;
+    s0 = two_sum(a.x[0], b.x[0], t0);
+    s1 = two_sum(a.x[1], b.x[1], t1);
+    s2 = two_sum(a.x[2], b.x[2], t2);
+    s1 = two_sum(s1, t0, t0);
+    s2 += (t0 + t1);
+    t0 = t2;
+    td_renorm(s0, s1, s2, t0);
+    return td_make(s0, s1, s2);
+}
+
+// operator*(td_real, td_real) of libQD3 built without QD_BF_MUL
+MPLAPACK_GEMM_HD td3 td_sloppy_mul(const td3 &a, const td3 &b) {
+    double p0, p1, p2, p3, p4, p5;
+    double q0, q1, q2, q3, q4, q5;
+    double t0, t1, s0, s1, s2;
+    p0 = two_prod(a.x[0], b.x[0], q0);
+    p1 = two_prod(a.x[0], b.x[1], q1);
+    p2 = two_prod(a.x[1], b.x[0], q2);
+    p3 = two_prod(a.x[0], b.x[2], q3);
+    p4 = two_prod(a.x[1], b.x[1], q4);
+    p5 = two_prod(a.x[2], b.x[0], q5);
+    td_three_sum(p1, p2, q0);
+    td_three_sum(p2, q1, q2);
+    td_three_sum(p3, p4, p5);
+    s0 = two_sum(p2, p3, t0);
+    s1 = two_sum(q1, p4, t1);
+    s2 = q2 + p5;
+    s1 = two_sum(s1, t0, t0);
+    s2 += t0 + t1;
+    s1 += a.x[1] * b.x[2] + a.x[2] * b.x[1] + q0 + q3 + q4 + q5;
+    td_renorm5(p0, p1, s0, s1, s2);
+    return td_make(p0, p1, s0);
+}
+
+// qd_real::sloppy_add (the version reorganized to minimize data dependency)
+MPLAPACK_GEMM_HD qd4 qd_sloppy_add(const qd4 &a, const qd4 &b) {
+    double s0, s1, s2, s3, t0, t1, t2, t3;
+    double v0, v1, v2, v3, u0, u1, u2, u3, w0, w1, w2, w3;
+    s0 = a.x[0] + b.x[0];
+    s1 = a.x[1] + b.x[1];
+    s2 = a.x[2] + b.x[2];
+    s3 = a.x[3] + b.x[3];
+    v0 = s0 - a.x[0];
+    v1 = s1 - a.x[1];
+    v2 = s2 - a.x[2];
+    v3 = s3 - a.x[3];
+    u0 = s0 - v0;
+    u1 = s1 - v1;
+    u2 = s2 - v2;
+    u3 = s3 - v3;
+    w0 = a.x[0] - u0;
+    w1 = a.x[1] - u1;
+    w2 = a.x[2] - u2;
+    w3 = a.x[3] - u3;
+    u0 = b.x[0] - v0;
+    u1 = b.x[1] - v1;
+    u2 = b.x[2] - v2;
+    u3 = b.x[3] - v3;
+    t0 = w0 + u0;
+    t1 = w1 + u1;
+    t2 = w2 + u2;
+    t3 = w3 + u3;
+    s1 = two_sum(s1, t0, t0);
+    qd_three_sum(s2, t0, t1);
+    qd_three_sum2(s3, t0, t2);
+    t0 = t0 + t1 + t3;
+    renorm(s0, s1, s2, s3, t0);
+    return qd_make(s0, s1, s2, s3);
+}
+
+// qd_real::sloppy_mul
+MPLAPACK_GEMM_HD qd4 qd_sloppy_mul(const qd4 &a, const qd4 &b) {
+    double p0, p1, p2, p3, p4, p5;
+    double q0, q1, q2, q3, q4, q5;
+    double t0, t1, s0, s1, s2;
+    p0 = two_prod(a.x[0], b.x[0], q0);
+    p1 = two_prod(a.x[0], b.x[1], q1);
+    p2 = two_prod(a.x[1], b.x[0], q2);
+    p3 = two_prod(a.x[0], b.x[2], q3);
+    p4 = two_prod(a.x[1], b.x[1], q4);
+    p5 = two_prod(a.x[2], b.x[0], q5);
+    qd_three_sum(p1, p2, q0);
+    qd_three_sum(p2, q1, q2);
+    qd_three_sum(p3, p4, p5);
+    s0 = two_sum(p2, p3, t0);
+    s1 = two_sum(q1, p4, t1);
+    s2 = q2 + p5;
+    s1 = two_sum(s1, t0, t0);
+    s2 += (t0 + t1);
+    s1 += a.x[0] * b.x[3] + a.x[1] * b.x[2] + a.x[2] * b.x[1] + a.x[3] * b.x[0] + q0 + q3 + q4 + q5;
+    renorm(p0, p1, s0, s1, s2);
+    return qd_make(p0, p1, s0, s1);
+}
 
 } // namespace mplapack_gemm
 
