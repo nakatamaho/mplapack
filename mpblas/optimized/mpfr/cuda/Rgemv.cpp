@@ -31,9 +31,8 @@
 // (../../common/blas/Rgemv_omp.cpp: lane-parallel OpenMP, else the reference
 // code).
 
-#include <mpblas_mpfr.h>
+#include <mpblas_mpfr_cuda.h>
 
-bool Rgemv_mpfr_cuda(const char *trans, mplapackint const m, mplapackint const n, mpfr_class const alpha, mpfr_class *a, mplapackint const lda, mpfr_class *x, mplapackint const incx, mpfr_class const beta, mpfr_class *y, mplapackint const incy);
 bool Rgemv_omp(const char *trans, mplapackint const m, mplapackint const n, mpfr_class const alpha, mpfr_class *a, mplapackint const lda, mpfr_class *x, mplapackint const incx, mpfr_class const beta, mpfr_class *y, mplapackint const incy);
 void Rgemv_reference_cpu(const char *trans, mplapackint const m, mplapackint const n, mpfr_class const alpha, mpfr_class *a, mplapackint const lda, mpfr_class *x, mplapackint const incx, mpfr_class const beta, mpfr_class *y, mplapackint const incy);
 

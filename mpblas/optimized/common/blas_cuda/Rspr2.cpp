@@ -33,14 +33,14 @@
 // reference result bit for bit.
 
 #include <mpblas.h>
+#include "../Rblas_cuda_entry_common.h"
 
-bool Rspr2_gpu(const char *uplo, INTEGER const n, REAL const alpha, REAL *x, INTEGER const incx, REAL *y, INTEGER const incy, REAL *ap);
 bool Rspr2_omp(const char *uplo, INTEGER const n, REAL const alpha, REAL *x, INTEGER const incx, REAL *y, INTEGER const incy, REAL *ap);
 void Rspr2_reference_cpu(const char *uplo, INTEGER const n, REAL const alpha, REAL *x, INTEGER const incx, REAL *y, INTEGER const incy, REAL *ap);
 
 void Rspr2(const char *uplo, INTEGER const n, REAL const alpha, REAL *x, INTEGER const incx, REAL *y, INTEGER const incy, REAL *ap)
 {
-    if (Rspr2_gpu(uplo, n, alpha, x, incx, y, incy, ap))
+    if (MPLAPACK_CUDA_ENTRY(Rspr2)(uplo, n, alpha, x, incx, y, incy, ap))
         return;
     if (Rspr2_omp(uplo, n, alpha, x, incx, y, incy, ap))
         return;

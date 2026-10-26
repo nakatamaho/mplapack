@@ -35,13 +35,12 @@
  */
 
 #include <cstdlib>
-#include <mpblas_dd.h>
+#include <mpblas_dd_cuda.h>
 
 void Rgemm_NN_omp(mplapackint m, mplapackint n, mplapackint k, dd_real alpha, dd_real * A, mplapackint lda, dd_real * B, mplapackint ldb, dd_real beta, dd_real * C, mplapackint ldc);
 void Rgemm_TN_omp(mplapackint m, mplapackint n, mplapackint k, dd_real alpha, dd_real * A, mplapackint lda, dd_real * B, mplapackint ldb, dd_real beta, dd_real * C, mplapackint ldc);
 void Rgemm_NT_omp(mplapackint m, mplapackint n, mplapackint k, dd_real alpha, dd_real * A, mplapackint lda, dd_real * B, mplapackint ldb, dd_real beta, dd_real * C, mplapackint ldc);
 void Rgemm_TT_omp(mplapackint m, mplapackint n, mplapackint k, dd_real alpha, dd_real * A, mplapackint lda, dd_real * B, mplapackint ldb, dd_real beta, dd_real * C, mplapackint ldc);
-bool Rgemm_gpu(bool nota, bool notb, mplapackint m, mplapackint n, mplapackint k, dd_real alpha, dd_real *A, mplapackint lda, dd_real *B, mplapackint ldb, dd_real beta, dd_real *C, mplapackint ldc);
 void Rgemm_fermi(const char *transa, const char *transb, mplapackint m, mplapackint n, mplapackint k, dd_real alpha, dd_real *A, mplapackint lda, dd_real *B, mplapackint ldb, dd_real beta, dd_real *C, mplapackint ldc);
 bool Rgemm_blocked_omp(bool nota, bool notb, mplapackint m, mplapackint n, mplapackint k, dd_real alpha, dd_real *A, mplapackint lda, dd_real *B, mplapackint ldb, dd_real beta, dd_real *C, mplapackint ldc);
 void Rgemm_ref(const char *transa, const char *transb, mplapackint m, mplapackint n, mplapackint k, dd_real alpha, dd_real * A, mplapackint lda, dd_real * B, mplapackint ldb, dd_real beta, dd_real * C, mplapackint ldc);
@@ -123,7 +122,7 @@ void Rgemm(const char *transa, const char *transb, mplapackint const m, mplapack
 	return;
     }
 //Start the operations.
-    if (Rgemm_gpu(nota != 0, notb != 0, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc))
+    if (Rgemm_dd_cuda(transa, transb, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc))
 	return;
     if (Rgemm_blocked_omp(nota != 0, notb != 0, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc))
 	return;

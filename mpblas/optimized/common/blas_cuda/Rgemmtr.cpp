@@ -32,14 +32,14 @@
 // reference result bit for bit.
 
 #include <mpblas.h>
+#include "../Rblas_cuda_entry_common.h"
 
-bool Rgemmtr_gpu(const char *uplo, const char *transa, const char *transb, INTEGER const n, INTEGER const k, REAL const alpha, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL const beta, REAL *c, INTEGER const ldc);
 bool Rgemmtr_omp(const char *uplo, const char *transa, const char *transb, INTEGER const n, INTEGER const k, REAL const alpha, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL const beta, REAL *c, INTEGER const ldc);
 void Rgemmtr_reference_cpu(const char *uplo, const char *transa, const char *transb, INTEGER const n, INTEGER const k, REAL const alpha, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL const beta, REAL *c, INTEGER const ldc);
 
 void Rgemmtr(const char *uplo, const char *transa, const char *transb, INTEGER const n, INTEGER const k, REAL const alpha, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL const beta, REAL *c, INTEGER const ldc)
 {
-    if (Rgemmtr_gpu(uplo, transa, transb, n, k, alpha, a, lda, b, ldb, beta, c, ldc))
+    if (MPLAPACK_CUDA_ENTRY(Rgemmtr)(uplo, transa, transb, n, k, alpha, a, lda, b, ldb, beta, c, ldc))
         return;
     if (Rgemmtr_omp(uplo, transa, transb, n, k, alpha, a, lda, b, ldb, beta, c, ldc))
         return;

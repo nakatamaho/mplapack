@@ -31,9 +31,8 @@
 // (../../common/blas/Rscal_omp.cpp: lane-parallel OpenMP, else the reference
 // code).
 
-#include <mpblas_mpfr.h>
+#include <mpblas_mpfr_cuda.h>
 
-bool Rscal_mpfr_cuda(mplapackint const n, mpfr_class const da, mpfr_class *dx, mplapackint const incx);
 bool Rscal_omp(mplapackint const n, mpfr_class const da, mpfr_class *dx, mplapackint const incx);
 void Rscal_reference_cpu(mplapackint const n, mpfr_class const da, mpfr_class *dx, mplapackint const incx);
 

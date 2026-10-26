@@ -32,14 +32,14 @@
 // All of them give the reference result bit for bit.
 
 #include <mpblas.h>
+#include "../Rblas_cuda_entry_common.h"
 
-bool Rtrsm_gpu(const char *side, const char *uplo, const char *transa, const char *diag, INTEGER const m, INTEGER const n, REAL const alpha, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb);
 bool Rtrsm_omp(const char *side, const char *uplo, const char *transa, const char *diag, INTEGER const m, INTEGER const n, REAL const alpha, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb);
 void Rtrsm_reference_cpu(const char *side, const char *uplo, const char *transa, const char *diag, INTEGER const m, INTEGER const n, REAL const alpha, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb);
 
 void Rtrsm(const char *side, const char *uplo, const char *transa, const char *diag, INTEGER const m, INTEGER const n, REAL const alpha, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb)
 {
-    if (Rtrsm_gpu(side, uplo, transa, diag, m, n, alpha, a, lda, b, ldb))
+    if (MPLAPACK_CUDA_ENTRY(Rtrsm)(side, uplo, transa, diag, m, n, alpha, a, lda, b, ldb))
         return;
     if (Rtrsm_omp(side, uplo, transa, diag, m, n, alpha, a, lda, b, ldb))
         return;

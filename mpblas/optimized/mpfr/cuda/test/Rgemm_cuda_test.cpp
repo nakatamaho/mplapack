@@ -41,7 +41,7 @@
  * Ineligible calls must return false and leave C unchanged.
  */
 
-#include <mpblas_mpfr.h>
+#include <mpblas_mpfr_cuda.h>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -51,7 +51,6 @@ namespace mplapack_mpfr_cuda {
 int device_count();
 }
 
-bool Rgemm_mpfr_cuda(bool nota, bool notb, mplapackint m, mplapackint n, mplapackint k, const mpfr_class &alpha, const mpfr_class *A, mplapackint lda, const mpfr_class *B, mplapackint ldb, const mpfr_class &beta, mpfr_class *C, mplapackint ldc);
 
 namespace {
 
@@ -135,7 +134,7 @@ void check_eligible(int prec, const char *ta, const char *tb, mplapackint m, mpl
 
     std::vector<mpfr_class> Cref(C0), Cgpu(C0);
     Rgemm(ta, tb, m, n, k, alpha, A.data(), lda, B.data(), ldb, beta, Cref.data(), ldc);
-    bool used = Rgemm_mpfr_cuda(nota, notb, m, n, k, alpha, A.data(), lda, B.data(), ldb, beta, Cgpu.data(), ldc);
+    bool used = Rgemm_mpfr_cuda(ta, tb, m, n, k, alpha, A.data(), lda, B.data(), ldb, beta, Cgpu.data(), ldc);
     if (!used) {
         std::printf("FAIL prec=%d %s%s m=%ld n=%ld k=%ld beta=%g alpha_kind=%d: GPU path not taken\n", prec, ta, tb, (long)m, (long)n, (long)k, beta_d, alpha_kind);
         failures++;
@@ -184,7 +183,7 @@ void check_ineligible(int prec)
         std::vector<mpfr_class> before(C2);
         if (c.kind == 4)
             mpfr_set_default_rounding_mode(MPFR_RNDZ);
-        bool used = Rgemm_mpfr_cuda(true, true, m, n, k, alpha, A2.data(), m, B2.data(), k, beta, C2.data(), m);
+        bool used = Rgemm_mpfr_cuda("N", "N", m, n, k, alpha, A2.data(), m, B2.data(), k, beta, C2.data(), m);
         mpfr_set_default_rounding_mode(MPFR_RNDN);
         bool unchanged = true;
         for (size_t t = 0; t < C2.size(); t++)
@@ -238,7 +237,7 @@ int main()
         fill(C);
         mpfr_class alpha = 1.0, beta = 1.0;
         mpfrxx::set_default_precision_bits(320);
-        bool used = Rgemm_mpfr_cuda(true, true, 8, 8, 8, alpha, A.data(), 8, B.data(), 8, beta, C.data(), 8);
+        bool used = Rgemm_mpfr_cuda("N", "N", 8, 8, 8, alpha, A.data(), 8, B.data(), 8, beta, C.data(), 8);
         if (used) {
             std::printf("FAIL operands at 256 bits with default precision 320 were taken by the GPU path\n");
             failures++;

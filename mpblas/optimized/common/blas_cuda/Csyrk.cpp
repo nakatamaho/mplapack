@@ -32,14 +32,14 @@
 // reference result bit for bit.
 
 #include <mpblas.h>
+#include "../Rblas_cuda_entry_common.h"
 
-bool Csyrk_gpu(const char *uplo, const char *trans, INTEGER const n, INTEGER const k, COMPLEX const alpha, COMPLEX *a, INTEGER const lda, COMPLEX const beta, COMPLEX *c, INTEGER const ldc);
 bool Csyrk_omp(const char *uplo, const char *trans, INTEGER const n, INTEGER const k, COMPLEX const alpha, COMPLEX *a, INTEGER const lda, COMPLEX const beta, COMPLEX *c, INTEGER const ldc);
 void Csyrk_reference_cpu(const char *uplo, const char *trans, INTEGER const n, INTEGER const k, COMPLEX const alpha, COMPLEX *a, INTEGER const lda, COMPLEX const beta, COMPLEX *c, INTEGER const ldc);
 
 void Csyrk(const char *uplo, const char *trans, INTEGER const n, INTEGER const k, COMPLEX const alpha, COMPLEX *a, INTEGER const lda, COMPLEX const beta, COMPLEX *c, INTEGER const ldc)
 {
-    if (Csyrk_gpu(uplo, trans, n, k, alpha, a, lda, beta, c, ldc))
+    if (MPLAPACK_CUDA_ENTRY(Csyrk)(uplo, trans, n, k, alpha, a, lda, beta, c, ldc))
         return;
     if (Csyrk_omp(uplo, trans, n, k, alpha, a, lda, beta, c, ldc))
         return;

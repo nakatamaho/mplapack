@@ -28,16 +28,21 @@
 
 // Host side of the qd CUDA Rgemm (../../common/Rgemm_cuda_bridge_common.h).
 
-#include <mpblas_qd.h>
+#include <mpblas_qd_cuda.h>
 #include "../../common/Rgemm_cuda_bridge_common.h"
+#include "../../common/Rgemm_entry_common.h"
 
 namespace mplapack_gemm {
 template <> struct ozaki_traits<qd_real> : qd_like_ozaki_traits<qd_real, 212, 4> {};
 } // namespace mplapack_gemm
 
-// Runs C := alpha*op(A)*op(B) + beta*C on the GPU; false when the call is
-// left to the CPU.  alpha != 0 and m, n > 0 are assumed.
-bool Rgemm_gpu(bool nota, bool notb, mplapackint m, mplapackint n, mplapackint k, qd_real alpha, qd_real *A, mplapackint lda, qd_real *B, mplapackint ldb, qd_real beta, qd_real *C, mplapackint ldc) {
+// Entry point (include/mpblas_qd_cuda.h): C := alpha*op(A)*op(B) + beta*C
+// on the GPU; false, C untouched, when the call is not computed there
+// (invalid arguments, quick returns, alpha == 0, ineligible calls, errors).
+bool Rgemm_qd_cuda(const char *transa, const char *transb, mplapackint const m, mplapackint const n, mplapackint const k, qd_real const alpha, qd_real *A, mplapackint const lda, qd_real *B, mplapackint const ldb, qd_real const beta, qd_real *C, mplapackint const ldc) {
+    bool nota, notb;
+    if (!mplapack_gemm::gemm_entry_args(transa, transb, m, n, k, lda, ldb, ldc, alpha == 0.0, beta == 1.0, nota, notb) || alpha == 0.0)
+        return false;
     const mplapack_gemm::shape s = {nota, notb, (long)m, (long)n, (long)k, (long)lda, (long)ldb, (long)ldc};
     return mplapack_gemm::gemm_cuda_bridge<qd_real, mplapack_gemm::qd_ops>("MPLAPACK_QD", s, alpha, beta, A, B, C);
 }

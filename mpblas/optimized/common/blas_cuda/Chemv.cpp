@@ -33,14 +33,14 @@
 // reference result bit for bit.
 
 #include <mpblas.h>
+#include "../Rblas_cuda_entry_common.h"
 
-bool Chemv_gpu(const char *uplo, INTEGER const n, COMPLEX const alpha, COMPLEX *a, INTEGER const lda, COMPLEX *x, INTEGER const incx, COMPLEX const beta, COMPLEX *y, INTEGER const incy);
 bool Chemv_omp(const char *uplo, INTEGER const n, COMPLEX const alpha, COMPLEX *a, INTEGER const lda, COMPLEX *x, INTEGER const incx, COMPLEX const beta, COMPLEX *y, INTEGER const incy);
 void Chemv_reference_cpu(const char *uplo, INTEGER const n, COMPLEX const alpha, COMPLEX *a, INTEGER const lda, COMPLEX *x, INTEGER const incx, COMPLEX const beta, COMPLEX *y, INTEGER const incy);
 
 void Chemv(const char *uplo, INTEGER const n, COMPLEX const alpha, COMPLEX *a, INTEGER const lda, COMPLEX *x, INTEGER const incx, COMPLEX const beta, COMPLEX *y, INTEGER const incy)
 {
-    if (Chemv_gpu(uplo, n, alpha, a, lda, x, incx, beta, y, incy))
+    if (MPLAPACK_CUDA_ENTRY(Chemv)(uplo, n, alpha, a, lda, x, incx, beta, y, incy))
         return;
     if (Chemv_omp(uplo, n, alpha, a, lda, x, incx, beta, y, incy))
         return;

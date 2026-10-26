@@ -31,9 +31,8 @@
 // (../../common/blas/Rsyrk_omp.cpp: lane-parallel OpenMP, else the reference
 // code under the name Rsyrk_reference_cpu).
 
-#include <mpblas_mpfr.h>
+#include <mpblas_mpfr_cuda.h>
 
-bool Rsyrk_mpfr_cuda(const char *uplo, const char *trans, mplapackint n, mplapackint k, const mpfr_class &alpha, const mpfr_class *a, mplapackint lda, const mpfr_class &beta, mpfr_class *c, mplapackint ldc);
 void Rsyrk_reference_cpu(const char *uplo, const char *trans, mplapackint const n, mplapackint const k, mpfr_class const alpha, mpfr_class *a, mplapackint const lda, mpfr_class const beta, mpfr_class *c, mplapackint const ldc);
 bool Rsyrk_omp(const char *uplo, const char *trans, mplapackint const n, mplapackint const k, mpfr_class const alpha, mpfr_class *a, mplapackint const lda, mpfr_class const beta, mpfr_class *c, mplapackint const ldc);
 

@@ -32,14 +32,14 @@
 // All of them give the reference result bit for bit.
 
 #include <mpblas.h>
+#include "../Rblas_cuda_entry_common.h"
 
-bool Rger_gpu(INTEGER const m, INTEGER const n, REAL const alpha, REAL *x, INTEGER const incx, REAL *y, INTEGER const incy, REAL *a, INTEGER const lda);
 bool Rger_omp(INTEGER const m, INTEGER const n, REAL const alpha, REAL *x, INTEGER const incx, REAL *y, INTEGER const incy, REAL *a, INTEGER const lda);
 void Rger_reference_cpu(INTEGER const m, INTEGER const n, REAL const alpha, REAL *x, INTEGER const incx, REAL *y, INTEGER const incy, REAL *a, INTEGER const lda);
 
 void Rger(INTEGER const m, INTEGER const n, REAL const alpha, REAL *x, INTEGER const incx, REAL *y, INTEGER const incy, REAL *a, INTEGER const lda)
 {
-    if (Rger_gpu(m, n, alpha, x, incx, y, incy, a, lda))
+    if (MPLAPACK_CUDA_ENTRY(Rger)(m, n, alpha, x, incx, y, incy, a, lda))
         return;
     if (Rger_omp(m, n, alpha, x, incx, y, incy, a, lda))
         return;

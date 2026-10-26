@@ -32,14 +32,14 @@
 // reference result bit for bit.
 
 #include <mpblas.h>
+#include "../Rblas_cuda_entry_common.h"
 
-bool Cherk_gpu(const char *uplo, const char *trans, INTEGER const n, INTEGER const k, REAL const alpha, COMPLEX *a, INTEGER const lda, REAL const beta, COMPLEX *c, INTEGER const ldc);
 bool Cherk_omp(const char *uplo, const char *trans, INTEGER const n, INTEGER const k, REAL const alpha, COMPLEX *a, INTEGER const lda, REAL const beta, COMPLEX *c, INTEGER const ldc);
 void Cherk_reference_cpu(const char *uplo, const char *trans, INTEGER const n, INTEGER const k, REAL const alpha, COMPLEX *a, INTEGER const lda, REAL const beta, COMPLEX *c, INTEGER const ldc);
 
 void Cherk(const char *uplo, const char *trans, INTEGER const n, INTEGER const k, REAL const alpha, COMPLEX *a, INTEGER const lda, REAL const beta, COMPLEX *c, INTEGER const ldc)
 {
-    if (Cherk_gpu(uplo, trans, n, k, alpha, a, lda, beta, c, ldc))
+    if (MPLAPACK_CUDA_ENTRY(Cherk)(uplo, trans, n, k, alpha, a, lda, beta, c, ldc))
         return;
     if (Cherk_omp(uplo, trans, n, k, alpha, a, lda, beta, c, ldc))
         return;

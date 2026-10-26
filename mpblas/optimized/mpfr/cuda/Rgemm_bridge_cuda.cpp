@@ -30,9 +30,10 @@
 /*
  * Bridge between mpfr_class matrices and the CUDA Rgemm.
  *
- * Rgemm_mpfr_cuda() returns true when it has computed C on the GPU, and false
- * (leaving C untouched) when the call is not eligible, so that Rgemm falls back
- * to the CPU code.  A call is eligible when
+ * The entry point Rgemm_mpfr_cuda() (include/mpblas_mpfr_cuda.h) returns
+ * true when it has computed C on the GPU, and false (leaving C untouched)
+ * when the call is not eligible, so that Rgemm falls back to the CPU code.
+ * A call is eligible when
  *   - the MPFR default precision, alpha, beta and every referenced element of
  *     A, B and C have the same precision p,
  *   - the MPFR default rounding mode is MPFR_RNDN,
@@ -56,7 +57,9 @@
  * by default.
  */
 
+#include <mpblas_mpfr_cuda.h>
 #include "mpfr_pack_cuda.h"
+#include "../../common/Rgemm_entry_common.h"
 #include "Rgemm_winograd_cuda.h"
 
 namespace {
@@ -162,8 +165,13 @@ bool run_rt(mpfr_prec_t prec, bool nota, bool notb, mplapackint m, mplapackint n
 
 } // namespace
 
-bool Rgemm_mpfr_cuda(bool nota, bool notb, mplapackint m, mplapackint n, mplapackint k, const mpfr_class &alpha, const mpfr_class *A, mplapackint lda, const mpfr_class *B, mplapackint ldb, const mpfr_class &beta, mpfr_class *C, mplapackint ldc)
+// Entry point (include/mpblas_mpfr_cuda.h).  Invalid arguments, the quick
+// returns of Rgemm and alpha == 0 are left to the caller.
+bool Rgemm_mpfr_cuda(const char *transa, const char *transb, mplapackint const m, mplapackint const n, mplapackint const k, mpfr_class const alpha, mpfr_class *A, mplapackint const lda, mpfr_class *B, mplapackint const ldb, mpfr_class const beta, mpfr_class *C, mplapackint const ldc)
 {
+    bool nota, notb;
+    if (!mplapack_gemm::gemm_entry_args(transa, transb, m, n, k, lda, ldb, ldc, alpha == 0.0, beta == 1.0, nota, notb) || alpha == 0.0)
+        return false;
     if (!cuda_enabled() || (double)m * n * k < (double)min_mnk())
         return false;
     if (mpfr_get_default_rounding_mode() != MPFR_RNDN)

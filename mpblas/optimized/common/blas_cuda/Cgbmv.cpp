@@ -33,14 +33,14 @@
 // reference result bit for bit.
 
 #include <mpblas.h>
+#include "../Rblas_cuda_entry_common.h"
 
-bool Cgbmv_gpu(const char *trans, INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku, COMPLEX const alpha, COMPLEX *a, INTEGER const lda, COMPLEX *x, INTEGER const incx, COMPLEX const beta, COMPLEX *y, INTEGER const incy);
 bool Cgbmv_omp(const char *trans, INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku, COMPLEX const alpha, COMPLEX *a, INTEGER const lda, COMPLEX *x, INTEGER const incx, COMPLEX const beta, COMPLEX *y, INTEGER const incy);
 void Cgbmv_reference_cpu(const char *trans, INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku, COMPLEX const alpha, COMPLEX *a, INTEGER const lda, COMPLEX *x, INTEGER const incx, COMPLEX const beta, COMPLEX *y, INTEGER const incy);
 
 void Cgbmv(const char *trans, INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku, COMPLEX const alpha, COMPLEX *a, INTEGER const lda, COMPLEX *x, INTEGER const incx, COMPLEX const beta, COMPLEX *y, INTEGER const incy)
 {
-    if (Cgbmv_gpu(trans, m, n, kl, ku, alpha, a, lda, x, incx, beta, y, incy))
+    if (MPLAPACK_CUDA_ENTRY(Cgbmv)(trans, m, n, kl, ku, alpha, a, lda, x, incx, beta, y, incy))
         return;
     if (Cgbmv_omp(trans, m, n, kl, ku, alpha, a, lda, x, incx, beta, y, incy))
         return;

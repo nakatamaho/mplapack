@@ -41,6 +41,7 @@
 
 #include <algorithm>
 #include "../Cblas_cuda_jobs_common.h"
+#include "../Rblas_cuda_entry_common.h"
 
 namespace mplapack_cblas_gpu {
 
@@ -602,82 +603,82 @@ template <class Ops, class X> bool Chpr2_gpu_t(X &ctx, const char *uplo, INTEGER
 // translation unit that defines the macro RUN(F, ...): it calls
 // mplapack_cblas_gpu::F<Ops>(ctx, __VA_ARGS__) with its X ctx.
 #define MPLAPACK_CBLAS_GPU_FUNCTION_Cgemm(RUN) \
-    bool Cgemm_gpu(const char *transa, const char *transb, INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX const alpha, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, COMPLEX const beta, COMPLEX *c, INTEGER const ldc) { return RUN(Cgemm_gpu_t, transa, transb, m, n, k, alpha, a, lda, b, ldb, beta, c, ldc); }
+    bool MPLAPACK_CUDA_ENTRY(Cgemm)(const char *transa, const char *transb, INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX const alpha, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, COMPLEX const beta, COMPLEX *c, INTEGER const ldc) { return RUN(Cgemm_gpu_t, transa, transb, m, n, k, alpha, a, lda, b, ldb, beta, c, ldc); }
 #define MPLAPACK_CBLAS_GPU_FUNCTION_Csymm(RUN) \
-    bool Csymm_gpu(const char *side, const char *uplo, INTEGER const m, INTEGER const n, COMPLEX const alpha, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, COMPLEX const beta, COMPLEX *c, INTEGER const ldc) { return RUN(Csymm_gpu_t, side, uplo, m, n, alpha, a, lda, b, ldb, beta, c, ldc); }
+    bool MPLAPACK_CUDA_ENTRY(Csymm)(const char *side, const char *uplo, INTEGER const m, INTEGER const n, COMPLEX const alpha, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, COMPLEX const beta, COMPLEX *c, INTEGER const ldc) { return RUN(Csymm_gpu_t, side, uplo, m, n, alpha, a, lda, b, ldb, beta, c, ldc); }
 #define MPLAPACK_CBLAS_GPU_FUNCTION_Chemm(RUN) \
-    bool Chemm_gpu(const char *side, const char *uplo, INTEGER const m, INTEGER const n, COMPLEX const alpha, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, COMPLEX const beta, COMPLEX *c, INTEGER const ldc) { return RUN(Chemm_gpu_t, side, uplo, m, n, alpha, a, lda, b, ldb, beta, c, ldc); }
+    bool MPLAPACK_CUDA_ENTRY(Chemm)(const char *side, const char *uplo, INTEGER const m, INTEGER const n, COMPLEX const alpha, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, COMPLEX const beta, COMPLEX *c, INTEGER const ldc) { return RUN(Chemm_gpu_t, side, uplo, m, n, alpha, a, lda, b, ldb, beta, c, ldc); }
 #define MPLAPACK_CBLAS_GPU_FUNCTION_Ctrmm(RUN) \
-    bool Ctrmm_gpu(const char *side, const char *uplo, const char *transa, const char *diag, INTEGER const m, INTEGER const n, COMPLEX const alpha, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb) { return RUN(Ctrmm_gpu_t, side, uplo, transa, diag, m, n, alpha, a, lda, b, ldb); }
+    bool MPLAPACK_CUDA_ENTRY(Ctrmm)(const char *side, const char *uplo, const char *transa, const char *diag, INTEGER const m, INTEGER const n, COMPLEX const alpha, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb) { return RUN(Ctrmm_gpu_t, side, uplo, transa, diag, m, n, alpha, a, lda, b, ldb); }
 #define MPLAPACK_CBLAS_GPU_FUNCTION_Ctrsm(RUN) \
-    bool Ctrsm_gpu(const char *side, const char *uplo, const char *transa, const char *diag, INTEGER const m, INTEGER const n, COMPLEX const alpha, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb) { return RUN(Ctrsm_gpu_t, side, uplo, transa, diag, m, n, alpha, a, lda, b, ldb); }
+    bool MPLAPACK_CUDA_ENTRY(Ctrsm)(const char *side, const char *uplo, const char *transa, const char *diag, INTEGER const m, INTEGER const n, COMPLEX const alpha, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb) { return RUN(Ctrsm_gpu_t, side, uplo, transa, diag, m, n, alpha, a, lda, b, ldb); }
 #define MPLAPACK_CBLAS_GPU_FUNCTION_Cgemv(RUN) \
-    bool Cgemv_gpu(const char *trans, INTEGER const m, INTEGER const n, COMPLEX const alpha, COMPLEX *a, INTEGER const lda, COMPLEX *x, INTEGER const incx, COMPLEX const beta, COMPLEX *y, INTEGER const incy) { return RUN(Cgemv_gpu_t, trans, m, n, alpha, a, lda, x, incx, beta, y, incy); }
+    bool MPLAPACK_CUDA_ENTRY(Cgemv)(const char *trans, INTEGER const m, INTEGER const n, COMPLEX const alpha, COMPLEX *a, INTEGER const lda, COMPLEX *x, INTEGER const incx, COMPLEX const beta, COMPLEX *y, INTEGER const incy) { return RUN(Cgemv_gpu_t, trans, m, n, alpha, a, lda, x, incx, beta, y, incy); }
 #define MPLAPACK_CBLAS_GPU_FUNCTION_Cgeru(RUN) \
-    bool Cgeru_gpu(INTEGER const m, INTEGER const n, COMPLEX const alpha, COMPLEX *x, INTEGER const incx, COMPLEX *y, INTEGER const incy, COMPLEX *a, INTEGER const lda) { return RUN(Cgeru_gpu_t, m, n, alpha, x, incx, y, incy, a, lda); }
+    bool MPLAPACK_CUDA_ENTRY(Cgeru)(INTEGER const m, INTEGER const n, COMPLEX const alpha, COMPLEX *x, INTEGER const incx, COMPLEX *y, INTEGER const incy, COMPLEX *a, INTEGER const lda) { return RUN(Cgeru_gpu_t, m, n, alpha, x, incx, y, incy, a, lda); }
 #define MPLAPACK_CBLAS_GPU_FUNCTION_Cgerc(RUN) \
-    bool Cgerc_gpu(INTEGER const m, INTEGER const n, COMPLEX const alpha, COMPLEX *x, INTEGER const incx, COMPLEX *y, INTEGER const incy, COMPLEX *a, INTEGER const lda) { return RUN(Cgerc_gpu_t, m, n, alpha, x, incx, y, incy, a, lda); }
+    bool MPLAPACK_CUDA_ENTRY(Cgerc)(INTEGER const m, INTEGER const n, COMPLEX const alpha, COMPLEX *x, INTEGER const incx, COMPLEX *y, INTEGER const incy, COMPLEX *a, INTEGER const lda) { return RUN(Cgerc_gpu_t, m, n, alpha, x, incx, y, incy, a, lda); }
 #define MPLAPACK_CBLAS_GPU_FUNCTION_Caxpy(RUN) \
-    bool Caxpy_gpu(INTEGER const n, COMPLEX const za, COMPLEX *zx, INTEGER const incx, COMPLEX *zy, INTEGER const incy) { return RUN(Caxpy_gpu_t, n, za, zx, incx, zy, incy); }
+    bool MPLAPACK_CUDA_ENTRY(Caxpy)(INTEGER const n, COMPLEX const za, COMPLEX *zx, INTEGER const incx, COMPLEX *zy, INTEGER const incy) { return RUN(Caxpy_gpu_t, n, za, zx, incx, zy, incy); }
 #define MPLAPACK_CBLAS_GPU_FUNCTION_Ccopy(RUN) \
-    bool Ccopy_gpu(INTEGER const n, COMPLEX *zx, INTEGER const incx, COMPLEX *zy, INTEGER const incy) { return RUN(Ccopy_gpu_t, n, zx, incx, zy, incy); }
+    bool MPLAPACK_CUDA_ENTRY(Ccopy)(INTEGER const n, COMPLEX *zx, INTEGER const incx, COMPLEX *zy, INTEGER const incy) { return RUN(Ccopy_gpu_t, n, zx, incx, zy, incy); }
 #define MPLAPACK_CBLAS_GPU_FUNCTION_Cswap(RUN) \
-    bool Cswap_gpu(INTEGER const n, COMPLEX *zx, INTEGER const incx, COMPLEX *zy, INTEGER const incy) { return RUN(Cswap_gpu_t, n, zx, incx, zy, incy); }
+    bool MPLAPACK_CUDA_ENTRY(Cswap)(INTEGER const n, COMPLEX *zx, INTEGER const incx, COMPLEX *zy, INTEGER const incy) { return RUN(Cswap_gpu_t, n, zx, incx, zy, incy); }
 #define MPLAPACK_CBLAS_GPU_FUNCTION_CRrot(RUN) \
-    bool CRrot_gpu(INTEGER const n, COMPLEX *zx, INTEGER const incx, COMPLEX *zy, INTEGER const incy, REAL const c, REAL const s) { return RUN(CRrot_gpu_t, n, zx, incx, zy, incy, c, s); }
+    bool MPLAPACK_CUDA_ENTRY(CRrot)(INTEGER const n, COMPLEX *zx, INTEGER const incx, COMPLEX *zy, INTEGER const incy, REAL const c, REAL const s) { return RUN(CRrot_gpu_t, n, zx, incx, zy, incy, c, s); }
 #define MPLAPACK_CBLAS_GPU_FUNCTION_Cscal(RUN) \
-    bool Cscal_gpu(INTEGER const n, COMPLEX const za, COMPLEX *zx, INTEGER const incx) { return RUN(Cscal_gpu_t, n, za, zx, incx); }
+    bool MPLAPACK_CUDA_ENTRY(Cscal)(INTEGER const n, COMPLEX const za, COMPLEX *zx, INTEGER const incx) { return RUN(Cscal_gpu_t, n, za, zx, incx); }
 #define MPLAPACK_CBLAS_GPU_FUNCTION_CRscal(RUN) \
-    bool CRscal_gpu(INTEGER const n, REAL const da, COMPLEX *zx, INTEGER const incx) { return RUN(CRscal_gpu_t, n, da, zx, incx); }
+    bool MPLAPACK_CUDA_ENTRY(CRscal)(INTEGER const n, REAL const da, COMPLEX *zx, INTEGER const incx) { return RUN(CRscal_gpu_t, n, da, zx, incx); }
 #define MPLAPACK_CBLAS_GPU_FUNCTION_Csyrk(RUN) \
-    bool Csyrk_gpu(const char *uplo, const char *trans, INTEGER const n, INTEGER const k, COMPLEX const alpha, COMPLEX *a, INTEGER const lda, COMPLEX const beta, COMPLEX *c, INTEGER const ldc) { return RUN(Csyrk_gpu_t, uplo, trans, n, k, alpha, a, lda, beta, c, ldc); }
+    bool MPLAPACK_CUDA_ENTRY(Csyrk)(const char *uplo, const char *trans, INTEGER const n, INTEGER const k, COMPLEX const alpha, COMPLEX *a, INTEGER const lda, COMPLEX const beta, COMPLEX *c, INTEGER const ldc) { return RUN(Csyrk_gpu_t, uplo, trans, n, k, alpha, a, lda, beta, c, ldc); }
 #define MPLAPACK_CBLAS_GPU_FUNCTION_Cherk(RUN) \
-    bool Cherk_gpu(const char *uplo, const char *trans, INTEGER const n, INTEGER const k, REAL const alpha, COMPLEX *a, INTEGER const lda, REAL const beta, COMPLEX *c, INTEGER const ldc) { return RUN(Cherk_gpu_t, uplo, trans, n, k, alpha, a, lda, beta, c, ldc); }
+    bool MPLAPACK_CUDA_ENTRY(Cherk)(const char *uplo, const char *trans, INTEGER const n, INTEGER const k, REAL const alpha, COMPLEX *a, INTEGER const lda, REAL const beta, COMPLEX *c, INTEGER const ldc) { return RUN(Cherk_gpu_t, uplo, trans, n, k, alpha, a, lda, beta, c, ldc); }
 #define MPLAPACK_CBLAS_GPU_FUNCTION_Csyr2k(RUN) \
-    bool Csyr2k_gpu(const char *uplo, const char *trans, INTEGER const n, INTEGER const k, COMPLEX const alpha, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, COMPLEX const beta, COMPLEX *c, INTEGER const ldc) { return RUN(Csyr2k_gpu_t, uplo, trans, n, k, alpha, a, lda, b, ldb, beta, c, ldc); }
+    bool MPLAPACK_CUDA_ENTRY(Csyr2k)(const char *uplo, const char *trans, INTEGER const n, INTEGER const k, COMPLEX const alpha, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, COMPLEX const beta, COMPLEX *c, INTEGER const ldc) { return RUN(Csyr2k_gpu_t, uplo, trans, n, k, alpha, a, lda, b, ldb, beta, c, ldc); }
 #define MPLAPACK_CBLAS_GPU_FUNCTION_Cher2k(RUN) \
-    bool Cher2k_gpu(const char *uplo, const char *trans, INTEGER const n, INTEGER const k, COMPLEX const alpha, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, REAL const beta, COMPLEX *c, INTEGER const ldc) { return RUN(Cher2k_gpu_t, uplo, trans, n, k, alpha, a, lda, b, ldb, beta, c, ldc); }
+    bool MPLAPACK_CUDA_ENTRY(Cher2k)(const char *uplo, const char *trans, INTEGER const n, INTEGER const k, COMPLEX const alpha, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, REAL const beta, COMPLEX *c, INTEGER const ldc) { return RUN(Cher2k_gpu_t, uplo, trans, n, k, alpha, a, lda, b, ldb, beta, c, ldc); }
 #define MPLAPACK_CBLAS_GPU_FUNCTION_Cgemmtr(RUN) \
-    bool Cgemmtr_gpu(const char *uplo, const char *transa, const char *transb, INTEGER const n, INTEGER const k, COMPLEX const alpha, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, COMPLEX const beta, COMPLEX *c, INTEGER const ldc) { return RUN(Cgemmtr_gpu_t, uplo, transa, transb, n, k, alpha, a, lda, b, ldb, beta, c, ldc); }
+    bool MPLAPACK_CUDA_ENTRY(Cgemmtr)(const char *uplo, const char *transa, const char *transb, INTEGER const n, INTEGER const k, COMPLEX const alpha, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, COMPLEX const beta, COMPLEX *c, INTEGER const ldc) { return RUN(Cgemmtr_gpu_t, uplo, transa, transb, n, k, alpha, a, lda, b, ldb, beta, c, ldc); }
 #define MPLAPACK_CBLAS_GPU_FUNCTION_Rgemmtr(RUN) \
-    bool Rgemmtr_gpu(const char *uplo, const char *transa, const char *transb, INTEGER const n, INTEGER const k, REAL const alpha, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL const beta, REAL *c, INTEGER const ldc) { return RUN(Rgemmtr_gpu_t, uplo, transa, transb, n, k, alpha, a, lda, b, ldb, beta, c, ldc); }
+    bool MPLAPACK_CUDA_ENTRY(Rgemmtr)(const char *uplo, const char *transa, const char *transb, INTEGER const n, INTEGER const k, REAL const alpha, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL const beta, REAL *c, INTEGER const ldc) { return RUN(Rgemmtr_gpu_t, uplo, transa, transb, n, k, alpha, a, lda, b, ldb, beta, c, ldc); }
 #define MPLAPACK_CBLAS_GPU_FUNCTION_Cher(RUN) \
-    bool Cher_gpu(const char *uplo, INTEGER const n, REAL const alpha, COMPLEX *x, INTEGER const incx, COMPLEX *a, INTEGER const lda) { return RUN(Cher_gpu_t, uplo, n, alpha, x, incx, a, lda); }
+    bool MPLAPACK_CUDA_ENTRY(Cher)(const char *uplo, INTEGER const n, REAL const alpha, COMPLEX *x, INTEGER const incx, COMPLEX *a, INTEGER const lda) { return RUN(Cher_gpu_t, uplo, n, alpha, x, incx, a, lda); }
 #define MPLAPACK_CBLAS_GPU_FUNCTION_Cher2(RUN) \
-    bool Cher2_gpu(const char *uplo, INTEGER const n, COMPLEX const alpha, COMPLEX *x, INTEGER const incx, COMPLEX *y, INTEGER const incy, COMPLEX *a, INTEGER const lda) { return RUN(Cher2_gpu_t, uplo, n, alpha, x, incx, y, incy, a, lda); }
+    bool MPLAPACK_CUDA_ENTRY(Cher2)(const char *uplo, INTEGER const n, COMPLEX const alpha, COMPLEX *x, INTEGER const incx, COMPLEX *y, INTEGER const incy, COMPLEX *a, INTEGER const lda) { return RUN(Cher2_gpu_t, uplo, n, alpha, x, incx, y, incy, a, lda); }
 
 #define MPLAPACK_CBLAS_GPU_FUNCTION_Chemv(RUN) \
-    bool Chemv_gpu(const char *uplo, INTEGER const n, COMPLEX const alpha, COMPLEX *a, INTEGER const lda, COMPLEX *x, INTEGER const incx, COMPLEX const beta, COMPLEX *y, INTEGER const incy) { return RUN(Chemv_gpu_t, uplo, n, alpha, a, lda, x, incx, beta, y, incy); }
+    bool MPLAPACK_CUDA_ENTRY(Chemv)(const char *uplo, INTEGER const n, COMPLEX const alpha, COMPLEX *a, INTEGER const lda, COMPLEX *x, INTEGER const incx, COMPLEX const beta, COMPLEX *y, INTEGER const incy) { return RUN(Chemv_gpu_t, uplo, n, alpha, a, lda, x, incx, beta, y, incy); }
 #define MPLAPACK_CBLAS_GPU_FUNCTION_Chbmv(RUN) \
-    bool Chbmv_gpu(const char *uplo, INTEGER const n, INTEGER const k, COMPLEX const alpha, COMPLEX *a, INTEGER const lda, COMPLEX *x, INTEGER const incx, COMPLEX const beta, COMPLEX *y, INTEGER const incy) { return RUN(Chbmv_gpu_t, uplo, n, k, alpha, a, lda, x, incx, beta, y, incy); }
+    bool MPLAPACK_CUDA_ENTRY(Chbmv)(const char *uplo, INTEGER const n, INTEGER const k, COMPLEX const alpha, COMPLEX *a, INTEGER const lda, COMPLEX *x, INTEGER const incx, COMPLEX const beta, COMPLEX *y, INTEGER const incy) { return RUN(Chbmv_gpu_t, uplo, n, k, alpha, a, lda, x, incx, beta, y, incy); }
 #define MPLAPACK_CBLAS_GPU_FUNCTION_Rsbmv(RUN) \
-    bool Rsbmv_gpu(const char *uplo, INTEGER const n, INTEGER const k, REAL const alpha, REAL *a, INTEGER const lda, REAL *x, INTEGER const incx, REAL const beta, REAL *y, INTEGER const incy) { return RUN(Rsbmv_gpu_t, uplo, n, k, alpha, a, lda, x, incx, beta, y, incy); }
+    bool MPLAPACK_CUDA_ENTRY(Rsbmv)(const char *uplo, INTEGER const n, INTEGER const k, REAL const alpha, REAL *a, INTEGER const lda, REAL *x, INTEGER const incx, REAL const beta, REAL *y, INTEGER const incy) { return RUN(Rsbmv_gpu_t, uplo, n, k, alpha, a, lda, x, incx, beta, y, incy); }
 #define MPLAPACK_CBLAS_GPU_FUNCTION_Chpmv(RUN) \
-    bool Chpmv_gpu(const char *uplo, INTEGER const n, COMPLEX const alpha, COMPLEX *ap, COMPLEX *x, INTEGER const incx, COMPLEX const beta, COMPLEX *y, INTEGER const incy) { return RUN(Chpmv_gpu_t, uplo, n, alpha, ap, x, incx, beta, y, incy); }
+    bool MPLAPACK_CUDA_ENTRY(Chpmv)(const char *uplo, INTEGER const n, COMPLEX const alpha, COMPLEX *ap, COMPLEX *x, INTEGER const incx, COMPLEX const beta, COMPLEX *y, INTEGER const incy) { return RUN(Chpmv_gpu_t, uplo, n, alpha, ap, x, incx, beta, y, incy); }
 #define MPLAPACK_CBLAS_GPU_FUNCTION_Rspmv(RUN) \
-    bool Rspmv_gpu(const char *uplo, INTEGER const n, REAL const alpha, REAL *ap, REAL *x, INTEGER const incx, REAL const beta, REAL *y, INTEGER const incy) { return RUN(Rspmv_gpu_t, uplo, n, alpha, ap, x, incx, beta, y, incy); }
+    bool MPLAPACK_CUDA_ENTRY(Rspmv)(const char *uplo, INTEGER const n, REAL const alpha, REAL *ap, REAL *x, INTEGER const incx, REAL const beta, REAL *y, INTEGER const incy) { return RUN(Rspmv_gpu_t, uplo, n, alpha, ap, x, incx, beta, y, incy); }
 #define MPLAPACK_CBLAS_GPU_FUNCTION_Rgbmv(RUN) \
-    bool Rgbmv_gpu(const char *trans, INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku, REAL const alpha, REAL *a, INTEGER const lda, REAL *x, INTEGER const incx, REAL const beta, REAL *y, INTEGER const incy) { return RUN(Rgbmv_gpu_t, trans, m, n, kl, ku, alpha, a, lda, x, incx, beta, y, incy); }
+    bool MPLAPACK_CUDA_ENTRY(Rgbmv)(const char *trans, INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku, REAL const alpha, REAL *a, INTEGER const lda, REAL *x, INTEGER const incx, REAL const beta, REAL *y, INTEGER const incy) { return RUN(Rgbmv_gpu_t, trans, m, n, kl, ku, alpha, a, lda, x, incx, beta, y, incy); }
 #define MPLAPACK_CBLAS_GPU_FUNCTION_Cgbmv(RUN) \
-    bool Cgbmv_gpu(const char *trans, INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku, COMPLEX const alpha, COMPLEX *a, INTEGER const lda, COMPLEX *x, INTEGER const incx, COMPLEX const beta, COMPLEX *y, INTEGER const incy) { return RUN(Cgbmv_gpu_t, trans, m, n, kl, ku, alpha, a, lda, x, incx, beta, y, incy); }
+    bool MPLAPACK_CUDA_ENTRY(Cgbmv)(const char *trans, INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku, COMPLEX const alpha, COMPLEX *a, INTEGER const lda, COMPLEX *x, INTEGER const incx, COMPLEX const beta, COMPLEX *y, INTEGER const incy) { return RUN(Cgbmv_gpu_t, trans, m, n, kl, ku, alpha, a, lda, x, incx, beta, y, incy); }
 #define MPLAPACK_CBLAS_GPU_FUNCTION_Ctrmv(RUN) \
-    bool Ctrmv_gpu(const char *uplo, const char *trans, const char *diag, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *x, INTEGER const incx) { return RUN(Ctrmv_gpu_t, uplo, trans, diag, n, a, lda, x, incx); }
+    bool MPLAPACK_CUDA_ENTRY(Ctrmv)(const char *uplo, const char *trans, const char *diag, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *x, INTEGER const incx) { return RUN(Ctrmv_gpu_t, uplo, trans, diag, n, a, lda, x, incx); }
 #define MPLAPACK_CBLAS_GPU_FUNCTION_Rtbmv(RUN) \
-    bool Rtbmv_gpu(const char *uplo, const char *trans, const char *diag, INTEGER const n, INTEGER const k, REAL *a, INTEGER const lda, REAL *x, INTEGER const incx) { return RUN(Rtbmv_gpu_t, uplo, trans, diag, n, k, a, lda, x, incx); }
+    bool MPLAPACK_CUDA_ENTRY(Rtbmv)(const char *uplo, const char *trans, const char *diag, INTEGER const n, INTEGER const k, REAL *a, INTEGER const lda, REAL *x, INTEGER const incx) { return RUN(Rtbmv_gpu_t, uplo, trans, diag, n, k, a, lda, x, incx); }
 #define MPLAPACK_CBLAS_GPU_FUNCTION_Ctbmv(RUN) \
-    bool Ctbmv_gpu(const char *uplo, const char *trans, const char *diag, INTEGER const n, INTEGER const k, COMPLEX *a, INTEGER const lda, COMPLEX *x, INTEGER const incx) { return RUN(Ctbmv_gpu_t, uplo, trans, diag, n, k, a, lda, x, incx); }
+    bool MPLAPACK_CUDA_ENTRY(Ctbmv)(const char *uplo, const char *trans, const char *diag, INTEGER const n, INTEGER const k, COMPLEX *a, INTEGER const lda, COMPLEX *x, INTEGER const incx) { return RUN(Ctbmv_gpu_t, uplo, trans, diag, n, k, a, lda, x, incx); }
 #define MPLAPACK_CBLAS_GPU_FUNCTION_Rtpmv(RUN) \
-    bool Rtpmv_gpu(const char *uplo, const char *trans, const char *diag, INTEGER const n, REAL *ap, REAL *x, INTEGER const incx) { return RUN(Rtpmv_gpu_t, uplo, trans, diag, n, ap, x, incx); }
+    bool MPLAPACK_CUDA_ENTRY(Rtpmv)(const char *uplo, const char *trans, const char *diag, INTEGER const n, REAL *ap, REAL *x, INTEGER const incx) { return RUN(Rtpmv_gpu_t, uplo, trans, diag, n, ap, x, incx); }
 #define MPLAPACK_CBLAS_GPU_FUNCTION_Ctpmv(RUN) \
-    bool Ctpmv_gpu(const char *uplo, const char *trans, const char *diag, INTEGER const n, COMPLEX *ap, COMPLEX *x, INTEGER const incx) { return RUN(Ctpmv_gpu_t, uplo, trans, diag, n, ap, x, incx); }
+    bool MPLAPACK_CUDA_ENTRY(Ctpmv)(const char *uplo, const char *trans, const char *diag, INTEGER const n, COMPLEX *ap, COMPLEX *x, INTEGER const incx) { return RUN(Ctpmv_gpu_t, uplo, trans, diag, n, ap, x, incx); }
 #define MPLAPACK_CBLAS_GPU_FUNCTION_Rspr(RUN) \
-    bool Rspr_gpu(const char *uplo, INTEGER const n, REAL const alpha, REAL *x, INTEGER const incx, REAL *ap) { return RUN(Rspr_gpu_t, uplo, n, alpha, x, incx, ap); }
+    bool MPLAPACK_CUDA_ENTRY(Rspr)(const char *uplo, INTEGER const n, REAL const alpha, REAL *x, INTEGER const incx, REAL *ap) { return RUN(Rspr_gpu_t, uplo, n, alpha, x, incx, ap); }
 #define MPLAPACK_CBLAS_GPU_FUNCTION_Rspr2(RUN) \
-    bool Rspr2_gpu(const char *uplo, INTEGER const n, REAL const alpha, REAL *x, INTEGER const incx, REAL *y, INTEGER const incy, REAL *ap) { return RUN(Rspr2_gpu_t, uplo, n, alpha, x, incx, y, incy, ap); }
+    bool MPLAPACK_CUDA_ENTRY(Rspr2)(const char *uplo, INTEGER const n, REAL const alpha, REAL *x, INTEGER const incx, REAL *y, INTEGER const incy, REAL *ap) { return RUN(Rspr2_gpu_t, uplo, n, alpha, x, incx, y, incy, ap); }
 #define MPLAPACK_CBLAS_GPU_FUNCTION_Chpr(RUN) \
-    bool Chpr_gpu(const char *uplo, INTEGER const n, REAL const alpha, COMPLEX *x, INTEGER const incx, COMPLEX *ap) { return RUN(Chpr_gpu_t, uplo, n, alpha, x, incx, ap); }
+    bool MPLAPACK_CUDA_ENTRY(Chpr)(const char *uplo, INTEGER const n, REAL const alpha, COMPLEX *x, INTEGER const incx, COMPLEX *ap) { return RUN(Chpr_gpu_t, uplo, n, alpha, x, incx, ap); }
 #define MPLAPACK_CBLAS_GPU_FUNCTION_Chpr2(RUN) \
-    bool Chpr2_gpu(const char *uplo, INTEGER const n, COMPLEX const alpha, COMPLEX *x, INTEGER const incx, COMPLEX *y, INTEGER const incy, COMPLEX *ap) { return RUN(Chpr2_gpu_t, uplo, n, alpha, x, incx, y, incy, ap); }
+    bool MPLAPACK_CUDA_ENTRY(Chpr2)(const char *uplo, INTEGER const n, COMPLEX const alpha, COMPLEX *x, INTEGER const incx, COMPLEX *y, INTEGER const incy, COMPLEX *ap) { return RUN(Chpr2_gpu_t, uplo, n, alpha, x, incx, y, incy, ap); }
 
 #define MPLAPACK_CBLAS_GPU_FUNCTIONS(RUN) \
     MPLAPACK_CBLAS_GPU_FUNCTION_Cgemm(RUN) \

@@ -31,9 +31,8 @@
 // (../../common/blas/Rrot_omp.cpp: lane-parallel OpenMP, else the reference
 // code).
 
-#include <mpblas_mpfr.h>
+#include <mpblas_mpfr_cuda.h>
 
-bool Rrot_mpfr_cuda(mplapackint const n, mpfr_class *dx, mplapackint const incx, mpfr_class *dy, mplapackint const incy, mpfr_class const c, mpfr_class const s);
 bool Rrot_omp(mplapackint const n, mpfr_class *dx, mplapackint const incx, mpfr_class *dy, mplapackint const incy, mpfr_class const c, mpfr_class const s);
 void Rrot_reference_cpu(mplapackint const n, mpfr_class *dx, mplapackint const incx, mpfr_class *dy, mplapackint const incy, mpfr_class const c, mpfr_class const s);
 

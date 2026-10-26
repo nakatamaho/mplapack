@@ -32,14 +32,14 @@
 // reference result bit for bit.
 
 #include <mpblas.h>
+#include "../Rblas_cuda_entry_common.h"
 
-bool CRscal_gpu(INTEGER const n, REAL const da, COMPLEX *zx, INTEGER const incx);
 bool CRscal_omp(INTEGER const n, REAL const da, COMPLEX *zx, INTEGER const incx);
 void CRscal_reference_cpu(INTEGER const n, REAL const da, COMPLEX *zx, INTEGER const incx);
 
 void CRscal(INTEGER const n, REAL const da, COMPLEX *zx, INTEGER const incx)
 {
-    if (CRscal_gpu(n, da, zx, incx))
+    if (MPLAPACK_CUDA_ENTRY(CRscal)(n, da, zx, incx))
         return;
     if (CRscal_omp(n, da, zx, incx))
         return;

@@ -28,14 +28,13 @@
  *
  */
 
-#include <mpblas_mpfr.h>
+#include <mpblas_mpfr_cuda.h>
 
 void Rgemm_NN_omp(mplapackint m, mplapackint n, mplapackint k, mpfr_class alpha, mpfr_class * A, mplapackint lda, mpfr_class * B, mplapackint ldb, mpfr_class beta, mpfr_class * C, mplapackint ldc);
 void Rgemm_TN_omp(mplapackint m, mplapackint n, mplapackint k, mpfr_class alpha, mpfr_class * A, mplapackint lda, mpfr_class * B, mplapackint ldb, mpfr_class beta, mpfr_class * C, mplapackint ldc);
 void Rgemm_NT_omp(mplapackint m, mplapackint n, mplapackint k, mpfr_class alpha, mpfr_class * A, mplapackint lda, mpfr_class * B, mplapackint ldb, mpfr_class beta, mpfr_class * C, mplapackint ldc);
 void Rgemm_TT_omp(mplapackint m, mplapackint n, mplapackint k, mpfr_class alpha, mpfr_class * A, mplapackint lda, mpfr_class * B, mplapackint ldb, mpfr_class beta, mpfr_class * C, mplapackint ldc);
 // Rgemm_bridge_cuda.cpp: true when C was computed on the GPU.
-bool Rgemm_mpfr_cuda(bool nota, bool notb, mplapackint m, mplapackint n, mplapackint k, const mpfr_class &alpha, const mpfr_class *A, mplapackint lda, const mpfr_class *B, mplapackint ldb, const mpfr_class &beta, mpfr_class *C, mplapackint ldc);
 void Rgemm_ref(const char *transa, const char *transb, mplapackint m, mplapackint n, mplapackint k, mpfr_class alpha, mpfr_class * A, mplapackint lda, mpfr_class * B, mplapackint ldb, mpfr_class beta, mpfr_class * C, mplapackint ldc);
 
 #define SINGLEOROMP 1000000
@@ -109,7 +108,7 @@ void Rgemm(const char *transa, const char *transb, mplapackint const m, mplapack
 	return;
     }
 //Start the operations.
-    if (Rgemm_mpfr_cuda(nota, notb, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc))
+    if (Rgemm_mpfr_cuda(transa, transb, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc))
 	return;
     if (notb) {
 	if (nota) {

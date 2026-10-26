@@ -42,7 +42,7 @@
  *    backend bit for bit.
  */
 
-#include <mpblas_mpfr.h>
+#include <mpblas_mpfr_cuda.h>
 #include <cstdio>
 #include <cstdlib>
 #include <vector>
@@ -53,7 +53,6 @@ namespace mplapack_mpfr_cuda {
 int device_count();
 }
 
-bool Rgemm_mpfr_cuda(bool nota, bool notb, mplapackint m, mplapackint n, mplapackint k, const mpfr_class &alpha, const mpfr_class *A, mplapackint lda, const mpfr_class *B, mplapackint ldb, const mpfr_class &beta, mpfr_class *C, mplapackint ldc);
 
 namespace {
 
@@ -100,7 +99,7 @@ void check(int prec, const char *ta, const char *tb, mplapackint m, mplapackint 
 
     std::vector<mpfr_class> Cref(C0), Cgpu(C0);
     Rgemm(ta, tb, m, n, k, alpha, A.data(), lda, B.data(), ldb, beta, Cref.data(), ldc);
-    if (!Rgemm_mpfr_cuda(nota, notb, m, n, k, alpha, A.data(), lda, B.data(), ldb, beta, Cgpu.data(), ldc)) {
+    if (!Rgemm_mpfr_cuda(ta, tb, m, n, k, alpha, A.data(), lda, B.data(), ldb, beta, Cgpu.data(), ldc)) {
         std::printf("FAIL prec=%d %s%s %ldx%ldx%ld: GPU path not taken\n", prec, ta, tb, (long)m, (long)n, (long)k);
         failures++;
         return;

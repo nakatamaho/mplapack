@@ -32,14 +32,14 @@
 // All of them give the reference result bit for bit.
 
 #include <mpblas.h>
+#include "../Rblas_cuda_entry_common.h"
 
-bool Rrot_gpu(INTEGER const n, REAL *dx, INTEGER const incx, REAL *dy, INTEGER const incy, REAL const c, REAL const s);
 bool Rrot_omp(INTEGER const n, REAL *dx, INTEGER const incx, REAL *dy, INTEGER const incy, REAL const c, REAL const s);
 void Rrot_reference_cpu(INTEGER const n, REAL *dx, INTEGER const incx, REAL *dy, INTEGER const incy, REAL const c, REAL const s);
 
 void Rrot(INTEGER const n, REAL *dx, INTEGER const incx, REAL *dy, INTEGER const incy, REAL const c, REAL const s)
 {
-    if (Rrot_gpu(n, dx, incx, dy, incy, c, s))
+    if (MPLAPACK_CUDA_ENTRY(Rrot)(n, dx, incx, dy, incy, c, s))
         return;
     if (Rrot_omp(n, dx, incx, dy, incy, c, s))
         return;

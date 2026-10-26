@@ -33,14 +33,14 @@
 // reference result bit for bit.
 
 #include <mpblas.h>
+#include "../Rblas_cuda_entry_common.h"
 
-bool Chpr_gpu(const char *uplo, INTEGER const n, REAL const alpha, COMPLEX *x, INTEGER const incx, COMPLEX *ap);
 bool Chpr_omp(const char *uplo, INTEGER const n, REAL const alpha, COMPLEX *x, INTEGER const incx, COMPLEX *ap);
 void Chpr_reference_cpu(const char *uplo, INTEGER const n, REAL const alpha, COMPLEX *x, INTEGER const incx, COMPLEX *ap);
 
 void Chpr(const char *uplo, INTEGER const n, REAL const alpha, COMPLEX *x, INTEGER const incx, COMPLEX *ap)
 {
-    if (Chpr_gpu(uplo, n, alpha, x, incx, ap))
+    if (MPLAPACK_CUDA_ENTRY(Chpr)(uplo, n, alpha, x, incx, ap))
         return;
     if (Chpr_omp(uplo, n, alpha, x, incx, ap))
         return;

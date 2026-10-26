@@ -31,9 +31,8 @@
 // (../../common/blas/Rtrmm_omp.cpp: lane-parallel OpenMP, else the reference
 // code under the name Rtrmm_reference_cpu).
 
-#include <mpblas_mpfr.h>
+#include <mpblas_mpfr_cuda.h>
 
-bool Rtrmm_mpfr_cuda(const char *side, const char *uplo, const char *transa, const char *diag, mplapackint m, mplapackint n, const mpfr_class &alpha, const mpfr_class *a, mplapackint lda, mpfr_class *b, mplapackint ldb);
 void Rtrmm_reference_cpu(const char *side, const char *uplo, const char *transa, const char *diag, mplapackint const m, mplapackint const n, mpfr_class const alpha, mpfr_class *a, mplapackint const lda, mpfr_class *b, mplapackint const ldb);
 bool Rtrmm_omp(const char *side, const char *uplo, const char *transa, const char *diag, mplapackint const m, mplapackint const n, mpfr_class const alpha, mpfr_class *a, mplapackint const lda, mpfr_class *b, mplapackint const ldb);
 

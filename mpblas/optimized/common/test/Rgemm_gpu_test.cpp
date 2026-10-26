@@ -30,7 +30,8 @@
  * Test of the dd/td/qd CUDA Rgemm (compile with -DRGEMM_TEST_DD,
  * -DRGEMM_TEST_TD or -DRGEMM_TEST_QD, together with <type>/cuda/Rgemm_bridge_cuda.cpp and
  * <type>/cuda/Rgemm_gpu_cuda.cu, and link with libmplapack_<type>_opt).
- * Rgemm_gpu() is compared with the CPU Rgemm of libmplapack_<type>_opt:
+ * The entry point Rgemm_<type>_cuda() is compared with the CPU Rgemm of
+ * libmplapack_<type>_opt:
  *
  *  - naive and tiled kernels: bit-identical to the conventional CPU Rgemm
  *    (k == 0 is never sent to the GPU: m*n*k is below any threshold);
@@ -53,17 +54,20 @@
 #include <vector>
 
 #if defined(RGEMM_TEST_DD)
-#include <mpblas_dd.h>
+#include <mpblas_dd_cuda.h>
+#define RGEMM_ENTRY Rgemm_dd_cuda
 typedef dd_real T;
 static const char *PREFIX = "MPLAPACK_DD";
 static const int PREC = 106;
 #elif defined(RGEMM_TEST_TD)
-#include <mpblas_td.h>
+#include <mpblas_td_cuda.h>
+#define RGEMM_ENTRY Rgemm_td_cuda
 typedef td_real T;
 static const char *PREFIX = "MPLAPACK_TD";
 static const int PREC = 159;
 #elif defined(RGEMM_TEST_QD)
-#include <mpblas_qd.h>
+#include <mpblas_qd_cuda.h>
+#define RGEMM_ENTRY Rgemm_qd_cuda
 typedef qd_real T;
 static const char *PREFIX = "MPLAPACK_QD";
 static const int PREC = 212;
@@ -71,7 +75,6 @@ static const int PREC = 212;
 #error "define RGEMM_TEST_DD, RGEMM_TEST_TD or RGEMM_TEST_QD"
 #endif
 
-bool Rgemm_gpu(bool nota, bool notb, mplapackint m, mplapackint n, mplapackint k, T alpha, T *A, mplapackint lda, T *B, mplapackint ldb, T beta, T *C, mplapackint ldc);
 
 #ifndef MPLAPACK_GEMM_CUDA_HOST_EMULATION
 #include <cuda_runtime.h>
@@ -157,7 +160,8 @@ static long failures = 0, checks = 0;
 static std::vector<T> gpu(const problem &p, const char *what) {
     problem q = p;
     checks++;
-    if (!Rgemm_gpu(p.ta == 'n', p.tb == 'n', q.m, q.n, q.k, q.alpha, q.A.data(), q.lda, q.B.data(), q.ldb, q.beta, q.C.data(), q.ldc)) {
+    const char ta[2] = {p.ta, 0}, tb[2] = {p.tb, 0};
+    if (!RGEMM_ENTRY(ta, tb, q.m, q.n, q.k, q.alpha, q.A.data(), q.lda, q.B.data(), q.ldb, q.beta, q.C.data(), q.ldc)) {
         failures++;
         std::printf("FAIL %s: %c%c m=%ld n=%ld k=%ld did not run on the GPU\n", what, p.ta, p.tb, p.m, p.n, p.k);
     }
@@ -278,7 +282,7 @@ int main() {
         env("_CUDA", "0");
         problem p = make('n', 'n', 8, 8, 8, 2, false);
         checks++;
-        if (Rgemm_gpu(true, true, p.m, p.n, p.k, p.alpha, p.A.data(), p.lda, p.B.data(), p.ldb, p.beta, p.C.data(), p.ldc)) {
+        if (RGEMM_ENTRY("N", "N", p.m, p.n, p.k, p.alpha, p.A.data(), p.lda, p.B.data(), p.ldb, p.beta, p.C.data(), p.ldc)) {
             failures++;
             std::printf("FAIL %s_CUDA=0 still ran on the GPU\n", PREFIX);
         }

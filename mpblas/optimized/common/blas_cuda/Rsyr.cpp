@@ -32,14 +32,14 @@
 // All of them give the reference result bit for bit.
 
 #include <mpblas.h>
+#include "../Rblas_cuda_entry_common.h"
 
-bool Rsyr_gpu(const char *uplo, INTEGER const n, REAL const alpha, REAL *x, INTEGER const incx, REAL *a, INTEGER const lda);
 bool Rsyr_omp(const char *uplo, INTEGER const n, REAL const alpha, REAL *x, INTEGER const incx, REAL *a, INTEGER const lda);
 void Rsyr_reference_cpu(const char *uplo, INTEGER const n, REAL const alpha, REAL *x, INTEGER const incx, REAL *a, INTEGER const lda);
 
 void Rsyr(const char *uplo, INTEGER const n, REAL const alpha, REAL *x, INTEGER const incx, REAL *a, INTEGER const lda)
 {
-    if (Rsyr_gpu(uplo, n, alpha, x, incx, a, lda))
+    if (MPLAPACK_CUDA_ENTRY(Rsyr)(uplo, n, alpha, x, incx, a, lda))
         return;
     if (Rsyr_omp(uplo, n, alpha, x, incx, a, lda))
         return;

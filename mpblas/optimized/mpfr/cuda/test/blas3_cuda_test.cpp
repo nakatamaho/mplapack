@@ -40,7 +40,7 @@
  * Elements outside the referenced part of the result must be untouched.
  */
 
-#include <mpblas_mpfr.h>
+#include <mpblas_mpfr_cuda.h>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -51,11 +51,6 @@ namespace mplapack_mpfr_cuda {
 int device_count();
 }
 
-bool Rsyrk_mpfr_cuda(const char *uplo, const char *trans, mplapackint n, mplapackint k, const mpfr_class &alpha, const mpfr_class *a, mplapackint lda, const mpfr_class &beta, mpfr_class *c, mplapackint ldc);
-bool Rsyr2k_mpfr_cuda(const char *uplo, const char *trans, mplapackint n, mplapackint k, const mpfr_class &alpha, const mpfr_class *a, mplapackint lda, const mpfr_class *b, mplapackint ldb, const mpfr_class &beta, mpfr_class *c, mplapackint ldc);
-bool Rsymm_mpfr_cuda(const char *side, const char *uplo, mplapackint m, mplapackint n, const mpfr_class &alpha, const mpfr_class *a, mplapackint lda, const mpfr_class *b, mplapackint ldb, const mpfr_class &beta, mpfr_class *c, mplapackint ldc);
-bool Rtrmm_mpfr_cuda(const char *side, const char *uplo, const char *transa, const char *diag, mplapackint m, mplapackint n, const mpfr_class &alpha, const mpfr_class *a, mplapackint lda, mpfr_class *b, mplapackint ldb);
-bool Rtrsm_mpfr_cuda(const char *side, const char *uplo, const char *transa, const char *diag, mplapackint m, mplapackint n, const mpfr_class &alpha, const mpfr_class *a, mplapackint lda, mpfr_class *b, mplapackint ldb);
 
 namespace {
 

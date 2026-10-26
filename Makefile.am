@@ -267,6 +267,23 @@ mplapack_include_HEADERS += \
     include/mplapack_utils_binary128.h
 endif
 
+# Accelerator entry points (misc/gen_accelerator_headers.py)
+if ENABLE_CUDA
+mplapack_include_HEADERS += include/mpblas_dd_cuda.h
+endif
+if ENABLE_TD_CUDA
+mplapack_include_HEADERS += include/mpblas_td_cuda.h
+endif
+if ENABLE_QD_CUDA
+mplapack_include_HEADERS += include/mpblas_qd_cuda.h
+endif
+if ENABLE_MPFR_CUDA
+mplapack_include_HEADERS += include/mpblas_mpfr_cuda.h
+endif
+if ENABLE_OPENCL_BINARY128
+mplapack_include_HEADERS += include/mpblas_binary128_opencl.h
+endif
+
 nodist_mplapack_include_HEADERS = include/mplapack_config.h
 
 # Internal headers used by tests/benchmarks; keep them in dist tarballs.

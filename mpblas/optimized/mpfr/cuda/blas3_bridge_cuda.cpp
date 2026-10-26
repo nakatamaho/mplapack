@@ -29,9 +29,9 @@
 /*
  * Host side of the MPFR Level 1/2/3 BLAS on CUDA (kernels in
  * blas3_kernel_cuda.h, lanes of ../../common/Rblas_lanes_common.h).
- * R*_mpfr_cuda() returns true when it has computed the result on the GPU,
- * and false, leaving every operand untouched, when the call is left to the
- * CPU:
+ * The entry points R*_mpfr_cuda() (include/mpblas_mpfr_cuda.h) return true
+ * when they have computed the result on the GPU, and false, leaving every
+ * operand untouched, when the call is left to the CPU:
  *
  *   - invalid arguments, quick returns, alpha == 0 (Level 2/3) and zero
  *     increments (the reference reports or handles them);
@@ -53,6 +53,7 @@
  * whose results equal the reference bit for bit, signed zeros included.
  */
 
+#include <mpblas_mpfr_cuda.h>
 #include "mpfr_pack_cuda.h"
 #include "blas3_kernel_cuda.h"
 #include "../../common/Rblas_calls_common.h"
@@ -276,31 +277,31 @@ mpfr_class *w(const mpfr_class *p) { return const_cast<mpfr_class *>(p); }
 
 } // namespace
 
-bool Rsyrk_mpfr_cuda(const char *uplo, const char *trans, mplapackint n, mplapackint k, const mpfr_class &alpha, const mpfr_class *a, mplapackint lda, const mpfr_class &beta, mpfr_class *c, mplapackint ldc)
+bool Rsyrk_mpfr_cuda(const char *uplo, const char *trans, mplapackint const n, mplapackint const k, mpfr_class const alpha, mpfr_class *a, mplapackint const lda, mpfr_class const beta, mpfr_class *c, mplapackint const ldc)
 {
     blas_call<mpfr_class> x;
     return mplapack_blas::make_syrk<mpfr_class>(x, ls, false, uplo, trans, n, k, alpha, w(a), lda, (mpfr_class *)NULL, 1, beta, c, ldc) && dispatch(x);
 }
 
-bool Rsyr2k_mpfr_cuda(const char *uplo, const char *trans, mplapackint n, mplapackint k, const mpfr_class &alpha, const mpfr_class *a, mplapackint lda, const mpfr_class *b, mplapackint ldb, const mpfr_class &beta, mpfr_class *c, mplapackint ldc)
+bool Rsyr2k_mpfr_cuda(const char *uplo, const char *trans, mplapackint const n, mplapackint const k, mpfr_class const alpha, mpfr_class *a, mplapackint const lda, mpfr_class *b, mplapackint const ldb, mpfr_class const beta, mpfr_class *c, mplapackint const ldc)
 {
     blas_call<mpfr_class> x;
     return mplapack_blas::make_syrk<mpfr_class>(x, ls, true, uplo, trans, n, k, alpha, w(a), lda, w(b), ldb, beta, c, ldc) && dispatch(x);
 }
 
-bool Rsymm_mpfr_cuda(const char *side, const char *uplo, mplapackint m, mplapackint n, const mpfr_class &alpha, const mpfr_class *a, mplapackint lda, const mpfr_class *b, mplapackint ldb, const mpfr_class &beta, mpfr_class *c, mplapackint ldc)
+bool Rsymm_mpfr_cuda(const char *side, const char *uplo, mplapackint const m, mplapackint const n, mpfr_class const alpha, mpfr_class *a, mplapackint const lda, mpfr_class *b, mplapackint const ldb, mpfr_class const beta, mpfr_class *c, mplapackint const ldc)
 {
     blas_call<mpfr_class> x;
     return mplapack_blas::make_symm<mpfr_class>(x, ls, side, uplo, m, n, alpha, w(a), lda, w(b), ldb, beta, c, ldc) && dispatch(x);
 }
 
-bool Rtrmm_mpfr_cuda(const char *side, const char *uplo, const char *transa, const char *diag, mplapackint m, mplapackint n, const mpfr_class &alpha, const mpfr_class *a, mplapackint lda, mpfr_class *b, mplapackint ldb)
+bool Rtrmm_mpfr_cuda(const char *side, const char *uplo, const char *transa, const char *diag, mplapackint const m, mplapackint const n, mpfr_class const alpha, mpfr_class *a, mplapackint const lda, mpfr_class *b, mplapackint const ldb)
 {
     blas_call<mpfr_class> x;
     return mplapack_blas::make_trxm<mpfr_class>(x, ls, false, side, uplo, transa, diag, m, n, alpha, w(a), lda, b, ldb) && dispatch(x);
 }
 
-bool Rtrsm_mpfr_cuda(const char *side, const char *uplo, const char *transa, const char *diag, mplapackint m, mplapackint n, const mpfr_class &alpha, const mpfr_class *a, mplapackint lda, mpfr_class *b, mplapackint ldb)
+bool Rtrsm_mpfr_cuda(const char *side, const char *uplo, const char *transa, const char *diag, mplapackint const m, mplapackint const n, mpfr_class const alpha, mpfr_class *a, mplapackint const lda, mpfr_class *b, mplapackint const ldb)
 {
     blas_call<mpfr_class> x;
     return mplapack_blas::make_trxm<mpfr_class>(x, ls, true, side, uplo, transa, diag, m, n, alpha, w(a), lda, b, ldb) && dispatch(x);

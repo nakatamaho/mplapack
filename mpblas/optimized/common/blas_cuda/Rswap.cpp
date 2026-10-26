@@ -32,14 +32,14 @@
 // All of them give the reference result bit for bit.
 
 #include <mpblas.h>
+#include "../Rblas_cuda_entry_common.h"
 
-bool Rswap_gpu(INTEGER const n, REAL *dx, INTEGER const incx, REAL *dy, INTEGER const incy);
 bool Rswap_omp(INTEGER const n, REAL *dx, INTEGER const incx, REAL *dy, INTEGER const incy);
 void Rswap_reference_cpu(INTEGER const n, REAL *dx, INTEGER const incx, REAL *dy, INTEGER const incy);
 
 void Rswap(INTEGER const n, REAL *dx, INTEGER const incx, REAL *dy, INTEGER const incy)
 {
-    if (Rswap_gpu(n, dx, incx, dy, incy))
+    if (MPLAPACK_CUDA_ENTRY(Rswap)(n, dx, incx, dy, incy))
         return;
     if (Rswap_omp(n, dx, incx, dy, incy))
         return;

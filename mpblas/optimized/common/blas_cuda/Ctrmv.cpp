@@ -33,14 +33,14 @@
 // reference result bit for bit.
 
 #include <mpblas.h>
+#include "../Rblas_cuda_entry_common.h"
 
-bool Ctrmv_gpu(const char *uplo, const char *trans, const char *diag, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *x, INTEGER const incx);
 bool Ctrmv_omp(const char *uplo, const char *trans, const char *diag, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *x, INTEGER const incx);
 void Ctrmv_reference_cpu(const char *uplo, const char *trans, const char *diag, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *x, INTEGER const incx);
 
 void Ctrmv(const char *uplo, const char *trans, const char *diag, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *x, INTEGER const incx)
 {
-    if (Ctrmv_gpu(uplo, trans, diag, n, a, lda, x, incx))
+    if (MPLAPACK_CUDA_ENTRY(Ctrmv)(uplo, trans, diag, n, a, lda, x, incx))
         return;
     if (Ctrmv_omp(uplo, trans, diag, n, a, lda, x, incx))
         return;

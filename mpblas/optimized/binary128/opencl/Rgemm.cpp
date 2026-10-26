@@ -1,6 +1,7 @@
 #include <assert.h>
 #include <stdlib.h>
-#include <mpblas_binary128.h>
+#include <mpblas_binary128_opencl.h>
+#include "../../common/Rgemm_entry_common.h"
 #include "OclHelper.hpp"
 
 static __CPP::__CPP_Helper *p;
@@ -50,13 +51,13 @@ void init_gpu(int bs = 4)
   std::cout << "block size for OpenCL kernels = " << bs_opencl << "\n";
 }
 
-void Rgemm_binary128_opencl_kernel(bool btransa, bool btransb,
-                                   int m, int n, int k,
-                                   mplapack_binary128_t alpha,
-                                   mplapack_binary128_t *A, int lda,
-                                   mplapack_binary128_t *B, int ldb,
-                                   mplapack_binary128_t beta,
-                                   mplapack_binary128_t *C, int ldc)
+static void rgemm_opencl_kernel(bool btransa, bool btransb,
+                                int m, int n, int k,
+                                mplapack_binary128_t alpha,
+                                mplapack_binary128_t *A, int lda,
+                                mplapack_binary128_t *B, int ldb,
+                                mplapack_binary128_t beta,
+                                mplapack_binary128_t *C, int ldc)
 {
   cl_event event;
 
@@ -166,6 +167,29 @@ void Rgemm_binary128_opencl_kernel(bool btransa, bool btransb,
   clFinish(q);
 }
 
+// Entry point (include/mpblas_binary128_opencl.h): C := alpha*op(A)*op(B) +
+// beta*C on the OpenCL device; false, C untouched, for invalid arguments,
+// the quick returns of Rgemm, alpha == 0 and matrices with m or n at most
+// the block size, which are left to the caller.
+bool Rgemm_binary128_opencl(const char *transa, const char *transb,
+                            mplapackint const m, mplapackint const n, mplapackint const k,
+                            mplapack_binary128_t const alpha,
+                            mplapack_binary128_t * A, mplapackint const lda,
+                            mplapack_binary128_t * B, mplapackint const ldb,
+                            mplapack_binary128_t const beta,
+                            mplapack_binary128_t * C, mplapackint const ldc)
+{
+  const mplapack_binary128_t Zero = 0.0, One = 1.0;
+  bool nota, notb;
+
+  if (!mplapack_gemm::gemm_entry_args(transa, transb, m, n, k, lda, ldb, ldc, alpha == Zero, beta == One, nota, notb) || alpha == Zero)
+    return false;
+  if ( (m <= bs_opencl) || (n <= bs_opencl) )
+    return false;
+  rgemm_opencl_kernel(!nota, !notb, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc);
+  return true;
+}
+
 void Rgemm_ref(const char *transa, const char *transb,
 	       mplapackint const m, mplapackint const n, mplapackint const k,
 	       mplapack_binary128_t const alpha,
@@ -182,7 +206,6 @@ void Rgemm(const char *transa, const char *transb,
 	   mplapack_binary128_t const beta,
 	   mplapack_binary128_t * C, mplapackint const ldc)
 {
-  bool b_transa, b_transb;
   const mplapack_binary128_t Zero = 0.0, One = 1.0;
 
   //Quick return if possible.
@@ -207,19 +230,7 @@ void Rgemm(const char *transa, const char *transb,
     return;
   }
 
-  if ( (m <= bs_opencl) || (n <= bs_opencl) ) {
-    //    std::cout << "call Rgemm for small matrices\n";
-    Rgemm_ref(transa, transb, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc);
+  if (Rgemm_binary128_opencl(transa, transb, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc))
     return;
-  }
-
-  b_transa = false;
-  b_transb = false;
-
-  if (transa[0] == 'T' || transa[0] == 't') b_transa = true;
-  if (transb[0] == 'T' || transb[0] == 't') b_transb = true;
-
-  Rgemm_binary128_opencl_kernel(b_transa, b_transb, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc);
-
-  return;
+  Rgemm_ref(transa, transb, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc);
 }

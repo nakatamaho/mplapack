@@ -31,9 +31,8 @@
 // (../../common/blas/Rger_omp.cpp: lane-parallel OpenMP, else the reference
 // code).
 
-#include <mpblas_mpfr.h>
+#include <mpblas_mpfr_cuda.h>
 
-bool Rger_mpfr_cuda(mplapackint const m, mplapackint const n, mpfr_class const alpha, mpfr_class *x, mplapackint const incx, mpfr_class *y, mplapackint const incy, mpfr_class *a, mplapackint const lda);
 bool Rger_omp(mplapackint const m, mplapackint const n, mpfr_class const alpha, mpfr_class *x, mplapackint const incx, mpfr_class *y, mplapackint const incy, mpfr_class *a, mplapackint const lda);
 void Rger_reference_cpu(mplapackint const m, mplapackint const n, mpfr_class const alpha, mpfr_class *x, mplapackint const incx, mpfr_class *y, mplapackint const incy, mpfr_class *a, mplapackint const lda);
 

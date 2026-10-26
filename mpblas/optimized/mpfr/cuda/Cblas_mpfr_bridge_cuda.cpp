@@ -30,8 +30,9 @@
  * Host side of the MPFR complex Level 1/2/3 BLAS (and Rgemmtr) on CUDA:
  * the routines of ../../common/blas_cuda/Cblas_bridge_body.h with the device
  * types of Cblas_mpfr_dev_types.h, where every GPU thread runs the text of
- * the reference routine on its part of the output.  R*_gpu return true when
- * they have computed the result on the GPU, and false, leaving every
+ * the reference routine on its part of the output.  The entry points
+ * <R>_mpfr_cuda (include/mpblas_mpfr_cuda.h) return true when they have
+ * computed the result on the GPU, and false, leaving every
  * operand untouched, when the call is left to the CPU:
  *
  *   - invalid arguments and quick returns;

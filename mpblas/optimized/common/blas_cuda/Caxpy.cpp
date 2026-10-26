@@ -32,14 +32,14 @@
 // reference result bit for bit.
 
 #include <mpblas.h>
+#include "../Rblas_cuda_entry_common.h"
 
-bool Caxpy_gpu(INTEGER const n, COMPLEX const za, COMPLEX *zx, INTEGER const incx, COMPLEX *zy, INTEGER const incy);
 bool Caxpy_omp(INTEGER const n, COMPLEX const za, COMPLEX *zx, INTEGER const incx, COMPLEX *zy, INTEGER const incy);
 void Caxpy_reference_cpu(INTEGER const n, COMPLEX const za, COMPLEX *zx, INTEGER const incx, COMPLEX *zy, INTEGER const incy);
 
 void Caxpy(INTEGER const n, COMPLEX const za, COMPLEX *zx, INTEGER const incx, COMPLEX *zy, INTEGER const incy)
 {
-    if (Caxpy_gpu(n, za, zx, incx, zy, incy))
+    if (MPLAPACK_CUDA_ENTRY(Caxpy)(n, za, zx, incx, zy, incy))
         return;
     if (Caxpy_omp(n, za, zx, incx, zy, incy))
         return;

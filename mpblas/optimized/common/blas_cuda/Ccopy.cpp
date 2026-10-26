@@ -32,14 +32,14 @@
 // reference result bit for bit.
 
 #include <mpblas.h>
+#include "../Rblas_cuda_entry_common.h"
 
-bool Ccopy_gpu(INTEGER const n, COMPLEX *zx, INTEGER const incx, COMPLEX *zy, INTEGER const incy);
 bool Ccopy_omp(INTEGER const n, COMPLEX *zx, INTEGER const incx, COMPLEX *zy, INTEGER const incy);
 void Ccopy_reference_cpu(INTEGER const n, COMPLEX *zx, INTEGER const incx, COMPLEX *zy, INTEGER const incy);
 
 void Ccopy(INTEGER const n, COMPLEX *zx, INTEGER const incx, COMPLEX *zy, INTEGER const incy)
 {
-    if (Ccopy_gpu(n, zx, incx, zy, incy))
+    if (MPLAPACK_CUDA_ENTRY(Ccopy)(n, zx, incx, zy, incy))
         return;
     if (Ccopy_omp(n, zx, incx, zy, incy))
         return;

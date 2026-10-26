@@ -32,9 +32,9 @@
 // All of them give the reference result bit for bit.
 
 #include <mpblas.h>
+#include "../Rblas_cuda_entry_common.h"
 #include <cstdlib>
 
-bool Rsyrk_gpu(const char *uplo, const char *trans, INTEGER const n, INTEGER const k, REAL const alpha, REAL *a, INTEGER const lda, REAL const beta, REAL *c, INTEGER const ldc);
 bool Rsyrk_omp(const char *uplo, const char *trans, INTEGER const n, INTEGER const k, REAL const alpha, REAL *a, INTEGER const lda, REAL const beta, REAL *c, INTEGER const ldc);
 void Rsyrk_reference_cpu(const char *uplo, const char *trans, INTEGER const n, INTEGER const k, REAL const alpha, REAL *a, INTEGER const lda, REAL const beta, REAL *c, INTEGER const ldc);
 #if defined(MPLAPACK_BUILD_WITH_DD) && !defined(MPLAPACK_GEMM_CUDA_HOST_EMULATION)
@@ -51,7 +51,7 @@ void Rsyrk(const char *uplo, const char *trans, INTEGER const n, INTEGER const k
         return;
     }
 #endif
-    if (Rsyrk_gpu(uplo, trans, n, k, alpha, a, lda, beta, c, ldc))
+    if (MPLAPACK_CUDA_ENTRY(Rsyrk)(uplo, trans, n, k, alpha, a, lda, beta, c, ldc))
         return;
     if (Rsyrk_omp(uplo, trans, n, k, alpha, a, lda, beta, c, ldc))
         return;

@@ -240,7 +240,7 @@ the additions of Winograd are bound by memory: even one level at n = 4096
 | `Rblas_split_common.h` | parallel reference calls on independent parts of the output |
 | `Rblas_cuda_common.cuh`, `Rblas_cuda_bridge_common.h` | the lanes on the GPU (dd, td, qd), host emulation, transfers |
 | `blas/R*.cpp`, `blas/R*_omp.cpp` | CPU dispatchers; the reference code renamed `R*_reference_cpu` and `R*_omp` |
-| `blas_cuda/R*.cpp`, `blas_cuda/Rblas_bridge_cuda.cpp` | dd/td/qd CUDA dispatchers and `R*_gpu` |
+| `blas_cuda/R*.cpp`, `blas_cuda/Rblas_bridge_cuda.cpp` | dd/td/qd CUDA dispatchers and the entry points `R*_<type>_cuda` (`../../../include/mpblas_<type>_cuda.h`) |
 
 `blas/Rgemm_blocked_omp.cpp` instantiates the CPU code for every type and
 is called by `<type>/Rgemm.cpp`. `<type>/cuda/{Rgemm.cpp,
@@ -372,7 +372,7 @@ the result is the reference result bit for bit whatever the engine:
   with n = 400 run about 10 times faster than the reference (2.7 to 3.3
   times on one core).
 - **GPU (dd, td, qd):** `blas_cuda/R*.cpp` sends eligible calls to the GPU
-  (`R*_gpu`, one thread per lane; `Rsyrk`/`Rsyr2k` in 16 x 16 tiles of C
+  (`R*_<type>_cuda`, one thread per lane; `Rsyrk`/`Rsyr2k` in 16 x 16 tiles of C
   with the columns of A and B staged in shared memory, each thread doing
   the operations of its lane) with the BF arithmetic of
   `Rgemm_qd_ops_common.h`, including libQD3's division (`accurate_div`), and

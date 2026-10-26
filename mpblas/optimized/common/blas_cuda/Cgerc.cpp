@@ -32,14 +32,14 @@
 // reference result bit for bit.
 
 #include <mpblas.h>
+#include "../Rblas_cuda_entry_common.h"
 
-bool Cgerc_gpu(INTEGER const m, INTEGER const n, COMPLEX const alpha, COMPLEX *x, INTEGER const incx, COMPLEX *y, INTEGER const incy, COMPLEX *a, INTEGER const lda);
 bool Cgerc_omp(INTEGER const m, INTEGER const n, COMPLEX const alpha, COMPLEX *x, INTEGER const incx, COMPLEX *y, INTEGER const incy, COMPLEX *a, INTEGER const lda);
 void Cgerc_reference_cpu(INTEGER const m, INTEGER const n, COMPLEX const alpha, COMPLEX *x, INTEGER const incx, COMPLEX *y, INTEGER const incy, COMPLEX *a, INTEGER const lda);
 
 void Cgerc(INTEGER const m, INTEGER const n, COMPLEX const alpha, COMPLEX *x, INTEGER const incx, COMPLEX *y, INTEGER const incy, COMPLEX *a, INTEGER const lda)
 {
-    if (Cgerc_gpu(m, n, alpha, x, incx, y, incy, a, lda))
+    if (MPLAPACK_CUDA_ENTRY(Cgerc)(m, n, alpha, x, incx, y, incy, a, lda))
         return;
     if (Cgerc_omp(m, n, alpha, x, incx, y, incy, a, lda))
         return;

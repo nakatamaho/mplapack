@@ -27,8 +27,8 @@
  */
 
 // Host side of the dd/td/qd complex Level 1/2/3 BLAS (and Rgemmtr) on CUDA
-// (../Cblas_cuda_common.cuh): R*_gpu return false when the call is left to
-// the CPU.  Environment (<P> = MPLAPACK_DD, MPLAPACK_TD or MPLAPACK_QD), as
+// (../Cblas_cuda_common.cuh): the entry points <R>_<backend>_cuda return
+// false when the call is left to the CPU.  Environment (<P> = MPLAPACK_DD, MPLAPACK_TD or MPLAPACK_QD), as
 // for the real routines (../Rblas_cuda_bridge_common.h): <P>_BLAS_CUDA=0,
 // <P>_BLAS_CUDA_MIN=N, <P>_BLAS_CUDA_L12=1 (Level 1 and 2 on the GPU),
 // <P>_CUDA_VERBOSE=1.  Calls with alpha == 0 or quick returns run on the GPU

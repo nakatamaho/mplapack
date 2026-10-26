@@ -3,7 +3,8 @@
 
 Writes the jobs (mpblas/optimized/common/Cblas_cuda_jobs_common.h: one
 element of y or x, or one column of AP, per GPU thread), the host routines
-<R>_gpu_t (mpblas/optimized/common/blas_cuda/Cblas_bridge_body.h) and the
+<R>_gpu_t and the entry points <R>_<backend>_cuda
+(mpblas/optimized/common/blas_cuda/Cblas_bridge_body.h) and the
 dispatchers mpblas/optimized/common/blas_cuda/<R>.cpp of Chemv, Chbmv,
 Rsbmv, Chpmv, Rspmv, Rgbmv, Cgbmv, Ctrmv, Rtbmv, Ctbmv, Rtpmv, Ctpmv, Rspr,
 Rspr2, Chpr and Chpr2.  Run once on files without these routines (it
@@ -111,7 +112,7 @@ i = c.index('} // namespace mplapack_cblas_gpu')
 c = c[:i] + '// Level 2 range variants (Level 2: eligible(false, ...))\n\n' + '\n'.join(bodies) + '\n' + c[i:]
 lines = []
 for s in S:
-    lines.append('#define MPLAPACK_CBLAS_GPU_FUNCTION_%s(RUN) \\\n    bool %s_gpu(%s) { return RUN(%s_gpu_t, %s); }' % (s['n'], s['n'], s['sig'], s['n'], ', '.join(s['args'])))
+    lines.append('#define MPLAPACK_CBLAS_GPU_FUNCTION_%s(RUN) \\\n    bool MPLAPACK_CUDA_ENTRY(%s)(%s) { return RUN(%s_gpu_t, %s); }' % (s['n'], s['n'], s['sig'], s['n'], ', '.join(s['args'])))
 i = c.index('#define MPLAPACK_CBLAS_GPU_FUNCTIONS(RUN)')
 c = c[:i] + '\n'.join(lines) + '\n\n' + c[i:]
 c = c.replace('    MPLAPACK_CBLAS_GPU_FUNCTION_Cher2(RUN)\n', '    MPLAPACK_CBLAS_GPU_FUNCTION_Cher2(RUN) \\\n' + ' \\\n'.join('    MPLAPACK_CBLAS_GPU_FUNCTION_%s(RUN)' % s['n'] for s in S) + '\n')
@@ -129,14 +130,14 @@ for s in S:
 // reference result bit for bit.
 
 #include <mpblas.h>
+#include "../Rblas_cuda_entry_common.h"
 
-bool %(n)s_gpu(%(sig)s);
 bool %(n)s_omp(%(sig)s);
 void %(n)s_reference_cpu(%(sig)s);
 
 void %(n)s(%(sig)s)
 {
-    if (%(n)s_gpu(%(a)s))
+    if (MPLAPACK_CUDA_ENTRY(%(n)s)(%(a)s))
         return;
     if (%(n)s_omp(%(a)s))
         return;

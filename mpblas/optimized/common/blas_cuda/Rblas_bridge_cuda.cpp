@@ -28,9 +28,11 @@
 
 // Host side of the Level 1/2/3 BLAS of the dd/td/qd CUDA libraries: the
 // calls of ../blas/R*_omp.cpp, run on the GPU (../Rblas_cuda_bridge_common.h).
-// R*_gpu return false when the call is left to the CPU.
+// The entry points R*_<backend>_cuda return false when the call is left to
+// the CPU.
 
 #include <mpblas.h>
+#include "../Rblas_cuda_entry_common.h"
 #include "../Rblas_cuda_bridge_common.h"
 
 #if defined(MPLAPACK_BUILD_WITH_DD)
@@ -52,7 +54,7 @@ namespace {
 bool ls(const char *a, const char *b) { return Mlsame(a, b) != 0; }
 } // namespace
 
-bool Rsyrk_gpu(const char *uplo, const char *trans, INTEGER const n, INTEGER const k, REAL const alpha, REAL *a, INTEGER const lda, REAL const beta, REAL *cc, INTEGER const ldc)
+bool MPLAPACK_CUDA_ENTRY(Rsyrk)(const char *uplo, const char *trans, INTEGER const n, INTEGER const k, REAL const alpha, REAL *a, INTEGER const lda, REAL const beta, REAL *cc, INTEGER const ldc)
 {
     using namespace mplapack_blas;
     blas_call<REAL> c;
@@ -61,7 +63,7 @@ bool Rsyrk_gpu(const char *uplo, const char *trans, INTEGER const n, INTEGER con
     return blas_gpu_bridge<REAL, OPS>(PREFIX, c);
 }
 
-bool Rsyr2k_gpu(const char *uplo, const char *trans, INTEGER const n, INTEGER const k, REAL const alpha, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL const beta, REAL *cc, INTEGER const ldc)
+bool MPLAPACK_CUDA_ENTRY(Rsyr2k)(const char *uplo, const char *trans, INTEGER const n, INTEGER const k, REAL const alpha, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL const beta, REAL *cc, INTEGER const ldc)
 {
     using namespace mplapack_blas;
     blas_call<REAL> c;
@@ -70,7 +72,7 @@ bool Rsyr2k_gpu(const char *uplo, const char *trans, INTEGER const n, INTEGER co
     return blas_gpu_bridge<REAL, OPS>(PREFIX, c);
 }
 
-bool Rsymm_gpu(const char *side, const char *uplo, INTEGER const m, INTEGER const n, REAL const alpha, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL const beta, REAL *cc, INTEGER const ldc)
+bool MPLAPACK_CUDA_ENTRY(Rsymm)(const char *side, const char *uplo, INTEGER const m, INTEGER const n, REAL const alpha, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL const beta, REAL *cc, INTEGER const ldc)
 {
     using namespace mplapack_blas;
     blas_call<REAL> c;
@@ -79,7 +81,7 @@ bool Rsymm_gpu(const char *side, const char *uplo, INTEGER const m, INTEGER cons
     return blas_gpu_bridge<REAL, OPS>(PREFIX, c);
 }
 
-bool Rtrmm_gpu(const char *side, const char *uplo, const char *transa, const char *diag, INTEGER const m, INTEGER const n, REAL const alpha, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb)
+bool MPLAPACK_CUDA_ENTRY(Rtrmm)(const char *side, const char *uplo, const char *transa, const char *diag, INTEGER const m, INTEGER const n, REAL const alpha, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb)
 {
     using namespace mplapack_blas;
     blas_call<REAL> c;
@@ -88,7 +90,7 @@ bool Rtrmm_gpu(const char *side, const char *uplo, const char *transa, const cha
     return blas_gpu_bridge<REAL, OPS>(PREFIX, c);
 }
 
-bool Rtrsm_gpu(const char *side, const char *uplo, const char *transa, const char *diag, INTEGER const m, INTEGER const n, REAL const alpha, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb)
+bool MPLAPACK_CUDA_ENTRY(Rtrsm)(const char *side, const char *uplo, const char *transa, const char *diag, INTEGER const m, INTEGER const n, REAL const alpha, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb)
 {
     using namespace mplapack_blas;
     blas_call<REAL> c;
@@ -97,7 +99,7 @@ bool Rtrsm_gpu(const char *side, const char *uplo, const char *transa, const cha
     return blas_gpu_bridge<REAL, OPS>(PREFIX, c);
 }
 
-bool Rgemv_gpu(const char *trans, INTEGER const m, INTEGER const n, REAL const alpha, REAL *a, INTEGER const lda, REAL *x, INTEGER const incx, REAL const beta, REAL *y, INTEGER const incy)
+bool MPLAPACK_CUDA_ENTRY(Rgemv)(const char *trans, INTEGER const m, INTEGER const n, REAL const alpha, REAL *a, INTEGER const lda, REAL *x, INTEGER const incx, REAL const beta, REAL *y, INTEGER const incy)
 {
     using namespace mplapack_blas;
     blas_call<REAL> c;
@@ -106,7 +108,7 @@ bool Rgemv_gpu(const char *trans, INTEGER const m, INTEGER const n, REAL const a
     return blas_gpu_bridge<REAL, OPS>(PREFIX, c);
 }
 
-bool Rsymv_gpu(const char *uplo, INTEGER const n, REAL const alpha, REAL *a, INTEGER const lda, REAL *x, INTEGER const incx, REAL const beta, REAL *y, INTEGER const incy)
+bool MPLAPACK_CUDA_ENTRY(Rsymv)(const char *uplo, INTEGER const n, REAL const alpha, REAL *a, INTEGER const lda, REAL *x, INTEGER const incx, REAL const beta, REAL *y, INTEGER const incy)
 {
     using namespace mplapack_blas;
     blas_call<REAL> c;
@@ -115,7 +117,7 @@ bool Rsymv_gpu(const char *uplo, INTEGER const n, REAL const alpha, REAL *a, INT
     return blas_gpu_bridge<REAL, OPS>(PREFIX, c);
 }
 
-bool Rtrmv_gpu(const char *uplo, const char *trans, const char *diag, INTEGER const n, REAL *a, INTEGER const lda, REAL *x, INTEGER const incx)
+bool MPLAPACK_CUDA_ENTRY(Rtrmv)(const char *uplo, const char *trans, const char *diag, INTEGER const n, REAL *a, INTEGER const lda, REAL *x, INTEGER const incx)
 {
     using namespace mplapack_blas;
     blas_call<REAL> c;
@@ -124,7 +126,7 @@ bool Rtrmv_gpu(const char *uplo, const char *trans, const char *diag, INTEGER co
     return blas_gpu_bridge<REAL, OPS>(PREFIX, c);
 }
 
-bool Rger_gpu(INTEGER const m, INTEGER const n, REAL const alpha, REAL *x, INTEGER const incx, REAL *y, INTEGER const incy, REAL *a, INTEGER const lda)
+bool MPLAPACK_CUDA_ENTRY(Rger)(INTEGER const m, INTEGER const n, REAL const alpha, REAL *x, INTEGER const incx, REAL *y, INTEGER const incy, REAL *a, INTEGER const lda)
 {
     using namespace mplapack_blas;
     blas_call<REAL> c;
@@ -133,7 +135,7 @@ bool Rger_gpu(INTEGER const m, INTEGER const n, REAL const alpha, REAL *x, INTEG
     return blas_gpu_bridge<REAL, OPS>(PREFIX, c);
 }
 
-bool Rsyr_gpu(const char *uplo, INTEGER const n, REAL const alpha, REAL *x, INTEGER const incx, REAL *a, INTEGER const lda)
+bool MPLAPACK_CUDA_ENTRY(Rsyr)(const char *uplo, INTEGER const n, REAL const alpha, REAL *x, INTEGER const incx, REAL *a, INTEGER const lda)
 {
     using namespace mplapack_blas;
     blas_call<REAL> c;
@@ -142,7 +144,7 @@ bool Rsyr_gpu(const char *uplo, INTEGER const n, REAL const alpha, REAL *x, INTE
     return blas_gpu_bridge<REAL, OPS>(PREFIX, c);
 }
 
-bool Rsyr2_gpu(const char *uplo, INTEGER const n, REAL const alpha, REAL *x, INTEGER const incx, REAL *y, INTEGER const incy, REAL *a, INTEGER const lda)
+bool MPLAPACK_CUDA_ENTRY(Rsyr2)(const char *uplo, INTEGER const n, REAL const alpha, REAL *x, INTEGER const incx, REAL *y, INTEGER const incy, REAL *a, INTEGER const lda)
 {
     using namespace mplapack_blas;
     blas_call<REAL> c;
@@ -151,7 +153,7 @@ bool Rsyr2_gpu(const char *uplo, INTEGER const n, REAL const alpha, REAL *x, INT
     return blas_gpu_bridge<REAL, OPS>(PREFIX, c);
 }
 
-bool Rscal_gpu(INTEGER const n, REAL const da, REAL *dx, INTEGER const incx)
+bool MPLAPACK_CUDA_ENTRY(Rscal)(INTEGER const n, REAL const da, REAL *dx, INTEGER const incx)
 {
     using namespace mplapack_blas;
     blas_call<REAL> c;
@@ -160,7 +162,7 @@ bool Rscal_gpu(INTEGER const n, REAL const da, REAL *dx, INTEGER const incx)
     return blas_gpu_bridge<REAL, OPS>(PREFIX, c);
 }
 
-bool Rswap_gpu(INTEGER const n, REAL *dx, INTEGER const incx, REAL *dy, INTEGER const incy)
+bool MPLAPACK_CUDA_ENTRY(Rswap)(INTEGER const n, REAL *dx, INTEGER const incx, REAL *dy, INTEGER const incy)
 {
     using namespace mplapack_blas;
     blas_call<REAL> c;
@@ -169,7 +171,7 @@ bool Rswap_gpu(INTEGER const n, REAL *dx, INTEGER const incx, REAL *dy, INTEGER 
     return blas_gpu_bridge<REAL, OPS>(PREFIX, c);
 }
 
-bool Rrot_gpu(INTEGER const n, REAL *dx, INTEGER const incx, REAL *dy, INTEGER const incy, REAL const c_, REAL const s)
+bool MPLAPACK_CUDA_ENTRY(Rrot)(INTEGER const n, REAL *dx, INTEGER const incx, REAL *dy, INTEGER const incy, REAL const c_, REAL const s)
 {
     using namespace mplapack_blas;
     blas_call<REAL> call;

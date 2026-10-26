@@ -32,13 +32,12 @@
  * Calls that do not run on the GPU use the CPU code of libmplapack_qd_opt.
  */
 
-#include <mpblas_qd.h>
+#include <mpblas_qd_cuda.h>
 
 void Rgemm_NN_omp(mplapackint m, mplapackint n, mplapackint k, qd_real alpha, qd_real * A, mplapackint lda, qd_real * B, mplapackint ldb, qd_real beta, qd_real * C, mplapackint ldc);
 void Rgemm_TN_omp(mplapackint m, mplapackint n, mplapackint k, qd_real alpha, qd_real * A, mplapackint lda, qd_real * B, mplapackint ldb, qd_real beta, qd_real * C, mplapackint ldc);
 void Rgemm_NT_omp(mplapackint m, mplapackint n, mplapackint k, qd_real alpha, qd_real * A, mplapackint lda, qd_real * B, mplapackint ldb, qd_real beta, qd_real * C, mplapackint ldc);
 void Rgemm_TT_omp(mplapackint m, mplapackint n, mplapackint k, qd_real alpha, qd_real * A, mplapackint lda, qd_real * B, mplapackint ldb, qd_real beta, qd_real * C, mplapackint ldc);
-bool Rgemm_gpu(bool nota, bool notb, mplapackint m, mplapackint n, mplapackint k, qd_real alpha, qd_real *A, mplapackint lda, qd_real *B, mplapackint ldb, qd_real beta, qd_real *C, mplapackint ldc);
 bool Rgemm_blocked_omp(bool nota, bool notb, mplapackint m, mplapackint n, mplapackint k, qd_real alpha, qd_real *A, mplapackint lda, qd_real *B, mplapackint ldb, qd_real beta, qd_real *C, mplapackint ldc);
 void Rgemm_ref(const char *transa, const char *transb, mplapackint m, mplapackint n, mplapackint k, qd_real alpha, qd_real * A, mplapackint lda, qd_real * B, mplapackint ldb, qd_real beta, qd_real * C, mplapackint ldc);
 
@@ -113,7 +112,7 @@ void Rgemm(const char *transa, const char *transb, mplapackint const m, mplapack
 	return;
     }
 //Start the operations.
-    if (Rgemm_gpu(nota != 0, notb != 0, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc))
+    if (Rgemm_qd_cuda(transa, transb, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc))
 	return;
     if (Rgemm_blocked_omp(nota != 0, notb != 0, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc))
 	return;
