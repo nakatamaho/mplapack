@@ -33,6 +33,46 @@ it current when this changes.
 - Version numbers live in BOTH configure.ac and CMakeLists.txt; change both.
 - libtool -version-info is ABI versioning, independent of package version.
 
+## Accelerator entry points (naming rule)
+
+Every routine an accelerator library computes has a public entry point that
+calls the accelerator directly, named
+
+    <Routine>_<backend>_<accelerator>      e.g. Rgemm_dd_cuda, Rgemm_qd_cuda,
+                                                Rgemm_mpfr_cuda, Rgemm_binary128_opencl
+
+- `<Routine>` is the MPLAPACK routine name (Rgemm, Cgemm, Rsyrk, ...),
+  `<backend>` the backend name of backends.txt (dd, td, qd, mpfr, gmp,
+  double, binary80, binary128), `<accelerator>` the suffix of the library
+  that defines it, libmplapack_<backend>_opt_<accelerator> (cuda, opencl).
+- Arguments: those of `<Routine>`, in the same order and with the same
+  types (`const char *` flags, `mplapackint` sizes, the backend's scalar
+  types).
+- Result: `bool`.  true: the accelerator computed the result.  false: it did
+  not (invalid arguments, quick-return cases, calls that are not eligible,
+  device or runtime errors); every output is then left untouched.  The entry
+  point never falls back to the CPU itself.
+- It honours the same environment variables as the dispatcher (enabling,
+  size threshold, algorithm and arithmetic selection, verbosity), which are
+  documented next to it.
+- Declared in `include/mpblas_<backend>_<accelerator>.h` (installed with that
+  library; autotools: Makefile.am mplapack_include_HEADERS under the
+  library's conditional, CMake installs include/*.h); defined in the
+  accelerator library.  Programs call it with that header and link the
+  library.
+- The dispatcher `<Routine>` of the accelerator library (it shadows the
+  optimized one, see the layered basename rule) calls the entry point and
+  computes on the CPU when it returns false.
+- Helpers (bridges, kernels, launchers) are not public: put them in a
+  namespace or make them static, and never give them a name of this form.
+
+Migration (not done yet): the dd/td/qd CUDA entry points are named
+`<Routine>_gpu` (dd/cuda/Rgemm_bridge_cuda.cpp etc., common/blas_cuda/R*.cpp,
+C*.cpp), the MPFR CUDA ones `<Routine>_mpfr_cuda` but with the dispatcher's
+internal arguments (bool nota, notb, ...), and the binary128 OpenCL Rgemm
+is `Rgemm_binary128_opencl_kernel` (void).  Bring them to this form, Rgemm
+first, and update this paragraph.
+
 ## Ongoing work: unified library layout (branch topic/unified-libs)
 
 The library taxonomy is being consolidated: one self-contained library per
