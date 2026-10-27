@@ -14,7 +14,8 @@ MPLAPACK_DD_OPTIMIZED_SOURCES =
 
 lib_LTLIBRARIES = libmplapack_dd_opt.la
 
-libmplapack_dd_opt_la_CPPFLAGS = -I. -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) $(OPENMP_CXXFLAGS) -DMPLAPACK_BUILD_WITH_DD
+# CPU-only permission: deliberately absent from every accelerator library.
+libmplapack_dd_opt_la_CPPFLAGS = -I. -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) $(OPENMP_CXXFLAGS) -DMPLAPACK_BUILD_WITH_DD -DMPLAPACK_CHOLESKY_CPU_TASKS=1
 libmplapack_dd_opt_la_CXXFLAGS = $(DD_CXXFLAGS)
 libmplapack_dd_opt_la_SOURCES = \
 Rcopy.cpp Rcopy_ref.cpp openmp/Rcopy_omp.cpp \

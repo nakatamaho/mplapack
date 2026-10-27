@@ -9,7 +9,8 @@ MPLAPACK_GMP_OPTIMIZED_SOURCES =
 
 lib_LTLIBRARIES = libmplapack_gmp_opt.la
 
-libmplapack_gmp_opt_la_CPPFLAGS = $(GMPFRXX_MKII_CPPFLAGS) -I$(top_srcdir)/include $(OPENMP_CXXFLAGS) -I$(GMP_INCLUDEDIR) -DMPLAPACK_BUILD_WITH_GMP  -finline-functions
+# CPU-only permission: deliberately absent from every accelerator library.
+libmplapack_gmp_opt_la_CPPFLAGS = $(GMPFRXX_MKII_CPPFLAGS) -I$(top_srcdir)/include $(OPENMP_CXXFLAGS) -I$(GMP_INCLUDEDIR) -DMPLAPACK_BUILD_WITH_GMP  -finline-functions -DMPLAPACK_CHOLESKY_CPU_TASKS=1
 libmplapack_gmp_opt_la_SOURCES = \
 Rcopy.cpp Rcopy_ref.cpp openmp/Rcopy_omp.cpp \
 Rdot.cpp  Rdot_ref.cpp  openmp/Rdot_omp.cpp \

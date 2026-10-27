@@ -29,14 +29,48 @@
 // Cpotrf of the optimized libraries: the reference blocked algorithm (same
 // block size, Cherk and Cpotrf2 on the diagonal blocks, Cgemm and Ctrsm
 // on the others) with look-ahead (Rlookahead_common.h), with the reference
-// result bit for bit; with MPLAPACK_LAPACK_FAST=1 the recursive Cpotrf2 on
-// the whole matrix (another reference algorithm: faster, different rounding).
+// result bit for bit. The diagonal recursion has task-tiled solves and
+// reductions; FAST=1 uses a separately blocked whole-matrix recursion.
 
 #define Cpotrf Cpotrf_reference_cpu
 #include "../../reference/Cpotrf.cpp"
 #undef Cpotrf
 
-#include "Rlookahead_common.h"
+#include "Rpotrf_common.h"
+
+namespace {
+// Generated column restriction preserves even the special real diagonal
+// arithmetic of Cherk (a GEMM off-diagonal replacement would not).
+#include "../../../mpblas/optimized/common/blas/Cherk_columns.h"
+struct CholeskyOps {
+    void leaf(bool upper, INTEGER n, COMPLEX *a, INTEGER ld, INTEGER &info) const
+    { Cpotrf2(upper ? "U" : "L", n, a, ld, info); }
+    void solve(bool upper, INTEGER k, INTEGER n, COMPLEX *a, COMPLEX *b, INTEGER ld) const
+    {
+        Ctrsm(upper ? "L" : "R", upper ? "U" : "L", "C", "N",
+              upper ? k : n, upper ? n : k, COMPLEX(1), a, ld, b, ld);
+    }
+    void rank(bool upper, INTEGER n, INTEGER k, COMPLEX *b, COMPLEX *c, INTEGER ld) const
+    { Cherk(upper ? "U" : "L", upper ? "C" : "N", n, k, REAL(-1), b, ld, REAL(1), c, ld); }
+    void rank_columns(bool upper, INTEGER n, INTEGER k, COMPLEX *b, COMPLEX *c, INTEGER ld, INTEGER p, INTEGER end) const
+    { Cherk_columns(upper ? "U" : "L", upper ? "C" : "N", n, k, REAL(-1), b, ld, REAL(1), c, ld, p, end); }
+};
+void potrf_diagonal(const char *uplo, INTEGER n, COMPLEX *a, INTEGER ld, INTEGER &info, bool tasks = false)
+{
+    if (!tasks) {
+        Cpotrf2(uplo, n, a, ld, info);
+        return;
+    }
+    const CholeskyOps op;
+    mplapack_potrf::recursive(Mlsame(uplo, "U"), n, a, ld, info,
+                             mplapack_potrf::tile_size(), tasks, false, op);
+}
+#define Cpotrf potrf_blocked
+#define Cpotrf2 potrf_diagonal
+#include "../../reference/Cpotrf.cpp"
+#undef Cpotrf2
+#undef Cpotrf
+} // namespace
 
 void Cpotrf(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, INTEGER &info)
 {
@@ -47,12 +81,14 @@ void Cpotrf(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
     }
     if (mplapack_lapack::la_fast()) {
         info = 0;
-        Cpotrf2(uplo, n, a, lda, info);
+        const CholeskyOps op;
+        mplapack_potrf::recursive(upper, n, a, lda, info,
+                                 mplapack_potrf::leaf_size(), false, true, op);
         return;
     }
     const INTEGER nb = iMlaenv(1, "Cpotrf", uplo, n, -1, -1, -1);
-    if (nb <= 1 || nb >= n || !mplapack_lapack::la_lookahead(false, n, nb)) {
-        Cpotrf_reference_cpu(uplo, n, a, lda, info);
+    if (nb <= 1 || nb >= n || !mplapack_potrf::tasks_enabled()) {
+        potrf_blocked(uplo, n, a, lda, info);
         return;
     }
     const REAL one = 1.0;
@@ -65,7 +101,7 @@ void Cpotrf(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
                 Cherk("Upper", "Conjugate transpose", jb, j, -one, &a[j * lda], lda, one, &a[j + j * lda], lda);
             else
                 Cherk("Lower", "No transpose", jb, j, -one, &a[j], lda, one, &a[j + j * lda], lda);
-            Cpotrf2(uplo, jb, &a[j + j * lda], lda, iinfo);
+            potrf_diagonal(uplo, jb, &a[j + j * lda], lda, iinfo, true);
         },
         [&](long j, long jb, long p0, long p1) {
             if (p1 <= p0)

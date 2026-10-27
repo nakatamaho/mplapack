@@ -10,7 +10,8 @@ MPLAPACK_%%B%%_OPTIMIZED_SOURCES =
 
 lib_LTLIBRARIES = libmplapack_%%b%%_opt.la
 
-libmplapack_%%b%%_opt_la_CPPFLAGS = %%opt_cppflags%%
+# CPU-only permission: deliberately absent from every accelerator library.
+libmplapack_%%b%%_opt_la_CPPFLAGS = %%opt_cppflags%% -DMPLAPACK_CHOLESKY_CPU_TASKS=1
 %%block opt_cxxflags%%
 libmplapack_%%b%%_opt_la_SOURCES = \
 Rcopy.cpp Rcopy_ref.cpp openmp/Rcopy_omp.cpp \

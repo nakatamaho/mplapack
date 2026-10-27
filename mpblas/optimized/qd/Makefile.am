@@ -14,7 +14,8 @@ MPLAPACK_QD_OPTIMIZED_SOURCES =
 
 lib_LTLIBRARIES = libmplapack_qd_opt.la
 
-libmplapack_qd_opt_la_CPPFLAGS = -I. -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) $(OPENMP_CXXFLAGS) -DMPLAPACK_BUILD_WITH_QD
+# CPU-only permission: deliberately absent from every accelerator library.
+libmplapack_qd_opt_la_CPPFLAGS = -I. -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) $(OPENMP_CXXFLAGS) -DMPLAPACK_BUILD_WITH_QD -DMPLAPACK_CHOLESKY_CPU_TASKS=1
 # The blocked Rgemm needs uncontracted arithmetic.
 libmplapack_qd_opt_la_CXXFLAGS = $(DD_CXXFLAGS)
 libmplapack_qd_opt_la_SOURCES = \

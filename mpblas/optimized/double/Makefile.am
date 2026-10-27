@@ -9,7 +9,8 @@ MPLAPACK_DOUBLE_OPTIMIZED_SOURCES =
 
 lib_LTLIBRARIES = libmplapack_double_opt.la
 
-libmplapack_double_opt_la_CPPFLAGS = -I. -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) $(OPENMP_CXXFLAGS) -DMPLAPACK_BUILD_WITH_DOUBLE
+# CPU-only permission: deliberately absent from every accelerator library.
+libmplapack_double_opt_la_CPPFLAGS = -I. -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) $(OPENMP_CXXFLAGS) -DMPLAPACK_BUILD_WITH_DOUBLE -DMPLAPACK_CHOLESKY_CPU_TASKS=1
 libmplapack_double_opt_la_SOURCES = \
 Rcopy.cpp Rcopy_ref.cpp openmp/Rcopy_omp.cpp \
 Rdot.cpp  Rdot_ref.cpp  openmp/Rdot_omp.cpp \

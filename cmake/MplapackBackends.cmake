@@ -106,6 +106,14 @@ function(mplapack_add_opt_backend backend)
     ${_mplapack_reference_sources}
     ${_mplapack_opt_sources})
   add_library(mplapack::${_target} ALIAS ${_target})
+  # Do not grant this permission to accelerator targets below: their BLAS
+  # dispatchers can enter non-reentrant GPU bridges, even with LOOKAHEAD=2.
+  set_property(TARGET ${_target} PROPERTY MPLAPACK_CPU_CHOLESKY TRUE)
+  set_source_files_properties(
+    "${CMAKE_CURRENT_SOURCE_DIR}/mplapack/optimized/common/Rpotrf.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/mplapack/optimized/common/Cpotrf.cpp"
+    PROPERTIES COMPILE_DEFINITIONS
+    "$<$<BOOL:$<TARGET_PROPERTY:MPLAPACK_CPU_CHOLESKY>>:MPLAPACK_CHOLESKY_CPU_TASKS=1>")
   string(TOUPPER "${backend}" _backend_upper)
   mplapack_configure_backend_target(
     ${_target} MPLAPACK_BUILD_WITH_${_backend_upper})

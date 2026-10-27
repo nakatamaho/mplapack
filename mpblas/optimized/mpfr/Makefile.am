@@ -14,7 +14,8 @@ MPLAPACK_MPFR_OPTIMIZED_SOURCES =
 
 lib_LTLIBRARIES = libmplapack_mpfr_opt.la
 
-libmplapack_mpfr_opt_la_CPPFLAGS = $(GMPFRXX_MKII_CPPFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR) $(OPENMP_CXXFLAGS) -DMPLAPACK_BUILD_WITH_MPFR
+# CPU-only permission: deliberately absent from every accelerator library.
+libmplapack_mpfr_opt_la_CPPFLAGS = $(GMPFRXX_MKII_CPPFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR) $(OPENMP_CXXFLAGS) -DMPLAPACK_BUILD_WITH_MPFR -DMPLAPACK_CHOLESKY_CPU_TASKS=1
 libmplapack_mpfr_opt_la_SOURCES = \
 Rcopy.cpp Rcopy_ref.cpp openmp/Rcopy_omp.cpp \
 Rdot.cpp  Rdot_ref.cpp  openmp/Rdot_omp.cpp \

@@ -14,7 +14,8 @@ MPLAPACK_BINARY128_OPTIMIZED_SOURCES =
 
 lib_LTLIBRARIES = libmplapack_binary128_opt.la
 
-libmplapack_binary128_opt_la_CPPFLAGS = -I. -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) $(OPENMP_CXXFLAGS) -DMPLAPACK_BUILD_WITH_BINARY128
+# CPU-only permission: deliberately absent from every accelerator library.
+libmplapack_binary128_opt_la_CPPFLAGS = -I. -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) $(OPENMP_CXXFLAGS) -DMPLAPACK_BUILD_WITH_BINARY128 -DMPLAPACK_CHOLESKY_CPU_TASKS=1
 libmplapack_binary128_opt_la_SOURCES = \
 Rcopy.cpp Rcopy_ref.cpp openmp/Rcopy_omp.cpp \
 Rdot.cpp  Rdot_ref.cpp  openmp/Rdot_omp.cpp \
