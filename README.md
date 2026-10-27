@@ -8,6 +8,13 @@ BSD-style license, supplemental to the original LAPACK license.
 
 # News
 
+* 2026-10-27  MPLAPACK 2.4.0 (2.x maintenance release) has been released.
+  Available from <https://github.com/nakatamaho/mplapack/releases/tag/v2.4.0>.
+  It retains the 2.3.0 unified library layout and SONAME 2, and focuses on
+  dependency linkage, installation, test-driver fixes (including backend
+  precision initialization in static MinGW test links), and reproducible
+  release QA. See [CHANGES.2.4.0.md](CHANGES.2.4.0.md).
+
 * 2026-07-29  MPLAPACK 2.3.0 has been released. Available from
   <https://github.com/nakatamaho/mplapack/releases/tag/v2.3.0>. This release
   adopts one self-contained library per backend/flavor, removes the separate
