@@ -36,6 +36,16 @@ run's tarball is superseded and must not be published.
 - Review decision (2026-10-27): numerical exceptions accepted as the known
   2.3.0 exceptions; release approved by the maintainer.
 
+## Publication record
+
+- 2026-10-27: tag `v2.4.0` (annotated) created at
+  `00e0b659d01d073a36a58fa5851fae067fdd3a10` and pushed to origin.
+- 2026-10-27 01:23 UTC: GitHub release published, not marked latest
+  (v3.0.1 remains latest): <https://github.com/nakatamaho/mplapack/releases/tag/v2.4.0>.
+  The downloaded asset matches SHA-256 `bfdd8c64...6093df` and is
+  byte-identical to the tested tarball.
+- The announcement (`doc/ANNOUNCE.2.4.0.md`) has not been sent.
+
 ## Prepared material
 
 - `CHANGES.2.4.0.md`: maintenance changes and numerical QA exceptions.
