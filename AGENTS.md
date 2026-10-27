@@ -92,6 +92,16 @@ repo-local skill `unified-libs-goal` — one goal per session, in order
 (invoke: "$unified-libs-goal 01"). Do not act on the goal files outside a
 skill-driven session.
 
+## Ongoing work: dedicated LU and Cholesky (CPU and GPU)
+
+Dedicated Rgetrf/Cgetrf, Rpotrf/Cpotrf and the routines around them (panels,
+laswp, getrs/potrs, gesv/posv, trtri/lauum), on the CPU and as GPU entry
+points `<Routine>_<backend>_cuda`. Normative spec and routine table:
+.agents/skills/factorization-goal/references/00-overview.md; goals 01-09 in
+the same directory, driven by the repo-local skill `factorization-goal`, one
+goal per session (invoke: "$factorization-goal 01"). Do not act on the goal
+files outside a skill-driven session.
+
 ## Build quickstarts
 
 autotools:
