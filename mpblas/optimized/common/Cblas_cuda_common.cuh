@@ -73,8 +73,8 @@ template <class Job> __global__ void k_job(const Job *job, long units)
 }
 #endif
 
-// Uploads the operands (spans), runs job(u) for u < units, downloads the
-// written ones.  ops[q].host is the logical element (0, 0); bind() gets the
+// Uploads the operands (their referenced elements, Rblas_gpu_operand_common.h),
+// runs job(u) for u < units, downloads the written ones.  ops[q].host is the logical element (0, 0); bind() gets the
 // device addresses of these elements.
 template <class E, class Job> int run_job(Job job, long units, const gpu_operand<E> *ops, int nops)
 {
@@ -85,8 +85,8 @@ template <class E, class Job> int run_job(Job job, long units, const gpu_operand
     for (int q = 0; q < nops && e == cudaSuccess; q++) {
         const size_t count = (size_t)(ops[q].count ? ops[q].count : 1);
         e = cudaMalloc(&buf[q], count * sizeof(E));
-        if (e == cudaSuccess && ops[q].count)
-            e = cudaMemcpy(buf[q], ops[q].host + ops[q].lo, ops[q].count * sizeof(E), cudaMemcpyHostToDevice);
+        if (e == cudaSuccess)
+            e = gpu_operand_upload(ops[q], buf[q]);
         dev[q] = buf[q] - ops[q].lo;
     }
     Job *djob = 0;
@@ -105,17 +105,16 @@ template <class E, class Job> int run_job(Job job, long units, const gpu_operand
     }
     cudaFree(djob);
     for (int q = 0; q < nops && e == cudaSuccess; q++)
-        if (ops[q].download && ops[q].count)
-            e = cudaMemcpy(const_cast<E *>(ops[q].host) + ops[q].lo, buf[q], ops[q].count * sizeof(E), cudaMemcpyDeviceToHost);
+        e = gpu_operand_download(ops[q], buf[q]);
     for (int q = 0; q < nops; q++)
         cudaFree(buf[q]);
     return (int)e;
 #else
     std::vector<E> buf[4];
     for (int q = 0; q < nops; q++) {
-        buf[q].assign(ops[q].host + ops[q].lo, ops[q].host + ops[q].lo + ops[q].count);
-        if (buf[q].empty())
-            buf[q].resize(1);
+        buf[q].assign((size_t)(ops[q].count ? ops[q].count : 1), E());
+        if (ops[q].count)
+            gpu_operand_gather(ops[q], buf[q].data());
         dev[q] = buf[q].data() - ops[q].lo;
     }
     job.bind(dev);
@@ -125,9 +124,8 @@ template <class E, class Job> int run_job(Job job, long units, const gpu_operand
     for (long u = 0; u < units; u++)
         job(u);
     for (int q = 0; q < nops; q++)
-        if (ops[q].download)
-            for (long t = 0; t < ops[q].count; t++)
-                const_cast<E *>(ops[q].host)[ops[q].lo + t] = buf[q][(size_t)t];
+        if (ops[q].download && ops[q].count)
+            gpu_operand_scatter(ops[q], buf[q].data());
     return 0;
 #endif
 }
@@ -255,8 +253,8 @@ template <class Ops> int cgemm_tiled_run(job_Cgemm<Ops> job, const gpu_operand<t
     for (int q = 0; q < nops && e == cudaSuccess; q++) {
         const size_t count = (size_t)(ops[q].count ? ops[q].count : 1);
         e = cudaMalloc(&buf[q], count * sizeof(E));
-        if (e == cudaSuccess && ops[q].count)
-            e = cudaMemcpy(buf[q], ops[q].host + ops[q].lo, ops[q].count * sizeof(E), cudaMemcpyHostToDevice);
+        if (e == cudaSuccess)
+            e = gpu_operand_upload(ops[q], buf[q]);
         dev[q] = buf[q] - ops[q].lo;
     }
     if (e == cudaSuccess) {
@@ -273,8 +271,7 @@ template <class Ops> int cgemm_tiled_run(job_Cgemm<Ops> job, const gpu_operand<t
             e = cudaDeviceSynchronize();
     }
     for (int q = 0; q < nops && e == cudaSuccess; q++)
-        if (ops[q].download && ops[q].count)
-            e = cudaMemcpy(const_cast<E *>(ops[q].host) + ops[q].lo, buf[q], ops[q].count * sizeof(E), cudaMemcpyDeviceToHost);
+        e = gpu_operand_download(ops[q], buf[q]);
     cudaFree(djob);
     for (int q = 0; q < nops; q++)
         cudaFree(buf[q]);
@@ -282,9 +279,9 @@ template <class Ops> int cgemm_tiled_run(job_Cgemm<Ops> job, const gpu_operand<t
 #else
     std::vector<E> buf[4];
     for (int q = 0; q < nops; q++) {
-        buf[q].assign(ops[q].host + ops[q].lo, ops[q].host + ops[q].lo + ops[q].count);
-        if (buf[q].empty())
-            buf[q].resize(1);
+        buf[q].assign((size_t)(ops[q].count ? ops[q].count : 1), E());
+        if (ops[q].count)
+            gpu_operand_gather(ops[q], buf[q].data());
         dev[q] = buf[q].data() - ops[q].lo;
     }
     job.bind(dev);
@@ -314,9 +311,8 @@ template <class Ops> int cgemm_tiled_run(job_Cgemm<Ops> job, const gpu_operand<t
                 t.finish(acc[(size_t)(ti + tj * CG_TILE)], i0 + ti, j0 + tj);
     }
     for (int q = 0; q < nops; q++)
-        if (ops[q].download)
-            for (long u = 0; u < ops[q].count; u++)
-                const_cast<E *>(ops[q].host)[ops[q].lo + u] = buf[q][(size_t)u];
+        if (ops[q].download && ops[q].count)
+            gpu_operand_scatter(ops[q], buf[q].data());
     return 0;
 #endif
 }

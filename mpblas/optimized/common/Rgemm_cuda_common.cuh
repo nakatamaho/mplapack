@@ -342,6 +342,18 @@ template <class Ops> class winograd_gpu_backend {
 // Number of elements of a column-major r x c matrix with leading dimension ld
 inline size_t gpu_span(long r, long c, long ld) { return (r <= 0 || c <= 0) ? 0 : (size_t)ld * (c - 1) + r; }
 
+// Copy of the r x c matrix with leading dimension ld between host and device
+// buffers laid out as its span: only its elements, not the ones between its
+// columns, which concurrent calls on other parts of the same array may be
+// updating.
+template <class F> inline cudaError_t gpu_copy_mat(F *dst, const F *src, long r, long c, long ld, cudaMemcpyKind kind) {
+    if (r <= 0 || c <= 0)
+        return cudaSuccess;
+    if (c == 1 || ld == r)
+        return cudaMemcpy(dst, src, gpu_span(r, c, ld) * sizeof(F), kind);
+    return cudaMemcpy2D(dst, (size_t)ld * sizeof(F), src, (size_t)ld * sizeof(F), (size_t)r * sizeof(F), (size_t)c, kind);
+}
+
 template <class Ops> int gemm_cuda(const shape &s, int algo, long cutoff, const ozaki_plan *plan, const gpu_scalars<typename Ops::F> &sc, const typename Ops::F *A, const typename Ops::F *B, typename Ops::F *C) {
     typedef typename Ops::F F;
     gpu_session g;
@@ -349,7 +361,7 @@ template <class Ops> int gemm_cuda(const shape &s, int algo, long cutoff, const 
     const size_t nC = gpu_span(m, n, s.ldc);
     F *dC = g.alloc<F>(nC);
     if (g.ok())
-        g.check(cudaMemcpy(dC, C, nC * sizeof(F), cudaMemcpyHostToDevice));
+        g.check(gpu_copy_mat(dC, C, m, n, s.ldc, cudaMemcpyHostToDevice));
 
     if (algo == GPU_OZAKI) {
         const int S = plan->S;
@@ -402,8 +414,8 @@ template <class Ops> int gemm_cuda(const shape &s, int algo, long cutoff, const 
         const size_t nA = gpu_span(s.nota ? m : k, s.nota ? k : m, s.lda), nB = gpu_span(s.notb ? k : n, s.notb ? n : k, s.ldb);
         F *dA = g.alloc<F>(nA), *dB = g.alloc<F>(nB), *oA = g.alloc<F>((size_t)m * k), *oB = g.alloc<F>((size_t)k * n), *dP = g.alloc<F>((size_t)m * n);
         if (g.ok()) {
-            g.check(cudaMemcpy(dA, A, nA * sizeof(F), cudaMemcpyHostToDevice));
-            g.check(cudaMemcpy(dB, B, nB * sizeof(F), cudaMemcpyHostToDevice));
+            g.check(gpu_copy_mat(dA, A, s.nota ? m : k, s.nota ? k : m, s.lda, cudaMemcpyHostToDevice));
+            g.check(gpu_copy_mat(dB, B, s.notb ? k : n, s.notb ? n : k, s.ldb, cudaMemcpyHostToDevice));
         }
         if (g.ok()) {
             // transposition through the leaf kernel would change the result;
@@ -433,8 +445,8 @@ template <class Ops> int gemm_cuda(const shape &s, int algo, long cutoff, const 
         F *dA = g.alloc<F>(nA), *dB = g.alloc<F>(nB);
         F *dBs = s.nota ? g.alloc<F>((size_t)k * n) : dB;
         if (g.ok()) {
-            g.check(cudaMemcpy(dA, A, nA * sizeof(F), cudaMemcpyHostToDevice));
-            g.check(cudaMemcpy(dB, B, nB * sizeof(F), cudaMemcpyHostToDevice));
+            g.check(gpu_copy_mat(dA, A, s.nota ? m : k, s.nota ? k : m, s.lda, cudaMemcpyHostToDevice));
+            g.check(gpu_copy_mat(dB, B, s.notb ? k : n, s.notb ? n : k, s.ldb, cudaMemcpyHostToDevice));
         }
         if (g.ok() && s.nota && k > 0) {
             k_alpha_opB<Ops><<<gpu_grid2(k, n), dim3(GPU_TILE, GPU_TILE)>>>(s, sc.alpha, dB, dBs);
@@ -451,7 +463,7 @@ template <class Ops> int gemm_cuda(const shape &s, int algo, long cutoff, const 
     if (g.ok())
         g.check(cudaDeviceSynchronize());
     if (g.ok())
-        g.check(cudaMemcpy(C, dC, nC * sizeof(F), cudaMemcpyDeviceToHost));
+        g.check(gpu_copy_mat(C, dC, m, n, s.ldc, cudaMemcpyDeviceToHost));
     return g.ok() ? 0 : (int)g.error();
 }
 

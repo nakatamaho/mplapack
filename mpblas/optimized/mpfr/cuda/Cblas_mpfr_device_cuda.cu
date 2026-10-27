@@ -39,6 +39,20 @@
 
 namespace mplapack_blas_dev {
 
+int mpfr_cblas_stack(size_t bytes)
+{
+#if MPLAPACK_CBLAS_CUDA_DEVICE
+    size_t cur = 0;
+    cudaError_t e = cudaDeviceGetLimit(&cur, cudaLimitStackSize);
+    if (e == cudaSuccess && cur < bytes)
+        e = cudaDeviceSetLimit(cudaLimitStackSize, bytes);
+    return (int)e;
+#else
+    (void)bytes;
+    return 0;
+#endif
+}
+
 long mplapack_mpfr_rt_prec_h = 0;
 #if MPLAPACK_CBLAS_CUDA_DEVICE
 __device__ long mplapack_mpfr_rt_prec_d = 0;

@@ -81,7 +81,7 @@ struct copy_ctx {
     // rows x cols elements of x with leading dimension (vectors: increment) ld > 0
     template <class E, class T> gpu_operand<E> op(T *x, long ld, long rows, long cols, bool download) const
     {
-        gpu_operand<E> o = {reinterpret_cast<const E *>(x), ld, 0, (cols - 1) * ld + rows, download};
+        gpu_operand<E> o = {reinterpret_cast<const E *>(x), ld, 0, (cols - 1) * ld + rows, download, rows, cols, mplapack_blas::REGION_ALL};
         return o;
     }
     template <class J> bool run(const J &j, const gpu_operand<typename J::E> *ops, int nops) const

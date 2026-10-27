@@ -25,7 +25,7 @@ AMPERE_FLAGS = -gencode arch=compute_80,code=sm_80 -m64 -O3 --ptxas-options=-v
 HOPPER_FLAGS = -gencode arch=compute_90,code=sm_90 -m64 -O3 --ptxas-options=-v
 NVCC_GLIBC_FEATURE_FLAGS = -U_GNU_SOURCE -D_XOPEN_SOURCE=700
 
-MPLAPACK_DD_CUDA_CPPFLAGS = -I. -I.. -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) $(OPENMP_CXXFLAGS) -DMPLAPACK_BUILD_WITH_DD
+MPLAPACK_DD_CUDA_CPPFLAGS = -I. -I.. -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) $(OPENMP_CXXFLAGS) -DMPLAPACK_BUILD_WITH_DD -DMPLAPACK_ACCELERATOR_LIBRARY=1
 AM_CPPFLAGS = $(MPLAPACK_DD_CUDA_CPPFLAGS)
 
 lib_LTLIBRARIES = libmplapack_dd_opt_cuda.la

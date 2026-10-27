@@ -134,6 +134,10 @@ template <int PB> int blas3_fixed(const l3_shape &s, const real_t<PB> &alpha, co
     }
     if (countC && l3_failed(cudaMemcpy(C, dC.p, countC * sizeof(real_t<PB>), cudaMemcpyDeviceToHost), "copy to host"))
         return 4;
+    // Rswap and Rrot also write x (A), as the host emulation does in place
+    if ((s.op == mplapack_blas::L1_SWAP || s.op == mplapack_blas::L1_ROT) && countA &&
+        l3_failed(cudaMemcpy(const_cast<real_t<PB> *>(A), dA.p, countA * sizeof(real_t<PB>), cudaMemcpyDeviceToHost), "copy x to host"))
+        return 4;
     return 0;
 #endif
 }

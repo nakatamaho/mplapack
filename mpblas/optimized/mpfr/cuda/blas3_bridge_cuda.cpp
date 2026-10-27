@@ -252,6 +252,7 @@ bool dispatch(const blas_call<mpfr_class> &c)
         return false;
     if (mpfr_get_default_rounding_mode() != MPFR_RNDN)
         return false;
+    std::lock_guard<std::mutex> lock(gpu_mutex());
     const gpu_call g = gpu_operands(c);
     const mpfr_prec_t prec = mpfrxx::default_precision_bits();
     const bool fixed_ok = c.s.op != mplapack_mpfr_cuda::L3_TRSM;

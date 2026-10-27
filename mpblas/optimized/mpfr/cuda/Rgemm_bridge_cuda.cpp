@@ -176,6 +176,7 @@ bool Rgemm_mpfr_cuda(const char *transa, const char *transb, mplapackint const m
         return false;
     if (mpfr_get_default_rounding_mode() != MPFR_RNDN)
         return false;
+    std::lock_guard<std::mutex> lock(gpu_mutex());
     // The CPU code rounds temporaries to the default precision.
     const mpfr_prec_t prec = mpfrxx::default_precision_bits();
     if (!force_runtime()) {

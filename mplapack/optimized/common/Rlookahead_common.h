@@ -64,10 +64,20 @@ inline bool la_fast() { return la_env("MPLAPACK_LAPACK_FAST", 0) != 0; }
 //     1.0-1.1x), Cholesky never (the left-looking order of the reference
 //     puts the diagonal blocks on a serial path: 0.66-1.17x)
 //   MPLAPACK_LAPACK_LOOKAHEAD=2: always;  0: never
+// In the accelerator libraries (MPLAPACK_ACCELERATOR_LIBRARY) the default is
+// never: each BLAS call of a task copies its operands to the GPU, and the
+// GPU calls do not overlap (the MPFR ones are serialized), so the tasks only
+// wait for each other (A100, 32 threads: dd LU n = 4096 15.7 s without, 40.3
+// s with; MPFR 512 bits n = 1024 11.3 s without, 146 s with).  =2 still
+// selects the tasks, with correct results.
 inline bool la_lookahead(bool lu, long mn, long nb)
 {
 #ifdef _OPENMP
+#ifdef MPLAPACK_ACCELERATOR_LIBRARY
+    const long mode = la_env("MPLAPACK_LAPACK_LOOKAHEAD", 0);
+#else
     const long mode = la_env("MPLAPACK_LAPACK_LOOKAHEAD", 1);
+#endif
     if (mode == 0 || omp_get_max_threads() < 2 || omp_get_level() != 0)
         return false;
     return mode >= 2 || (lu && mn >= 12 * nb);

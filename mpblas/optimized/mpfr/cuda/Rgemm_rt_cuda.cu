@@ -529,6 +529,9 @@ int blas3_rt(const l3_shape &s, long prec, const rt_pack &alpha, const rt_pack &
         return rc;
     if (countC && !dC.download(C, countC, nl))
         return 5;
+    // Rswap and Rrot also write x (A), as the host emulation does in place
+    if ((s.op == mplapack_blas::L1_SWAP || s.op == mplapack_blas::L1_ROT) && countA && !dA.download(const_cast<rt_pack &>(A), countA, nl))
+        return 5;
     return 0;
 #endif
 }

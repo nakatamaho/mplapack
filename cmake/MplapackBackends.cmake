@@ -179,6 +179,9 @@ function(mplapack_add_accelerator_backend backend accelerator)
   string(TOUPPER "${backend}" _backend_upper)
   mplapack_configure_backend_target(
     ${_target} MPLAPACK_BUILD_WITH_${_backend_upper})
+  # GPU-backed BLAS: the LAPACK look-ahead tasks are off by default
+  # (mplapack/optimized/common/Rlookahead_common.h).
+  target_compile_definitions(${_target} PRIVATE MPLAPACK_ACCELERATOR_LIBRARY=1)
   message(VERBOSE
     "${_target}: accelerator-shadowed source set computed from: "
     "${_accelerator_sources}")

@@ -38,6 +38,7 @@
 
 #include <mpblas_mpfr.h>
 #include <cstdlib>
+#include <mutex>
 #include <vector>
 #include "Rgemm_kernel_cuda.h"
 #include "Rgemm_rt_cuda.h"
@@ -58,6 +59,17 @@ inline long env_long(const char *name, long fallback)
     char *end = NULL;
     long r = std::strtol(v, &end, 10);
     return (end != v && *end == '\0') ? r : fallback;
+}
+
+// Serializes the GPU calls of the MPFR CUDA library: the runtime-precision
+// kernels use mpc_cuda's arena globals and per-call device limits, and the
+// complex bridge keeps its packed operands in a shared store, so calls from
+// concurrent threads (e.g. the OpenMP tasks of the look-ahead
+// factorizations) must not overlap.
+inline std::mutex &gpu_mutex()
+{
+    static std::mutex m;
+    return m;
 }
 
 inline bool cuda_enabled()

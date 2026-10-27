@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <mpblas_binary128_opencl.h>
 #include "../../common/Rgemm_entry_common.h"
+#include <mutex>
 #include "OclHelper.hpp"
 
 static __CPP::__CPP_Helper *p;
@@ -186,6 +187,10 @@ bool Rgemm_binary128_opencl(const char *transa, const char *transb,
     return false;
   if ( (m <= bs_opencl) || (n <= bs_opencl) )
     return false;
+  // The OpenCL context, kernels and device buffers are shared statics:
+  // concurrent calls (e.g. LAPACK look-ahead tasks) must not overlap.
+  static std::mutex opencl_mutex;
+  std::lock_guard<std::mutex> lock(opencl_mutex);
   rgemm_opencl_kernel(!nota, !notb, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc);
   return true;
 }

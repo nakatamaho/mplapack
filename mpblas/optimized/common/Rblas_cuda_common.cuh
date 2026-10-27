@@ -249,7 +249,8 @@ template <class Ops> __global__ void k_syrk_tiled(gpu_lane_args<Ops> g)
     syrk_finish<Ops>(g, st, i, j);
 }
 
-// Device copy of the span of an operand.
+// Device copy of the span of an operand (only its referenced elements are
+// transferred, Rblas_gpu_operand_common.h).
 template <class F> class gpu_span {
   public:
     gpu_span() : d_(NULL) {}
@@ -258,11 +259,11 @@ template <class F> class gpu_span {
     {
         o_ = o;
         cudaError_t e = cudaMalloc(&d_, (o.count ? o.count : 1) * sizeof(F));
-        if (e == cudaSuccess && o.count)
-            e = cudaMemcpy(d_, o.host + o.lo, o.count * sizeof(F), cudaMemcpyHostToDevice);
+        if (e == cudaSuccess)
+            e = gpu_operand_upload(o, d_);
         return e;
     }
-    cudaError_t down() { return o_.download && o_.count ? cudaMemcpy(const_cast<F *>(o_.host) + o_.lo, d_, o_.count * sizeof(F), cudaMemcpyDeviceToHost) : cudaSuccess; }
+    cudaError_t down() { return gpu_operand_download(o_, d_); }
     F *at0() const { return d_ - o_.lo; } // logical element (0, 0)
 
   private:
@@ -326,14 +327,12 @@ template <class F> struct emul_span {
         o = op;
         v.assign((size_t)(op.count ? op.count : 1), F());
         if (op.count)
-            for (long t = 0; t < op.count; t++)
-                v[(size_t)t] = op.host[op.lo + t];
+            gpu_operand_gather(op, v.data());
     }
     void down()
     {
-        if (o.download)
-            for (long t = 0; t < o.count; t++)
-                const_cast<F *>(o.host)[o.lo + t] = v[(size_t)t];
+        if (o.download && o.count)
+            gpu_operand_scatter(o, v.data());
     }
     F *at0() { return v.data() - o.lo; }
 };

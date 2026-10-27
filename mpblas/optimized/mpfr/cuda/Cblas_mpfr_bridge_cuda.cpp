@@ -102,6 +102,8 @@ template <int PB> struct fixed_engine {
     typedef mcomplex<PB> DC;
     long p;
     explicit fixed_engine(long) : p(PB) {}
+    // device stack: 16 KB per 512 bits (twice what 512 bits need on an A100)
+    static size_t stack_bytes() { return (size_t)16384 * ((PB + 511) / 512); }
     bool pack1(mpfr_srcptr x, DR &d, mpfr_exp_t bound) const { return pack<PB>(x, d.v, bound); }
     void unpack1(const DR &d, mpfr_ptr x) const { unpack<PB>(d.v, x); }
     bool same1(const DR &a, const DR &b) const { return same<PB>(a.v, b.v); }
@@ -159,6 +161,8 @@ template <int NL> struct rt_engine {
     }
     long exp1(const DR &d) const { return d.exp; }
     template <class J> int run(const J &j, const gpu_operand<typename J::E> *ops, int nops) const { return mplapack_blas_dev::cgpu_run_rt(j, ops, nops, p); }
+    // device stack of the cu_mpfr / cu_mpc functions, as the real runtime kernels
+    static size_t stack_bytes() { return (size_t)65536; }
 };
 
 // The element-type side of Cblas_bridge_body.h: operands are packed into
@@ -213,7 +217,7 @@ template <class Eng> struct pack_ctx {
                 ok = pk(x[i + j * ld], h.buf[(size_t)(i + j * ld)]);
         if (download)
             h.orig = h.buf;
-        gpu_operand<E> o = {h.buf.data(), ld, 0, count, download};
+        gpu_operand<E> o = {h.buf.data(), ld, 0, count, download, rows, cols, mplapack_blas::REGION_ALL};
         return o;
     }
 
@@ -274,7 +278,9 @@ template <class Eng> struct pack_ctx {
     {
         if (!ok)
             return false;
-        const int rc = eng.run(j, ops, nops);
+        int rc = mplapack_blas_dev::mpfr_cblas_stack(Eng::stack_bytes());
+        if (rc == 0)
+            rc = eng.run(j, ops, nops);
         if (rc != 0) {
             if (verbose())
                 std::fprintf(stderr, "mplapack mpfr cuda (complex BLAS): GPU error %d, computing on the CPU\n", rc);
@@ -324,6 +330,7 @@ template <class Eng> struct pack_ctx {
 #endif
 #define MPLAPACK_MPFR_CBLAS_RUN(F, ...)                                           \
     ([&]() -> bool {                                                              \
+        std::lock_guard<std::mutex> lock(gpu_mutex());                            \
         const long p = (long)mpfrxx::default_precision_bits();                    \
         if (!force_runtime())                                                     \
             switch (p) {                                                          \

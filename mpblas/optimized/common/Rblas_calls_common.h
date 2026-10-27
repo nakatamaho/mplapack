@@ -46,6 +46,7 @@
 #include <cstdlib>
 #include <new>
 #include "Rblas_lanes_common.h"
+#include "Rblas_gpu_operand_common.h" // REGION_*
 
 namespace mplapack_blas {
 
@@ -56,8 +57,6 @@ inline long blas_env_long(const char *name, long dflt)
         return dflt;
     return std::strtol(v, NULL, 10);
 }
-
-enum { REGION_ALL = 0, REGION_UPPER = 1, REGION_LOWER = 2, REGION_NODIAG = 4 };
 
 template <class T> struct blas_operand {
     T *X;

@@ -57,7 +57,7 @@ namespace mplapack_blas {
 
 template <class F, class T> inline gpu_operand<F> gpu_operand_of(const blas_operand<T> &op, bool download)
 {
-    gpu_operand<F> o = {reinterpret_cast<const F *>(op.X), op.ld, 0, 0, download};
+    gpu_operand<F> o = {reinterpret_cast<const F *>(op.X), op.ld, 0, 0, download, op.rows, op.cols, op.region};
     if (op.X == 0 || op.rows <= 0 || op.cols <= 0)
         return o;
     const long last = (op.cols - 1) * op.ld; // offset of the last column
