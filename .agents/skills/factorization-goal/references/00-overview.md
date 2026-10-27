@@ -32,6 +32,36 @@ better use of the cores for small and medium n; the GPU gains come from
 keeping the matrix on the device for the whole factorization (one upload,
 one download) and running the panel there too.
 
+## Known defects found by goal 01 (fixed outside this series)
+
+Goal 01 (commit 0cb1fc78) found two defects of the existing accelerator
+libraries. They are being fixed in a separate bug-fix track (not a numbered
+goal; it touches mpblas/optimized/common/*cuda*, mpblas/optimized/common/
+blas_cuda/, mpblas/optimized/{dd,td,qd,mpfr}/cuda/ and
+mplapack/optimized/common/Rlookahead_common.h). Until that fix is merged,
+goals of this series must not edit those CUDA files and must not rely on
+task-parallel factorizations in the accelerator libraries.
+
+1. dd/td/qd CUDA: MPLAPACK_LAPACK_LOOKAHEAD=2 (task look-ahead forced for
+   Cholesky) corrupts lower Rpotrf/Cpotrf outputs, residuals and sometimes
+   info, depending on the schedule. Cholesky look-ahead is off by default,
+   but LU look-ahead is on by default when min(m,n) >= 12*nb, so default
+   Rgetrf/Cgetrf of the CUDA libraries may run concurrent GPU BLAS calls too.
+2. MPFR CUDA: Rgetrf at n = 1024 and 2048 (512 bits) ends with an illegal
+   memory access; afterwards the CUDA context is poisoned and every later
+   call falls back to the CPU silently.
+
+Working hypothesis (to be confirmed by the fix): both come from GPU BLAS
+entry points called concurrently from OpenMP tasks — the bridges are not
+thread-safe (shared device state such as mpc_cuda's arena globals saved and
+restored around runtime-precision kernels, device limits set per call, and
+possibly shared buffers or library handles).
+
+Provisional `<P>_LAPACK_CUDA_MIN` planning defaults from goal 01 (GPU BLAS
+per call; retune after device residency, goals 05-07): MPLAPACK_DD 4096,
+MPLAPACK_QD 512, MPLAPACK_TD 512 (QD proxy, not measured), MPLAPACK_MPFR 2048
+(MPFR LU timings above 512 unverified because of defect 2).
+
 ## Routine table (what to implement)
 
 Backends: CPU paths are generic (mplapack/optimized/common, every backend);

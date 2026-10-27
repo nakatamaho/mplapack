@@ -1,6 +1,9 @@
 # GOAL 03: Dedicated CPU LU (Rgetrf / Cgetrf, Rgetrf2 / Cgetrf2)
 
-Prerequisites: goals 01, 02. Read 00-overview.md first.
+Prerequisites: goals 01, 02. Read 00-overview.md first, including "Known
+defects found by goal 01": in the accelerator libraries the LU task
+schedule must not issue concurrent GPU BLAS calls until the bug-fix track
+is merged (same rule as goal 02, task 4).
 
 ## Scope
 

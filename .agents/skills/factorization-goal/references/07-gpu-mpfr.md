@@ -1,6 +1,7 @@
 # GOAL 07: MPFR GPU Cholesky and LU (Rgetrf / Rpotrf / C*, mpfr)
 
-Prerequisites: goals 05, 06, 07a. Read 00-overview.md and
+Prerequisites: goals 05, 06, 07a. Read 00-overview.md (including "Known
+defects found by goal 01"; the bug-fix track must be merged first) and
 mpblas/optimized/mpfr/cuda/README.md first.
 
 ## Scope

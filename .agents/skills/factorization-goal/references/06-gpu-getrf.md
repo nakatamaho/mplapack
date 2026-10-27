@@ -1,6 +1,7 @@
 # GOAL 06: GPU LU entry points (Rgetrf / Cgetrf, dd td qd)
 
-Prerequisites: goals 03, 04, 05. Read 00-overview.md first.
+Prerequisites: goals 03, 04, 05. Read 00-overview.md (including "Known
+defects found by goal 01"; the bug-fix track must be merged first) first.
 
 ## Scope
 
