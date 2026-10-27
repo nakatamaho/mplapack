@@ -11,24 +11,17 @@ self-contained, per-flavor library layout and SONAME 2. It is intended for
 users maintaining applications on the 2.x backend interface, rather than
 moving to the 3.x series.
 
-Highlights since 2.3.0:
+This is a small maintenance release. The only user-visible behavior change:
 
-- Correct backend and OpenMP dependency linkage, public pkg-config metadata,
-  and CMake dependency propagation for installed consumers.
-- More reliable support-library installation and MinGW distcheck, including
-  preservation of the private dlfcn-win32 dependency during uninstall/reinstall.
-- Correct ownership and link order of LIN/EIG test overrides, with matching
-  Autotools and CMake regression probes.
-- Preserve the existing MPFR exponent range unless explicit
-  `MPLAPACK_MPFR_EMIN` / `MPLAPACK_MPFR_EMAX` overrides are supplied. Applications
-  relying on the previous automatic precision-dependent limits should now set
-  their intended limits explicitly.
-- Retain each backend's precision initializer in static test links, so the
-  MinGW GMP tests run at the intended 512 bits.
-- Intel compilers use `-fp-model=strict` in the CMake build as well, and the
-  CMake tests compare against the bundled reference LAPACK.
-- Improved macOS packaging, binary80 header include order, Fable
-  source-reproduction checks, and release-source reproducibility.
+- MPLAPACK no longer sets the MPFR exponent range. Unless specified with
+  `MPLAPACK_MPFR_EMIN` / `MPLAPACK_MPFR_EMAX`, the MPFR default range is used.
+  Applications relying on the previous automatic precision-dependent limits
+  should set their intended limits explicitly.
+
+All other changes are QA and release-engineering matters: dependency linkage
+and pkg-config/CMake metadata, installation order, LIN/EIG test-driver
+ownership and backend initialization in static test links, and release
+validation.
 
 The release QA run completed all 12 Tier 1 jobs and all 4 Tier 2 jobs with
 OK status. Coverage includes macOS, Ubuntu amd64/arm64, Windows via
