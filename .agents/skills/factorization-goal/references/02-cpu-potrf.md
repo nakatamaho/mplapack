@@ -3,10 +3,17 @@
 Prerequisites: goal 01 (commit 0cb1fc78). Read 00-overview.md first,
 including "Known defects found by goals 01 and 02".
 
-Status: done in f9216152 (CPU correctness gates passed). Its performance
-gate was measured on a shared machine and is NOT decided: remeasure the
-default-mode timings (before = 1a9e8a7f, after = f9216152) on an idle
-machine before declaring the goal complete.
+Status: done in f9216152. CPU correctness gates passed (goal 02 commit).
+Performance gate: passed on interleaved re-measurement (2026-10-27,
+A100 host shared with other workloads, load average about 100 on 64
+hardware threads, so absolute times are not calibrated): Rpotrf lower,
+default mode, OMP_NUM_THREADS=32, before = 1a9e8a7f, after = f9216152,
+5 rounds alternating the order; median after/before dd 1.09 / 0.99 / 0.92,
+qd 0.99 / 1.04 / 0.99, mpfr 1.05 / 1.07 / 1.00 at n = 512 / 1024 / 2048
+(all <= 1.1; per-round ratios 0.72-1.24 without a consistent sign).
+FAST=1 medians 0.95-1.06 except dd n = 512 (1.17, 0.07 s runs, ratios
+0.81-1.68). Raw data: bench_local/results/goal02_potrf_interleaved.csv
+in the working tree of that measurement (not committed).
 
 ## Scope
 
