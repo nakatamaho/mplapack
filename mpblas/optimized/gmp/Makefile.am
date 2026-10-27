@@ -131,3 +131,13 @@ Rgemm_winograd_omp_test_gmp_CPPFLAGS = $(libmplapack_gmp_opt_la_CPPFLAGS)
 Rgemm_winograd_omp_test_gmp_LDFLAGS = -static
 Rgemm_winograd_omp_test_gmp_LDADD = libmplapack_gmp_opt.la $(libmplapack_gmp_opt_la_LIBADD)
 TESTS = Rblas_omp_test_gmp Cblas_omp_test_gmp Rlapack_omp_test_gmp Rgemm_winograd_omp_test_gmp
+
+# Shared LU / Cholesky verification gates (default mode; also run with
+# MPLAPACK_LAPACK_FAST=1 to check the opt-in algorithm).
+check_PROGRAMS += Rfactor_test_gmp
+TESTS += Rfactor_test_gmp
+Rfactor_test_gmp_SOURCES = ../../../mplapack/optimized/common/test/Rfactor_test.cpp
+Rfactor_test_gmp_CPPFLAGS = $(libmplapack_gmp_opt_la_CPPFLAGS)
+Rfactor_test_gmp_CXXFLAGS = $(DD_CXXFLAGS)
+Rfactor_test_gmp_LDFLAGS = -static $(QD_RPATH_LDFLAGS)
+Rfactor_test_gmp_LDADD = libmplapack_gmp_opt.la $(libmplapack_gmp_opt_la_LIBADD)

@@ -9,7 +9,8 @@ Rgemv.mpfr  Rgemv.mpfr_opt  \
 Rsyrk.mpfr  Rsyrk.mpfr_opt  \
 Rpotrf.mpfr Rpotrf.mpfr_opt \
 Rpotf2.mpfr Rpotf2.mpfr_opt \
-Rgetrf.mpfr Rgetrf.mpfr_opt
+Rgetrf.mpfr Rgetrf.mpfr_opt \
+Rfactor.mpfr Rfactor.mpfr_opt
 
 mpfrcxxflags = $(GMPFRXX_MKII_CPPFLAGS) $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR) -DMPLAPACK_BUILD_WITH_MPFR
 mpfrlapack_libdepends = -L$(top_builddir)/mplapack/reference -lmplapack_mpfr
@@ -72,6 +73,14 @@ Rsyrk_mpfr_opt_CXXFLAGS= $(mpfrcxxflags)
 Rsyrk_mpfr_opt_LDFLAGS=  $(mpfropt_libdepends)
 
 # LAPACK benchmarks
+Rfactor_mpfr_SOURCES = Rfactor.cpp
+Rfactor_mpfr_CXXFLAGS = $(mpfrcxxflags)
+Rfactor_mpfr_LDFLAGS = $(mpfr_libdepends)
+
+Rfactor_mpfr_opt_SOURCES = Rfactor.cpp
+Rfactor_mpfr_opt_CXXFLAGS = $(mpfrcxxflags)
+Rfactor_mpfr_opt_LDFLAGS = $(mpfropt_libdepends)
+
 Rpotrf_mpfr_SOURCES=      Rpotrf.cpp
 Rpotrf_mpfr_CXXFLAGS=     $(mpfrcxxflags)
 Rpotrf_mpfr_LDFLAGS=      $(mpfr_libdepends)

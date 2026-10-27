@@ -9,7 +9,8 @@ Rgemv.dd  Rgemv.dd_opt  \
 Rsyrk.dd  Rsyrk.dd_opt  \
 Rpotrf.dd Rpotrf.dd_opt \
 Rpotf2.dd Rpotf2.dd_opt \
-Rgetrf.dd Rgetrf.dd_opt
+Rgetrf.dd Rgetrf.dd_opt \
+Rfactor.dd Rfactor.dd_opt
 
 # Note: CUDA benchmarks (Rpotrf.dd_cuda_total, Rgetrf.dd_cuda_total) are built
 # via Makefile.dd_cuda.am, included from the top-level Makefile.am under
@@ -76,6 +77,14 @@ Rsyrk_dd_opt_CXXFLAGS= $(ddcxxflags)
 Rsyrk_dd_opt_LDFLAGS=  $(ddopt_libdepends)
 
 # LAPACK benchmarks
+Rfactor_dd_SOURCES = Rfactor.cpp
+Rfactor_dd_CXXFLAGS = $(ddcxxflags)
+Rfactor_dd_LDFLAGS = $(dd_libdepends)
+
+Rfactor_dd_opt_SOURCES = Rfactor.cpp
+Rfactor_dd_opt_CXXFLAGS = $(ddcxxflags)
+Rfactor_dd_opt_LDFLAGS = $(ddopt_libdepends)
+
 Rpotrf_dd_SOURCES=      Rpotrf.cpp
 Rpotrf_dd_CXXFLAGS=     $(ddcxxflags)
 Rpotrf_dd_LDFLAGS=      $(dd_libdepends)

@@ -426,6 +426,8 @@ $(MPLAPACK_PKGCONFIG_FILES): cmake/mplapack.pc.cmake.in
 	    $(srcdir)/cmake/mplapack.pc.cmake.in > '$@'
 
 EXTRA_DIST = \
+benchmark/README.Rfactor.md \
+mplapack/optimized/common/test/README.md \
 backends.txt \
 misc/check_shared_load.c \
 misc/check_macos_shared_load.sh \

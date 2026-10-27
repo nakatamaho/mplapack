@@ -9,7 +9,8 @@ Rgemv.gmp  Rgemv.gmp_opt  \
 Rsyrk.gmp  Rsyrk.gmp_opt  \
 Rpotrf.gmp Rpotrf.gmp_opt \
 Rpotf2.gmp Rpotf2.gmp_opt \
-Rgetrf.gmp Rgetrf.gmp_opt
+Rgetrf.gmp Rgetrf.gmp_opt \
+Rfactor.gmp Rfactor.gmp_opt
 
 gmpcxxflags = $(GMPFRXX_MKII_CPPFLAGS) $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -I$(MPC_INCLUDEDIR) -DMPLAPACK_BUILD_WITH_GMP
 gmplapack_libdepends = -L$(top_builddir)/mplapack/reference -lmplapack_gmp
@@ -72,6 +73,14 @@ Rsyrk_gmp_opt_CXXFLAGS= $(gmpcxxflags)
 Rsyrk_gmp_opt_LDFLAGS=  $(gmpopt_libdepends)
 
 # LAPACK benchmarks
+Rfactor_gmp_SOURCES = Rfactor.cpp
+Rfactor_gmp_CXXFLAGS = $(gmpcxxflags)
+Rfactor_gmp_LDFLAGS = $(gmp_libdepends)
+
+Rfactor_gmp_opt_SOURCES = Rfactor.cpp
+Rfactor_gmp_opt_CXXFLAGS = $(gmpcxxflags)
+Rfactor_gmp_opt_LDFLAGS = $(gmpopt_libdepends)
+
 Rpotrf_gmp_SOURCES=      Rpotrf.cpp
 Rpotrf_gmp_CXXFLAGS=     $(gmpcxxflags)
 Rpotrf_gmp_LDFLAGS=      $(gmp_libdepends)

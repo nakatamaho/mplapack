@@ -4,7 +4,7 @@
 # against mplapack_<backend>_opt and the CUDA libraries when they are built.  The
 # drivers dlopen() an optional optimized library at run time, hence ${CMAKE_DL_LIBS}.
 
-set(_bench_drivers Raxpy Rcopy Rdot Rgemm Rgemv Rsyrk Rpotrf Rpotf2 Rgetrf)
+set(_bench_drivers Raxpy Rcopy Rdot Rgemm Rgemv Rsyrk Rpotrf Rpotf2 Rgetrf Rfactor)
 set(_bench_backends ${MPLAPACK_BACKENDS})
 
 foreach(_b ${_bench_backends})
@@ -57,10 +57,14 @@ foreach(_b dd td qd mpfr)
   if(NOT TARGET mplapack_${_b}_opt_cuda)
     continue()
   endif()
-  foreach(_drv Rgemm Rpotrf Rgetrf)
+  foreach(_drv Rgemm Rpotrf Rgetrf Rfactor)
     set(_name "bench_${_drv}_${_b}_cuda_total")
     add_executable(${_name} "${CMAKE_CURRENT_SOURCE_DIR}/${_drv}.cpp")
     target_link_libraries(${_name} PRIVATE mplapack::mplapack_${_b}_opt_cuda ${CMAKE_DL_LIBS})
+    if(_drv STREQUAL "Rfactor")
+      target_compile_definitions(${_name} PRIVATE MPLAPACK_FACTOR_CUDA)
+      target_link_libraries(${_name} PRIVATE CUDA::cudart)
+    endif()
     if(TARGET OpenMP::OpenMP_CXX)
       target_link_libraries(${_name} PRIVATE OpenMP::OpenMP_CXX)
     endif()

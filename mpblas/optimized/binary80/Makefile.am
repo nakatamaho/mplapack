@@ -131,3 +131,13 @@ Rgemm_winograd_omp_test_binary80_CPPFLAGS = $(libmplapack_binary80_opt_la_CPPFLA
 Rgemm_winograd_omp_test_binary80_LDFLAGS = -static
 Rgemm_winograd_omp_test_binary80_LDADD = libmplapack_binary80_opt.la $(libmplapack_binary80_opt_la_LIBADD)
 TESTS = Rblas_omp_test_binary80 Cblas_omp_test_binary80 Rlapack_omp_test_binary80 Rgemm_winograd_omp_test_binary80
+
+# Shared LU / Cholesky verification gates (default mode; also run with
+# MPLAPACK_LAPACK_FAST=1 to check the opt-in algorithm).
+check_PROGRAMS += Rfactor_test_binary80
+TESTS += Rfactor_test_binary80
+Rfactor_test_binary80_SOURCES = ../../../mplapack/optimized/common/test/Rfactor_test.cpp
+Rfactor_test_binary80_CPPFLAGS = $(libmplapack_binary80_opt_la_CPPFLAGS)
+Rfactor_test_binary80_CXXFLAGS = $(DD_CXXFLAGS)
+Rfactor_test_binary80_LDFLAGS = -static $(QD_RPATH_LDFLAGS)
+Rfactor_test_binary80_LDADD = libmplapack_binary80_opt.la $(libmplapack_binary80_opt_la_LIBADD)

@@ -34,6 +34,11 @@ Rsyrk_dd_cuda_kernel_LINK=     $(dd_cuda_link)
 Rsyrk_dd_cuda_kernel_CXXFLAGS= $(dd_cuda_cxxflags)
 
 # LAPACK benchmarks
+bench_PROGRAMS += Rfactor.dd_cuda_total
+Rfactor_dd_cuda_total_SOURCES = Rfactor.cpp
+Rfactor_dd_cuda_total_LINK = $(dd_cuda_link)
+Rfactor_dd_cuda_total_CXXFLAGS = $(dd_cuda_cxxflags) -DMPLAPACK_FACTOR_CUDA
+
 Rpotrf_dd_cuda_total_SOURCES=  Rpotrf.cpp
 Rpotrf_dd_cuda_total_LINK=     $(dd_cuda_link)
 Rpotrf_dd_cuda_total_CXXFLAGS= $(dd_cuda_cxxflags)

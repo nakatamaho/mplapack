@@ -9,7 +9,8 @@ Rgemv.qd  Rgemv.qd_opt  \
 Rsyrk.qd  Rsyrk.qd_opt  \
 Rpotrf.qd Rpotrf.qd_opt \
 Rpotf2.qd Rpotf2.qd_opt \
-Rgetrf.qd Rgetrf.qd_opt
+Rgetrf.qd Rgetrf.qd_opt \
+Rfactor.qd Rfactor.qd_opt
 
 qdcxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) -DMPLAPACK_BUILD_WITH_QD
 qdlapack_libdepends = -L$(top_builddir)/mplapack/reference -lmplapack_qd
@@ -72,6 +73,14 @@ Rsyrk_qd_opt_CXXFLAGS= $(qdcxxflags)
 Rsyrk_qd_opt_LDFLAGS=  $(qdopt_libdepends)
 
 # LAPACK benchmarks
+Rfactor_qd_SOURCES = Rfactor.cpp
+Rfactor_qd_CXXFLAGS = $(qdcxxflags)
+Rfactor_qd_LDFLAGS = $(qd_libdepends)
+
+Rfactor_qd_opt_SOURCES = Rfactor.cpp
+Rfactor_qd_opt_CXXFLAGS = $(qdcxxflags)
+Rfactor_qd_opt_LDFLAGS = $(qdopt_libdepends)
+
 Rpotrf_qd_SOURCES=      Rpotrf.cpp
 Rpotrf_qd_CXXFLAGS=     $(qdcxxflags)
 Rpotrf_qd_LDFLAGS=      $(qd_libdepends)

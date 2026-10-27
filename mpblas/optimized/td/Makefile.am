@@ -162,3 +162,13 @@ Rgemm_gpu_host_test_CXXFLAGS = $(DD_CXXFLAGS)
 Rgemm_gpu_host_test_LDFLAGS = -static $(QD_RPATH_LDFLAGS)
 Rgemm_gpu_host_test_LDADD = libmplapack_td_opt.la $(libmplapack_td_opt_la_LIBADD)
 TESTS = Rblas_omp_test_td Cblas_omp_test_td Rlapack_omp_test_td Rgemm_winograd_omp_test_td Rgemm_opt_test Rgemm_gpu_host_test Rblas_gpu_host_test_td Cblas_gpu_host_test_td
+
+# Shared LU / Cholesky verification gates (default mode; also run with
+# MPLAPACK_LAPACK_FAST=1 to check the opt-in algorithm).
+check_PROGRAMS += Rfactor_test_td
+TESTS += Rfactor_test_td
+Rfactor_test_td_SOURCES = ../../../mplapack/optimized/common/test/Rfactor_test.cpp
+Rfactor_test_td_CPPFLAGS = $(libmplapack_td_opt_la_CPPFLAGS)
+Rfactor_test_td_CXXFLAGS = $(DD_CXXFLAGS)
+Rfactor_test_td_LDFLAGS = -static $(QD_RPATH_LDFLAGS)
+Rfactor_test_td_LDADD = libmplapack_td_opt.la $(libmplapack_td_opt_la_LIBADD)

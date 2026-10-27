@@ -111,3 +111,13 @@ if IS_MINGW
 libmplapack_%%b%%_opt_la_LDFLAGS += -no-undefined%%opt_mingw_ldflags%%
 endif
 %%block opt_rgemm_tests%%
+
+# Shared LU / Cholesky verification gates (default mode; also run with
+# MPLAPACK_LAPACK_FAST=1 to check the opt-in algorithm).
+check_PROGRAMS += Rfactor_test_%%b%%
+TESTS += Rfactor_test_%%b%%
+Rfactor_test_%%b%%_SOURCES = ../../../mplapack/optimized/common/test/Rfactor_test.cpp
+Rfactor_test_%%b%%_CPPFLAGS = $(libmplapack_%%b%%_opt_la_CPPFLAGS)
+Rfactor_test_%%b%%_CXXFLAGS = $(DD_CXXFLAGS)
+Rfactor_test_%%b%%_LDFLAGS = -static $(QD_RPATH_LDFLAGS)
+Rfactor_test_%%b%%_LDADD = libmplapack_%%b%%_opt.la $(libmplapack_%%b%%_opt_la_LIBADD)

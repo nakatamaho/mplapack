@@ -9,7 +9,8 @@ Rgemv.td  Rgemv.td_opt  \
 Rsyrk.td  Rsyrk.td_opt  \
 Rpotrf.td Rpotrf.td_opt \
 Rpotf2.td Rpotf2.td_opt \
-Rgetrf.td Rgetrf.td_opt
+Rgetrf.td Rgetrf.td_opt \
+Rfactor.td Rfactor.td_opt
 
 tdcxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) -DMPLAPACK_BUILD_WITH_TD $(DD_CXXFLAGS)
 tdlapack_libdepends = -L$(top_builddir)/mplapack/reference -lmplapack_td
@@ -72,6 +73,14 @@ Rsyrk_td_opt_CXXFLAGS= $(tdcxxflags)
 Rsyrk_td_opt_LDFLAGS=  $(tdopt_libdepends)
 
 # LAPACK benchmarks
+Rfactor_td_SOURCES = Rfactor.cpp
+Rfactor_td_CXXFLAGS = $(tdcxxflags)
+Rfactor_td_LDFLAGS = $(td_libdepends)
+
+Rfactor_td_opt_SOURCES = Rfactor.cpp
+Rfactor_td_opt_CXXFLAGS = $(tdcxxflags)
+Rfactor_td_opt_LDFLAGS = $(tdopt_libdepends)
+
 Rpotrf_td_SOURCES=      Rpotrf.cpp
 Rpotrf_td_CXXFLAGS=     $(tdcxxflags)
 Rpotrf_td_LDFLAGS=      $(td_libdepends)

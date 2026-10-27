@@ -1,7 +1,8 @@
 bench_PROGRAMS += \
 Rgemm.qd_cuda_total  \
 Rpotrf.qd_cuda_total \
-Rgetrf.qd_cuda_total
+Rgetrf.qd_cuda_total \
+Rfactor.qd_cuda_total
 
 # libmplapack_qd_opt_cuda: Rgemm on the GPU (naive / tiled / Winograd /
 # Ozaki, see mpblas/optimized/common/README.md), everything else on the CPU.
@@ -10,6 +11,10 @@ qd_cuda_libdepends = -L$(top_builddir)/mpblas/optimized/qd/cuda -lmplapack_qd_op
                      $(CUDA_LDFLAGS) -lcublas -lcudart \
                      -L$(QD_LIBDIR) -lqd $(DYLD)
 qd_cuda_link       = $(LIBTOOL) --mode=link $(CXX) -o $@ $(CUDA_LDFLAGS) $(CUDA_LIBS) $(qd_cuda_libdepends) $(OPENMP_CXXFLAGS)
+
+Rfactor_qd_cuda_total_SOURCES = Rfactor.cpp
+Rfactor_qd_cuda_total_LINK = $(qd_cuda_link)
+Rfactor_qd_cuda_total_CXXFLAGS = $(qd_cuda_cxxflags) -DMPLAPACK_FACTOR_CUDA
 
 Rgemm_qd_cuda_total_SOURCES=   Rgemm.cpp
 Rgemm_qd_cuda_total_LINK=      $(qd_cuda_link)

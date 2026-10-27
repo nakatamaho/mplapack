@@ -9,7 +9,8 @@ Rgemv.%%b%%  Rgemv.%%b%%_opt  \
 Rsyrk.%%b%%  Rsyrk.%%b%%_opt  \
 Rpotrf.%%b%% Rpotrf.%%b%%_opt \
 Rpotf2.%%b%% Rpotf2.%%b%%_opt \
-Rgetrf.%%b%% Rgetrf.%%b%%_opt
+Rgetrf.%%b%% Rgetrf.%%b%%_opt \
+Rfactor.%%b%% Rfactor.%%b%%_opt
 
 %%block bench_note%%
 %%b%%cxxflags = %%bench_cxxflags%%
@@ -72,6 +73,14 @@ Rsyrk_%%b%%_opt_CXXFLAGS= $(%%b%%cxxflags)
 Rsyrk_%%b%%_opt_LDFLAGS=  $(%%b%%opt_libdepends)
 
 # LAPACK benchmarks
+Rfactor_%%b%%_SOURCES = Rfactor.cpp
+Rfactor_%%b%%_CXXFLAGS = $(%%b%%cxxflags)
+Rfactor_%%b%%_LDFLAGS = $(%%b%%_libdepends)
+
+Rfactor_%%b%%_opt_SOURCES = Rfactor.cpp
+Rfactor_%%b%%_opt_CXXFLAGS = $(%%b%%cxxflags)
+Rfactor_%%b%%_opt_LDFLAGS = $(%%b%%opt_libdepends)
+
 Rpotrf_%%b%%_SOURCES=      Rpotrf.cpp
 Rpotrf_%%b%%_CXXFLAGS=     $(%%b%%cxxflags)
 Rpotrf_%%b%%_LDFLAGS=      $(%%b%%_libdepends)

@@ -9,7 +9,8 @@ Rgemv.binary128  Rgemv.binary128_opt  \
 Rsyrk.binary128  Rsyrk.binary128_opt  \
 Rpotrf.binary128 Rpotrf.binary128_opt \
 Rpotf2.binary128 Rpotf2.binary128_opt \
-Rgetrf.binary128 Rgetrf.binary128_opt
+Rgetrf.binary128 Rgetrf.binary128_opt \
+Rfactor.binary128 Rfactor.binary128_opt
 
 binary128cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -DMPLAPACK_BUILD_WITH_BINARY128
 binary128lapack_libdepends = -L$(top_builddir)/mplapack/reference -lmplapack_binary128
@@ -78,6 +79,14 @@ Rsyrk_binary128_opt_CXXFLAGS= $(binary128cxxflags)
 Rsyrk_binary128_opt_LDFLAGS=  $(binary128opt_libdepends)
 
 # LAPACK benchmarks
+Rfactor_binary128_SOURCES = Rfactor.cpp
+Rfactor_binary128_CXXFLAGS = $(binary128cxxflags)
+Rfactor_binary128_LDFLAGS = $(binary128_libdepends)
+
+Rfactor_binary128_opt_SOURCES = Rfactor.cpp
+Rfactor_binary128_opt_CXXFLAGS = $(binary128cxxflags)
+Rfactor_binary128_opt_LDFLAGS = $(binary128opt_libdepends)
+
 Rpotrf_binary128_SOURCES=      Rpotrf.cpp
 Rpotrf_binary128_CXXFLAGS=     $(binary128cxxflags)
 Rpotrf_binary128_LDFLAGS=      $(binary128_libdepends)
