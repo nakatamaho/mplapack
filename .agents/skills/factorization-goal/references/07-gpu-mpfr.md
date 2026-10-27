@@ -1,6 +1,6 @@
 # GOAL 07: MPFR GPU Cholesky and LU (Rgetrf / Rpotrf / C*, mpfr)
 
-Prerequisites: goals 05, 06. Read 00-overview.md and
+Prerequisites: goals 05, 06, 07a. Read 00-overview.md and
 mpblas/optimized/mpfr/cuda/README.md first.
 
 ## Scope
@@ -13,11 +13,11 @@ mpblas/optimized/mpfr/cuda (and mplapack-side dispatchers there).
 1. Eligibility exactly like the MPFR BLAS entry points (same precision for
    every element and the default, MPFR_RNDN, finite values, exponent bounds;
    fixed precisions 256..2048 on cu_freal, others on cu_mpfr).
-2. Bit identity: every operation correctly rounded as the CPU. cu_freal has
-   no correctly rounded division or sqrt: decide, by measurement, between
-   (a) panel divisions / sqrt on cu_mpfr on the device and (b) the panel on
-   the host with the trailing update on the device (hybrid, MAGMA style),
-   and document the choice. Updates (Rgemm, Rtrsm with diag = U, Rsyrk) on
+2. Bit identity: every operation correctly rounded as the CPU. Divisions
+   and square roots of the panels on the fixed precisions use cu_fdiv_rn /
+   cu_sqrt_rn (goal 07a); compare by measurement with (a) cu_mpfr on the
+   device and (b) the panel on the host with the trailing update on the
+   device (hybrid, MAGMA style), and document the choice. Updates (Rgemm, Rtrsm with diag = U, Rsyrk) on
    cu_freal.
 3. Device memory check (an n = 10000, 512-bit matrix is 8 GB on the device)
    and `MPLAPACK_MPFR_LAPACK_CUDA*` variables as in goal 05.

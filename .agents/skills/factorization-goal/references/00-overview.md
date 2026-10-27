@@ -1,6 +1,6 @@
 # GOAL SERIES: dedicated LU and Cholesky (CPU and GPU)
 
-Shared context for goals 01-09. Read it before any numbered goal. Do not
+Shared context for goals 01-09 and 07a. Read it before any numbered goal. Do not
 implement anything from this file alone.
 
 ## Motivation
@@ -50,6 +50,7 @@ cu_mpfr). P0 = first, P1 = next, P2 = later.
 | trtri, lauum (trti2, lauu2) | triangular inverse, U·U^T | reference | dedicated recursive versions | `Rtrtri_<b>_cuda`, `Rlauum_<b>_cuda` | P2 | 09 |
 | potri, getri | inverse from the factors | reference | keep (calls trtri / lauum) | `Rpotri_<b>_cuda`, `Rgetri_<b>_cuda` | P2 | 09 |
 | trtrs | triangular solve with checks | reference | keep | (Rtrsm is already on the GPU) | — | — |
+| (support) cu_freal div / sqrt | correctly rounded division and square root for the MPFR fixed-precision device type | not correctly rounded (cu_fmath.cuh) | — | `cu_fdiv_rn`, `cu_sqrt_rn` as a patch to the bundled mpc_cuda (offered upstream, carried on 3.1); MPFR Rtrsm on cu_freal | P0 for mpfr | 07a |
 
 Out of scope: QR, eigenvalue and SVD routines, pivoted Cholesky (pstrf),
 band and packed storage, mixed precision refinement.
@@ -117,10 +118,11 @@ band and packed storage, mixed precision refinement.
   reference (iRamax / iCamax semantics, first index on ties). Row swaps:
   device Rlaswp. Scaling: the reference test `|pivot| >= sfmin` then
   multiply by the reciprocal, else divide — dd/td/qd divide with
-  accurate_div (bit-identical); for mpfr, cu_freal has no correctly
-  rounded division (see mpblas/optimized/mpfr/cuda/README.md, Rtrsm), so
-  the panel's divisions and square roots use cu_mpfr or the panel runs on
-  the host (goal 07 decides, measured).
+  accurate_div (bit-identical); for mpfr, the bundled cu_freal has no
+  correctly rounded division or sqrt (see mpblas/optimized/mpfr/cuda/README.md,
+  Rtrsm); goal 07a adds cu_fdiv_rn / cu_sqrt_rn as a patch to mpc_cuda,
+  after which the panels can stay on cu_freal (goal 07 still measures the
+  alternatives: cu_mpfr on the device, the panel on the host).
 - Streams: a panel stream and an update stream with events, so that the
   look-ahead of Rlookahead_common.h maps onto the GPU (panel j+1 while the
   trailing update of step j runs). Scheduling only; arithmetic order as in
