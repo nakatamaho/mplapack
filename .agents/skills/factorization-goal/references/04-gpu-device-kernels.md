@@ -1,8 +1,8 @@
 # GOAL 04: GPU building blocks for device-resident factorizations (dd, td, qd)
 
-Prerequisites: goal 01, and the bug-fix track of 00-overview.md "Known
-defects found by goal 01" merged. Read 00-overview.md first (in particular
-"GPU design" and "Known defects found by goal 01").
+Prerequisites: goal 01 and the fix b626121f (merged). Read 00-overview.md
+first (in particular "GPU design" and "Known defects found by goals 01 and
+02").
 
 ## Scope
 

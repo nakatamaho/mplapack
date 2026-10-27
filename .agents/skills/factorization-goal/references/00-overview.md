@@ -32,35 +32,44 @@ better use of the cores for small and medium n; the GPU gains come from
 keeping the matrix on the device for the whole factorization (one upload,
 one download) and running the panel there too.
 
-## Known defects found by goal 01 (fixed outside this series)
+## Known defects found by goals 01 and 02 (fixed in b626121f)
 
-Goal 01 (commit 0cb1fc78) found two defects of the existing accelerator
-libraries. They are being fixed in a separate bug-fix track (not a numbered
-goal; it touches mpblas/optimized/common/*cuda*, mpblas/optimized/common/
-blas_cuda/, mpblas/optimized/{dd,td,qd,mpfr}/cuda/ and
-mplapack/optimized/common/Rlookahead_common.h). Until that fix is merged,
-goals of this series must not edit those CUDA files and must not rely on
-task-parallel factorizations in the accelerator libraries.
+Goals 01 and 02 found defects of the accelerator libraries; they were fixed
+outside this series in commit b626121f ("CUDA/OpenCL: make GPU BLAS calls
+safe under the LAPACK look-ahead tasks"):
 
-1. dd/td/qd CUDA: MPLAPACK_LAPACK_LOOKAHEAD=2 (task look-ahead forced for
-   Cholesky) corrupts lower Rpotrf/Cpotrf outputs, residuals and sometimes
-   info, depending on the schedule. Cholesky look-ahead is off by default,
-   but LU look-ahead is on by default when min(m,n) >= 12*nb, so default
-   Rgetrf/Cgetrf of the CUDA libraries may run concurrent GPU BLAS calls too.
-2. MPFR CUDA: Rgetrf at n = 1024 and 2048 (512 bits) ends with an illegal
-   memory access; afterwards the CUDA context is poisoned and every later
-   call falls back to the CPU silently.
+1. dd/td/qd CUDA: each GPU BLAS call wrote back the whole memory span of its
+   operands, overwriting rows that concurrent look-ahead tasks were updating
+   (lower Rpotrf/Cpotrf with MPLAPACK_LAPACK_LOOKAHEAD=2). Now only the
+   referenced elements are transferred (gpu_operand rows/cols/region,
+   Rblas_gpu_operand_common.h).
+2. MPFR CUDA: concurrent calls raced on mpc_cuda's arena globals, per-call
+   device limits and the complex bridge's shared store (illegal memory
+   access in Rgetrf n = 1024, 2048). The MPFR GPU entry points are
+   serialized by a mutex.
+3. MPFR CUDA complex BLAS: the fixed-precision Ctrsm overflowed the default
+   1 KB device stack even in serial calls (found by goal 02). The bridge
+   raises the stack limit before its launches.
+4. MPFR CUDA Rswap/Rrot: x was not copied back from the device.
 
-Working hypothesis (to be confirmed by the fix): both come from GPU BLAS
-entry points called concurrently from OpenMP tasks — the bridges are not
-thread-safe (shared device state such as mpc_cuda's arena globals saved and
-restored around runtime-precision kernels, device limits set per call, and
-possibly shared buffers or library handles).
+Consequences for this series:
+- The accelerator libraries (compiled with MPLAPACK_ACCELERATOR_LIBRARY)
+  run the LAPACK look-ahead tasks only with MPLAPACK_LAPACK_LOOKAHEAD=2; by
+  default their factorizations are serial (each task's BLAS call would copy
+  its operands to the GPU and wait for the others: dd LU n = 4096 26.5 s
+  with the old default, 5.4 s now). Concurrent GPU BLAS calls are correct
+  but serialized; do not design GPU goals around them.
+- MPLAPACK_ACCELERATOR_LIBRARY is the one compile-time switch for "this is
+  an accelerator library". Goal 02 introduced MPLAPACK_CHOLESKY_CPU_TASKS
+  (granted to the CPU libraries only) before the fix existed; goal 03
+  replaces it by !MPLAPACK_ACCELERATOR_LIBRARY (one switch, same effect).
+- The CUDA files of the fix (mpblas/optimized/common/*cuda*, blas_cuda/,
+  {dd,td,qd,mpfr}/cuda/, Rlookahead_common.h) are no longer off limits.
 
 Provisional `<P>_LAPACK_CUDA_MIN` planning defaults from goal 01 (GPU BLAS
 per call; retune after device residency, goals 05-07): MPLAPACK_DD 4096,
 MPLAPACK_QD 512, MPLAPACK_TD 512 (QD proxy, not measured), MPLAPACK_MPFR 2048
-(MPFR LU timings above 512 unverified because of defect 2).
+(MPFR LU timings above 512 were unverified because of defect 2; remeasure).
 
 ## Routine table (what to implement)
 

@@ -1,7 +1,7 @@
 # GOAL 05: GPU Cholesky entry points (Rpotrf / Cpotrf, dd td qd)
 
-Prerequisites: goals 02, 04. Read 00-overview.md (including "Known defects
-found by goal 01"; the bug-fix track must be merged first) first.
+Prerequisites: goals 02, 04 and the fix b626121f (merged). Read
+00-overview.md (including "Known defects found by goals 01 and 02") first.
 
 ## Scope
 

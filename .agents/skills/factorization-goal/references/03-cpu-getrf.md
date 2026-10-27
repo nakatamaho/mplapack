@@ -1,9 +1,7 @@
 # GOAL 03: Dedicated CPU LU (Rgetrf / Cgetrf, Rgetrf2 / Cgetrf2)
 
-Prerequisites: goals 01, 02. Read 00-overview.md first, including "Known
-defects found by goal 01": in the accelerator libraries the LU task
-schedule must not issue concurrent GPU BLAS calls until the bug-fix track
-is merged (same rule as goal 02, task 4).
+Prerequisites: goals 01, 02 and the fix b626121f. Read 00-overview.md
+first, including "Known defects found by goals 01 and 02".
 
 ## Scope
 
@@ -22,7 +20,14 @@ if used) in the same directory, Rlookahead_common.h.
    (lapack/getrf/getrf_parallel.c as the model): recursive panel of its own
    width, dynamic look-ahead, updates fused with the BLAS engine's packing
    where the optimized Rgemm exposes it.
-3. Rgetrs keeps the reference code (it calls the optimized Rlaswp / Rtrsm);
+3. One accelerator switch: replace MPLAPACK_CHOLESKY_CPU_TASKS (goal 02:
+   cmake/MplapackBackends.cmake, misc/backend_makefiles/mpblas_optimized.am.in
+   and the generated Makefile.am, mplapack/optimized/common/Rpotrf_common.h)
+   by tests of MPLAPACK_ACCELERATOR_LIBRARY (defined only for accelerator
+   libraries), and use the same switch for the LU task schedule: in the
+   accelerator libraries the LU tasks follow Rlookahead_common.h (only with
+   MPLAPACK_LAPACK_LOOKAHEAD=2).
+4. Rgetrs keeps the reference code (it calls the optimized Rlaswp / Rtrsm);
    check that Rgesv picks up the new Rgetrf.
 
 ## Acceptance criteria

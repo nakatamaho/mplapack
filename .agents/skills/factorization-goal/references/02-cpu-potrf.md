@@ -1,7 +1,12 @@
 # GOAL 02: Dedicated CPU Cholesky (Rpotrf / Cpotrf)
 
 Prerequisites: goal 01 (commit 0cb1fc78). Read 00-overview.md first,
-including "Known defects found by goal 01".
+including "Known defects found by goals 01 and 02".
+
+Status: done in f9216152 (CPU correctness gates passed). Its performance
+gate was measured on a shared machine and is NOT decided: remeasure the
+default-mode timings (before = 1a9e8a7f, after = f9216152) on an idle
+machine before declaring the goal complete.
 
 ## Scope
 
@@ -23,15 +28,10 @@ mplapack/optimized/common, shadowing the reference by basename).
    optimized BLAS, its own block size.
 3. Document the modes and variables in mplapack/optimized/common/README.md.
 4. Accelerator libraries: mplapack/optimized/common/{R,C}potrf.cpp are also
-   compiled into libmplapack_{dd,td,qd,mpfr}_opt_cuda, whose GPU BLAS calls
-   are not safe to issue concurrently yet (Known defect 1). In those
-   libraries keep Cholesky free of concurrent BLAS calls: no task schedule
-   (the current production behaviour, la_lookahead(false, ...) without
-   MPLAPACK_LAPACK_LOOKAHEAD=2) unless the bug-fix track has been merged
-   (check git log for it and say which case applies in the report). Find
-   or add a compile-time way to tell an accelerator build (e.g. a define
-   passed only by the cuda/ Makefile.am and the CMake accelerator targets)
-   rather than relying on the environment. Do not edit CUDA sources.
+   compiled into libmplapack_{dd,td,qd,mpfr}_opt_cuda. (Done in f9216152 with
+   MPLAPACK_CHOLESKY_CPU_TASKS granted to the CPU libraries only; since the
+   fix b626121f the accelerator libraries define MPLAPACK_ACCELERATOR_LIBRARY,
+   and goal 03 replaces the former by the latter.)
 
 ## Acceptance criteria
 
