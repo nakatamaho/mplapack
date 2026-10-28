@@ -37,6 +37,20 @@ checked separately, excluding any object padding. The existing reference CPU
 symbols use the BLAS of the linked library, as in Rlapack_omp_test; these tests
 are not an independent test of BLAS kernels.
 
+## Device-resident Cholesky (goal 05)
+
+`Rpotrf_gpu_test.cpp` exercises the six dd/td/qd entry points directly;
+`Rpotrf_gpu_device_test.cu` is its nvcc wrapper. CMake runs
+`{dd,td,qd}_cuda_Rpotrf_{host,device}` (device absence exits 77).
+Autotools runs `Rpotrf_gpu_host_test_<b>` in each optimized backend's
+`make check`. Each variant performs 398 checks: memcmp of the entire padded
+matrix and info against the reference, both triangles, block boundaries,
+odd n through 599, non-positive pivots, imaginary complex diagonals,
+invalid/disabled/quick/overflow rejection without publication, and normalized
+backward error <=30. Backend LAPACK_FAST=1 currently uses the same arithmetic
+and is tested too. Device oracles disable GPU BLAS, not LAPACK entry points.
+The test fixes OpenMP threads to one to avoid tiny-oracle parallel overhead.
+
 For fault injection, copy the source outside the tree, add `g[0] += T(1);`
 after the tested factorization, build the copy with the same flags/library,
 and verify exit 1 in both modes. Do not modify the library or commit the fault.

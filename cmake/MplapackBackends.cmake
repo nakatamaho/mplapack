@@ -160,12 +160,18 @@ function(mplapack_add_accelerator_backend backend accelerator)
   mplapack_shadow_sources(
     _mpblas_accelerated_reference_sources MPBLAS_SOURCES _mpblas_overrides)
 
+  mplapack_shadow_sources(
+    _mplapack_accelerated_opt_sources _mplapack_opt_sources _accelerator_sources)
+  set(_mplapack_overrides ${_mplapack_accelerated_opt_sources} ${_accelerator_sources})
+  mplapack_shadow_sources(
+    _mplapack_accelerated_reference_sources _mplapack_reference_sources _mplapack_overrides)
+
   set(_target mplapack_${backend}_opt_${accelerator})
   add_library(${_target}
     ${_mpblas_accelerated_reference_sources}
     ${_mpblas_accelerated_opt_sources}
-    ${_mplapack_reference_sources}
-    ${_mplapack_opt_sources}
+    ${_mplapack_accelerated_reference_sources}
+    ${_mplapack_accelerated_opt_sources}
     ${_accelerator_sources})
   add_library(mplapack::${_target} ALIAS ${_target})
   string(TOUPPER "${backend}" _backend_upper)

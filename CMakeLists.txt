@@ -347,6 +347,11 @@ endif()
 file(GLOB _mplapack_blas_cuda_sources CONFIGURE_DEPENDS
   "${CMAKE_CURRENT_SOURCE_DIR}/mpblas/optimized/common/blas_cuda/*.cpp")
 
+foreach(_b dd td qd)
+  set_property(SOURCE "mpblas/optimized/${_b}/cuda/Rpotrf_gpu_cuda.cu" APPEND PROPERTY
+    COMPILE_OPTIONS "$<$<COMPILE_LANGUAGE:CUDA>:-Xcompiler=-ffp-contract=off>")
+endforeach()
+
 if(MPLAPACK_ENABLE_CUDA)
   file(GLOB _mplapack_cuda_sources CONFIGURE_DEPENDS
     "${CMAKE_CURRENT_SOURCE_DIR}/mpblas/optimized/dd/cuda/*.cu")
@@ -360,6 +365,8 @@ if(MPLAPACK_ENABLE_CUDA)
   mplapack_add_accelerator_backend(dd cuda ${_mplapack_cuda_sources}
     "${CMAKE_CURRENT_SOURCE_DIR}/mpblas/optimized/dd/cuda/Rgemm.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/mpblas/optimized/dd/cuda/Rgemm_bridge_cuda.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/mpblas/optimized/dd/cuda/Rpotrf.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/mpblas/optimized/dd/cuda/Cpotrf.cpp"
     ${_mplapack_blas_cuda_sources})
   target_sources(mplapack_dd_opt_cuda PRIVATE
     "${CMAKE_CURRENT_SOURCE_DIR}/mpblas/optimized/dd/cuda/dd_real_cuda.h")
@@ -389,6 +396,7 @@ foreach(_b qd td)
   set(_dir "${CMAKE_CURRENT_SOURCE_DIR}/mpblas/optimized/${_b}/cuda")
   mplapack_add_accelerator_backend(${_b} cuda
     "${_dir}/Rgemm.cpp" "${_dir}/Rgemm_bridge_cuda.cpp" "${_dir}/Rgemm_gpu_cuda.cu"
+    "${_dir}/Rpotrf.cpp" "${_dir}/Cpotrf.cpp" "${_dir}/Rpotrf_gpu_cuda.cu"
     ${_mplapack_blas_cuda_sources})
   target_link_libraries(mplapack_${_b}_opt_cuda PUBLIC QD::QD CUDA::cudart CUDA::cublas)
   mplapack_configure_dd_arithmetic(mplapack_${_b}_opt_cuda)
@@ -647,6 +655,13 @@ if(MPLAPACK_BUILD_TESTS)
   foreach(b dd td qd)
     if(TARGET mplapack_${b}_opt)
       string(TOUPPER "${b}" _B)
+      set(_exe ${b}_cuda_Rpotrf_host_test)
+      add_executable(${_exe} mplapack/optimized/common/test/Rpotrf_gpu_test.cpp)
+      target_compile_definitions(${_exe} PRIVATE MPLAPACK_GEMM_CUDA_HOST_EMULATION)
+      target_link_libraries(${_exe} PRIVATE mplapack_${b}_opt)
+      mplapack_configure_dd_arithmetic(${_exe})
+      add_test(NAME ${b}_cuda_Rpotrf_host COMMAND ${_exe})
+      set_tests_properties(${b}_cuda_Rpotrf_host PROPERTIES ENVIRONMENT "OMP_NUM_THREADS=1")
       set(_exe ${b}_cuda_Rlapack_host_test)
       add_executable(${_exe} "${_mplapack_opt_common}/test/Rlapack_gpu_test.cpp")
       target_compile_definitions(${_exe} PRIVATE MPLAPACK_GEMM_CUDA_HOST_EMULATION)
@@ -679,6 +694,14 @@ if(MPLAPACK_BUILD_TESTS)
       set_tests_properties(${b}_cuda_Cblas_host PROPERTIES ENVIRONMENT "OMP_NUM_THREADS=4")
     endif()
     if(TARGET mplapack_${b}_opt_cuda)
+      set(_exe ${b}_cuda_Rpotrf_device_test)
+      add_executable(${_exe} mplapack/optimized/common/test/Rpotrf_gpu_device_test.cu)
+      target_compile_options(${_exe} PRIVATE "$<$<COMPILE_LANGUAGE:CUDA>:-fmad=false>" "$<$<COMPILE_LANGUAGE:CUDA>:-Xcompiler=-ffp-contract=off>")
+      target_link_libraries(${_exe} PRIVATE mplapack_${b}_opt_cuda CUDA::cudart)
+      mplapack_configure_dd_arithmetic(${_exe})
+      set_target_properties(${_exe} PROPERTIES CUDA_ARCHITECTURES "${MPLAPACK_CUDA_ARCHITECTURES}" CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED ON)
+      add_test(NAME ${b}_cuda_Rpotrf_device COMMAND ${_exe})
+      set_tests_properties(${b}_cuda_Rpotrf_device PROPERTIES SKIP_RETURN_CODE 77 ENVIRONMENT "OMP_NUM_THREADS=1;MPLAPACK_${_B}_CUDA=0")
       set(_exe ${b}_cuda_Rlapack_device_test)
       add_executable(${_exe} "${CMAKE_CURRENT_SOURCE_DIR}/mpblas/optimized/${b}/cuda/Rlapack_device_test.cu")
       # This CUDA TU also contains the host libQD3 oracle.

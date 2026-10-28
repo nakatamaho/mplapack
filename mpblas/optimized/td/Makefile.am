@@ -119,7 +119,7 @@ endif
 
 # Parallel Level 1/2/3 BLAS (../common/blas), real and complex:
 # bit-identical to the reference routines.
-check_PROGRAMS = Rblas_omp_test_td Cblas_omp_test_td Rlapack_omp_test_td Rgemm_winograd_omp_test_td Rgemm_opt_test Rgemm_gpu_host_test Rblas_gpu_host_test_td Cblas_gpu_host_test_td Rlapack_gpu_host_test_td
+check_PROGRAMS = Rblas_omp_test_td Cblas_omp_test_td Rlapack_omp_test_td Rgemm_winograd_omp_test_td Rgemm_opt_test Rgemm_gpu_host_test Rblas_gpu_host_test_td Cblas_gpu_host_test_td Rlapack_gpu_host_test_td Rpotrf_gpu_host_test_td
 Rblas_omp_test_td_SOURCES = ../common/test/Rblas_omp_test.cpp
 Rblas_omp_test_td_CPPFLAGS = $(libmplapack_td_opt_la_CPPFLAGS)
 Rblas_omp_test_td_LDFLAGS = -static $(QD_RPATH_LDFLAGS)
@@ -146,6 +146,12 @@ Rgemm_opt_test_CXXFLAGS = $(DD_CXXFLAGS)
 Rgemm_opt_test_LDFLAGS = -static $(QD_RPATH_LDFLAGS)
 Rgemm_opt_test_LDADD = libmplapack_td_opt.la $(libmplapack_td_opt_la_LIBADD)
 
+Rpotrf_gpu_host_test_td_SOURCES = ../../../mplapack/optimized/common/test/Rpotrf_gpu_test.cpp
+Rpotrf_gpu_host_test_td_CPPFLAGS = $(libmplapack_td_opt_la_CPPFLAGS) -DMPLAPACK_GEMM_CUDA_HOST_EMULATION
+Rpotrf_gpu_host_test_td_CXXFLAGS = $(DD_CXXFLAGS)
+Rpotrf_gpu_host_test_td_LDFLAGS = -static $(QD_RPATH_LDFLAGS)
+Rpotrf_gpu_host_test_td_LDADD = libmplapack_td_opt.la $(libmplapack_td_opt_la_LIBADD)
+
 Rlapack_gpu_host_test_td_SOURCES = ../common/test/Rlapack_gpu_test.cpp
 Rlapack_gpu_host_test_td_CPPFLAGS = $(libmplapack_td_opt_la_CPPFLAGS) -DMPLAPACK_GEMM_CUDA_HOST_EMULATION
 Rlapack_gpu_host_test_td_CXXFLAGS = $(DD_CXXFLAGS)
@@ -169,7 +175,7 @@ Rgemm_gpu_host_test_CPPFLAGS = $(libmplapack_td_opt_la_CPPFLAGS) -DRGEMM_TEST_TD
 Rgemm_gpu_host_test_CXXFLAGS = $(DD_CXXFLAGS)
 Rgemm_gpu_host_test_LDFLAGS = -static $(QD_RPATH_LDFLAGS)
 Rgemm_gpu_host_test_LDADD = libmplapack_td_opt.la $(libmplapack_td_opt_la_LIBADD)
-TESTS = Rblas_omp_test_td Cblas_omp_test_td Rlapack_omp_test_td Rgemm_winograd_omp_test_td Rgemm_opt_test Rgemm_gpu_host_test Rblas_gpu_host_test_td Cblas_gpu_host_test_td Rlapack_gpu_host_test_td
+TESTS = Rblas_omp_test_td Cblas_omp_test_td Rlapack_omp_test_td Rgemm_winograd_omp_test_td Rgemm_opt_test Rgemm_gpu_host_test Rblas_gpu_host_test_td Cblas_gpu_host_test_td Rlapack_gpu_host_test_td Rpotrf_gpu_host_test_td
 
 # Shared LU / Cholesky verification gates (default mode; also run with
 # MPLAPACK_LAPACK_FAST=1 to check the opt-in algorithm).

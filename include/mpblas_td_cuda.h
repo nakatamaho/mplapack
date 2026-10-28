@@ -41,6 +41,8 @@
 #include <mpblas_td.h>
 
 bool Rgemm_td_cuda(const char *transa, const char *transb, mplapackint const m, mplapackint const n, mplapackint const k, td_real const alpha, td_real *a, mplapackint const lda, td_real *b, mplapackint const ldb, td_real const beta, td_real *c, mplapackint const ldc);
+bool Rpotrf_td_cuda(const char *uplo, mplapackint const n, td_real *a, mplapackint const lda, mplapackint &info);
+bool Cpotrf_td_cuda(const char *uplo, mplapackint const n, td_complex *a, mplapackint const lda, mplapackint &info);
 bool Rsyrk_td_cuda(const char *uplo, const char *trans, mplapackint const n, mplapackint const k, td_real const alpha, td_real *a, mplapackint const lda, td_real const beta, td_real *c, mplapackint const ldc);
 bool Rsyr2k_td_cuda(const char *uplo, const char *trans, mplapackint const n, mplapackint const k, td_real const alpha, td_real *a, mplapackint const lda, td_real *b, mplapackint const ldb, td_real const beta, td_real *c, mplapackint const ldc);
 bool Rsymm_td_cuda(const char *side, const char *uplo, mplapackint const m, mplapackint const n, td_real const alpha, td_real *a, mplapackint const lda, td_real *b, mplapackint const ldb, td_real const beta, td_real *c, mplapackint const ldc);

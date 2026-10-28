@@ -41,6 +41,8 @@
 #include <mpblas_qd.h>
 
 bool Rgemm_qd_cuda(const char *transa, const char *transb, mplapackint const m, mplapackint const n, mplapackint const k, qd_real const alpha, qd_real *a, mplapackint const lda, qd_real *b, mplapackint const ldb, qd_real const beta, qd_real *c, mplapackint const ldc);
+bool Rpotrf_qd_cuda(const char *uplo, mplapackint const n, qd_real *a, mplapackint const lda, mplapackint &info);
+bool Cpotrf_qd_cuda(const char *uplo, mplapackint const n, qd_complex *a, mplapackint const lda, mplapackint &info);
 bool Rsyrk_qd_cuda(const char *uplo, const char *trans, mplapackint const n, mplapackint const k, qd_real const alpha, qd_real *a, mplapackint const lda, qd_real const beta, qd_real *c, mplapackint const ldc);
 bool Rsyr2k_qd_cuda(const char *uplo, const char *trans, mplapackint const n, mplapackint const k, qd_real const alpha, qd_real *a, mplapackint const lda, qd_real *b, mplapackint const ldb, qd_real const beta, qd_real *c, mplapackint const ldc);
 bool Rsymm_qd_cuda(const char *side, const char *uplo, mplapackint const m, mplapackint const n, qd_real const alpha, qd_real *a, mplapackint const lda, qd_real *b, mplapackint const ldb, qd_real const beta, qd_real *c, mplapackint const ldc);

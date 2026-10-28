@@ -21,6 +21,8 @@ NVCC_DD_CUDA_FLAGS = -std=c++17 -fmad=false -I$(srcdir) -I$(top_builddir)/includ
 .cu.lo:
 	$(top_srcdir)/misc/cudalt.py $@ $(NVCC) $(NVCC_GLIBC_FEATURE_FLAGS) $(NVCC_DD_CUDA_FLAGS) --compiler-options=\"$(CFLAGS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) \" $(AMPERE_FLAGS) $(HOPPER_FLAGS) -c $<
 
+Rpotrf_gpu_cuda.lo Rpotrf_gpu_cuda.o: NVCC_DD_CUDA_FLAGS += -Xcompiler=-ffp-contract=off
+
 # Header dependencies of the .cu objects, written by nvcc through
 # misc/cudalt.py (automake does not track the .cu.lo suffix rule).
 -include $(wildcard *.lo.d)
@@ -122,8 +124,7 @@ $(MPLAPACK_ACCEL_REFERENCE_SOURCES) \
 ../../../../mplapack/optimized/common/Cgetrf.cpp \
 ../../../../mplapack/optimized/common/Rgetrf2.cpp \
 ../../../../mplapack/optimized/common/Cgetrf2.cpp \
-../../../../mplapack/optimized/common/Rpotrf.cpp \
-../../../../mplapack/optimized/common/Cpotrf.cpp \
+Rpotrf.cpp Cpotrf.cpp Rpotrf_gpu_cuda.cu \
 $(MPLAPACK_DD_CUDA_LAPACK_OPTIMIZED_SOURCES) \
 Rgemm.cpp Rgemm_bridge_cuda.cpp Rgemm_gpu_cuda.cu ../../common/blas_cuda/Rblas_bridge_cuda.cpp ../../common/blas_cuda/Cblas_bridge_cuda.cpp \
 Rgemm_cuda.cu Rgemm_fermi.cu Rgemm_tesla.cu \
@@ -138,7 +139,7 @@ if IS_MINGW
 libmplapack_dd_opt_cuda_la_LDFLAGS += -fopenmp -no-undefined
 endif
 
-EXTRA_DIST = \
+EXTRA_DIST = README.md \
 Rgemm_fermi_NN_0.cu \
 Rgemm_fermi_NN_p.cu \
 Rgemm_fermi_NT_0.cu \

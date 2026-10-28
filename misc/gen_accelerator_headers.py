@@ -8,7 +8,7 @@ entry points"):
     bool <Routine>_<backend>_<accelerator>(<arguments of <Routine>>);
 
 The arguments are copied from the declaration of <Routine> in
-include/mpblas_<backend>.h.  Run from the top source directory after
+include/mpblas_<backend>.h or include/mplapack_<backend>.h.  Run from the top source directory after
 changing the routines an accelerator library computes:
 
     misc/gen_accelerator_headers.py
@@ -31,9 +31,9 @@ MPFR_CUDA = ["Rsyrk", "Rsyr2k", "Rsymm", "Rtrmm", "Rtrsm", "Rgemv", "Rsymv", "Rt
              "Rsyr", "Rsyr2", "Rscal", "Rswap", "Rrot"]
 
 LIBRARIES = [
-    ("dd", "cuda", "ENABLE_CUDA", ["Rgemm"] + BLAS_CUDA + CBLAS_CUDA),
-    ("td", "cuda", "ENABLE_TD_CUDA", ["Rgemm"] + BLAS_CUDA + CBLAS_CUDA),
-    ("qd", "cuda", "ENABLE_QD_CUDA", ["Rgemm"] + BLAS_CUDA + CBLAS_CUDA),
+    ("dd", "cuda", "ENABLE_CUDA", ["Rgemm", "Rpotrf", "Cpotrf"] + BLAS_CUDA + CBLAS_CUDA),
+    ("td", "cuda", "ENABLE_TD_CUDA", ["Rgemm", "Rpotrf", "Cpotrf"] + BLAS_CUDA + CBLAS_CUDA),
+    ("qd", "cuda", "ENABLE_QD_CUDA", ["Rgemm", "Rpotrf", "Cpotrf"] + BLAS_CUDA + CBLAS_CUDA),
     ("mpfr", "cuda", "ENABLE_MPFR_CUDA", ["Rgemm"] + MPFR_CUDA + CBLAS_CUDA),
     ("binary128", "opencl", "ENABLE_OPENCL_BINARY128", ["Rgemm"]),
 ]
@@ -46,10 +46,11 @@ def license_text():
 
 def declarations(backend):
     decls = {}
-    for line in (TOP / "include" / ("mpblas_%s.h" % backend)).read_text().splitlines():
-        m = re.match(r"void ([RC][A-Za-z0-9]+)\((.*)\);\s*$", line)
-        if m:
-            decls[m.group(1)] = m.group(2)
+    for header in ("mpblas", "mplapack"):
+        for line in (TOP / "include" / ("%s_%s.h" % (header, backend))).read_text().splitlines():
+            m = re.match(r"void ([RC][A-Za-z0-9]+)\((.*)\);\s*$", line)
+            if m:
+                decls[m.group(1)] = m.group(2)
     return decls
 
 
@@ -75,7 +76,7 @@ def main():
                  ""]
         for r in routines:
             if r not in decls:
-                sys.exit("%s is not declared in include/mpblas_%s.h" % (r, backend))
+                sys.exit("%s is not declared in the BLAS/LAPACK headers for %s" % (r, backend))
             lines.append("bool %s_%s_%s(%s);" % (r, backend, accel, decls[r]))
         lines += ["", "#endif", ""]
         out = TOP / "include" / ("mpblas_%s_%s.h" % (backend, accel))
