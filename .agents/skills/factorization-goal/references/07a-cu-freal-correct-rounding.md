@@ -1,7 +1,8 @@
 # GOAL 07a: correctly rounded division and square root for cu_freal (mpc_cuda patch)
 
-Prerequisites: none of the other goals (it can run before or in parallel
-with 01-06); goal 07 depends on it. Read 00-overview.md first, and
+Prerequisites: the MPFR CUDA fixes of b626121f (mutex around the MPFR GPU
+entry points, device stack limit for the complex kernels, Rswap/Rrot);
+goals 01-06 are done. Goal 07 depends on this goal. Read 00-overview.md first, and
 mpblas/optimized/mpfr/cuda/README.md.
 
 ## Background (verified on the bundled mpc_cuda-0.0.1-abd9407)
@@ -50,14 +51,12 @@ bundled tarball, and the same file is the upstream submission:
   remove the patch once the bundled tarball contains it) and the PR
   description text in the commit body. Opening the upstream PR needs the
   maintainer's account: prepare the text, do not attempt it.
-- Branch 3.1 (origin/3.1, currently without external/mpc_cuda and without
-  the MPFR CUDA library) keeps the patch as well: after the commit on
-  claude/mpfr-cuda-rgemm, create a second commit for 3.1 that adds only
-  external/mpc_cuda/patches/patch-cu_freal-correctly-rounded-div-sqrt and
-  external/mpc_cuda/patches/README.md (stating that 3.1 does not build
-  mpc_cuda yet and the patch is carried for when it does). Put it on a
-  local branch `topic/3.1-mpc_cuda-patch` based on origin/3.1; do not push
-  to 3.1 itself, report the branch and commit for the maintainer.
+- Branch 3.1 now equals claude/mpfr-cuda-rgemm (fast-forwarded; it builds
+  external/mpc_cuda and the MPFR CUDA library), so the patch is carried on
+  3.1 simply by the commit of this goal; no separate 3.1 branch is needed.
+- Rebuilds: the stamp of the extract/patch step must depend on the patch
+  file(s), so that editing a patch re-extracts, re-patches and rebuilds
+  mpc_cuda in both build systems.
 
 ## Tasks
 
@@ -112,7 +111,11 @@ bundled tarball, and the same file is the upstream submission:
    reference Rtrsm (existing mpfr_cuda_blas3 tests); update the README
    ("Rtrsm always uses cu_mpfr" no longer holds for fixed precisions) and
    keep the cu_mpfr path for the runtime precisions. Keep the exponent
-   range gate Rtrsm has today.
+   range gate Rtrsm has today. The Newton steps at W = PB + 64 bits may need
+   more device stack than the real fixed kernels have today (the default
+   1 KB; the complex kernels already raise it, see mpfr_cblas_stack in
+   Cblas_mpfr_device_cuda.cu): check with compute-sanitizer and raise the
+   limit for the kernels that call cu_fdiv_rn / cu_sqrt_rn if needed.
 5. 00-overview.md and goal 07: state that cu_fdiv_rn / cu_sqrt_rn exist, so
    the getrf / potrf panels can stay on cu_freal (goal 07 still measures).
 
@@ -131,6 +134,6 @@ bundled tarball, and the same file is the upstream submission:
 - `patch -p1 --dry-run` of the patch file applies to a fresh extraction of
   the tarball outside the build (the upstream-submission check).
 - misc/check_unique_symbols.sh on libmplapack_mpfr_opt_cuda.
-- Commits:
-  1. on claude/mpfr-cuda-rgemm: "mpc_cuda: correctly rounded cu_freal division and sqrt (factorization goal 07a)";
-  2. on topic/3.1-mpc_cuda-patch (based on origin/3.1, not pushed): "Carry the mpc_cuda cu_freal correct-rounding patch".
+- Editing the patch file (e.g. touching it) re-applies it and rebuilds
+  mpc_cuda (show the make output of both build systems).
+- One commit on claude/mpfr-cuda-rgemm: "mpc_cuda: correctly rounded cu_freal division and sqrt (factorization goal 07a)". No push.
