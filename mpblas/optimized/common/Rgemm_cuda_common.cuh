@@ -79,6 +79,10 @@
 
 namespace mplapack_gemm {
 
+// Device-pointer tiled path. Bs is k*n workspace, separate from B.
+template<class Ops> static int gemm_device(const shape &, const gpu_scalars<typename Ops::F> &,
+    const typename Ops::F *, const typename Ops::F *, typename Ops::F *, typename Ops::F *, bool = false);
+
 // ---- element code ----
 
 template <class Ops> MPLAPACK_GEMM_HD typename Ops::F gpu_scaled_c(const gpu_scalars<typename Ops::F> &sc, const typename Ops::F &c) {
@@ -448,17 +452,8 @@ template <class Ops> int gemm_cuda(const shape &s, int algo, long cutoff, const 
             g.check(gpu_copy_mat(dA, A, s.nota ? m : k, s.nota ? k : m, s.lda, cudaMemcpyHostToDevice));
             g.check(gpu_copy_mat(dB, B, s.notb ? k : n, s.notb ? n : k, s.ldb, cudaMemcpyHostToDevice));
         }
-        if (g.ok() && s.nota && k > 0) {
-            k_alpha_opB<Ops><<<gpu_grid2(k, n), dim3(GPU_TILE, GPU_TILE)>>>(s, sc.alpha, dB, dBs);
-            g.check_launch();
-        }
-        if (g.ok()) {
-            if (algo == GPU_NAIVE)
-                k_naive<Ops><<<gpu_grid2(m, n), dim3(GPU_TILE, GPU_TILE)>>>(s, sc, dA, dBs, dC);
-            else
-                k_tiled<Ops><<<gpu_grid2(m, n), dim3(GPU_TILE, GPU_TILE)>>>(s, sc, dA, dBs, dC, 0);
-            g.check_launch();
-        }
+        if (g.ok())
+            g.check((cudaError_t)gemm_device<Ops>(s, sc, dA, dB, dC, dBs, algo == GPU_NAIVE));
     }
     if (g.ok())
         g.check(cudaDeviceSynchronize());
@@ -556,26 +551,36 @@ template <class Ops> int gemm_cuda(const shape &s, int algo, long cutoff, const 
         return 0;
     }
     std::vector<F> Bs;
-    const F *bop = B;
-    if (s.nota) {
-        Bs.resize((size_t)k * n + 1);
-        for (long j = 0; j < n; j++)
-            for (long l = 0; l < k; l++)
-                gpu_alpha_opB<Ops>(s, sc.alpha, B, Bs.data(), l, j);
-        bop = Bs.data();
-    }
-#ifdef _OPENMP
-#pragma omp parallel for
-#endif
-    for (long j = 0; j < n; j++)
-        for (long i = 0; i < m; i++)
-            gpu_element<Ops>(s, sc, A, bop, C, i, j);
-    return 0;
+    if (s.nota) Bs.resize((size_t)k * n + 1);
+    return gemm_device<Ops>(s, sc, A, B, C, Bs.data());
 }
 
 template <class Ops> int gpu_device_count() { return 1; }
 
 #endif
+
+template<class Ops> static int gemm_device(const shape &s, const gpu_scalars<typename Ops::F> &sc,
+    const typename Ops::F *A, const typename Ops::F *B, typename Ops::F *C, typename Ops::F *Bs, bool naive)
+{
+    if (s.m == 0 || s.n == 0) return 0;
+#if defined(__CUDACC__)
+    if (s.nota && s.k > 0) {
+        k_alpha_opB<Ops><<<gpu_grid2(s.k,s.n),dim3(GPU_TILE,GPU_TILE)>>>(s,sc.alpha,B,Bs);
+        cudaError_t e=cudaGetLastError(); if(e!=cudaSuccess) return (int)e;
+    }
+    const typename Ops::F *bop=s.nota ? Bs : B;
+    if(naive) k_naive<Ops><<<gpu_grid2(s.m,s.n),dim3(GPU_TILE,GPU_TILE)>>>(s,sc,A,bop,C);
+    else k_tiled<Ops><<<gpu_grid2(s.m,s.n),dim3(GPU_TILE,GPU_TILE)>>>(s,sc,A,bop,C,0);
+    cudaError_t e=cudaGetLastError();
+    return (int)(e==cudaSuccess ? cudaDeviceSynchronize() : e);
+#else
+    (void)naive;
+    if(s.nota)
+        for(long j=0;j<s.n;++j) for(long l=0;l<s.k;++l) gpu_alpha_opB<Ops>(s,sc.alpha,B,Bs,l,j);
+    for(long j=0;j<s.n;++j) for(long i=0;i<s.m;++i) gpu_element<Ops>(s,sc,A,s.nota ? Bs : B,C,i,j);
+    return 0;
+#endif
+}
 
 } // namespace mplapack_gemm
 

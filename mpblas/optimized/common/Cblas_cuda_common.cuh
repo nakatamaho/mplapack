@@ -73,6 +73,23 @@ template <class Job> __global__ void k_job(const Job *job, long units)
 }
 #endif
 
+// Bound device pointers; scratch belongs to the caller (one Job on device).
+// This shares k_job with the host-copy wrapper, without transferring operands.
+template<class Job> static int job_device(Job job, long units, Job *scratch)
+{
+#if MPLAPACK_CBLAS_CUDA_DEVICE
+    if (units <= 0) return 0;
+    cudaError_t e=cudaMemcpy(scratch,&job,sizeof(Job),cudaMemcpyHostToDevice);
+    if(e==cudaSuccess) k_job<Job><<<(unsigned)((units+63)/64),64>>>(scratch,units);
+    if(e==cudaSuccess) e=cudaGetLastError();
+    return (int)(e==cudaSuccess ? cudaDeviceSynchronize() : e);
+#else
+    (void)scratch;
+    for(long u=0;u<units;++u) job(u);
+    return 0;
+#endif
+}
+
 // Uploads the operands (their referenced elements, Rblas_gpu_operand_common.h),
 // runs job(u) for u < units, downloads the written ones.  ops[q].host is the logical element (0, 0); bind() gets the
 // device addresses of these elements.
@@ -94,14 +111,7 @@ template <class E, class Job> int run_job(Job job, long units, const gpu_operand
         job.bind(dev);
         e = cudaMalloc(&djob, sizeof(Job));
         if (e == cudaSuccess)
-            e = cudaMemcpy(djob, &job, sizeof(Job), cudaMemcpyHostToDevice);
-        const int threads = 64;
-        if (e == cudaSuccess)
-            k_job<Job><<<(unsigned)((units + threads - 1) / threads), threads>>>(djob, units);
-        if (e == cudaSuccess)
-            e = cudaGetLastError();
-        if (e == cudaSuccess)
-            e = cudaDeviceSynchronize();
+            e = (cudaError_t)job_device(job, units, djob);
     }
     cudaFree(djob);
     for (int q = 0; q < nops && e == cudaSuccess; q++)

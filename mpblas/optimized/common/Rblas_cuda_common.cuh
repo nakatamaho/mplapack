@@ -97,6 +97,8 @@ template <class Ops> MPLAPACK_BLAS_HD void gpu_lane(const gpu_lane_args<Ops> &g,
     blas_lane(e, g.s, x, lane);
 }
 
+template <class Ops> static int blas_device(const gpu_lane_args<Ops> &g);
+
 // ---- Rsyrk / Rsyr2k tiled: a TILE x TILE block of threads computes a tile
 // of C, the columns l of A (B) in chunks of TILE held in shared memory.  Every
 // thread performs the operations of l3_syrk / l3_syr2k (Rblas_lanes_common.h)
@@ -295,7 +297,23 @@ template <class Ops> int blas_gpu(const blas_shape &s, const typename Ops::F &al
     g.s = s;
     g.al = dal.at0(), g.be = dbe.at0(), g.a = da.at0(), g.b = db.at0(), g.c = dc.at0();
     g.lda = a.ld, g.ldb = b.ld, g.ldc = c.ld;
+    e = (cudaError_t)blas_device<Ops>(g);
+    if (e == cudaSuccess)
+        e = dc.down();
+    if (e == cudaSuccess)
+        e = da.down();
+    return (int)e;
+}
+
+// No allocation or operand transfers. Scalars and matrices are device pointers.
+// Synchronous for now; callers may schedule independent calls on host threads.
+template <class Ops> int blas_device(const gpu_lane_args<Ops> &g)
+{
+    const blas_shape &s = g.s;
+    cudaError_t e = cudaSuccess;
     const long lanes = blas_lanes(s);
+    if (lanes <= 0)
+        return 0;
     const int threads = 64;
     if (syrk_tiled<Ops>(s)) {
         const unsigned nb = (unsigned)((s.n + BLAS_TILE - 1) / BLAS_TILE);
@@ -309,10 +327,6 @@ template <class Ops> int blas_gpu(const blas_shape &s, const typename Ops::F &al
         if (e == cudaSuccess)
             e = cudaDeviceSynchronize();
     }
-    if (e == cudaSuccess)
-        e = dc.down();
-    if (e == cudaSuccess)
-        e = da.down();
     return (int)e;
 }
 
@@ -348,7 +362,18 @@ template <class Ops> int blas_gpu(const blas_shape &s, const typename Ops::F &al
     g.s = s;
     g.al = dal.at0(), g.be = dbe.at0(), g.a = da.at0(), g.b = db.at0(), g.c = dc.at0();
     g.lda = a.ld, g.ldb = b.ld, g.ldc = c.ld;
+    const int status = blas_device<Ops>(g);
+    dc.down();
+    da.down();
+    return status;
+}
+
+template <class Ops> int blas_device(const gpu_lane_args<Ops> &g)
+{
+    const blas_shape &s = g.s;
     const long lanes = blas_lanes(s);
+    if (lanes <= 0)
+        return 0;
     if (syrk_tiled<Ops>(s)) {
         // the tiled kernel, the threads of a block phase by phase
         const long nb = (s.n + BLAS_TILE - 1) / BLAS_TILE;
@@ -385,8 +410,6 @@ template <class Ops> int blas_gpu(const blas_shape &s, const typename Ops::F &al
         for (long lane = 0; lane < lanes; lane++)
             gpu_lane<Ops>(g, lane);
     }
-    dc.down();
-    da.down();
     return 0;
 }
 

@@ -26,6 +26,48 @@ in the same order, as in `openmp/Rgemm_{NN,NT,TN,TT}_omp.cpp`. Only the loops
 over i and j are blocked and reordered. Every combination of transposes is
 supported.
 
+## Internal device-resident LAPACK blocks (dd/td/qd)
+
+`Rlapack_cuda_common.cuh`, namespace `mplapack_lapack_gpu`, is an internal,
+header-only layer, **not a public factorization API**. It does not read any
+LAPACK environment variables or dispatch/fall back to a CPU implementation.
+
+- `matrix<E>` owns a compact column-major matrix (`ld = max(1, rows)`).
+  `allocate` checks size overflow and `cudaMemGetInfo`; `copy(host, lda,
+  down)` uploads/downloads only the active rectangle, preserving host padding.
+  Callers pack C++ scalars into `dreal<Ops>` / `dcomplex<dreal<Ops>>` explicitly.
+- `panel<Ops>(rows, width)` owns at most `rows*width` workspace elements,
+  two scalar constants, one reciprocal and one status word; use panel widths <= nb. Its
+  `getrf2` and `potrf2` follow the reference recursion and BLAS call order.
+  Pivots are device `long` words, 1-based. Only status words return to the
+  host during recursion; no matrix arithmetic runs on the host.
+- `iamax` reduces a column in one block (strided scan plus tree reduction),
+  real abs or complex abs(real)+abs(imag), first index on ties. `laswp`
+  supports forward/reverse/strided pivots. Scaling follows the reference
+  sfmin branch and accurate division. `Rlapack_sqrt_common.h` reproduces
+  bundled libQD3's Karp (dd), Newton (td), and Heron (qd) square roots.
+- `mplapack_gemm::gemm_device` takes device operands and caller-owned k*n
+  workspace (used for alpha*op(B)), sharing the existing tiled kernel.
+  `mplapack_blas::blas_device` takes bound `gpu_lane_args` (including device
+  scalar pointers), sharing the existing Rtrsm and tiled Rsyrk kernels.
+  Complex `job_device` takes a bound job and caller-owned device job scratch;
+  it shares `k_job` with the copying wrapper, including Ctrsm and Cherk.
+  (There is no BLAS routine named Rherk; the complex Hermitian update is Cherk.)
+- Launches currently synchronize; stream/event look-ahead belongs to the
+  factorization driver goals. Errors are CUDA codes, 0 on success; the panel
+  retains its first failure in `error`. Device buffers may be partially
+  changed on failure: do not download/publish them until the whole call has
+  succeeded. A public driver's untouched-output guarantee is its responsibility.
+
+`test/Rlapack_gpu_test.cpp` runs the same code with
+`MPLAPACK_GEMM_CUDA_HOST_EMULATION` in autotools and CMake, and with nvcc in
+CMake (`*_cuda_Rlapack_device`, skip code 77 without a GPU). It compares
+pivots, swaps, scaling, sqrt, Cherk and recursive real panels bit for bit,
+including padded leading dimensions, rectangular/singular/tie/tiny-pivot LU,
+both Cholesky triangles and failed pivots. The unmodified reference panel
+bodies are included under private test names. Existing GPU BLAS regression
+tests also exercise the shared device-pointer launches through their wrappers.
+
 ## Small-block engine (every CPU type)
 
 `Rblas_block_common.h` is the CPU engine of `Rgemm` for every type

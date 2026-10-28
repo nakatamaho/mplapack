@@ -34,6 +34,8 @@ endif
 # Header-only Rgemm code shared by the dd, td, qd and binary128 libraries,
 # and the lane-parallel BLAS headers shared by every library (common/blas).
 EXTRA_DIST = common/README.md \
+common/Rlapack_cuda_common.cuh common/Rlapack_sqrt_common.h common/test/Rlapack_gpu_test.cpp \
+dd/cuda/Rlapack_device_test.cu td/cuda/Rlapack_device_test.cu qd/cuda/Rlapack_device_test.cu \
 common/Rblas_lanes_common.h common/Rblas_calls_common.h common/Rblas_cpu_common.h \
 common/Rblas_cuda_common.cuh common/Rblas_cuda_bridge_common.h common/Rblas_simd_common.h \
 common/Rblas_split_common.h common/Cblas_simd_common.h \

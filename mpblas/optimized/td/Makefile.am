@@ -119,7 +119,7 @@ endif
 
 # Parallel Level 1/2/3 BLAS (../common/blas), real and complex:
 # bit-identical to the reference routines.
-check_PROGRAMS = Rblas_omp_test_td Cblas_omp_test_td Rlapack_omp_test_td Rgemm_winograd_omp_test_td Rgemm_opt_test Rgemm_gpu_host_test Rblas_gpu_host_test_td Cblas_gpu_host_test_td
+check_PROGRAMS = Rblas_omp_test_td Cblas_omp_test_td Rlapack_omp_test_td Rgemm_winograd_omp_test_td Rgemm_opt_test Rgemm_gpu_host_test Rblas_gpu_host_test_td Cblas_gpu_host_test_td Rlapack_gpu_host_test_td
 Rblas_omp_test_td_SOURCES = ../common/test/Rblas_omp_test.cpp
 Rblas_omp_test_td_CPPFLAGS = $(libmplapack_td_opt_la_CPPFLAGS)
 Rblas_omp_test_td_LDFLAGS = -static $(QD_RPATH_LDFLAGS)
@@ -145,6 +145,12 @@ Rgemm_opt_test_CPPFLAGS = $(libmplapack_td_opt_la_CPPFLAGS) -DRGEMM_TEST_TD
 Rgemm_opt_test_CXXFLAGS = $(DD_CXXFLAGS)
 Rgemm_opt_test_LDFLAGS = -static $(QD_RPATH_LDFLAGS)
 Rgemm_opt_test_LDADD = libmplapack_td_opt.la $(libmplapack_td_opt_la_LIBADD)
+
+Rlapack_gpu_host_test_td_SOURCES = ../common/test/Rlapack_gpu_test.cpp
+Rlapack_gpu_host_test_td_CPPFLAGS = $(libmplapack_td_opt_la_CPPFLAGS) -DMPLAPACK_GEMM_CUDA_HOST_EMULATION
+Rlapack_gpu_host_test_td_CXXFLAGS = $(DD_CXXFLAGS)
+Rlapack_gpu_host_test_td_LDFLAGS = -static $(QD_RPATH_LDFLAGS)
+Rlapack_gpu_host_test_td_LDADD = libmplapack_td_opt.la $(libmplapack_td_opt_la_LIBADD)
 # The CUDA complex Level 1/2/3 BLAS code run on the host (no CUDA needed).
 Cblas_gpu_host_test_td_SOURCES = ../common/test/Cblas_gpu_test.cpp ../common/blas_cuda/Cblas_bridge_cuda.cpp ../common/blas_cuda/Cgemm.cpp ../common/blas_cuda/Csymm.cpp ../common/blas_cuda/Chemm.cpp ../common/blas_cuda/Ctrmm.cpp ../common/blas_cuda/Ctrsm.cpp ../common/blas_cuda/Cgemv.cpp ../common/blas_cuda/Cgeru.cpp ../common/blas_cuda/Cgerc.cpp ../common/blas_cuda/Caxpy.cpp ../common/blas_cuda/Ccopy.cpp ../common/blas_cuda/Cswap.cpp ../common/blas_cuda/CRrot.cpp ../common/blas_cuda/Cscal.cpp ../common/blas_cuda/CRscal.cpp ../common/blas_cuda/Csyrk.cpp ../common/blas_cuda/Cherk.cpp ../common/blas_cuda/Csyr2k.cpp ../common/blas_cuda/Cher2k.cpp ../common/blas_cuda/Cgemmtr.cpp ../common/blas_cuda/Rgemmtr.cpp ../common/blas_cuda/Cher.cpp ../common/blas_cuda/Cher2.cpp ../common/blas_cuda/Chemv.cpp ../common/blas_cuda/Chbmv.cpp ../common/blas_cuda/Rsbmv.cpp ../common/blas_cuda/Chpmv.cpp ../common/blas_cuda/Rspmv.cpp ../common/blas_cuda/Rgbmv.cpp ../common/blas_cuda/Cgbmv.cpp ../common/blas_cuda/Ctrmv.cpp ../common/blas_cuda/Rtbmv.cpp ../common/blas_cuda/Ctbmv.cpp ../common/blas_cuda/Rtpmv.cpp ../common/blas_cuda/Ctpmv.cpp ../common/blas_cuda/Rspr.cpp ../common/blas_cuda/Rspr2.cpp ../common/blas_cuda/Chpr.cpp ../common/blas_cuda/Chpr2.cpp
 Cblas_gpu_host_test_td_CPPFLAGS = $(libmplapack_td_opt_la_CPPFLAGS) -DMPLAPACK_GEMM_CUDA_HOST_EMULATION
@@ -163,7 +169,7 @@ Rgemm_gpu_host_test_CPPFLAGS = $(libmplapack_td_opt_la_CPPFLAGS) -DRGEMM_TEST_TD
 Rgemm_gpu_host_test_CXXFLAGS = $(DD_CXXFLAGS)
 Rgemm_gpu_host_test_LDFLAGS = -static $(QD_RPATH_LDFLAGS)
 Rgemm_gpu_host_test_LDADD = libmplapack_td_opt.la $(libmplapack_td_opt_la_LIBADD)
-TESTS = Rblas_omp_test_td Cblas_omp_test_td Rlapack_omp_test_td Rgemm_winograd_omp_test_td Rgemm_opt_test Rgemm_gpu_host_test Rblas_gpu_host_test_td Cblas_gpu_host_test_td
+TESTS = Rblas_omp_test_td Cblas_omp_test_td Rlapack_omp_test_td Rgemm_winograd_omp_test_td Rgemm_opt_test Rgemm_gpu_host_test Rblas_gpu_host_test_td Cblas_gpu_host_test_td Rlapack_gpu_host_test_td
 
 # Shared LU / Cholesky verification gates (default mode; also run with
 # MPLAPACK_LAPACK_FAST=1 to check the opt-in algorithm).

@@ -160,6 +160,13 @@ def values(name, traits, conf):
             programs.append("Rgemm_gpu_host_test")
             programs.append("Rblas_gpu_host_test_%%b%%")
             programs.append("Cblas_gpu_host_test_%%b%%")
+            programs.append("Rlapack_gpu_host_test_%%b%%")
+            tests += ["",
+                      "Rlapack_gpu_host_test_%%b%%_SOURCES = ../common/test/Rlapack_gpu_test.cpp",
+                      "Rlapack_gpu_host_test_%%b%%_CPPFLAGS = $(libmplapack_%%b%%_opt_la_CPPFLAGS) -DMPLAPACK_GEMM_CUDA_HOST_EMULATION",
+                      "Rlapack_gpu_host_test_%%b%%_CXXFLAGS = $(DD_CXXFLAGS)",
+                      "Rlapack_gpu_host_test_%%b%%_LDFLAGS = -static $(QD_RPATH_LDFLAGS)",
+                      "Rlapack_gpu_host_test_%%b%%_LDADD = libmplapack_%%b%%_opt.la $(libmplapack_%%b%%_opt_la_LIBADD)"]
             tests += ["# The CUDA complex Level 1/2/3 BLAS code run on the host (no CUDA needed).",
                       "Cblas_gpu_host_test_%%b%%_SOURCES = ../common/test/Cblas_gpu_test.cpp " + " ".join(
                           "../common/blas_cuda/%s.cpp" % r for r in CBLAS_CUDA_SOURCES),

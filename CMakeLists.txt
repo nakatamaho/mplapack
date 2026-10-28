@@ -647,6 +647,13 @@ if(MPLAPACK_BUILD_TESTS)
   foreach(b dd td qd)
     if(TARGET mplapack_${b}_opt)
       string(TOUPPER "${b}" _B)
+      set(_exe ${b}_cuda_Rlapack_host_test)
+      add_executable(${_exe} "${_mplapack_opt_common}/test/Rlapack_gpu_test.cpp")
+      target_compile_definitions(${_exe} PRIVATE MPLAPACK_GEMM_CUDA_HOST_EMULATION)
+      target_link_libraries(${_exe} PRIVATE mplapack_${b}_opt)
+      mplapack_configure_dd_arithmetic(${_exe})
+      add_test(NAME ${b}_cuda_Rlapack_host COMMAND ${_exe})
+      set_tests_properties(${b}_cuda_Rlapack_host PROPERTIES ENVIRONMENT "OMP_NUM_THREADS=1")
       set(_exe ${b}_cuda_Rgemm_host_test)
       add_executable(${_exe}
         "${_mplapack_opt_common}/test/Rgemm_gpu_test.cpp"
@@ -672,6 +679,19 @@ if(MPLAPACK_BUILD_TESTS)
       set_tests_properties(${b}_cuda_Cblas_host PROPERTIES ENVIRONMENT "OMP_NUM_THREADS=4")
     endif()
     if(TARGET mplapack_${b}_opt_cuda)
+      set(_exe ${b}_cuda_Rlapack_device_test)
+      add_executable(${_exe} "${CMAKE_CURRENT_SOURCE_DIR}/mpblas/optimized/${b}/cuda/Rlapack_device_test.cu")
+      # This CUDA TU also contains the host libQD3 oracle.
+      target_compile_options(${_exe} PRIVATE
+        "$<$<COMPILE_LANGUAGE:CUDA>:-fmad=false>"
+        "$<$<COMPILE_LANGUAGE:CUDA>:-Xcompiler=-ffp-contract=off>")
+      target_link_libraries(${_exe} PRIVATE mplapack_${b}_opt CUDA::cudart CUDA::cublas)
+      mplapack_configure_dd_arithmetic(${_exe})
+      set_target_properties(${_exe} PROPERTIES
+        CUDA_ARCHITECTURES "${MPLAPACK_CUDA_ARCHITECTURES}"
+        CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED ON)
+      add_test(NAME ${b}_cuda_Rlapack_device COMMAND ${_exe})
+      set_tests_properties(${b}_cuda_Rlapack_device PROPERTIES SKIP_RETURN_CODE 77 ENVIRONMENT "OMP_NUM_THREADS=1")
       set(_exe ${b}_cuda_Rgemm_device_test)
       add_executable(${_exe}
         "${_mplapack_opt_common}/test/Rgemm_gpu_test.cpp"
