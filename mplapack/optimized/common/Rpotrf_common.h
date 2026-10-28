@@ -31,13 +31,12 @@
 
 namespace mplapack_potrf {
 
-// Opt-in at build time, not at runtime: accelerator libraries must never
-// submit concurrent GPU BLAS calls, even with LOOKAHEAD=2 or FAST=1.
+// CPU and accelerator builds share the single accelerator-library switch.
+// Concurrent GPU BLAS is safe after b626121f, but only explicitly requested.
 inline bool tasks_enabled()
 {
-#if defined(MPLAPACK_CHOLESKY_CPU_TASKS) && defined(_OPENMP)
-    return omp_get_max_threads() > 1 && omp_get_level() == 0 &&
-           mplapack_lapack::la_env("MPLAPACK_LAPACK_LOOKAHEAD", 1) >= 2;
+#if defined(_OPENMP)
+    return mplapack_lapack::la_lookahead(false, 0, 1);
 #else
     return false;
 #endif

@@ -29,11 +29,17 @@
 // Cgetrf of the optimized libraries: as Rgetrf.cpp, with Cgetrf2, Claswp,
 // Ctrsm and Cgemm.
 
+#include <mpblas.h>
+#include <mplapack.h>
+
+void Cgetrf2_reference_cpu(INTEGER, INTEGER, COMPLEX *, INTEGER, INTEGER *, INTEGER &);
 #define Cgetrf Cgetrf_reference_cpu
+#define Cgetrf2 Cgetrf2_reference_cpu
 #include "../../reference/Cgetrf.cpp"
+#undef Cgetrf2
 #undef Cgetrf
 
-#include "Rlookahead_common.h"
+#include "Rgetrf_common.h"
 
 void Cgetrf(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, INTEGER *ipiv, INTEGER &info)
 {
@@ -41,14 +47,29 @@ void Cgetrf(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, INT
         Cgetrf_reference_cpu(m, n, a, lda, ipiv, info);
         return;
     }
-    if (mplapack_lapack::la_fast()) {
-        info = 0;
+    const bool fast = mplapack_lapack::la_fast();
+    const INTEGER nb = fast ? mplapack_getrf::width() : iMlaenv(1, "Cgetrf", " ", m, n, -1, -1);
+    const bool tasks = mplapack_lapack::la_lookahead(true, std::min(m, n), nb);
+    if (nb <= 1 || nb >= std::min(m, n)) {
         Cgetrf2(m, n, a, lda, ipiv, info);
         return;
     }
-    const INTEGER nb = iMlaenv(1, "Cgetrf", " ", m, n, -1, -1);
-    if (nb <= 1 || nb >= std::min(m, n) || !mplapack_lapack::la_lookahead(true, std::min(m, n), nb)) {
-        Cgetrf_reference_cpu(m, n, a, lda, ipiv, info);
+    if (!tasks) {
+        info = 0;
+        for (INTEGER j = 0; j < std::min(m, n); j += nb) {
+            const INTEGER jb = std::min(nb, std::min(m, n) - j);
+            INTEGER iinfo = 0;
+            Cgetrf2(m - j, jb, a + j + j * lda, lda, ipiv + j, iinfo);
+            if (info == 0 && iinfo > 0) info = j + iinfo;
+            for (INTEGER i = j; i < j + jb; ++i) ipiv[i] += j;
+            Claswp(j, a, lda, j + 1, j + jb, ipiv, 1);
+            if (j + jb < n) {
+                Claswp(n - j - jb, a + (j + jb) * lda, lda, j + 1, j + jb, ipiv, 1);
+                Ctrsm("L", "L", "N", "U", jb, n - j - jb, COMPLEX(1.0), a + j + j * lda, lda, a + j + (j + jb) * lda, lda);
+                if (j + jb < m)
+                    Cgemm("N", "N", m - j - jb, n - j - jb, jb, -COMPLEX(1.0), a + j + jb + j * lda, lda, a + j + (j + jb) * lda, lda, COMPLEX(1.0), a + j + jb + (j + jb) * lda, lda);
+            }
+        }
         return;
     }
     const COMPLEX one = COMPLEX(1.0, 0.0);

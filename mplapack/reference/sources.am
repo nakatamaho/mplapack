@@ -68,7 +68,6 @@ MPLAPACK_OPT_REFERENCE_SOURCES = \
 ../../../mplapack/reference/Cgesvx.cpp \
 ../../../mplapack/reference/Cgetc2.cpp \
 ../../../mplapack/reference/Cgetf2.cpp \
-../../../mplapack/reference/Cgetrf2.cpp \
 ../../../mplapack/reference/Cgetri.cpp \
 ../../../mplapack/reference/Cgetrs.cpp \
 ../../../mplapack/reference/Cgetsls.cpp \
@@ -543,7 +542,6 @@ MPLAPACK_OPT_REFERENCE_SOURCES = \
 ../../../mplapack/reference/Rgesvx.cpp \
 ../../../mplapack/reference/Rgetc2.cpp \
 ../../../mplapack/reference/Rgetf2.cpp \
-../../../mplapack/reference/Rgetrf2.cpp \
 ../../../mplapack/reference/Rgetri.cpp \
 ../../../mplapack/reference/Rgetrs.cpp \
 ../../../mplapack/reference/Rgetsls.cpp \
@@ -970,6 +968,8 @@ MPLAPACK_OPT_REFERENCE_SOURCES = \
 # Replaced in the optimized libraries by mplapack/optimized/common (same
 # basenames); listed here so that the manifest names every reference file.
 MPLAPACK_OPT_REFERENCE_SOURCES_SHADOWED = \
+../../../mplapack/reference/Cgetrf2.cpp \
+../../../mplapack/reference/Rgetrf2.cpp \
 ../../../mplapack/reference/Cgetrf.cpp \
 ../../../mplapack/reference/Claswp.cpp \
 ../../../mplapack/reference/Cpotrf.cpp \

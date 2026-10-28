@@ -14,8 +14,7 @@ MPLAPACK_QD_OPTIMIZED_SOURCES =
 
 lib_LTLIBRARIES = libmplapack_qd_opt.la
 
-# CPU-only permission: deliberately absent from every accelerator library.
-libmplapack_qd_opt_la_CPPFLAGS = -I. -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) $(OPENMP_CXXFLAGS) -DMPLAPACK_BUILD_WITH_QD -DMPLAPACK_CHOLESKY_CPU_TASKS=1
+libmplapack_qd_opt_la_CPPFLAGS = -I. -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) $(OPENMP_CXXFLAGS) -DMPLAPACK_BUILD_WITH_QD
 # The blocked Rgemm needs uncontracted arithmetic.
 libmplapack_qd_opt_la_CXXFLAGS = $(DD_CXXFLAGS)
 libmplapack_qd_opt_la_SOURCES = \
@@ -104,6 +103,8 @@ $(MPLAPACK_OPT_REFERENCE_SOURCES) \
 ../../../mplapack/optimized/common/Claswp.cpp \
 ../../../mplapack/optimized/common/Rgetrf.cpp \
 ../../../mplapack/optimized/common/Cgetrf.cpp \
+../../../mplapack/optimized/common/Rgetrf2.cpp \
+../../../mplapack/optimized/common/Cgetrf2.cpp \
 ../../../mplapack/optimized/common/Rpotrf.cpp \
 ../../../mplapack/optimized/common/Cpotrf.cpp \
 $(MPLAPACK_QD_OPTIMIZED_SOURCES)

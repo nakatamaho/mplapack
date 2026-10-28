@@ -7,6 +7,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <random>
+#include <string>
 #include <set>
 #include <type_traits>
 #include <vector>
@@ -16,6 +17,8 @@
 
 void Rgetrf_reference_cpu(INTEGER, INTEGER, REAL *, INTEGER, INTEGER *, INTEGER &);
 void Cgetrf_reference_cpu(INTEGER, INTEGER, COMPLEX *, INTEGER, INTEGER *, INTEGER &);
+void Rgetrf2_reference_cpu(INTEGER, INTEGER, REAL *, INTEGER, INTEGER *, INTEGER &);
+void Cgetrf2_reference_cpu(INTEGER, INTEGER, COMPLEX *, INTEGER, INTEGER *, INTEGER &);
 void Rpotrf_reference_cpu(const char *, INTEGER, REAL *, INTEGER, INTEGER &);
 void Cpotrf_reference_cpu(const char *, INTEGER, COMPLEX *, INTEGER, INTEGER &);
 
@@ -72,6 +75,12 @@ void lu(INTEGER m, INTEGER n, REAL *a, INTEGER ld, INTEGER *p, INTEGER &i, bool 
 void lu(INTEGER m, INTEGER n, COMPLEX *a, INTEGER ld, INTEGER *p, INTEGER &i, bool ref) {
     if (ref) Cgetrf_reference_cpu(m,n,a,ld,p,i); else Cgetrf(m,n,a,ld,p,i);
 }
+void panel(INTEGER m, INTEGER n, REAL *a, INTEGER ld, INTEGER *p, INTEGER &i, bool ref) {
+    if (ref) Rgetrf2_reference_cpu(m,n,a,ld,p,i); else Rgetrf2(m,n,a,ld,p,i);
+}
+void panel(INTEGER m, INTEGER n, COMPLEX *a, INTEGER ld, INTEGER *p, INTEGER &i, bool ref) {
+    if (ref) Cgetrf2_reference_cpu(m,n,a,ld,p,i); else Cgetrf2(m,n,a,ld,p,i);
+}
 void chol(const char *u, INTEGER n, REAL *a, INTEGER ld, INTEGER &i, bool ref) {
     if (ref) Rpotrf_reference_cpu(u,n,a,ld,i); else Rpotrf(u,n,a,ld,i);
 }
@@ -101,7 +110,7 @@ template<class T> void residual(const std::vector<T> &a, const std::vector<T> &p
     if (ratio>worst) worst=ratio;
     check(ratio<=REAL(30),"backward error",m,n,kind);
 }
-template<class T> void test_lu(INTEGER m, INTEGER n, int kind) {
+template<class T> void test_lu(INTEGER m, INTEGER n, int kind, bool direct_panel = false) {
     routine = std::is_same<T, REAL>::value ? "Rgetrf" : "Cgetrf";
     triangle = '-';
     INTEGER ld=m+3, k=std::min(m,n), ir=-99, ig=-98;
@@ -119,8 +128,13 @@ template<class T> void test_lu(INTEGER m, INTEGER n, int kind) {
     auto r=a, g=a;
     std::vector<INTEGER> pr(k,-1), pg(k,-2);
     // The oracle must always use the blocked reference path.
-    lu(m,n,r.data(),ld,pr.data(),ir,true);
-    lu(m,n,g.data(),ld,pg.data(),ig,false);
+    if (direct_panel) {
+        panel(m,n,r.data(),ld,pr.data(),ir,true);
+        panel(m,n,g.data(),ld,pg.data(),ig,false);
+    } else {
+        lu(m,n,r.data(),ld,pr.data(),ir,true);
+        lu(m,n,g.data(),ld,pg.data(),ig,false);
+    }
     check(ir==ig,"LU info",m,n,kind);
     if (!fast || kind!=4) check(std::memcmp(pr.data(),pg.data(),k*sizeof(INTEGER))==0,"pivots",m,n,kind);
     if (!fast) identical(r,g,m,n,kind);
@@ -133,6 +147,54 @@ template<class T> void test_lu(INTEGER m, INTEGER n, int kind) {
     }
     product(m,n,k,l.data(),u.data(),p.data());
     residual(a,p,m,n,ld,kind);
+}
+// Complex -one has a negative-zero imaginary component, unlike COMPLEX(-1).
+// Exercise both the new recursive panel and the serial blocked dispatcher.
+void test_signed_zeros() {
+    const char *old = std::getenv("MPLAPACK_LAPACK_LOOKAHEAD");
+    const bool had_old = old != nullptr;
+    const std::string saved = old ? old : "";
+    setenv("MPLAPACK_LAPACK_LOOKAHEAD", "0", 1);
+    for (bool direct : {true, false}) {
+        if (!direct && fast) continue; // FAST getrf may round differently.
+        const INTEGER m = direct ? 2 : 65, n = 65, ld = m + 3;
+        routine = direct ? "Cgetrf2" : "Cgetrf";
+        triangle = '-';
+        for (int pa=0; pa<4; ++pa) for (int la=0; la<4; ++la)
+        for (int ba=0; ba<4; ++ba) for (int ca=0; ca<4; ++ca) {
+            auto zero = [](int flags) {
+                return COMPLEX(REAL(flags&1 ? -0.0 : 0.0), REAL(flags&2 ? -0.0 : 0.0));
+            };
+            const COMPLEX pivot(REAL(pa&1 ? -1.0 : 1.0), REAL(pa&2 ? -0.0 : 0.0));
+            const COMPLEX upper(REAL(ba&1 ? -1.0 : 1.0), REAL(ba&2 ? -0.0 : 0.0));
+            std::vector<COMPLEX> a(ld*n, COMPLEX(19));
+            for (INTEGER j=0; j<n; ++j) for (INTEGER i=0; i<m; ++i) a[i+j*ld]=COMPLEX(0);
+            if (direct) {
+                a[0]=pivot; a[1]=zero(la);
+                for (INTEGER j=1; j<n; ++j) { a[j*ld]=upper; a[1+j*ld]=zero(ca); }
+            } else {
+                for (INTEGER j=0; j<m-1; ++j) a[j+j*ld]=COMPLEX(1);
+                a[m-2+(m-2)*ld]=pivot; a[m-1+(m-2)*ld]=zero(la);
+                a[m-2+(n-1)*ld]=upper; a[m-1+(n-1)*ld]=zero(ca);
+            }
+            auto r=a, g=a;
+            std::vector<INTEGER> pr(m), pg(m);
+            INTEGER ir=0, ig=0;
+            if (direct) {
+                panel(m,n,r.data(),ld,pr.data(),ir,true);
+                panel(m,n,g.data(),ld,pg.data(),ig,false);
+            } else {
+                lu(m,n,r.data(),ld,pr.data(),ir,true);
+                lu(m,n,g.data(),ld,pg.data(),ig,false);
+            }
+            const int kind=pa+4*la+16*ba+64*ca;
+            check(ir==ig,"signed-zero info",m,n,kind);
+            check(std::memcmp(pr.data(),pg.data(),m*sizeof(INTEGER))==0,"signed-zero pivots",m,n,kind);
+            identical(r,g,m,n,kind);
+        }
+    }
+    if (had_old) setenv("MPLAPACK_LAPACK_LOOKAHEAD", saved.c_str(), 1);
+    else unsetenv("MPLAPACK_LAPACK_LOOKAHEAD");
 }
 template<class T> void test_chol(INTEGER n, const char *up, int bad) {
     routine = std::is_same<T, REAL>::value ? "Rpotrf" : "Cpotrf";
@@ -165,8 +227,7 @@ template<class T> void test_chol(INTEGER n, const char *up, int bad) {
 int main() {
 #ifndef MPLAPACK_FACTOR_CUDA
     // CPU: exercise tasks at block boundaries too. CUDA uses production
-    // defaults: forced Cholesky look-ahead currently corrupts its results.
-    // Set MPLAPACK_LAPACK_LOOKAHEAD=2 explicitly to reproduce that failure.
+    // defaults; also run with LOOKAHEAD=2 to exercise concurrent GPU BLAS.
     if (!std::getenv("MPLAPACK_LAPACK_LOOKAHEAD"))
         setenv("MPLAPACK_LAPACK_LOOKAHEAD", "2", 1);
 #endif
@@ -191,6 +252,20 @@ int main() {
             test_chol<REAL>(n,up,bad); test_chol<COMPLEX>(n,up,bad);
         }
     }
+    // Tall, skinny panels reach the parallel row-block pivot reduction and
+    // scaling, including ties spanning several blocks and a short tail.
+    for (int kind=0; kind<=4; ++kind) {
+        test_lu<REAL>(4103,3,kind);
+        test_lu<COMPLEX>(4103,3,kind);
+    }
+    const bool saved_fast = fast;
+    fast = false; // Public GETRF2 always retains the reference recursion.
+    for (int kind=0; kind<=4; ++kind) {
+        test_lu<REAL>(137,129,kind,true);
+        test_lu<COMPLEX>(137,129,kind,true);
+    }
+    fast = saved_fast;
+    test_signed_zeros();
 #ifdef MPLAPACK_FACTOR_CUDA
     ++checks;
     cudaError_t status = cudaDeviceSynchronize();

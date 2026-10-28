@@ -39,11 +39,9 @@
  *
  *   MPLAPACK_LAPACK_LOOKAHEAD=0   the reference blocked loop
  *   MPLAPACK_LAPACK_LOOKAHEAD=2   tasks also for small LU and for Cholesky
- *   MPLAPACK_LAPACK_FAST=1        the recursive algorithm of the reference
- *                                 (Rgetrf2, Rpotrf2, ...) on the whole matrix:
- *                                 the rounding differs from the blocked
- *                                 routine; measured 0.85-1.2x of it on 4
- *                                 cores, so not faster in general
+ *   MPLAPACK_LAPACK_FAST=1        dedicated LU panel width / Cholesky
+ *                                 recursion (see README.md); rounding
+ *                                 differs from the reference blocked loop
  */
 
 #ifndef _MPLAPACK_LOOKAHEAD_COMMON_H_
@@ -52,6 +50,15 @@
 #include "../../../mpblas/optimized/common/Rblas_cpu_common.h"
 
 namespace mplapack_lapack {
+
+// Recursive panels may share a team only when every worker has installed
+// the caller's arithmetic context (not an arbitrary external OpenMP team).
+inline thread_local bool lu_team_active = false;
+struct lu_team_scope {
+    bool previous = lu_team_active;
+    lu_team_scope() { lu_team_active = true; }
+    ~lu_team_scope() { lu_team_active = previous; }
+};
 
 inline long la_env(const char *name, long dflt) { return mplapack_blas::blas_env_long(name, dflt); }
 
@@ -80,7 +87,11 @@ inline bool la_lookahead(bool lu, long mn, long nb)
 #endif
     if (mode == 0 || omp_get_max_threads() < 2 || omp_get_level() != 0)
         return false;
+#ifdef MPLAPACK_ACCELERATOR_LIBRARY
+    return mode >= 2;
+#else
     return mode >= 2 || (lu && mn >= 12 * nb);
+#endif
 #else
     (void)lu, (void)mn, (void)nb;
     return false;
@@ -107,6 +118,7 @@ template <class FP, class FL, class FS> void la_getrf(long m, long n, long nb, I
 #pragma omp parallel
     {
         const mplapack_blas::blas_thread_context::scope sc(ctx);
+        const lu_team_scope team;
 #pragma omp single
         for (long s = 0; s < steps; s++) {
             const long j = s * nb, jb = std::min(nb, mn - j);

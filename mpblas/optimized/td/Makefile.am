@@ -14,8 +14,7 @@ MPLAPACK_TD_OPTIMIZED_SOURCES =
 
 lib_LTLIBRARIES = libmplapack_td_opt.la
 
-# CPU-only permission: deliberately absent from every accelerator library.
-libmplapack_td_opt_la_CPPFLAGS = -I. -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) $(OPENMP_CXXFLAGS) -DMPLAPACK_BUILD_WITH_TD -DMPLAPACK_CHOLESKY_CPU_TASKS=1
+libmplapack_td_opt_la_CPPFLAGS = -I. -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) $(OPENMP_CXXFLAGS) -DMPLAPACK_BUILD_WITH_TD
 libmplapack_td_opt_la_CXXFLAGS = $(DD_CXXFLAGS)
 libmplapack_td_opt_la_SOURCES = \
 Rcopy.cpp Rcopy_ref.cpp openmp/Rcopy_omp.cpp \
@@ -103,6 +102,8 @@ $(MPLAPACK_OPT_REFERENCE_SOURCES) \
 ../../../mplapack/optimized/common/Claswp.cpp \
 ../../../mplapack/optimized/common/Rgetrf.cpp \
 ../../../mplapack/optimized/common/Cgetrf.cpp \
+../../../mplapack/optimized/common/Rgetrf2.cpp \
+../../../mplapack/optimized/common/Cgetrf2.cpp \
 ../../../mplapack/optimized/common/Rpotrf.cpp \
 ../../../mplapack/optimized/common/Cpotrf.cpp \
 $(MPLAPACK_TD_OPTIMIZED_SOURCES)

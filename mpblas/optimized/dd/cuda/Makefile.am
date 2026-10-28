@@ -116,6 +116,8 @@ $(MPLAPACK_ACCEL_REFERENCE_SOURCES) \
 ../../../../mplapack/optimized/common/Claswp.cpp \
 ../../../../mplapack/optimized/common/Rgetrf.cpp \
 ../../../../mplapack/optimized/common/Cgetrf.cpp \
+../../../../mplapack/optimized/common/Rgetrf2.cpp \
+../../../../mplapack/optimized/common/Cgetrf2.cpp \
 ../../../../mplapack/optimized/common/Rpotrf.cpp \
 ../../../../mplapack/optimized/common/Cpotrf.cpp \
 $(MPLAPACK_DD_CUDA_LAPACK_OPTIMIZED_SOURCES) \

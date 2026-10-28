@@ -9,8 +9,7 @@ MPLAPACK_BINARY80_OPTIMIZED_SOURCES =
 
 lib_LTLIBRARIES = libmplapack_binary80_opt.la
 
-# CPU-only permission: deliberately absent from every accelerator library.
-libmplapack_binary80_opt_la_CPPFLAGS = -I. -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) $(OPENMP_CXXFLAGS) -DMPLAPACK_BUILD_WITH_BINARY80 -DMPLAPACK_CHOLESKY_CPU_TASKS=1
+libmplapack_binary80_opt_la_CPPFLAGS = -I. -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) $(OPENMP_CXXFLAGS) -DMPLAPACK_BUILD_WITH_BINARY80
 libmplapack_binary80_opt_la_SOURCES = \
 Rcopy.cpp Rcopy_ref.cpp openmp/Rcopy_omp.cpp \
 Rdot.cpp  Rdot_ref.cpp  openmp/Rdot_omp.cpp \
@@ -97,6 +96,8 @@ $(MPLAPACK_OPT_REFERENCE_SOURCES) \
 ../../../mplapack/optimized/common/Claswp.cpp \
 ../../../mplapack/optimized/common/Rgetrf.cpp \
 ../../../mplapack/optimized/common/Cgetrf.cpp \
+../../../mplapack/optimized/common/Rgetrf2.cpp \
+../../../mplapack/optimized/common/Cgetrf2.cpp \
 ../../../mplapack/optimized/common/Rpotrf.cpp \
 ../../../mplapack/optimized/common/Cpotrf.cpp \
 $(MPLAPACK_BINARY80_OPTIMIZED_SOURCES)

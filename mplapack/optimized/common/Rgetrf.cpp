@@ -29,14 +29,20 @@
 // Rgetrf of the optimized libraries: the reference blocked algorithm (same
 // block size, Rgetrf2 panels, Rlaswp, Rtrsm, Rgemm) with look-ahead
 // (Rlookahead_common.h), with the reference result bit for bit; with
-// MPLAPACK_LAPACK_FAST=1 the recursive Rgetrf2 on the whole matrix (another
-// reference algorithm: faster, different rounding).
+// MPLAPACK_LAPACK_FAST=1 selects our own panel width and the same fused
+// dependency schedule, with different rounding.
 
+#include <mpblas.h>
+#include <mplapack.h>
+
+void Rgetrf2_reference_cpu(INTEGER, INTEGER, REAL *, INTEGER, INTEGER *, INTEGER &);
 #define Rgetrf Rgetrf_reference_cpu
+#define Rgetrf2 Rgetrf2_reference_cpu
 #include "../../reference/Rgetrf.cpp"
+#undef Rgetrf2
 #undef Rgetrf
 
-#include "Rlookahead_common.h"
+#include "Rgetrf_common.h"
 
 void Rgetrf(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, INTEGER *ipiv, INTEGER &info)
 {
@@ -44,14 +50,30 @@ void Rgetrf(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, INTEGE
         Rgetrf_reference_cpu(m, n, a, lda, ipiv, info);
         return;
     }
-    if (mplapack_lapack::la_fast()) {
-        info = 0;
+    const bool fast = mplapack_lapack::la_fast();
+    const INTEGER nb = fast ? mplapack_getrf::width() : iMlaenv(1, "Rgetrf", " ", m, n, -1, -1);
+    const bool tasks = mplapack_lapack::la_lookahead(true, std::min(m, n), nb);
+    if (nb <= 1 || nb >= std::min(m, n)) {
         Rgetrf2(m, n, a, lda, ipiv, info);
         return;
     }
-    const INTEGER nb = iMlaenv(1, "Rgetrf", " ", m, n, -1, -1);
-    if (nb <= 1 || nb >= std::min(m, n) || !mplapack_lapack::la_lookahead(true, std::min(m, n), nb)) {
-        Rgetrf_reference_cpu(m, n, a, lda, ipiv, info);
+    if (!tasks) {
+        // Same blocked order, but use the dedicated recursive panel.
+        info = 0;
+        for (INTEGER j = 0; j < std::min(m, n); j += nb) {
+            const INTEGER jb = std::min(nb, std::min(m, n) - j);
+            INTEGER iinfo = 0;
+            Rgetrf2(m - j, jb, a + j + j * lda, lda, ipiv + j, iinfo);
+            if (info == 0 && iinfo > 0) info = j + iinfo;
+            for (INTEGER i = j; i < j + jb; ++i) ipiv[i] += j;
+            Rlaswp(j, a, lda, j + 1, j + jb, ipiv, 1);
+            if (j + jb < n) {
+                Rlaswp(n - j - jb, a + (j + jb) * lda, lda, j + 1, j + jb, ipiv, 1);
+                Rtrsm("L", "L", "N", "U", jb, n - j - jb, REAL(1.0), a + j + j * lda, lda, a + j + (j + jb) * lda, lda);
+                if (j + jb < m)
+                    Rgemm("N", "N", m - j - jb, n - j - jb, jb, -REAL(1.0), a + j + jb + j * lda, lda, a + j + (j + jb) * lda, lda, REAL(1.0), a + j + jb + (j + jb) * lda, lda);
+            }
+        }
         return;
     }
     const REAL one = 1.0;
