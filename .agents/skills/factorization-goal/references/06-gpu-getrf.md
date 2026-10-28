@@ -23,6 +23,14 @@ both build systems.
   matrix set (rectangular, singular, ties, lda > m); false for invalid
   arguments and quick returns.
 - Host emulation variant passes.
-- Timings as in goal 05 for getrf.
+- Timings as in goal 05 for getrf, for dd, td and qd, real and complex
+  (Rgetrf and Cgetrf).
+- Performance items goal 05 left UNVERIFIED, measured here with the same
+  method (interleaved runs, medians): Rpotrf/Cpotrf for td, the complex
+  Cpotrf for dd/td/qd, and the upper triangle (UPLO = "U") for all of them.
+  Add `--upper` to benchmark/Rfactor.cpp (keep its existing outputs and
+  defaults unchanged) for this. If a measured crossover contradicts goal 05's
+  `<P>_LAPACK_CUDA_MIN` defaults, adjust them per type (and per routine if
+  needed) and state the evidence.
 - nm -D, check_unique_symbols.sh.
 - One commit: "Rgetrf/Cgetrf_<b>_cuda: device-resident LU (factorization goal 06)".
