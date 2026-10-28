@@ -21,6 +21,10 @@ NVCC_DD_CUDA_FLAGS = -std=c++17 -fmad=false -I$(srcdir) -I$(top_builddir)/includ
 .cu.lo:
 	$(top_srcdir)/misc/cudalt.py $@ $(NVCC) $(NVCC_GLIBC_FEATURE_FLAGS) $(NVCC_DD_CUDA_FLAGS) --compiler-options=\"$(CFLAGS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) \" $(AMPERE_FLAGS) $(HOPPER_FLAGS) -c $<
 
+# Header dependencies of the .cu objects, written by nvcc through
+# misc/cudalt.py (automake does not track the .cu.lo suffix rule).
+-include $(wildcard *.lo.d)
+
 AMPERE_FLAGS = -gencode arch=compute_80,code=sm_80 -m64 -O3 --ptxas-options=-v
 HOPPER_FLAGS = -gencode arch=compute_90,code=sm_90 -m64 -O3 --ptxas-options=-v
 NVCC_GLIBC_FEATURE_FLAGS = -U_GNU_SOURCE -D_XOPEN_SOURCE=700
@@ -159,3 +163,6 @@ Rsyrk_TL_0.cu \
 Rsyrk_TL_p.cu \
 Rsyrk_TU_0.cu \
 Rsyrk_TU_p.cu
+
+clean-local:
+	rm -f *.lo.d
