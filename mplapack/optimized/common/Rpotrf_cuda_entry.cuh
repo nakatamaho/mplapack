@@ -28,16 +28,19 @@ using PotrfOps=mplapack_gemm::dd_ops;
 #define POTRF_ENTRY(R) R##_dd_cuda
 static constexpr const char *potrf_prefix="MPLAPACK_DD";
 static constexpr long potrf_min=4096;
+static constexpr long potrf_complex_min=potrf_min;
 #elif defined(MPLAPACK_BUILD_WITH_TD)
 using PotrfOps=mplapack_gemm::td_ops;
 #define POTRF_ENTRY(R) R##_td_cuda
 static constexpr const char *potrf_prefix="MPLAPACK_TD";
-static constexpr long potrf_min=2048; // QD proxy; TD performance not measured.
+static constexpr long potrf_min=2048; // Measured real/complex, both UPLOs.
+static constexpr long potrf_complex_min=potrf_min;
 #elif defined(MPLAPACK_BUILD_WITH_QD)
 using PotrfOps=mplapack_gemm::qd_ops;
 #define POTRF_ENTRY(R) R##_qd_cuda
 static constexpr const char *potrf_prefix="MPLAPACK_QD";
 static constexpr long potrf_min=2048; // Measured crossover after device residency.
+static constexpr long potrf_complex_min=4096; // Upper loses at 2048; both UPLOs win at 4096.
 #else
 #error dd/td/qd only
 #endif
@@ -70,7 +73,7 @@ template<class Context,class Host> static bool potrf_call(const char *name,const
     const char *enable=potrf_env("_LAPACK_CUDA");
     if(enable && std::strcmp(enable,"0")==0) return false;
     const char *threshold=potrf_env("_LAPACK_CUDA_MIN");
-    long minimum=potrf_min;
+    long minimum=name[0]=='C'?potrf_complex_min:potrf_min;
     if(threshold) {
         char *end=nullptr;
         long v=std::strtol(threshold,&end,10);
@@ -90,6 +93,10 @@ template<class Context,class Host> static bool potrf_call(const char *name,const
         for(long j=0;j<n;++j) for(long i=0;i<n;++i)
             if(upper?i<=j:i>=j) staging[i+j*n]=potrf_pack(a[i+j*lda]);
         if(device.copy(staging.data(),n,false)) return false;
+#if defined(__CUDACC__)
+        // Nonblocking panel/update streams must wait for pageable H2D DMA.
+        if(cudaStreamSynchronize(nullptr)!=cudaSuccess) return false;
+#endif
         auto uploaded=Clock::now();
         long result=cholesky(ctx,upper,n,nb,device.data(),device.ld);
         if(ctx.error) return false;

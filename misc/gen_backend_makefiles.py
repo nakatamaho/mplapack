@@ -162,6 +162,13 @@ def values(name, traits, conf):
             programs.append("Cblas_gpu_host_test_%%b%%")
             programs.append("Rlapack_gpu_host_test_%%b%%")
             programs.append("Rpotrf_gpu_host_test_%%b%%")
+            programs.append("Rgetrf_gpu_host_test_%%b%%")
+            tests += ["",
+                      "Rgetrf_gpu_host_test_%%b%%_SOURCES = ../../../mplapack/optimized/common/test/Rgetrf_gpu_test.cpp",
+                      "Rgetrf_gpu_host_test_%%b%%_CPPFLAGS = $(libmplapack_%%b%%_opt_la_CPPFLAGS) -DMPLAPACK_GEMM_CUDA_HOST_EMULATION",
+                      "Rgetrf_gpu_host_test_%%b%%_CXXFLAGS = $(DD_CXXFLAGS)",
+                      "Rgetrf_gpu_host_test_%%b%%_LDFLAGS = -static $(QD_RPATH_LDFLAGS)",
+                      "Rgetrf_gpu_host_test_%%b%%_LDADD = libmplapack_%%b%%_opt.la $(libmplapack_%%b%%_opt_la_LIBADD)"]
             tests += ["",
                       "Rpotrf_gpu_host_test_%%b%%_SOURCES = ../../../mplapack/optimized/common/test/Rpotrf_gpu_test.cpp",
                       "Rpotrf_gpu_host_test_%%b%%_CPPFLAGS = $(libmplapack_%%b%%_opt_la_CPPFLAGS) -DMPLAPACK_GEMM_CUDA_HOST_EMULATION",

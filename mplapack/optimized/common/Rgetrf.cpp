@@ -44,7 +44,11 @@ void Rgetrf2_reference_cpu(INTEGER, INTEGER, REAL *, INTEGER, INTEGER *, INTEGER
 
 #include "Rgetrf_common.h"
 
+#ifdef MPLAPACK_GETRF_CPU_DISPATCH
+static void getrf_cpu(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, INTEGER *ipiv, INTEGER &info)
+#else
 void Rgetrf(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, INTEGER *ipiv, INTEGER &info)
+#endif
 {
     if (m <= 0 || n <= 0 || lda < std::max((INTEGER)1, m)) {
         Rgetrf_reference_cpu(m, n, a, lda, ipiv, info);

@@ -51,6 +51,22 @@ backward error <=30. Backend LAPACK_FAST=1 currently uses the same arithmetic
 and is tested too. Device oracles disable GPU BLAS, not LAPACK entry points.
 The test fixes OpenMP threads to one to avoid tiny-oracle parallel overhead.
 
+## Device-resident LU (goal 06)
+
+`Rgetrf_gpu_test.cpp` and its nvcc wrapper exercise all six LU entries
+without a CPU fallback. CMake registers `{dd,td,qd}_cuda_Rgetrf_{host,device}`;
+autotools `make check` runs `Rgetrf_gpu_host_test_<b>`. Each variant performs
+890 host / 892 device checks: whole padded A, ipiv (including sentinels) and
+info memcmp against
+the CPU-only reference oracle, square/tall/wide matrices, block boundaries,
+odd sizes through 599, zero/duplicate columns, forced swaps and tied maxima.
+Tiny/subnormal pivots cover reciprocal scaling and direct division; singular
+factorizations complete. A forced nb=1 recursive real/complex check also
+verifies bounded scratch for wide matrices. Invalid/quick/disabled/threshold/overflow calls
+preserve all outputs. Both modes check normalized backward error <=30 on
+small matrices. Device tests exit 77 without a device. Set OMP_NUM_THREADS=1
+for the host tests (as CMake does) to avoid tiny-oracle thread overhead.
+
 For fault injection, copy the source outside the tree, add `g[0] += T(1);`
 after the tested factorization, build the copy with the same flags/library,
 and verify exit 1 in both modes. Do not modify the library or commit the fault.

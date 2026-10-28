@@ -19,7 +19,7 @@ NVCC_TD_CUDA_FLAGS = -std=c++17 -fmad=false -I$(srcdir) -I$(top_builddir)/includ
 .cu.lo:
 	$(top_srcdir)/misc/cudalt.py $@ $(NVCC) $(NVCC_GLIBC_FEATURE_FLAGS) $(NVCC_TD_CUDA_FLAGS) --compiler-options=\"$(CFLAGS) $(DEFAULT_INCLUDES) $(INCLUDES) $(CPPFLAGS) \" $(AMPERE_FLAGS) $(HOPPER_FLAGS) -c $<
 
-Rpotrf_gpu_cuda.lo Rpotrf_gpu_cuda.o: NVCC_TD_CUDA_FLAGS += -Xcompiler=-ffp-contract=off
+Rpotrf_gpu_cuda.lo Rpotrf_gpu_cuda.o Rgetrf_gpu_cuda.lo Rgetrf_gpu_cuda.o: NVCC_TD_CUDA_FLAGS += -Xcompiler=-ffp-contract=off
 
 # Header dependencies of the .cu objects, written by nvcc through
 # misc/cudalt.py (automake does not track the .cu.lo suffix rule).
@@ -118,8 +118,7 @@ libmplapack_td_opt_cuda_la_SOURCES = \
 $(MPLAPACK_ACCEL_REFERENCE_SOURCES) \
 ../../../../mplapack/optimized/common/Rlaswp.cpp \
 ../../../../mplapack/optimized/common/Claswp.cpp \
-../../../../mplapack/optimized/common/Rgetrf.cpp \
-../../../../mplapack/optimized/common/Cgetrf.cpp \
+Rgetrf.cpp Cgetrf.cpp Rgetrf_gpu_cuda.cu \
 ../../../../mplapack/optimized/common/Rgetrf2.cpp \
 ../../../../mplapack/optimized/common/Cgetrf2.cpp \
 Rpotrf.cpp Cpotrf.cpp Rpotrf_gpu_cuda.cu \
