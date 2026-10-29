@@ -54,6 +54,7 @@
  */
 
 #include <mpblas_mpfr_cuda.h>
+#include "mpfr_cuda_stack.h"
 #include "mpfr_pack_cuda.h"
 #include "blas3_kernel_cuda.h"
 #include "../../common/Rblas_calls_common.h"
@@ -218,6 +219,17 @@ template <int PB> bool run_fixed(const gpu_call &g, mpfr_prec_t prec)
     std::vector<F> pA(1), pB(1), pO;
     if ((present(g.A) && !fixed_pack<PB>(g.A, true, prec, pA, bound, trsm)) || (present(g.B) && !fixed_pack<PB>(g.B, true, prec, pB, bound, trsm)) || !fixed_pack<PB>(g.O, g.read_o, prec, pO, bound, trsm))
         return false;
+#ifndef MPLAPACK_MPFR_CUDA_HOST_EMULATION
+    if (trsm) {
+        // Keep the small, precision-dependent BLAS limit. Resizing the CUDA
+        // stack on every tiny TRSM is very expensive. The factorization entry
+        // uses its own call-scoped guard; it never calls this BLAS bridge.
+        size_t current = 0, want = mplapack_mpfr_cuda::fixed_stack_bytes(PB);
+        if (cudaDeviceGetLimit(&current, cudaLimitStackSize) != cudaSuccess ||
+            (current < want && cudaDeviceSetLimit(cudaLimitStackSize, want) != cudaSuccess))
+            return false;
+    }
+#endif
     if (mplapack_mpfr_cuda::blas3_fixed<PB>(packed_shape(g), a, b, pA.data(), count(g.A), pB.data(), count(g.B), pO.data(), count(g.O)) != 0)
         return false;
     if (!fixed_fits<PB>(g.O, pO) || (g.write_a && !fixed_fits<PB>(g.A, pA)))

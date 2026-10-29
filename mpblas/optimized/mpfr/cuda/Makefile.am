@@ -27,15 +27,15 @@ NVCC_MPFR_CUDA_FLAGS = $(NVCC_GLIBC_FEATURE_FLAGS) -std=c++17 -rdc=true -fmad=fa
 -include $(wildcard *.lo.d)
 
 MPFR_CBLAS_DEVICE_LO = Cblas_mpfr_device_cuda.lo Cblas_mpfr_device_rt_cuda.lo Cblas_mpfr_device_rt64_cuda.lo Cblas_mpfr_device_rt128_cuda.lo Cblas_mpfr_device_rt256_cuda.lo
-Rgemm_dlink_cuda.lo: Rgemm_device_cuda.lo Rgemm_rt_cuda.lo blas3_device_cuda.lo $(MPFR_CBLAS_DEVICE_LO)
-	$(top_srcdir)/misc/cudalt.py $@ $(NVCC) $(MPFR_CUDA_GENCODE) -dlink .libs/Rgemm_device_cuda.o .libs/Rgemm_rt_cuda.o .libs/blas3_device_cuda.o $(MPFR_CBLAS_DEVICE_LO:%.lo=.libs/%.o) $(MPC_CUDA_LIBRARY)
+Rgemm_dlink_cuda.lo: Rgemm_device_cuda.lo Rgemm_rt_cuda.lo blas3_device_cuda.lo Rfactor_device_cuda.lo Rfactor_rt_cuda.lo $(MPFR_CBLAS_DEVICE_LO)
+	$(top_srcdir)/misc/cudalt.py $@ $(NVCC) $(MPFR_CUDA_GENCODE) -dlink .libs/Rgemm_device_cuda.o .libs/Rgemm_rt_cuda.o .libs/blas3_device_cuda.o .libs/Rfactor_device_cuda.o .libs/Rfactor_rt_cuda.o $(MPFR_CBLAS_DEVICE_LO:%.lo=.libs/%.o) $(MPC_CUDA_LIBRARY)
 
 # Must match the architectures libmpc_cuda.a was built for (--with-mpfr-cuda-arch,
 # e.g. 80,90 for A100 and H100).
 MPFR_CUDA_GENCODE = $(MPFR_CUDA_GENCODES) -m64 -O3
 NVCC_GLIBC_FEATURE_FLAGS = -U_GNU_SOURCE -D_XOPEN_SOURCE=700
 
-MPLAPACK_MPFR_CUDA_CPPFLAGS = $(GMPFRXX_MKII_CPPFLAGS) -I. -I$(srcdir) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR) -I$(MPC_CUDA_INCLUDEDIR) $(OPENMP_CXXFLAGS) -DMPLAPACK_BUILD_WITH_MPFR -DMPLAPACK_ACCELERATOR_LIBRARY=1
+MPLAPACK_MPFR_CUDA_CPPFLAGS = $(GMPFRXX_MKII_CPPFLAGS) -I. -I$(srcdir) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR) -I$(MPC_CUDA_INCLUDEDIR) $(CUDA_CFLAGS) $(OPENMP_CXXFLAGS) -DMPLAPACK_BUILD_WITH_MPFR -DMPLAPACK_ACCELERATOR_LIBRARY=1
 AM_CPPFLAGS = $(MPLAPACK_MPFR_CUDA_CPPFLAGS)
 
 lib_LTLIBRARIES = libmplapack_mpfr_opt_cuda.la
@@ -123,13 +123,15 @@ libmplapack_mpfr_opt_cuda_la_SOURCES = \
 $(MPLAPACK_ACCEL_REFERENCE_SOURCES) \
 ../../../../mplapack/optimized/common/Rlaswp.cpp \
 ../../../../mplapack/optimized/common/Claswp.cpp \
-../../../../mplapack/optimized/common/Rgetrf.cpp \
+Rgetrf.cpp \
 ../../../../mplapack/optimized/common/Cgetrf.cpp \
 ../../../../mplapack/optimized/common/Rgetrf2.cpp \
 ../../../../mplapack/optimized/common/Cgetrf2.cpp \
-../../../../mplapack/optimized/common/Rpotrf.cpp \
+Rpotrf.cpp \
 ../../../../mplapack/optimized/common/Cpotrf.cpp \
 $(MPLAPACK_MPFR_CUDA_LAPACK_OPTIMIZED_SOURCES) \
+Rfactor_bridge_cuda.cpp Rfactor_device_cuda.cu Rfactor_rt_cuda.cu \
+Rfactor_kernel_cuda.h Rfactor_device_body.cuh Rfactor_rt_body.cuh mpfr_cuda_stack.h \
 Rgemm.cpp Rgemm_bridge_cuda.cpp Rgemm_device_cuda.cu Rgemm_kernel_cuda.h \
 Rgemm_rt_cuda.cu Rgemm_rt_cuda.h Rgemm_winograd_cuda.h mpfr_pack_cuda.h \
 Rsyrk.cpp Rsyr2k.cpp Rsymm.cpp Rtrmm.cpp Rtrsm.cpp \
@@ -142,6 +144,14 @@ libmplapack_mpfr_opt_cuda_la_LIBADD = Rgemm_dlink_cuda.lo $(MPC_CUDA_LIBRARY) $(
 EXTRA_libmplapack_mpfr_opt_cuda_la_DEPENDENCIES = Rgemm_dlink_cuda.lo
 CLEANFILES = Rgemm_dlink_cuda.lo .libs/Rgemm_dlink_cuda.o Rgemm_dlink_cuda.o
 
+check_PROGRAMS = Rfactor_gpu_host_test_mpfr
+TESTS = $(check_PROGRAMS)
+Rfactor_gpu_host_test_mpfr_SOURCES = test/Rfactor_cuda_test.cpp Rfactor_bridge_cuda.cpp test/Rfactor_fixed_host.cpp test/Rfactor_runtime_host.cpp
+Rfactor_gpu_host_test_mpfr_CPPFLAGS = $(MPLAPACK_MPFR_CUDA_CPPFLAGS) -DMPLAPACK_MPFR_CUDA_HOST_EMULATION
+Rfactor_gpu_host_test_mpfr_LDADD = ../libmplapack_mpfr_opt.la $(MPLAPACK_MPFR_LIBS) $(OPENMP_LIBS)
+Rfactor_gpu_host_test_mpfr_LDFLAGS = -static -Wl,--disable-new-dtags -Wl,-rpath,$(MPC_LIBDIR):$(MPFR_LIBDIR):$(GMP_LIBDIR)
+TESTS_ENVIRONMENT = OMP_NUM_THREADS=1
+
 clean-local:
 	rm -f *.lo.d
 if IS_MACOS
@@ -152,4 +162,4 @@ libmplapack_mpfr_opt_cuda_la_LDFLAGS += -fopenmp -no-undefined
 endif
 
 EXTRA_DIST = README.md Rgemm_host_cuda.cpp test/Rgemm_cuda_test.cpp test/Rgemm_winograd_cuda_test.cpp test/blas3_cuda_test.cpp \
-    test/cu_fround_test.cpp test/cu_fround_device_test.cu test/cu_fround_bench.cu test/Rtrsm_round_bench.cpp test/run_round_bench.py
+    test/Rfactor_cuda_test.cpp test/Rfactor_bench.cpp test/Rfactor_panel_bench.cpp test/run_factor_bench.py test/cu_fround_test.cpp test/cu_fround_device_test.cu test/cu_fround_bench.cu test/Rtrsm_round_bench.cpp test/run_round_bench.py

@@ -51,7 +51,7 @@ namespace mplapack_mpfr_cuda_host {
 using mplapack_mpfr_cuda::gemm_shape;
 using mplapack_mpfr_cuda::real_t;
 
-inline long env_long(const char *name, long fallback)
+__attribute__((visibility("hidden"))) inline long env_long(const char *name, long fallback)
 {
     const char *v = std::getenv(name);
     if (v == NULL || v[0] == '\0')

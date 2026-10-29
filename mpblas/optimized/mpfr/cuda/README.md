@@ -9,8 +9,9 @@ and 2 BLAS (`Rgemv`, `Rsymv`, `Rtrmv`, `Rger`, `Rsyr`, `Rsyr2`, `Rscal`,
 `Cher`, `Cher2`, `Caxpy`, `Ccopy`, `Cswap`, `Cscal`, `CRscal`, `CRrot`) and the
 band/packed/Hermitian/triangular Level 2 routines (`Chemv`, `Chbmv`, `Chpmv`,
 `Rsbmv`, `Rspmv`, `Rgbmv`, `Cgbmv`, `Ctrmv`, `Rtbmv`, `Ctbmv`, `Rtpmv`,
-`Ctpmv`, `Rspr`, `Rspr2`, `Chpr`, `Chpr2`; Level 1 and 2 on request). Every
-other routine, and every call that is not eligible, uses the same code as
+`Ctpmv`, `Rspr`, `Rspr2`, `Chpr`, `Chpr2`; Level 1 and 2 on request).
+`Rgetrf` and `Rpotrf` also have device-resident real factorization entries
+(described below). Every other routine, and every call that is not eligible, uses the same code as
 `libmplapack_mpfr_opt`.
 
 The GPU arithmetic comes from [mpc_cuda](https://github.com/tkouya/mpc_cuda)
@@ -79,8 +80,13 @@ Each routine is written once against an arithmetic engine:
   exponent outside that range, leaving the caller's outputs untouched.
   Only Rtrsm preserves signed zeros in the otherwise unused sign field of
   zero fixed values, so its results remain bit-identical including zeros.
-  Other fixed BLAS retain their documented +0 convention. Only the fixed
-  Rtrsm launch raises the stack limit to 64 KB for the Newton temporaries.
+  Other fixed BLAS retain their documented +0 convention. Fixed Rtrsm now
+  raises the stack only to a precision-dependent limit (4 KiB at 256/512 bits,
+  8 KiB at 768/1024, 16 KiB at 2048), retaining the largest limit used to avoid
+  expensive per-BLAS-call resizing. It no longer requests a 64-KiB/thread
+  reservation; a larger pre-existing caller limit is not lowered. Resident
+  factorization entries, in contrast, raise the limit
+  only for their call and restore its previous value.
   Complex divisions (`cu_mpc_div`) are unchanged.
 
 `cuda/R*.cpp` replaces the CPU dispatcher of `../../common/blas`. Calls that
@@ -259,6 +265,207 @@ See `external/mpc_cuda/patches/README.md` for the algorithm, reproducible
 benchmarks (`mpfr_cuda_cu_fround_bench`, `mpfr_cuda_Rtrsm_round_bench`) and
 verification results. These benchmarks are built with the CMake CUDA tests,
 but are not registered as correctness tests.
+
+## Device-resident real LU and Cholesky (goal 07)
+
+`Rgetrf_mpfr_cuda` and `Rpotrf_mpfr_cuda` have the LAPACK arguments and return
+`bool`; they never fall back to CPU factorization. `false` leaves A, pivots
+and info untouched. The `Rgetrf` / `Rpotrf` dispatchers alone fall back to the
+existing optimized CPU path. Complex factorization entries are **not yet
+implemented**; Cgetrf/Cpotrf retain the previous GPU-BLAS-per-call path.
+
+The real entries pack once, upload once, keep the matrix on the device for
+the whole factorization, then download/unpack once. Only numerical status
+words return to the host between panels. LU pivots are one-based, first
+index on ties; singular LU completes, and Cholesky stops at the reference
+failure index. Both retain iMlaenv block sizes, the reference recursive
+panels and BLAS arithmetic order. No Winograd/sloppy arithmetic is enabled.
+The backend `MPLAPACK_MPFR_LAPACK_FAST=1` currently retains this same algorithm.
+
+Eligibility: default precision and every matrix element's precision agree,
+MPFR_RNDN, finite inputs, and the default MPFR exponent range (the same gate
+as Rtrsm). Fixed precisions 256/512/768/1024/2048 use cu_freal and correctly
+rounded cu_fdiv_rn / cu_sqrt_rn; other precisions use cu_mpfr. Both engines
+check intermediate range/domain failures before publication. Unlike the old
+fixed GEMM convention, the factorization engine retains signed zeros in
+all arithmetic, including updates. Padding and the opposite Cholesky triangle
+are never published. Device-memory preflight includes the matrix, pivots,
+candidate reduction, runtime arena/workspace and the device stack reservation.
+Allocation/launch/transfer failure also returns false without publication.
+
+Panels and updates use two nonblocking streams with ready/done events.
+Runtime launches use disjoint physical thread-index ranges and two arena /
+register-workspace pools: overlapping kernels must not reset or allocate from
+another stream's per-thread slab. The arena globals remain constant until
+both streams finish. The existing gpu_mutex serializes the whole call against
+other MPFR BLAS.
+Stack limits are raised only during the call and restored before publication;
+fixed limits are those above, runtime 8 KiB through 1024 bits, 16 KiB through
+4096 bits, and the existing conservative 64 KiB above that.
+
+Settings are read on every factorization call:
+
+| Variable | Meaning |
+|---|---|
+| `MPLAPACK_MPFR_LAPACK_CUDA=0` | disable resident factorization |
+| `MPLAPACK_MPFR_LAPACK_CUDA_MIN=N` | minimum min(m,n); defaults Rgetrf 512, Rpotrf 2048 (measured below); one override applies to both |
+| `MPLAPACK_MPFR_LAPACK_FAST=1` | currently the same reference-order algorithm |
+| `MPLAPACK_MPFR_CUDA=0` | disable the MPFR GPU entries, including these |
+| `MPLAPACK_MPFR_CUDA_RUNTIME=0` | disable the cu_mpfr engine |
+| `MPLAPACK_MPFR_CUDA_FORCE_RUNTIME=1` | select cu_mpfr at fixed precisions too |
+| `MPLAPACK_MPFR_CUDA_VERBOSE=1` | print measured upload / factor / download seconds |
+
+CMake tests `mpfr_cuda_Rfactor_{host,device}[_runtime]` use a CPU-only oracle
+and call the entries directly (no fallback can hide a failure). Device
+absence returns 77. The autotools host variant is
+`make -C mpblas/optimized/mpfr/cuda check`. Whole padded matrices, pivot
+sentinels and info are compared strictly, including signed zeros; default
+coverage is six precisions, square/tall/wide matrices, both triangles,
+block boundaries and odd sizes through 599, singular/tied/tiny pivots,
+nonpositive diagonals, backward error <=30, rejection and output preservation.
+`OMP_NUM_THREADS=1 mpfr_cuda_Rfactor_device_test PREC --quick` selects the smaller same-kernel cases
+for stack/memory sanitizer sweeps; default tests are not shortened.
+
+Benchmark targets: `mpfr_cpu_Rfactor_bench` (CPU default),
+`mpfr_cuda_Rfactor_bench` (end-to-end direct entry), and
+`mpfr_cuda_Rfactor_panel_bench` (512-bit panel comparison). The latter times
+the device fixed / device MPFR panel phase, or actual D2H/unpack/host-MPFR/
+pack/H2D for a hybrid panel. The common trailing updates are excluded from
+this isolated panel comparison, not estimated. `test/run_factor_bench.py`
+records raw results from separate CPU / retained-old-CUDA / new-entry binaries,
+interleaving order in multiple fresh-process rounds and reporting medians.
+Upload/download include conversion; allocation, initialization and cleanup
+are outside the split, so the parts need not sum to the end-to-end time.
+
+### Panel choice and measured crossover (A100 sm_80, CUDA 13.1)
+
+Choose cu_freal panels at the five fixed precisions and cu_mpfr otherwise
+(or when forced). At 512 bits the fixed GPU panel is 3.66x/4.87x faster than
+the runtime GPU LU panel, and 2.21x faster for Cholesky. The host hybrid is
+faster for the small Cholesky diagonal, but would require repeated panel
+conversion/transfers. It is a benchmark comparator, not an entry-point path:
+the default retains the required GPU panels and one conversion at each end.
+No CPU fallback or hybrid panel is hidden inside a successful entry.
+
+Panel-phase seconds, median of five interleaved/reversed rounds; OMP=32,
+MPFRXX_DEFAULT_PRECISION_BITS=512 in every process. LU has 64 columns;
+Cholesky is one 64x64 diagonal. Fixed/runtime phase excludes initial
+allocation/upload and final download; hybrid phase measures actual
+D2H/unpack/CPU-panel/pack/H2D. No trailing-update time is inferred.
+
+| panel | shape | GPU cu_freal | GPU cu_mpfr | host hybrid |
+|---|---:|---:|---:|---:|
+|Rgetrf2|512x64|0.035606|0.130347|0.284334|
+|Rgetrf2|2048x64|0.037426|0.182221|0.286631|
+|Rpotrf2 L|64x64|0.045240|0.100045|0.009627|
+
+End-to-end seconds, **three interleaved rounds with reversed call order**,
+medians, fresh process per call, OMP=32, deterministic full-precision random
+significands and strict diagonal dominance. CPU is libmplapack_mpfr_opt;
+old is the retained pre-goal CUDA shared library (CPU factors, GPU BLAS per
+eligible call); new calls the entry directly, with MIN=0, and must return
+true/info=0. All **126** timed calls succeeded. The shared host is not
+calibrated; no times below are estimates. The split excludes initialization,
+allocation and cleanup, and includes matrix conversion in upload/download.
+Set MPFRXX_DEFAULT_PRECISION_BITS to the requested precision also for OpenMP
+workers; the runner does this and clears inherited LAPACK/MPFR tuning.
+
+|bits|routine|n|CPU|old CUDA|new entry|upload|factor|download|old/new|
+|---:|---|---:|---:|---:|---:|---:|---:|---:|---:|
+|512|Rgetrf|512|1.756656|2.341467|0.848922|0.027765|0.287701|0.010484|2.758|
+|512|Rpotrf L|512|0.566250|0.889964|0.984371|0.026733|0.409643|0.007654|0.904|
+|512|Rgetrf|1024|10.162399|5.611150|1.355135|0.089125|0.683307|0.044113|4.141|
+|512|Rpotrf L|1024|2.701463|1.411368|1.592530|0.087411|0.941978|0.029290|0.886|
+|512|Rgetrf|2048|42.035304|13.834973|3.269151|0.303249|2.228172|0.163487|4.232|
+|512|Rpotrf L|2048|15.898697|4.085477|3.513640|0.306834|2.524661|0.115267|1.163|
+|512|Rgetrf|4096|207.326357|66.609945|14.326270|1.317213|11.433812|0.639304|4.649|
+|512|Rpotrf L|4096|108.800011|20.468114|12.022977|1.306446|9.303057|0.450669|1.702|
+|256|Rgetrf|512|2.357260|1.840826|0.721356|0.017675|0.171737|0.005474|2.552|
+|256|Rpotrf L|512|0.453155|0.754467|0.754167|0.018071|0.193519|0.004226|1.000|
+|1024|Rgetrf|512|2.360622|2.873891|1.404849|0.041723|0.811452|0.013564|2.046|
+|1024|Rpotrf L|512|0.806218|1.297241|2.124351|0.041456|1.546730|0.010665|0.611|
+|200|Rgetrf|512|1.910529|12.610459|1.720275|0.013817|1.141940|0.006778|7.330|
+|200|Rpotrf L|512|0.457441|6.889667|1.677536|0.014755|1.064007|0.004351|4.107|
+
+Use routine-specific defaults: **Rgetrf 512**, **Rpotrf 2048**. LU wins at
+every measured size from 512; Cholesky loses at 512/1024 but wins at both
+2048 and 4096. The losing points are retained above. These are measured
+eligibility points, not an extrapolated exact crossover. One explicit MIN
+overrides both. Other precisions retain this conservative shared policy.
+Raw records (ignored local assets): bench_local/results/goal07_real/.
+
+### Verification (real milestone, 2026-10-29)
+
+All values below are observed, not inferred from CPU fallback. The four main
+runs are host/device, each automatic and forced runtime. Each run compares
+241 LU cases / 2,832,648 matrix elements and 84 Cholesky cases / 1,361,932
+matrix elements **at each precision**. Entire padded matrices, pivots and
+info are checked. Small nonsingular cases also require backward error <=30.
+Signed zero is strict on both paths; no tolerance was weakened.
+
+|bits|automatic engine|LU cases (four runs)|Cholesky cases (four runs)|A/ipiv/info errors|zero-sign differences|
+|---:|---|---:|---:|---:|---:|
+|256|cu_freal|241 x 4|84 x 4|0|0|
+|512|cu_freal|241 x 4|84 x 4|0|0|
+|768|cu_freal|241 x 4|84 x 4|0|0|
+|1024|cu_freal|241 x 4|84 x 4|0|0|
+|2048|cu_freal|241 x 4|84 x 4|0|0|
+|200|cu_mpfr|241 x 4|84 x 4|0|0|
+
+Each main host run has 710 checks / 4,194,760 element comparisons per
+precision; each device run has 1,036 / 4,194,772 (including stack restoration
+and memory-budget rejection). Four main runs total 20,952 checks and
+100,674,384 element comparisons. All errors and zero-sign differences are 0.
+
+- **CMake**: `ctest -R mpfr_cuda_ -j2`: **22/22 PASS, 12,492.95 s**,
+  including all 18 pre-existing MPFR CUDA tests. Sanitizer jobs ran in
+  parallel, but no benchmark did. CPU/CUDA old factor default/fast tests:
+  **4/4 PASS, 1,174.61 s**. GPU-hidden device tests: **2/2 SKIP (77)**;
+  GPU-hidden host quick test: **506 checks, 476,131 elements, 0 errors**.
+- **Autotools**: regenerated Makefile, shared/static CUDA libraries and full
+  host `make check`: **1/1 PASS, 2,588 s**, all six precisions, 710 checks
+  each, no errors/zero differences. A previous full run also passed.
+- **compute-sanitizer memcheck**, same factor kernels, quick cases including
+  the 131-sized two-stream overlap: all six precisions **730 checks each**,
+  LU 165 cases / 340,907 elements; Cholesky 58 / 135,044; total 476,143
+  comparisons per precision, **0 numeric/zero-sign differences, 0 sanitizer
+  errors**. Fixed limits 4/4/8/8/16 KiB, runtime 200-bit limit 8 KiB;
+  every factor call restores its previous limit.
+- **Optional 4096-bit runtime**: final normal quick test passes 730 checks /
+  476,143 comparisons, LU 165 cases / Cholesky 58, no errors or zero-sign
+  differences, with a 16-KiB scoped limit. Memcheck was stopped after over
+  one hour without a completed result: **UNVERIFIED**, not counted as PASS.
+- **Fixed Rtrsm**: post-policy full blas3 device replay **1/1 PASS,
+  1,084.25 s**; memcheck **327,920 elements, 0 failures, 0 sanitizer errors**.
+  The suite's 580 allowed sign-only zeros belong to other fixed BLAS;
+  Rtrsm's zero-sign checks remain strict. A separate public-entry probe
+  observes retained limits 4/4/8/8/16/16 KiB for 256/512/768/1024/2048/256
+  bits, exact results including zeros, and the factor entry preserves the
+  inherited 16-KiB limit. The BLAS bridge retains its right-sized maximum
+  to avoid repeated CUDA stack reallocations; the factor guard is scoped.
+- **LAPACK real GE/PO drivers**: CPU and LD_PRELOAD CUDA both pass
+  3,653 + 5,748 GE and 1,628 + 1,910 PO checks (12,939 each), including
+  error exits. CPU 25.80 s; CUDA with MIN=0 1,532.51 s, **1,815 LU and
+  828 Cholesky successful resident-entry traces**. MIN=0 deliberately
+  exercises even tiny, latency-dominated calls; it is not a speed claim.
+- **Natural default gates**: 512-sized LU / 2048-sized Cholesky eligible,
+  one below each rejected with outputs untouched: 6 checks / 8,912,896
+  comparisons, 0 errors or sign differences.
+- **ABI/build hygiene**: `nm -D` has only the two declared entry additions,
+  no removals (3,983 -> 3,989 including four generated CUDA registration/
+  wrapper symbols). Seven produced/dependent archives pass
+  `check_unique_symbols.sh`; both final CUDA archives rechecked. All five
+  generated accelerator headers and generated backend Makefiles are fresh;
+  `git diff --check` passes. Both sm_80 and sm_90 fatbin targets build.
+
+**Deferred / UNVERIFIED**: Cgetrf/Cpotrf are intentionally not implemented
+in this user-approved real-only milestone; goal 07 and hence the full goal
+08 are **not** declared complete/unblocked. The optional 4096-bit memcheck,
+sm_90 execution, actual injected
+cudaMalloc/copy/kernel failures, an n=10000 allocation, and crossovers beyond
+the measured table are UNVERIFIED. Preflight budget/overflow rejection and
+unchanged outputs are tested. No common dd/td/qd header, solver or bundled
+mpc_cuda patch is changed.
 
 ## Limitations
 

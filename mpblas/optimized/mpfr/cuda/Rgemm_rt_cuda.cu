@@ -81,6 +81,9 @@ typedef mpfr_exp_t cu_mpfr_exp_t;
 #define cu_mpfr_zero_p mpfr_zero_p
 #define cu_mpfr_nan_p mpfr_nan_p
 #define cu_mpfr_cmp_ui mpfr_cmp_ui
+#define cu_mpfr_cmp mpfr_cmp
+#define cu_mpfr_abs mpfr_abs
+#define cu_mpfr_sqrt mpfr_sqrt
 #define RT_HD
 #else
 #include <cuda_runtime.h>
@@ -188,6 +191,7 @@ struct l3_rt_engine {
     RT_HD bool isone(const V &a) const { return !cu_mpfr_nan_p(a.x) && cu_mpfr_cmp_ui(a.x, 1) == 0; }
 };
 
+#ifndef MPLAPACK_MPFR_FACTOR_RT_ONLY
 RT_HD void l3_rt_lane(const l3_shape &s, long prec, int nl, const dpack &al, const dpack &be, const dpack &A, const dpack &B, const dpack &C, long lane, cu_mp_limb_t *W)
 {
     l3_rt_engine e;
@@ -264,6 +268,7 @@ RT_HD void rt_element(const gemm_shape &s, long prec, int nl, const dpack &alpha
     store(c, nl, C, ci);
 }
 
+#endif // !MPLAPACK_MPFR_FACTOR_RT_ONLY
 long env_long(const char *name, long fallback)
 {
     const char *v = std::getenv(name);
@@ -275,7 +280,7 @@ long env_long(const char *name, long fallback)
 }
 
 #ifdef MPLAPACK_MPFR_CUDA_HOST_EMULATION
-
+#ifndef MPLAPACK_MPFR_FACTOR_RT_ONLY
 int run(const gemm_shape &s, long prec, int nl, const dpack &alpha, const dpack &beta, const dpack &A, const dpack &B, dpack &AB, dpack &C)
 {
     std::vector<cu_mp_limb_t> W(3 * (size_t)nl);
@@ -288,9 +293,9 @@ int run(const gemm_shape &s, long prec, int nl, const dpack &alpha, const dpack 
             rt_element(s, prec, nl, alpha, beta, A, B, AB, C, i, j, W.data());
     return 0;
 }
-
+#endif // !MPLAPACK_MPFR_FACTOR_RT_ONLY
 #else
-
+#ifndef MPLAPACK_MPFR_FACTOR_RT_ONLY
 __global__ void alpha_opB_kernel(gemm_shape s, long prec, int nl, dpack alpha, dpack B, dpack AB, cu_mp_limb_t *work)
 {
     const long tid = (long)blockIdx.x * blockDim.x + threadIdx.x;
@@ -318,6 +323,7 @@ __global__ void l3_kernel(l3_shape s, long prec, int nl, dpack al, dpack be, dpa
         l3_rt_lane(s, prec, nl, al, be, A, B, C, lane, W);
 }
 
+#endif // !MPLAPACK_MPFR_FACTOR_RT_ONLY
 bool verbose()
 {
     const char *v = std::getenv("MPLAPACK_MPFR_CUDA_VERBOSE");
@@ -396,6 +402,7 @@ struct limit_guard {
 
 } // namespace
 
+#ifndef MPLAPACK_MPFR_FACTOR_RT_ONLY
 int gemm_rt(const gemm_shape &s, long prec, const rt_pack &alpha, const rt_pack &beta, const rt_pack &A, size_t countA, const rt_pack &B, size_t countB, rt_pack &C)
 {
     const int nl = (int)((prec + 63) / 64);
@@ -536,4 +543,9 @@ int blas3_rt(const l3_shape &s, long prec, const rt_pack &alpha, const rt_pack &
 #endif
 }
 
+#endif // !MPLAPACK_MPFR_FACTOR_RT_ONLY
 } // namespace mplapack_mpfr_cuda
+
+#ifdef MPLAPACK_MPFR_FACTOR_RT_ONLY
+#include "Rfactor_rt_body.cuh"
+#endif

@@ -36,6 +36,7 @@
 #include <cstdlib>
 #include <vector>
 #include "blas3_kernel_cuda.h"
+#include "mpfr_cuda_stack.h"
 
 #ifndef MPLAPACK_MPFR_CUDA_HOST_EMULATION
 #include <cuda_runtime.h>
@@ -125,13 +126,11 @@ template <int PB> int blas3_fixed(const l3_shape &s, const real_t<PB> &alpha, co
     int ndev = 0;
     if (l3_failed(cudaGetDeviceCount(&ndev), "cudaGetDeviceCount") || ndev == 0)
         return 1;
-    // Only Rtrsm calls Newton. Leave other real BLAS launches' limits alone.
-    if (s.op == L3_TRSM) {
-        size_t cur = 0;
-        if (l3_failed(cudaDeviceGetLimit(&cur, cudaLimitStackSize), "get stack") ||
-            (cur < 65536 && l3_failed(cudaDeviceSetLimit(cudaLimitStackSize, 65536), "set stack")))
-            return 2;
-    }
+    // Only Rtrsm calls Newton. Precision-dependent, call-scoped stack storage
+    // avoids retaining a 64-KiB/thread reservation beside a resident matrix.
+    mpfr_stack_guard stack(s.op == L3_TRSM ? fixed_stack_bytes(PB) : 0);
+    if (l3_failed(static_cast<cudaError_t>(stack.error), "set stack"))
+        return 2;
     int failed = 0;
     dbuf<int> status;
     if (s.op == L3_TRSM && !status.up(&failed, 1))
@@ -153,6 +152,8 @@ template <int PB> int blas3_fixed(const l3_shape &s, const real_t<PB> &alpha, co
     }
     if (s.op == L3_TRSM &&
         (l3_failed(cudaMemcpy(&failed, status.p, sizeof(failed), cudaMemcpyDeviceToHost), "copy status") || failed))
+        return 3;
+    if (l3_failed(static_cast<cudaError_t>(stack.restore()), "restore stack"))
         return 3;
     if (countC && l3_failed(cudaMemcpy(C, dC.p, countC * sizeof(real_t<PB>), cudaMemcpyDeviceToHost), "copy to host"))
         return 4;

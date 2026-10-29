@@ -34,7 +34,7 @@ LIBRARIES = [
     ("dd", "cuda", "ENABLE_CUDA", ["Rgemm", "Rpotrf", "Cpotrf", "Rgetrf", "Cgetrf"] + BLAS_CUDA + CBLAS_CUDA),
     ("td", "cuda", "ENABLE_TD_CUDA", ["Rgemm", "Rpotrf", "Cpotrf", "Rgetrf", "Cgetrf"] + BLAS_CUDA + CBLAS_CUDA),
     ("qd", "cuda", "ENABLE_QD_CUDA", ["Rgemm", "Rpotrf", "Cpotrf", "Rgetrf", "Cgetrf"] + BLAS_CUDA + CBLAS_CUDA),
-    ("mpfr", "cuda", "ENABLE_MPFR_CUDA", ["Rgemm"] + MPFR_CUDA + CBLAS_CUDA),
+    ("mpfr", "cuda", "ENABLE_MPFR_CUDA", ["Rgemm", "Rpotrf", "Rgetrf"] + MPFR_CUDA + CBLAS_CUDA),
     ("binary128", "opencl", "ENABLE_OPENCL_BINARY128", ["Rgemm"]),
 ]
 

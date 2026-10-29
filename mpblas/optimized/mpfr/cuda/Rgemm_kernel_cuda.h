@@ -75,28 +75,51 @@ template <int PB> __host__ __device__ inline void gemm_alpha_opB(const gemm_shap
 //   op(A) = A  : C(i,j) = beta*C(i,j); for l: C(i,j) += AB(l,j) * A(i,l)
 //   op(A) = A' : C(i,j) = beta*C(i,j); temp = 0; for l: temp += A(l,i) * op(B)(l,j);
 //                C(i,j) += alpha * temp
+// Engine form also serves device-resident LAPACK. packed_ab=false computes
+// alpha*op(B) locally, retaining exactly the same rounding and operation order.
+// Register slots 0..3 are private to this element.
+template<class E> __host__ __device__ inline void gemm_engine_element(
+    E &e, const gemm_shape &s, const typename E::M &al, const typename E::M &be,
+    const typename E::M &A, const typename E::M &B, const typename E::M &AB,
+    typename E::M &C, long i, long j, bool packed_ab) {
+    auto c=e.reg(0), temp=e.reg(1), p=e.reg(2), ab=e.reg(3);
+    if(s.beta_zero) e.zero(c);
+    else if(s.beta_one) e.set(c,e.at(C,i,j));
+    else e.mul(c,e.at(be,0,0),e.at(C,i,j));
+    if(s.nota) {
+        for(long l=0;l<s.k;++l) {
+            if(packed_ab) e.set(ab,e.at(AB,l,j));
+            else e.mul(ab,e.at(al,0,0),s.notb?e.at(B,l,j):e.at(B,j,l));
+            e.mul(p,ab,e.at(A,i,l));
+            e.add(c,c,p);
+        }
+    } else {
+        e.zero(temp);
+        for(long l=0;l<s.k;++l) {
+            e.mul(p,e.at(A,l,i),s.notb?e.at(B,l,j):e.at(B,j,l));
+            e.add(temp,temp,p);
+        }
+        e.mul(p,e.at(al,0,0),temp);
+        e.add(c,c,p);
+    }
+    e.put(C,i,j,c);
+}
+template<int PB> struct gemm_fixed_engine {
+    using V=real_t<PB>;
+    struct M { const V *p; long ld; };
+    __host__ __device__ V reg(int) const { V v; v.set_zero(); return v; }
+    __host__ __device__ V at(const M &a,long i,long j) const { return a.p[i+j*a.ld]; }
+    __host__ __device__ void put(M &a,long i,long j,const V &v) const { const_cast<V*>(a.p)[i+j*a.ld]=v; }
+    __host__ __device__ void set(V &r,const V &a) const { r=a; }
+    __host__ __device__ void zero(V &r) const { r.set_zero(); }
+    __host__ __device__ void mul(V &r,const V &a,const V &b) const { r=a*b; }
+    __host__ __device__ void add(V &r,const V &a,const V &b) const { r=a+b; }
+};
 template <int PB> __host__ __device__ inline void gemm_element(const gemm_shape &s, const real_t<PB> &alpha, const real_t<PB> &beta, const real_t<PB> *A, const real_t<PB> *B, const real_t<PB> *AB, real_t<PB> *C, long i, long j) {
-    real_t<PB> c;
-    if (s.beta_zero) {
-        c.set_zero();
-    } else if (s.beta_one) {
-        c = C[i + j * s.ldc];
-    } else {
-        c = beta * C[i + j * s.ldc];
-    }
-    if (s.nota) {
-        for (long l = 0; l < s.k; l++) {
-            c = c + AB[l + j * s.k] * A[i + l * s.lda];
-        }
-    } else {
-        real_t<PB> temp;
-        temp.set_zero();
-        for (long l = 0; l < s.k; l++) {
-            temp = temp + A[l + i * s.lda] * gemm_opB<PB>(s, B, l, j);
-        }
-        c = c + alpha * temp;
-    }
-    C[i + j * s.ldc] = c;
+    gemm_fixed_engine<PB> e;
+    using M=typename gemm_fixed_engine<PB>::M;
+    M c{C,s.ldc};
+    gemm_engine_element(e,s,M{&alpha,1},M{&beta,1},M{A,s.lda},M{B,s.ldb},M{AB,s.k},c,i,j,true);
 }
 
 // Computes C := alpha*op(A)*op(B) + beta*C on packed operands.

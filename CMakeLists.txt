@@ -487,6 +487,11 @@ if(MPLAPACK_ENABLE_MPFR_CUDA)
   list(FILTER _mplapack_mpfr_cuda_cblas INCLUDE REGEX "/(C[A-Za-z0-9]+|Rgemmtr|Rsbmv|Rspmv|Rgbmv|Rtbmv|Rtpmv|Rspr|Rspr2)\\.cpp$")
   list(FILTER _mplapack_mpfr_cuda_cblas EXCLUDE REGEX "/Cblas_bridge_cuda\\.cpp$")
   mplapack_add_accelerator_backend(mpfr cuda
+    "${_mplapack_mpfr_cuda_dir}/Rgetrf.cpp"
+    "${_mplapack_mpfr_cuda_dir}/Rpotrf.cpp"
+    "${_mplapack_mpfr_cuda_dir}/Rfactor_bridge_cuda.cpp"
+    "${_mplapack_mpfr_cuda_dir}/Rfactor_device_cuda.cu"
+    "${_mplapack_mpfr_cuda_dir}/Rfactor_rt_cuda.cu"
     "${_mplapack_mpfr_cuda_dir}/Rgemm.cpp"
     "${_mplapack_mpfr_cuda_dir}/Rgemm_bridge_cuda.cpp"
     "${_mplapack_mpfr_cuda_dir}/Rgemm_device_cuda.cu"
@@ -783,6 +788,29 @@ if(MPLAPACK_BUILD_TESTS)
     # OpenMP CPU Rgemm used as the reference creates its temporaries at the
     # worker threads' MPFR default precision.
     set(_mplapack_mpfr_cuda_dir "${CMAKE_CURRENT_SOURCE_DIR}/mpblas/optimized/mpfr/cuda")
+    add_executable(mpfr_cpu_Rfactor_bench "${_mplapack_mpfr_cuda_dir}/test/Rfactor_bench.cpp")
+    target_compile_definitions(mpfr_cpu_Rfactor_bench PRIVATE MPLAPACK_FACTOR_BENCH_CPU_ONLY)
+    target_link_libraries(mpfr_cpu_Rfactor_bench PRIVATE mplapack_mpfr_opt)
+    add_executable(mpfr_cuda_Rfactor_bench "${_mplapack_mpfr_cuda_dir}/test/Rfactor_bench.cpp")
+    target_link_libraries(mpfr_cuda_Rfactor_bench PRIVATE mplapack_mpfr_opt_cuda CUDA::cudart)
+    add_executable(mpfr_cuda_Rfactor_panel_bench
+      "${_mplapack_mpfr_cuda_dir}/test/Rfactor_panel_bench.cpp"
+      "${_mplapack_mpfr_cuda_dir}/Rfactor_device_cuda.cu"
+      "${_mplapack_mpfr_cuda_dir}/Rfactor_rt_cuda.cu")
+    target_include_directories(mpfr_cuda_Rfactor_panel_bench PRIVATE "${MPLAPACK_MPC_CUDA_INCLUDE_DIR}")
+    target_link_libraries(mpfr_cuda_Rfactor_panel_bench PRIVATE mplapack_mpfr_opt "${MPLAPACK_MPC_CUDA_LIBRARY}" CUDA::cudart)
+    target_compile_options(mpfr_cuda_Rfactor_panel_bench PRIVATE "$<$<COMPILE_LANGUAGE:CUDA>:-fmad=false>")
+    set_target_properties(mpfr_cuda_Rfactor_panel_bench PROPERTIES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED ON
+      CUDA_SEPARABLE_COMPILATION ON CUDA_RESOLVE_DEVICE_SYMBOLS ON
+      CUDA_ARCHITECTURES "${MPLAPACK_CUDA_ARCHITECTURES}")
+    if(_mplapack_mpc_cuda_bundled)
+      add_dependencies(mpfr_cuda_Rfactor_panel_bench mpc_cuda_bundled)
+    endif()
+    if(UNIX AND NOT APPLE)
+      foreach(_factor_bench mpfr_cpu_Rfactor_bench mpfr_cuda_Rfactor_bench mpfr_cuda_Rfactor_panel_bench)
+        target_link_options(${_factor_bench} PRIVATE "-Wl,--disable-new-dtags")
+      endforeach()
+    endif()
     add_executable(mpfr_cuda_Rtrsm_round_bench "${_mplapack_mpfr_cuda_dir}/test/Rtrsm_round_bench.cpp")
     target_link_libraries(mpfr_cuda_Rtrsm_round_bench PRIVATE mplapack_mpfr_opt_cuda CUDA::cudart)
     add_executable(mpfr_cuda_cu_fround_bench "${_mplapack_mpfr_cuda_dir}/test/cu_fround_bench.cu")
@@ -796,6 +824,42 @@ if(MPLAPACK_BUILD_TESTS)
       add_dependencies(mpfr_cuda_cu_fround_bench mpc_cuda_bundled)
     endif()
     foreach(_variant host device)
+      set(_fexe mpfr_cuda_Rfactor_${_variant}_test)
+      if(_variant STREQUAL "host")
+        set(_factor_engine_sources
+          "${_mplapack_mpfr_cuda_dir}/test/Rfactor_fixed_host.cpp"
+          "${_mplapack_mpfr_cuda_dir}/test/Rfactor_runtime_host.cpp")
+      else()
+        set(_factor_engine_sources
+          "${_mplapack_mpfr_cuda_dir}/Rfactor_device_cuda.cu"
+          "${_mplapack_mpfr_cuda_dir}/Rfactor_rt_cuda.cu")
+      endif()
+      add_executable(${_fexe}
+        "${_mplapack_mpfr_cuda_dir}/test/Rfactor_cuda_test.cpp"
+        "${_mplapack_mpfr_cuda_dir}/Rfactor_bridge_cuda.cpp"
+        ${_factor_engine_sources})
+      target_include_directories(${_fexe} PRIVATE "${MPLAPACK_MPC_CUDA_INCLUDE_DIR}")
+      target_link_libraries(${_fexe} PRIVATE mplapack_mpfr_opt CUDA::cudart)
+      if(UNIX AND NOT APPLE)
+        target_link_options(${_fexe} PRIVATE "-Wl,--disable-new-dtags")
+      endif()
+      if(_variant STREQUAL "host")
+        target_compile_definitions(${_fexe} PRIVATE MPLAPACK_MPFR_CUDA_HOST_EMULATION)
+      else()
+        target_link_libraries(${_fexe} PRIVATE "${MPLAPACK_MPC_CUDA_LIBRARY}")
+        target_compile_options(${_fexe} PRIVATE "$<$<COMPILE_LANGUAGE:CUDA>:-fmad=false>")
+        set_target_properties(${_fexe} PROPERTIES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED ON
+          CUDA_SEPARABLE_COMPILATION ON CUDA_RESOLVE_DEVICE_SYMBOLS ON
+          CUDA_ARCHITECTURES "${MPLAPACK_CUDA_ARCHITECTURES}")
+      endif()
+      if(_mplapack_mpc_cuda_bundled)
+        add_dependencies(${_fexe} mpc_cuda_bundled)
+      endif()
+      add_test(NAME mpfr_cuda_Rfactor_${_variant} COMMAND ${_fexe})
+      add_test(NAME mpfr_cuda_Rfactor_${_variant}_runtime COMMAND ${_fexe})
+      set_tests_properties(mpfr_cuda_Rfactor_${_variant} PROPERTIES SKIP_RETURN_CODE 77 ENVIRONMENT "OMP_NUM_THREADS=1")
+      set_tests_properties(mpfr_cuda_Rfactor_${_variant}_runtime PROPERTIES
+        SKIP_RETURN_CODE 77 ENVIRONMENT "OMP_NUM_THREADS=1;MPLAPACK_MPFR_CUDA_FORCE_RUNTIME=1")
       set(_roundexe mpfr_cuda_cu_fround_${_variant}_test)
       if(_variant STREQUAL "host")
         add_executable(${_roundexe} "${_mplapack_mpfr_cuda_dir}/test/cu_fround_test.cpp")
