@@ -5,6 +5,15 @@ entry points, device stack limit for the complex kernels, Rswap/Rrot);
 goals 01-06 are done. Goal 07 depends on this goal. Read 00-overview.md first, and
 mpblas/optimized/mpfr/cuda/README.md.
 
+Status: implemented and verified. Both builds and patch-touch rebuilds pass;
+CMake regression 18/18, host/device MPFR oracle 0 mismatches at every PB,
+and RN/fixed-Rtrsm sanitizer checks 0 errors. The unchanged runtime heap
+restore produces two handled API diagnostics (also reproduced on the old
+library); full memory checking is clean. Results, measured timings, the
+upstream PR proposal and the sm_90-hardware UNVERIFIED item are recorded in
+external/mpc_cuda/patches/README.md. Goal 07 is unblocked. No upstream
+submission or push.
+
 ## Background (verified on the bundled mpc_cuda-0.0.1-abd9407)
 
 - cu_fp::cu_freal<PB> (include/mpc_cuda/cu_freal.cuh): fixed precision PB
@@ -20,8 +29,8 @@ mpblas/optimized/mpfr/cuda/README.md.
 - The precisions MPLAPACK uses on cu_freal (256, 512, 768, 1024, 2048,
   MPLAPACK_MPFR_CUDA_FIXED_PRECISIONS in Rgemm_kernel_cuda.h) are multiples
   of 64 (no 32 unused low bits); the functions must still handle SB = 32.
-- Consequence today: MPLAPACK's MPFR Rtrsm always runs on cu_mpfr (the
-  device port of MPFR, slow), and goal 07 cannot use cu_freal for the
+- Consequence before 07a: MPLAPACK's MPFR Rtrsm always ran on cu_mpfr (the
+  device port of MPFR, slow), and goal 07 could not use cu_freal for the
   divisions and square roots of the getrf / potrf panels.
 
 ## Policy: a patch kept in MPLAPACK, offered upstream

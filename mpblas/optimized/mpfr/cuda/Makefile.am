@@ -151,4 +151,5 @@ if IS_MINGW
 libmplapack_mpfr_opt_cuda_la_LDFLAGS += -fopenmp -no-undefined
 endif
 
-EXTRA_DIST = README.md Rgemm_host_cuda.cpp test/Rgemm_cuda_test.cpp test/Rgemm_winograd_cuda_test.cpp test/blas3_cuda_test.cpp
+EXTRA_DIST = README.md Rgemm_host_cuda.cpp test/Rgemm_cuda_test.cpp test/Rgemm_winograd_cuda_test.cpp test/blas3_cuda_test.cpp \
+    test/cu_fround_test.cpp test/cu_fround_device_test.cu test/cu_fround_bench.cu test/Rtrsm_round_bench.cpp test/run_round_bench.py

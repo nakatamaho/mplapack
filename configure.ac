@@ -787,6 +787,9 @@ if test x$enable_mpfr_cuda = xyes; then
     if test ! -f "$MPC_CUDA_INCLUDEDIR/mpc_cuda.cuh"; then
       AC_MSG_ERROR([--with-mpc-cuda-includedir=DIR must contain mpc_cuda.cuh (https://github.com/tkouya/mpc_cuda)])
     fi
+    if test ! -f "$MPC_CUDA_INCLUDEDIR/mpc_cuda/cu_fround.cuh"; then
+      AC_MSG_ERROR([installed mpc_cuda needs cu_fround.cuh; apply external/mpc_cuda/patches/patch-cu_freal-correctly-rounded-div-sqrt])
+    fi
     if test -z "$MPC_CUDA_LIBRARY"; then
       MPC_CUDA_LIBRARY="$MPC_CUDA_INCLUDEDIR/../lib/libmpc_cuda.a"
     fi

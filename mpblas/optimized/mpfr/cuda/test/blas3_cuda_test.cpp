@@ -234,7 +234,7 @@ void check_trxm(int prec, bool solve, const char *side, const char *uplo, const 
     }
     char buf[160];
     std::snprintf(buf, sizeof(buf), "%s %s%s%s%s m=%ld n=%ld alpha_kind=%d", solve ? "Rtrsm" : "Rtrmm", side, uplo, transa, diag, m, n, ak);
-    // Rtrsm runs on the cu_mpfr engine at every precision: exact.
+    // Rtrsm also preserves signed zeros on the fixed engine: exact.
     const bool saved = force_runtime;
     if (solve)
         force_runtime = true;
@@ -242,10 +242,56 @@ void check_trxm(int prec, bool solve, const char *side, const char *uplo, const 
     force_runtime = saved;
 }
 
+void check_trsm_edges(int prec)
+{
+    // Retain the stricter Rtrsm contract, including -0 on the fixed engine.
+    for (const char *side : {"L", "R"})
+        for (const char *trans : {"N", "T"})
+            for (const char *diag : {"N", "U"})
+                for (int sign : {-1, 1}) {
+                    std::vector<mpfr_class> a(1, mpfr_class(-2)), ref(1), got(1);
+                    mpfr_set_zero(ref[0].get_mpfr_t(), sign);
+                    got = ref;
+                    mpfr_class alpha = -0.5;
+                    Rtrsm(side, "U", trans, diag, 1, 1, alpha, a.data(), 1, ref.data(), 1);
+                    bool used = Rtrsm_mpfr_cuda(side, "U", trans, diag, 1, 1, alpha, a.data(), 1, got.data(), 1);
+                    const bool saved = force_runtime;
+                    force_runtime = true;
+                    compare("Rtrsm signed zero", prec, ref, got, used);
+                    force_runtime = saved;
+                }
+    mpfr_class a = 2, b = 1, alpha = 1;
+    const mpfr_exp_t emax = mpfr_get_emax();
+    mpfr_set_emax(emax - 1);
+    bool used = Rtrsm_mpfr_cuda("L", "U", "N", "N", 1, 1, alpha, &a, 1, &b, 1);
+    mpfr_set_emax(emax);
+    if (used || b != 1) { std::fprintf(stderr, "Rtrsm exponent gate changed output\n"); failures++; }
+    if (signed_zero_may_differ(prec)) { // fixed engine selected
+        a = 0;
+        used = Rtrsm_mpfr_cuda("L", "U", "N", "N", 1, 1, alpha, &a, 1, &b, 1);
+        if (used || b != 1) { std::fprintf(stderr, "Rtrsm zero divisor changed output\n"); failures++; }
+        for (int underflow : {0, 1}) {
+            mpfr_set_ui_2exp(a.get_mpfr_t(), 1, underflow ? emax - 4 : mpfr_get_emin() + 4, MPFR_RNDN);
+            mpfr_set_ui_2exp(b.get_mpfr_t(), 1, underflow ? mpfr_get_emin() + 4 : emax - 4, MPFR_RNDN);
+            mpfr_class saved = b;
+            used = Rtrsm_mpfr_cuda("L", "U", "N", "N", 1, 1, alpha, &a, 1, &b, 1);
+            if (used || !same_bits(b, saved)) { std::fprintf(stderr, "Rtrsm range error changed output\n"); failures++; }
+        }
+    }
+}
+
 } // namespace
 
-int main()
+int main(int argc, char **argv)
 {
+    // Isolate the new RN kernels for sanitizer runs. The unchanged cu_mpfr
+    // heap-limit guard deliberately tolerates an un-restorable heap limit;
+    // checking that legacy cleanup API error is separate from memory safety.
+    const bool fixed_only = argc == 2 && std::strcmp(argv[1], "--fixed-only") == 0;
+    if (argc > 1 && !fixed_only) {
+        std::fprintf(stderr, "usage: %s [--fixed-only]\n", argv[0]);
+        return 1;
+    }
     if (mplapack_mpfr_cuda::device_count() == 0) {
         std::printf("SKIPPED: no CUDA device\n");
         return 77;
@@ -261,7 +307,10 @@ int main()
     const char *ul[] = {"U", "L"}, *tr[] = {"N", "T"}, *sd[] = {"L", "R"}, *dg[] = {"N", "U"};
     const long sizes[][2] = {{1, 1}, {7, 5}, {13, 17}};
     for (int prec : precs) {
+        if (fixed_only && (prec == 64 || prec == 200 || prec == 333))
+            continue;
         mpfrxx::set_default_precision_bits(prec);
+        check_trsm_edges(prec);
         for (auto &z : sizes)
             for (int ak = 0; ak < 3; ak++) {
                 for (const char *u : ul)

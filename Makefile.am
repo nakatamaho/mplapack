@@ -545,6 +545,8 @@ external/mpc/download/mpc-1.4.1.tar.xz \
 external/mpc_cuda/Makefile.am \
 external/mpc_cuda/Makefile.in \
 external/mpc_cuda/download/mpc_cuda-0.0.1-abd9407.tar.xz \
+external/mpc_cuda/patches/patch-cu_freal-correctly-rounded-div-sqrt \
+external/mpc_cuda/patches/README.md \
 external/mpfr/Makefile.am \
 external/mpfr/Makefile.in \
 external/mpfr/download/allpatches \

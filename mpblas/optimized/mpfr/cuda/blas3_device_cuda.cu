@@ -50,9 +50,9 @@ template <int PB> struct fixed_args {
     real_t<PB> *al, *be, *a, *b, *c;
 };
 
-template <int PB> L3_HD void fixed_lane(const fixed_args<PB> &f, long lane)
+template <int PB, bool TRSM> L3_HD bool fixed_lane(const fixed_args<PB> &f, long lane)
 {
-    typedef l3_fixed_engine<PB> E;
+    typedef l3_fixed_engine<PB, TRSM> E;
     E e;
     blas_mats<E> x;
     x.al.p = f.al, x.al.ld = 1;
@@ -60,15 +60,19 @@ template <int PB> L3_HD void fixed_lane(const fixed_args<PB> &f, long lane)
     x.a.p = f.a, x.a.ld = f.s.lda;
     x.b.p = f.b, x.b.ld = f.s.ldb;
     x.c.p = f.c, x.c.ld = f.s.ldc;
-    blas_lane(e, f.s, x, lane);
+    if constexpr (TRSM)
+        l3_trsm(e, f.s, x, lane);
+    else
+        blas_lane(e, f.s, x, lane);
+    return e.ok;
 }
 
 #ifndef MPLAPACK_MPFR_CUDA_HOST_EMULATION
-template <int PB> __global__ void fixed_kernel(fixed_args<PB> f, long lanes)
+template <int PB, bool TRSM> __global__ void fixed_kernel(fixed_args<PB> f, long lanes, int *failed)
 {
     const long lane = (long)blockIdx.x * blockDim.x + threadIdx.x;
-    if (lane < lanes)
-        fixed_lane<PB>(f, lane);
+    if (lane < lanes && !fixed_lane<PB, TRSM>(f, lane) && failed)
+        atomicExch(failed, 1);
 }
 
 bool l3_failed(cudaError_t e, const char *what)
@@ -110,16 +114,28 @@ template <int PB> int blas3_fixed(const l3_shape &s, const real_t<PB> &alpha, co
     f.s = s;
     f.al = &al, f.be = &be;
     f.a = const_cast<real_t<PB> *>(A), f.b = const_cast<real_t<PB> *>(B), f.c = C;
+    int failed = 0;
 #ifdef _OPENMP
-#pragma omp parallel for schedule(dynamic, 1)
+#pragma omp parallel for schedule(dynamic, 1) reduction(|:failed)
 #endif
     for (long lane = 0; lane < lanes; lane++)
-        fixed_lane<PB>(f, lane);
-    return 0;
+        failed |= !(s.op == L3_TRSM ? fixed_lane<PB, true>(f, lane) : fixed_lane<PB, false>(f, lane));
+    return failed;
 #else
     int ndev = 0;
     if (l3_failed(cudaGetDeviceCount(&ndev), "cudaGetDeviceCount") || ndev == 0)
         return 1;
+    // Only Rtrsm calls Newton. Leave other real BLAS launches' limits alone.
+    if (s.op == L3_TRSM) {
+        size_t cur = 0;
+        if (l3_failed(cudaDeviceGetLimit(&cur, cudaLimitStackSize), "get stack") ||
+            (cur < 65536 && l3_failed(cudaDeviceSetLimit(cudaLimitStackSize, 65536), "set stack")))
+            return 2;
+    }
+    int failed = 0;
+    dbuf<int> status;
+    if (s.op == L3_TRSM && !status.up(&failed, 1))
+        return 2;
     dbuf<real_t<PB>> dal, dbe, dA, dB, dC;
     if (!dal.up(&alpha, 1) || !dbe.up(&beta, 1) || !dA.up(A, countA) || !dB.up(B, countB) || !dC.up(C, countC))
         return 2;
@@ -128,10 +144,16 @@ template <int PB> int blas3_fixed(const l3_shape &s, const real_t<PB> &alpha, co
     f.al = dal.p, f.be = dbe.p, f.a = dA.p, f.b = dB.p, f.c = dC.p;
     const int threads = 64;
     if (lanes > 0) {
-        fixed_kernel<PB><<<(unsigned)((lanes + threads - 1) / threads), threads>>>(f, lanes);
+        if (s.op == L3_TRSM)
+            fixed_kernel<PB, true><<<(unsigned)((lanes + threads - 1) / threads), threads>>>(f, lanes, status.p);
+        else
+            fixed_kernel<PB, false><<<(unsigned)((lanes + threads - 1) / threads), threads>>>(f, lanes, nullptr);
         if (l3_failed(cudaGetLastError(), "kernel launch") || l3_failed(cudaDeviceSynchronize(), "kernel"))
             return 3;
     }
+    if (s.op == L3_TRSM &&
+        (l3_failed(cudaMemcpy(&failed, status.p, sizeof(failed), cudaMemcpyDeviceToHost), "copy status") || failed))
+        return 3;
     if (countC && l3_failed(cudaMemcpy(C, dC.p, countC * sizeof(real_t<PB>), cudaMemcpyDeviceToHost), "copy to host"))
         return 4;
     // Rswap and Rrot also write x (A), as the host emulation does in place

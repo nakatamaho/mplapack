@@ -43,12 +43,12 @@
  *     precision p, or not finite, among the referenced elements;
  *   - all routines but Rtrsm: an input exponent outside the bound that keeps
  *     every intermediate inside the exponent range, or a result outside it;
- *   - Rtrsm (always the cu_mpfr engine: cu_freal has no correctly rounded
- *     division): an MPFR exponent range other than the device default
+ *   - Rtrsm (fixed: cu_fdiv_rn, otherwise cu_mpfr): an MPFR exponent
+ *     range other than the device default
  *     [1-2^30, 2^30-1], so that overflow and underflow happen exactly as on
  *     the host.
  *
- * p = 256/512/768/1024/2048 uses the cu_freal engine (zeros are +0), other
+ * p = 256/512/768/1024/2048 uses cu_freal (+0 except signed-zero Rtrsm), other
  * precisions (or MPLAPACK_MPFR_CUDA_FORCE_RUNTIME=1) the cu_mpfr engine,
  * whose results equal the reference bit for bit, signed zeros included.
  */
@@ -101,7 +101,7 @@ gpu_call gpu_operands(const blas_call<mpfr_class> &c)
 
 bool present(const operand &o) { return o.X != NULL && o.rows > 0 && o.cols > 0; }
 
-template <int PB> bool fixed_pack(const operand &o, bool read, mpfr_prec_t prec, std::vector<real_t<PB>> &out, mpfr_exp_t bound)
+template <int PB> bool fixed_pack(const operand &o, bool read, mpfr_prec_t prec, std::vector<real_t<PB>> &out, mpfr_exp_t bound, bool signed_zero)
 {
     out.resize((size_t)o.rows * o.cols + 1);
     for (long j = 0; j < o.cols; j++)
@@ -116,6 +116,8 @@ template <int PB> bool fixed_pack(const operand &o, bool read, mpfr_prec_t prec,
                     return false;
             } else if (!pack<PB>(x, r, bound)) {
                 return false;
+            } else if (signed_zero && r.is_zero()) {
+                r.sign = mpfr_signbit(x) ? -1 : 1;
             }
         }
     return true;
@@ -130,12 +132,18 @@ template <int PB> bool fixed_fits(const operand &o, const std::vector<real_t<PB>
     return true;
 }
 
-template <int PB> void fixed_unpack(const operand &o, const std::vector<real_t<PB>> &p)
+template <int PB> void fixed_unpack(const operand &o, const std::vector<real_t<PB>> &p, bool signed_zero)
 {
     for (long j = 0; j < o.cols; j++)
         for (long i = 0; i < o.rows; i++)
-            if (o.ref(i, j))
-                unpack<PB>(p[i + j * o.rows], const_cast<mpfr_class &>(o.X[i + j * o.ld]).get_mpfr_t());
+            if (o.ref(i, j)) {
+                const real_t<PB> &v = p[i + j * o.rows];
+                mpfr_ptr x = const_cast<mpfr_class &>(o.X[i + j * o.ld]).get_mpfr_t();
+                if (signed_zero && v.is_zero())
+                    mpfr_set_zero(x, v.sign);
+                else
+                    unpack<PB>(v, x);
+            }
 }
 
 bool rt_pack_operand(const operand &o, bool read, mpfr_prec_t prec, int nl, rt_storage &st, mpfr_exp_t bound)
@@ -202,20 +210,21 @@ size_t count(const operand &o) { return present(o) ? (size_t)o.rows * o.cols : 0
 template <int PB> bool run_fixed(const gpu_call &g, mpfr_prec_t prec)
 {
     typedef real_t<PB> F;
-    const mpfr_exp_t bound = input_exponent_bound();
+    const bool trsm = g.c->s.op == mplapack_mpfr_cuda::L3_TRSM;
+    const mpfr_exp_t bound = trsm ? (mpfr_exp_t)mplapack_mpfr_cuda::RT_DEVICE_EMAX : input_exponent_bound();
     F a, b;
     if (!pack<PB>(g.c->alpha.get_mpfr_t(), a, bound) || !pack<PB>(g.c->beta.get_mpfr_t(), b, bound))
         return false;
     std::vector<F> pA(1), pB(1), pO;
-    if ((present(g.A) && !fixed_pack<PB>(g.A, true, prec, pA, bound)) || (present(g.B) && !fixed_pack<PB>(g.B, true, prec, pB, bound)) || !fixed_pack<PB>(g.O, g.read_o, prec, pO, bound))
+    if ((present(g.A) && !fixed_pack<PB>(g.A, true, prec, pA, bound, trsm)) || (present(g.B) && !fixed_pack<PB>(g.B, true, prec, pB, bound, trsm)) || !fixed_pack<PB>(g.O, g.read_o, prec, pO, bound, trsm))
         return false;
     if (mplapack_mpfr_cuda::blas3_fixed<PB>(packed_shape(g), a, b, pA.data(), count(g.A), pB.data(), count(g.B), pO.data(), count(g.O)) != 0)
         return false;
     if (!fixed_fits<PB>(g.O, pO) || (g.write_a && !fixed_fits<PB>(g.A, pA)))
         return false;
-    fixed_unpack<PB>(g.O, pO);
+    fixed_unpack<PB>(g.O, pO, trsm);
     if (g.write_a)
-        fixed_unpack<PB>(g.A, pA);
+        fixed_unpack<PB>(g.A, pA, trsm);
     return true;
 }
 
@@ -255,8 +264,10 @@ bool dispatch(const blas_call<mpfr_class> &c)
     std::lock_guard<std::mutex> lock(gpu_mutex());
     const gpu_call g = gpu_operands(c);
     const mpfr_prec_t prec = mpfrxx::default_precision_bits();
-    const bool fixed_ok = c.s.op != mplapack_mpfr_cuda::L3_TRSM;
-    if (fixed_ok && !force_runtime()) {
+    if (c.s.op == mplapack_mpfr_cuda::L3_TRSM &&
+        (mpfr_get_emax() != mplapack_mpfr_cuda::RT_DEVICE_EMAX || mpfr_get_emin() != -mplapack_mpfr_cuda::RT_DEVICE_EMAX))
+        return false;
+    if (!force_runtime()) {
         switch (prec) {
 #define MPLAPACK_MPFR_CUDA_L3_DISPATCH(PB) \
     case PB:                               \

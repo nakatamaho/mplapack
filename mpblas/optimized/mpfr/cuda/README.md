@@ -49,7 +49,8 @@ The kernels are in `blas3_kernel_cuda.h`, the host side in
 operations of the reference BLAS (`mpblas/reference/R*.cpp`, which the MPFR
 libraries use for these routines) in the same order. Each operation is
 correctly rounded to the working precision, so the result is the reference
-result bit for bit. Zeros are always `+0` on the `cu_freal` engine.
+result bit for bit. Except in `Rtrsm`, zeros are always `+0` on the
+`cu_freal` engine.
 
 The work is split into independent lanes:
 
@@ -70,10 +71,17 @@ Each routine is written once against an arithmetic engine:
 
 - 256, 512, 768, 1024 and 2048 bits use `cu_freal`;
 - other precisions (or `MPLAPACK_MPFR_CUDA_FORCE_RUNTIME=1`) use `cu_mpfr`;
-- `Rtrsm` always uses `cu_mpfr`, because `cu_freal` has no correctly rounded
-  division. It runs only when the host MPFR exponent range is the device
-  default `[1-2^30, 2^30-1]`, so that overflow and underflow happen as on the
-  host.
+- real `Rtrsm` uses `cu_fdiv_rn` on the fixed precisions (the additive
+  `cu_fround.cuh` patch in `external/mpc_cuda/patches`); runtime precisions
+  and `MPLAPACK_MPFR_CUDA_FORCE_RUNTIME=1` still use `cu_mpfr`. The existing
+  gate on the host MPFR exponent range, device default `[1-2^30, 2^30-1]`,
+  remains. Fixed calls also reject zero divisors and any intermediate
+  exponent outside that range, leaving the caller's outputs untouched.
+  Only Rtrsm preserves signed zeros in the otherwise unused sign field of
+  zero fixed values, so its results remain bit-identical including zeros.
+  Other fixed BLAS retain their documented +0 convention. Only the fixed
+  Rtrsm launch raises the stack limit to 64 KB for the Newton temporaries.
+  Complex divisions (`cu_mpc_div`) are unchanged.
 
 `cuda/R*.cpp` replaces the CPU dispatcher of `../../common/blas`. Calls that
 do not run on the GPU go to the CPU code of `../../common/blas/R*_omp.cpp`:
@@ -90,7 +98,8 @@ Limitations:
 
 - with side L or side R the parallelism is the number of columns or rows only;
 - a call copies its operands to the GPU and back;
-- the routines are not yet measured on a GPU.
+- `Rtrsm` timings are in `external/mpc_cuda/patches/README.md`; the other
+  routines have no timings recorded here.
 
 ## Complex BLAS
 
@@ -138,7 +147,10 @@ when:
 mpc_cuda needs CUDA 13 (nvcc 12.0 rejects its early-clobber `"=&l"` asm
 constraints). The bundled one is built for the GPU architectures given
 (several give fat binaries, e.g. 80 and 90 for A100 and H100); an installed
-libmpc_cuda.a must have been built for the same ones.
+libmpc_cuda.a must have been built for the same ones. An externally installed
+mpc_cuda must also provide `mpc_cuda/cu_fround.cuh`; apply the bundled patch
+if its upstream version does not yet contain it. Both bundled build systems
+apply the patch after extraction and re-extract/rebuild when it changes.
 
 CMake (builds `external/mpc_cuda` unless `MPLAPACK_MPC_CUDA_INCLUDE_DIR` names
 an installed mpc_cuda):
@@ -237,6 +249,17 @@ They run with `OMP_NUM_THREADS=1`: the OpenMP CPU `Rgemm` used as the
 reference creates its temporaries in each worker thread at that thread's MPFR
 default precision, which is not the caller's precision.
 
+`mpfr_cuda_cu_fround_{host,device}` compare the new correctly rounded
+operations directly with host MPFR at 224 (SB=32), 256, 512, 768, 1024 and
+2048 bits: 100,000 random pairs per PB on the host, 1,000,000 on the device,
+plus 256 deliberately constructed pairs, domain/alias tests and integer
+midpoint tests. Output reports mismatches and exact-path counts separately
+for division and sqrt. The device test skips with code 77 without a GPU.
+See `external/mpc_cuda/patches/README.md` for the algorithm, reproducible
+benchmarks (`mpfr_cuda_cu_fround_bench`, `mpfr_cuda_Rtrsm_round_bench`) and
+verification results. These benchmarks are built with the CMake CUDA tests,
+but are not registered as correctness tests.
+
 ## Limitations
 
 - Accelerated: `Rgemm`, `Rsyrk`, `Rsyr2k`, `Rsymm`, `Rtrmm`, `Rtrsm`, the
@@ -244,4 +267,5 @@ default precision, which is not the caller's precision.
 - One thread per element of `C`, no shared-memory tiling yet.
 - The Winograd variant exists for the fixed precisions only (not for the
   `cu_mpfr` kernels) and allocates its temporaries with `cudaMalloc` at every level.
-- Not yet measured on a GPU.
+- `Rtrsm` has been measured on A100 (see the patch README); no timings for
+  the remaining routines are recorded here.

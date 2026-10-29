@@ -1,0 +1,2 @@
+# Unified-diff context has a prefix space before upstream recipe tabs/blank lines.
+patch-* -whitespace

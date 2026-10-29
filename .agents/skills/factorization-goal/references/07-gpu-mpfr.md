@@ -16,7 +16,9 @@ mpblas/optimized/mpfr/cuda (and mplapack-side dispatchers there).
    fixed precisions 256..2048 on cu_freal, others on cu_mpfr).
 2. Bit identity: every operation correctly rounded as the CPU. Divisions
    and square roots of the panels on the fixed precisions use cu_fdiv_rn /
-   cu_sqrt_rn (goal 07a); compare by measurement with (a) cu_mpfr on the
+   cu_sqrt_rn (available in the bundled additive mpc_cuda patch from goal
+   07a; fixed real Rtrsm already uses it for division); compare by
+   measurement with (a) cu_mpfr on the
    device and (b) the panel on the host with the trailing update on the
    device (hybrid, MAGMA style), and document the choice. Updates (Rgemm, Rtrsm with diag = U, Rsyrk) on
    cu_freal.

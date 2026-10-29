@@ -1,0 +1,180 @@
+From: MPLAPACK maintainers
+Subject: [PATCH] Add correctly rounded finite cu_freal division and sqrt
+
+Against mpc_cuda abd9407 (0.0.1). Add cu_fdiv_rn/cu_sqrt_rn without changing
+cu_fmath or operators. Newton at PB+64 uses a conservative 64-ulp filter;
+ambiguous results use exact integer midpoint products and ties-to-even.
+Host/device MPFR comparison tests and benchmarks are carried by MPLAPACK
+in mpblas/optimized/mpfr/cuda/test/cu_fround_test.cpp. See patches/README.md
+for reproducible commands, limitations and verification status.
+
+--- a/Makefile.in
++++ b/Makefile.in
+@@ -277,7 +277,8 @@
+ 	$(MKDIR_P) $(DESTDIR)$(pkgincdir)/mpfr $(DESTDIR)$(pkgincdir)/mpc
+ 	$(INSTALL_DATA) include/mpc_cuda/*.h $(DESTDIR)$(pkgincdir)/
+ 	$(INSTALL_DATA) include/mpc_cuda/cu_freal.cuh include/mpc_cuda/cu_fcomplex.cuh \
+-	    include/mpc_cuda/cu_fmath.cuh include/mpc_cuda/cu_fcmath.cuh $(DESTDIR)$(pkgincdir)/
++	    include/mpc_cuda/cu_fmath.cuh include/mpc_cuda/cu_fcmath.cuh \
++	    include/mpc_cuda/cu_fround.cuh $(DESTDIR)$(pkgincdir)/
+ 	$(MKDIR_P) $(DESTDIR)$(includedir)
+ 	$(INSTALL_DATA) include/mpc_cuda.cuh include/mpc_cuda.h $(DESTDIR)$(includedir)/
+ 	cd src/mpfr_cuda && find . -name '*.h' -print | tar -cf - -T - | tar -xf - -C $(DESTDIR)$(pkgincdir)/mpfr
+--- a/include/mpc_cuda.cuh
++++ b/include/mpc_cuda.cuh
+@@ -52,6 +52,7 @@
+  * csqrt,csin,ccos,ctan,csinh,ccosh}.  Header-only templates; fastest at low/
+  * medium precision.  (Real/complex special functions are future work.) */
+ #include "mpc_cuda/cu_fmath.cuh"
++#include "mpc_cuda/cu_fround.cuh"
+ #include "mpc_cuda/cu_fcmath.cuh"
+ 
+ #endif /* MPC_CUDA_UMBRELLA_CUH */
+--- /dev/null
++++ b/include/mpc_cuda/cu_fround.cuh
+@@ -0,0 +1,145 @@
++/* Correctly rounded, finite cu_freal division and square root (RNDN).
++ * Additive API: cu_fmath's approximate functions/operators are unchanged.
++ * No NaN/Inf/signed zero: zero results are +0; domain errors return 1.
++ * Exponents are unrestricted by MPFR's emin/emax, but must fit in long
++ * (as for cu_freal's other operations). Inputs must be normalized.
++ *
++ * Ziv filter: Newton at W=PB+64, then exact integer midpoint comparison
++ * only within 64 ulps(W) of a PB rounding boundary. Here u=2^-W.
++ * Normalizing inputs keeps the reciprocal argument in [1/2,1), the
++ * rsqrt argument in [1/2,2). The rounded-double seeds have relative error
++ * <=2^-50 (including conversion and the host/device double division/sqrt).
++ * For |error|<=1/8, rounding each multiply/subtract in cu_recip_w gives
++ * |e_next| <= e^2+4u; cu_sqrt_w gives <=2e^2+8u. The iteration count
++ * cu_newton_iters(W)+1 = ceil(log2(W/52))+2 for W>=96. Ignoring the
++ * rounding floor, 2e^2 starting at 2^-50 gives e_j <= 2^(1-49*2^j);
++ * the two surplus iterations put that term well below u. At the floor,
++ * (5u)^2+4u < 5u and 2(9u)^2+8u < 9u for W>=96, so the final errors
++ * stay bounded despite rounding. Thus final reciprocal error <=5u and rsqrt
++ * error <=9u; the final multiply gives respectively <=7u and <=11u.
++ * A relative error <=11u is <22 ulps(W), including a binade crossing.
++ * The conservative 64-ulp filter covers both (W>=96, i.e. every PB>=32).
++ * Away from that interval, conversion to PB cannot cross a midpoint.
++ * In the interval the midpoint has PB+1 bits, is exactly representable
++ * at W, and full integer products decide a-t*b or a-t*t, without rounding.
++ * No unbounded Ziv loop or floating point is used in that exact decision.
++ */
++#ifndef CU_MPC_CUDA_FROUND_CUH
++#define CU_MPC_CUDA_FROUND_CUH
++#include "mpc_cuda/cu_fmath.cuh"
++
++namespace cu_fp {
++namespace fround_detail {
++
++/* Instrumentable internal routines: exact is per call, never global state. */
++template<int W> __host__ __device__ static cu_limb tail(const cu_freal<W>& y)
++{
++  return cu_freal<W>::SB ? (y.m[0]>>32)|(y.m[1]<<32) : y.m[0];
++}
++template<int W> __host__ __device__ static bool ambiguous(const cu_freal<W>& y)
++{
++  const cu_limb h=1ULL<<63, l=tail(y);
++  return l>=h-64 && l<=h+64;
++}
++template<int W> __host__ __device__ static cu_freal<W> midpoint(cu_freal<W> y)
++{
++  if (cu_freal<W>::SB) { y.m[0]=0; y.m[1]=(y.m[1]&~0xffffffffULL)|0x80000000ULL; }
++  else y.m[0]=1ULL<<63;
++  y.sign=1;
++  return y;
++}
++__host__ __device__ static int msb(const cu_limb* a, int n)
++{
++  for(int i=n-1;i>=0;--i) if(a[i]) {
++    int k=63; while(!((a[i]>>k)&1)) --k;
++    return i*64+k;
++  }
++  return -1;
++}
++/* Compare positive integers times powers of two; shifts need no workspace. */
++__host__ __device__ static int compare(const cu_limb* a,int na,long ea,
++                                      const cu_limb* b,int nb,long eb)
++{
++  int ha=msb(a,na), hb=msb(b,nb);
++  if(ha+ea!=hb+eb) return ha+ea>hb+eb?1:-1;
++  int n=(ha>hb?ha:hb)+1;
++  for(int i=0;i<n;++i) {
++    cu_limb x=cu_wbit(a,na,ha-i), y=cu_wbit(b,nb,hb-i);
++    if(x!=y) return x>y?1:-1;
++  }
++  return 0;
++}
++/* sign(a-t*b), all inputs positive. Full 2N-limb product; the midpoint's
++ * trailing zeros mean only PB+1 by PB bits actually carry information. */
++template<int W> __host__ __device__ static int residual(const cu_freal<W>& a,
++                                      const cu_freal<W>& t,const cu_freal<W>& b)
++{
++  const int N=cu_freal<W>::N;
++  cu_limb p[2*N]; cu_mul_full<W>(p,t.m,b.m);
++  return compare(a.m,N,a.exp-N*64,p,2*N,t.exp+b.exp-2*N*64);
++}
++/* Move the exact midpoint one W-ulp toward the exact answer, then let
++ * cu_convert do the PB rounding (including carry and ties-to-even). */
++template<int PB> __host__ __device__ static cu_freal<PB>
++finish(cu_freal<PB+64> t, int cmp)
++{
++  typedef cu_freal<PB+64> G;
++  if(cmp) {
++    cu_limb d=1ULL<<G::SB;
++    for(int i=0;i<G::N && d;++i) {
++      cu_limb old=t.m[i];
++      t.m[i]=cmp>0?old+d:old-d;
++      d=cmp>0?(t.m[i]<old):(old<d);
++    }
++  }
++  return cu_convert<PB>(t);
++}
++template<int PB> __host__ __device__ static int
++div(cu_freal<PB>& q,const cu_freal<PB>& a,const cu_freal<PB>& b,bool& exact)
++{
++  exact=false;
++  if(b.is_zero()) return 1;
++  if(a.is_zero()) { q.set_zero(); return 0; }
++  const int W=PB+64;
++  cu_freal<W> aw=cu_convert<W>(a), bw=cu_convert<W>(b);
++  const long scale=a.exp-b.exp;
++  const int sign=a.sign*b.sign;
++  aw.exp=bw.exp=0; aw.sign=bw.sign=1;
++  cu_freal<W> y=cu_fmul<W>(aw,cu_recip_w<W>(bw));
++  if(ambiguous(y)) {
++    exact=true;
++    cu_freal<W> t=midpoint(y);
++    q=finish<PB>(t,residual(aw,t,bw));
++  } else q=cu_convert<PB>(y);
++  q.exp+=scale; q.sign=sign;
++  return 0;
++}
++template<int PB> __host__ __device__ static int
++sqrt(cu_freal<PB>& r,const cu_freal<PB>& a,bool& exact)
++{
++  exact=false;
++  if(a.is_zero()) { r.set_zero(); return 0; }
++  if(a.sign<0) return 1;
++  const int W=PB+64;
++  cu_freal<W> aw=cu_convert<W>(a);
++  const long scale=cu_floordiv(a.exp,2);
++  aw.exp=a.exp-2*scale;
++  cu_freal<W> y=cu_sqrt_w<W>(aw);
++  if(ambiguous(y)) {
++    exact=true;
++    cu_freal<W> t=midpoint(y);
++    r=finish<PB>(t,residual(aw,t,t));
++  } else r=cu_convert<PB>(y);
++  r.exp+=scale;
++  return 0;
++}
++} /* namespace fround_detail */
++
++template<int PB> __host__ __device__ static int
++cu_fdiv_rn(cu_freal<PB>& q,const cu_freal<PB>& a,const cu_freal<PB>& b)
++{ bool exact; return fround_detail::div(q,a,b,exact); }
++template<int PB> __host__ __device__ static int
++cu_sqrt_rn(cu_freal<PB>& r,const cu_freal<PB>& a)
++{ bool exact; return fround_detail::sqrt(r,a,exact); }
++} /* namespace cu_fp */
++#endif

@@ -219,6 +219,9 @@ if(MPLAPACK_ENABLE_MPFR_CUDA)
         "MPLAPACK_MPC_CUDA_INCLUDE_DIR must point to the mpc_cuda include directory "
         "(containing mpc_cuda.cuh); see https://github.com/tkouya/mpc_cuda")
     endif()
+    if(NOT EXISTS "${MPLAPACK_MPC_CUDA_INCLUDE_DIR}/mpc_cuda/cu_fround.cuh")
+      message(FATAL_ERROR "Installed mpc_cuda needs cu_fround.cuh; apply external/mpc_cuda/patches/patch-cu_freal-correctly-rounded-div-sqrt")
+    endif()
     if(NOT MPLAPACK_MPC_CUDA_LIBRARY)
       set(MPLAPACK_MPC_CUDA_LIBRARY "${MPLAPACK_MPC_CUDA_INCLUDE_DIR}/../lib/libmpc_cuda.a")
     endif()
@@ -434,6 +437,8 @@ if(_mplapack_mpc_cuda_bundled)
   set(_mplapack_mpc_cuda_libdir "${CUDAToolkit_LIBRARY_DIR}")
   # mpc_cuda builds from the GMP/MPFR/MPC sources of external/{gmp,mpfr,mpc}
   # and must not be built in parallel.
+  find_program(MPLAPACK_PATCH_EXECUTABLE patch REQUIRED)
+  set(_mplapack_mpc_cuda_patch "${_mplapack_external}/mpc_cuda/patches/patch-cu_freal-correctly-rounded-div-sqrt")
   ExternalProject_Add(mpc_cuda_bundled
     URL "${_mplapack_external}/mpc_cuda/download/mpc_cuda-0.0.1-abd9407.tar.xz"
     URL_HASH SHA256=bcac28655a62d381ffe38fc09704aca39f45610d1f697c351b4fc0acaa2278e7
@@ -442,6 +447,7 @@ if(_mplapack_mpc_cuda_bundled)
       ${CMAKE_COMMAND} -E tar xf "${_mplapack_external}/gmp/download/gmp-6.3.0.tar.xz"
       COMMAND ${CMAKE_COMMAND} -E tar xf "${_mplapack_external}/mpfr/download/mpfr-4.2.2.tar.bz2"
       COMMAND ${CMAKE_COMMAND} -E tar xf "${_mplapack_external}/mpc/download/mpc-1.4.1.tar.xz"
+      COMMAND "${MPLAPACK_PATCH_EXECUTABLE}" -p1 --batch -i "${_mplapack_mpc_cuda_patch}"
     CONFIGURE_COMMAND <SOURCE_DIR>/configure "--prefix=${_mplapack_mpc_cuda_root}"
       "--with-cuda-arch=sm_${_mplapack_mpc_cuda_arch}" "NVCC=${_mplapack_mpc_cuda_nvcc}"
     BUILD_IN_SOURCE ON
@@ -450,6 +456,12 @@ if(_mplapack_mpc_cuda_bundled)
     BUILD_COMMAND ${CMAKE_COMMAND} -E env MAKEFLAGS= LC_ALL=C "CUDA_LIBDIR=${_mplapack_mpc_cuda_libdir}" make -j1
     INSTALL_COMMAND ${CMAKE_COMMAND} -E env MAKEFLAGS= make -j1 install
     BUILD_BYPRODUCTS "${MPLAPACK_MPC_CUDA_LIBRARY}")
+  # A changed patch invalidates download/extract, not just patch: never apply
+  # an updated diff on top of an already patched source tree.
+  ExternalProject_Add_Step(mpc_cuda_bundled patch_input
+    INDEPENDENT TRUE
+    DEPENDEES mkdir DEPENDERS download
+    DEPENDS "${_mplapack_mpc_cuda_patch}")
 endif()
 
 if(MPLAPACK_ENABLE_MPFR_CUDA)
@@ -771,7 +783,36 @@ if(MPLAPACK_BUILD_TESTS)
     # OpenMP CPU Rgemm used as the reference creates its temporaries at the
     # worker threads' MPFR default precision.
     set(_mplapack_mpfr_cuda_dir "${CMAKE_CURRENT_SOURCE_DIR}/mpblas/optimized/mpfr/cuda")
+    add_executable(mpfr_cuda_Rtrsm_round_bench "${_mplapack_mpfr_cuda_dir}/test/Rtrsm_round_bench.cpp")
+    target_link_libraries(mpfr_cuda_Rtrsm_round_bench PRIVATE mplapack_mpfr_opt_cuda CUDA::cudart)
+    add_executable(mpfr_cuda_cu_fround_bench "${_mplapack_mpfr_cuda_dir}/test/cu_fround_bench.cu")
+    target_include_directories(mpfr_cuda_cu_fround_bench PRIVATE "${MPLAPACK_MPC_CUDA_INCLUDE_DIR}")
+    target_link_libraries(mpfr_cuda_cu_fround_bench PRIVATE "${MPLAPACK_MPC_CUDA_LIBRARY}" CUDA::cudart)
+    target_compile_options(mpfr_cuda_cu_fround_bench PRIVATE "$<$<COMPILE_LANGUAGE:CUDA>:-fmad=false>")
+    set_target_properties(mpfr_cuda_cu_fround_bench PROPERTIES
+      CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED ON CUDA_SEPARABLE_COMPILATION ON
+      CUDA_RESOLVE_DEVICE_SYMBOLS ON CUDA_ARCHITECTURES "${MPLAPACK_CUDA_ARCHITECTURES}")
+    if(_mplapack_mpc_cuda_bundled)
+      add_dependencies(mpfr_cuda_cu_fround_bench mpc_cuda_bundled)
+    endif()
     foreach(_variant host device)
+      set(_roundexe mpfr_cuda_cu_fround_${_variant}_test)
+      if(_variant STREQUAL "host")
+        add_executable(${_roundexe} "${_mplapack_mpfr_cuda_dir}/test/cu_fround_test.cpp")
+      else()
+        add_executable(${_roundexe} "${_mplapack_mpfr_cuda_dir}/test/cu_fround_device_test.cu")
+        target_link_libraries(${_roundexe} PRIVATE CUDA::cudart)
+        target_compile_options(${_roundexe} PRIVATE "$<$<COMPILE_LANGUAGE:CUDA>:-fmad=false>")
+        set_target_properties(${_roundexe} PROPERTIES CUDA_STANDARD 17
+          CUDA_STANDARD_REQUIRED ON CUDA_ARCHITECTURES "${MPLAPACK_CUDA_ARCHITECTURES}")
+      endif()
+      target_include_directories(${_roundexe} PRIVATE "${MPLAPACK_MPC_CUDA_INCLUDE_DIR}")
+      target_link_libraries(${_roundexe} PRIVATE mplapack_mpfr_opt)
+      if(_mplapack_mpc_cuda_bundled)
+        add_dependencies(${_roundexe} mpc_cuda_bundled)
+      endif()
+      add_test(NAME mpfr_cuda_cu_fround_${_variant} COMMAND ${_roundexe})
+      set_tests_properties(mpfr_cuda_cu_fround_${_variant} PROPERTIES SKIP_RETURN_CODE 77)
       if(_variant STREQUAL "host")
         set(_fixed "${_mplapack_mpfr_cuda_dir}/Rgemm_host_cuda.cpp")
       else()
