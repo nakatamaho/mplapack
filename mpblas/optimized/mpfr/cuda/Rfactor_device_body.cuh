@@ -31,7 +31,11 @@ template<class E> struct factor_job {
             blas_mats<E> x{};
             x.a=a; x.b=b; x.c=c;
             x.al=constants; x.be=constants;
+#ifdef MPLAPACK_MPFR_FACTOR_COMPLEX
+            e.trsm(s,x,lane);
+#else
             l3_trsm(e,s,x,lane);
+#endif
         } else if(op==2) {
             long start=lane*128, end=start+128<m?start+128:m, best=start;
             auto largest=e.reg(0), v=e.reg(1);
@@ -57,7 +61,11 @@ template<class E> struct factor_job {
                 auto v=e.reg(0), t=e.reg(1);
                 e.set(t,e.at(a,0,0)); e.set(v,e.at(a,best,0));
                 e.put(a,0,0,v); e.put(a,best,0,t);
+#ifdef MPLAPACK_MPFR_FACTOR_COMPLEX
+                e.magnitude(v,e.at(a,0,0));
+#else
                 e.absolute(v,e.at(a,0,0));
+#endif
                 status[1]=e.compare(v,e.at(constants,2,0))>=0;
                 if(status[1]) {
                     e.div(t,e.at(constants,0,0),e.at(a,0,0));
@@ -96,10 +104,18 @@ template<class E> struct factor_update_job {
         if(op==0) {
             blas_mats<E> x{}; x.a=a; x.c=c;
             x.al=E::shift(constants,1); x.be=constants;
+#ifdef MPLAPACK_MPFR_FACTOR_COMPLEX
+            e.herk(s,x,lane);
+#else
             l3_syrk(e,s,x,lane%s.n,lane/s.n);
+#endif
         } else {
             auto al=E::shift(constants,1),ab=a;
+#ifdef MPLAPACK_MPFR_FACTOR_COMPLEX
+            e.gemm(g,al,constants,a,b,c,lane%g.m,lane/g.m);
+#else
             gemm_engine_element(e,g,al,constants,a,b,ab,c,lane%g.m,lane/g.m,false);
+#endif
         }
     }
 };

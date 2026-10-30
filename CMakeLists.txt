@@ -488,7 +488,12 @@ if(MPLAPACK_ENABLE_MPFR_CUDA)
   list(FILTER _mplapack_mpfr_cuda_cblas EXCLUDE REGEX "/Cblas_bridge_cuda\\.cpp$")
   mplapack_add_accelerator_backend(mpfr cuda
     "${_mplapack_mpfr_cuda_dir}/Rgetrf.cpp"
+    "${_mplapack_mpfr_cuda_dir}/Cgetrf.cpp"
     "${_mplapack_mpfr_cuda_dir}/Rpotrf.cpp"
+    "${_mplapack_mpfr_cuda_dir}/Cpotrf.cpp"
+    "${_mplapack_mpfr_cuda_dir}/Cfactor_bridge_cuda.cpp"
+    "${_mplapack_mpfr_cuda_dir}/Cfactor_device_cuda.cu"
+    "${_mplapack_mpfr_cuda_dir}/Cfactor_rt_cuda.cu"
     "${_mplapack_mpfr_cuda_dir}/Rfactor_bridge_cuda.cpp"
     "${_mplapack_mpfr_cuda_dir}/Rfactor_device_cuda.cu"
     "${_mplapack_mpfr_cuda_dir}/Rfactor_rt_cuda.cu"
@@ -793,6 +798,11 @@ if(MPLAPACK_BUILD_TESTS)
     target_link_libraries(mpfr_cpu_Rfactor_bench PRIVATE mplapack_mpfr_opt)
     add_executable(mpfr_cuda_Rfactor_bench "${_mplapack_mpfr_cuda_dir}/test/Rfactor_bench.cpp")
     target_link_libraries(mpfr_cuda_Rfactor_bench PRIVATE mplapack_mpfr_opt_cuda CUDA::cudart)
+    add_executable(mpfr_cpu_Cfactor_bench "${_mplapack_mpfr_cuda_dir}/test/Cfactor_bench.cpp")
+    target_compile_definitions(mpfr_cpu_Cfactor_bench PRIVATE MPLAPACK_FACTOR_BENCH_CPU_ONLY)
+    target_link_libraries(mpfr_cpu_Cfactor_bench PRIVATE mplapack_mpfr_opt)
+    add_executable(mpfr_cuda_Cfactor_bench "${_mplapack_mpfr_cuda_dir}/test/Cfactor_bench.cpp")
+    target_link_libraries(mpfr_cuda_Cfactor_bench PRIVATE mplapack_mpfr_opt_cuda CUDA::cudart)
     add_executable(mpfr_cuda_Rfactor_panel_bench
       "${_mplapack_mpfr_cuda_dir}/test/Rfactor_panel_bench.cpp"
       "${_mplapack_mpfr_cuda_dir}/Rfactor_device_cuda.cu"
@@ -806,8 +816,22 @@ if(MPLAPACK_BUILD_TESTS)
     if(_mplapack_mpc_cuda_bundled)
       add_dependencies(mpfr_cuda_Rfactor_panel_bench mpc_cuda_bundled)
     endif()
+    add_executable(mpfr_cuda_Cfactor_panel_bench
+      "${_mplapack_mpfr_cuda_dir}/test/Cfactor_panel_bench.cpp"
+      "${_mplapack_mpfr_cuda_dir}/Cfactor_device_cuda.cu"
+      "${_mplapack_mpfr_cuda_dir}/Cfactor_rt_cuda.cu"
+      "${_mplapack_mpfr_cuda_dir}/test/Cfactor_device_globals.cu")
+    target_include_directories(mpfr_cuda_Cfactor_panel_bench PRIVATE "${MPLAPACK_MPC_CUDA_INCLUDE_DIR}")
+    target_link_libraries(mpfr_cuda_Cfactor_panel_bench PRIVATE mplapack_mpfr_opt "${MPLAPACK_MPC_CUDA_LIBRARY}" CUDA::cudart)
+    target_compile_options(mpfr_cuda_Cfactor_panel_bench PRIVATE "$<$<COMPILE_LANGUAGE:CUDA>:-fmad=false>")
+    set_target_properties(mpfr_cuda_Cfactor_panel_bench PROPERTIES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED ON
+      CUDA_SEPARABLE_COMPILATION ON CUDA_RESOLVE_DEVICE_SYMBOLS ON
+      CUDA_ARCHITECTURES "${MPLAPACK_CUDA_ARCHITECTURES}")
+    if(_mplapack_mpc_cuda_bundled)
+      add_dependencies(mpfr_cuda_Cfactor_panel_bench mpc_cuda_bundled)
+    endif()
     if(UNIX AND NOT APPLE)
-      foreach(_factor_bench mpfr_cpu_Rfactor_bench mpfr_cuda_Rfactor_bench mpfr_cuda_Rfactor_panel_bench)
+      foreach(_factor_bench mpfr_cpu_Rfactor_bench mpfr_cuda_Rfactor_bench mpfr_cuda_Rfactor_panel_bench mpfr_cpu_Cfactor_bench mpfr_cuda_Cfactor_bench mpfr_cuda_Cfactor_panel_bench)
         target_link_options(${_factor_bench} PRIVATE "-Wl,--disable-new-dtags")
       endforeach()
     endif()
@@ -860,6 +884,42 @@ if(MPLAPACK_BUILD_TESTS)
       set_tests_properties(mpfr_cuda_Rfactor_${_variant} PROPERTIES SKIP_RETURN_CODE 77 ENVIRONMENT "OMP_NUM_THREADS=1")
       set_tests_properties(mpfr_cuda_Rfactor_${_variant}_runtime PROPERTIES
         SKIP_RETURN_CODE 77 ENVIRONMENT "OMP_NUM_THREADS=1;MPLAPACK_MPFR_CUDA_FORCE_RUNTIME=1")
+      set(_cfexe mpfr_cuda_Cfactor_${_variant}_test)
+      if(_variant STREQUAL "host")
+        set(_cfactor_sources
+          "${_mplapack_mpfr_cuda_dir}/test/Cfactor_fixed_host.cpp"
+          "${_mplapack_mpfr_cuda_dir}/test/Cfactor_runtime_host.cpp")
+      else()
+        set(_cfactor_sources
+          "${_mplapack_mpfr_cuda_dir}/Cfactor_device_cuda.cu"
+          "${_mplapack_mpfr_cuda_dir}/Cfactor_rt_cuda.cu"
+          "${_mplapack_mpfr_cuda_dir}/test/Cfactor_device_globals.cu")
+      endif()
+      add_executable(${_cfexe}
+        "${_mplapack_mpfr_cuda_dir}/test/Cfactor_cuda_test.cpp"
+        "${_mplapack_mpfr_cuda_dir}/Cfactor_bridge_cuda.cpp" ${_cfactor_sources})
+      target_include_directories(${_cfexe} PRIVATE "${MPLAPACK_MPC_CUDA_INCLUDE_DIR}")
+      target_link_libraries(${_cfexe} PRIVATE mplapack_mpfr_opt CUDA::cudart)
+      if(UNIX AND NOT APPLE)
+        target_link_options(${_cfexe} PRIVATE "-Wl,--disable-new-dtags")
+      endif()
+      if(_variant STREQUAL "host")
+        target_compile_definitions(${_cfexe} PRIVATE MPLAPACK_MPFR_CUDA_HOST_EMULATION)
+      else()
+        target_link_libraries(${_cfexe} PRIVATE "${MPLAPACK_MPC_CUDA_LIBRARY}")
+        target_compile_options(${_cfexe} PRIVATE "$<$<COMPILE_LANGUAGE:CUDA>:-fmad=false>")
+        set_target_properties(${_cfexe} PROPERTIES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED ON
+          CUDA_SEPARABLE_COMPILATION ON CUDA_RESOLVE_DEVICE_SYMBOLS ON
+          CUDA_ARCHITECTURES "${MPLAPACK_CUDA_ARCHITECTURES}")
+      endif()
+      if(_mplapack_mpc_cuda_bundled)
+        add_dependencies(${_cfexe} mpc_cuda_bundled)
+      endif()
+      add_test(NAME mpfr_cuda_Cfactor_${_variant} COMMAND ${_cfexe})
+      add_test(NAME mpfr_cuda_Cfactor_${_variant}_runtime COMMAND ${_cfexe})
+      set_tests_properties(mpfr_cuda_Cfactor_${_variant} PROPERTIES SKIP_RETURN_CODE 77 ENVIRONMENT "OMP_NUM_THREADS=1")
+      set_tests_properties(mpfr_cuda_Cfactor_${_variant}_runtime PROPERTIES SKIP_RETURN_CODE 77
+        ENVIRONMENT "OMP_NUM_THREADS=1;MPLAPACK_MPFR_CUDA_FORCE_RUNTIME=1")
       set(_roundexe mpfr_cuda_cu_fround_${_variant}_test)
       if(_variant STREQUAL "host")
         add_executable(${_roundexe} "${_mplapack_mpfr_cuda_dir}/test/cu_fround_test.cpp")

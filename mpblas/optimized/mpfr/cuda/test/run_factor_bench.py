@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Interleaved, fresh-process measurements. Append raw records as JSON lines.
 
-Usage: run_factor_bench.py CPU_BINARY OLD_CUDA_BINARY NEW_CUDA_BINARY OUT [ROUNDS]
+Usage: run_factor_bench.py CPU_BINARY OLD_CUDA_BINARY NEW_CUDA_BINARY OUT [ROUNDS] [complex]
 Inputs have full-P significands, deterministic seed, and strict diagonal dominance.
 CPU/old/entry order reverses on alternate rounds; report medians, never estimates.
 """
@@ -15,9 +15,11 @@ import sys
 
 cpu, old, new, output = sys.argv[1:5]
 rounds = int(sys.argv[5]) if len(sys.argv) > 5 else 3
-cases = [(512, n, routine) for n in (512, 1024, 2048, 4096)
+complex_mode = len(sys.argv) > 6 and sys.argv[6] == "complex"
+cases = [(512, n, routine) for n in ((512, 1024, 2048) if complex_mode else (512, 1024, 2048, 4096))
          for routine in ("getrf", "potrf")]
-cases += [(p, 512, r) for p in (256, 1024, 200) for r in ("getrf", "potrf")]
+if not complex_mode:
+    cases += [(p, 512, r) for p in (256, 1024, 200) for r in ("getrf", "potrf")]
 records = []
 # Compare default algorithms, not tuning inherited from the invoking shell.
 base_env = {k: v for k, v in os.environ.items()

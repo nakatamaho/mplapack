@@ -14,6 +14,14 @@ __attribute__((visibility("hidden"))) inline size_t fixed_stack_bytes(long p) {
 __attribute__((visibility("hidden"))) inline size_t runtime_stack_bytes(long p) {
     return p<=1024?8192:p<=4096?16384:65536;
 }
+// Complex panels also call MPC division/hypot. Keep their policy separate
+// from real panels and BLAS; stack reservations are scoped by the same guard.
+__attribute__((visibility("hidden"))) inline size_t complex_fixed_stack_bytes(long p) {
+    return p<=1024?8192:16384;
+}
+__attribute__((visibility("hidden"))) inline size_t complex_runtime_stack_bytes(long p) {
+    return p<=1024?8192:p<=2048?16384:65536;
+}
 #ifndef MPLAPACK_MPFR_CUDA_HOST_EMULATION
 struct __attribute__((visibility("hidden"))) mpfr_stack_guard {
     size_t old=0; bool changed=false; int error=0;
