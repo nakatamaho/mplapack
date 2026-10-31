@@ -352,8 +352,16 @@ file(GLOB _mplapack_blas_cuda_sources CONFIGURE_DEPENDS
 
 foreach(_b dd td qd)
   set_property(SOURCE "mpblas/optimized/${_b}/cuda/Rpotrf_gpu_cuda.cu"
-    "mpblas/optimized/${_b}/cuda/Rgetrf_gpu_cuda.cu" APPEND PROPERTY
+    "mpblas/optimized/${_b}/cuda/Rgetrf_gpu_cuda.cu"
+    "mpblas/optimized/${_b}/cuda/Rsolver_gpu_cuda.cu" APPEND PROPERTY
     COMPILE_OPTIONS "$<$<COMPILE_LANGUAGE:CUDA>:-Xcompiler=-ffp-contract=off>")
+endforeach()
+
+foreach(_b dd td qd mpfr)
+  set(_solver_${_b}_sources "")
+  foreach(_r Rgetrs Rpotrs Rgesv Rposv Cgetrs Cpotrs Cgesv Cposv)
+    list(APPEND _solver_${_b}_sources "${CMAKE_CURRENT_SOURCE_DIR}/mpblas/optimized/${_b}/cuda/${_r}.cpp")
+  endforeach()
 endforeach()
 
 if(MPLAPACK_ENABLE_CUDA)
@@ -366,7 +374,7 @@ if(MPLAPACK_ENABLE_CUDA)
   # shadow the same-stem CPU files; Rgemm_gpu_cuda.cu (kernels of
   # mpblas/optimized/common), Rsyrk_legacy_cuda.cu and the *_bridge_cuda.cpp
   # files are helpers.
-  mplapack_add_accelerator_backend(dd cuda ${_mplapack_cuda_sources}
+  mplapack_add_accelerator_backend(dd cuda ${_mplapack_cuda_sources} ${_solver_dd_sources}
     "${CMAKE_CURRENT_SOURCE_DIR}/mpblas/optimized/dd/cuda/Rgemm.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/mpblas/optimized/dd/cuda/Rgemm_bridge_cuda.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/mpblas/optimized/dd/cuda/Rpotrf.cpp"
@@ -400,7 +408,7 @@ foreach(_b qd td)
   # cuda/Rgemm.cpp shadows optimized/<b>/Rgemm.cpp and common/blas_cuda/R*.cpp
   # the CPU dispatchers of common/blas; the *_cuda files are helpers.
   set(_dir "${CMAKE_CURRENT_SOURCE_DIR}/mpblas/optimized/${_b}/cuda")
-  mplapack_add_accelerator_backend(${_b} cuda
+  mplapack_add_accelerator_backend(${_b} cuda ${_solver_${_b}_sources} "${_dir}/Rsolver_gpu_cuda.cu"
     "${_dir}/Rgemm.cpp" "${_dir}/Rgemm_bridge_cuda.cpp" "${_dir}/Rgemm_gpu_cuda.cu"
     "${_dir}/Rpotrf.cpp" "${_dir}/Cpotrf.cpp" "${_dir}/Rpotrf_gpu_cuda.cu"
     "${_dir}/Rgetrf.cpp" "${_dir}/Cgetrf.cpp" "${_dir}/Rgetrf_gpu_cuda.cu"
@@ -486,7 +494,7 @@ if(MPLAPACK_ENABLE_MPFR_CUDA)
   set(_mplapack_mpfr_cuda_cblas ${_mplapack_blas_cuda_sources})
   list(FILTER _mplapack_mpfr_cuda_cblas INCLUDE REGEX "/(C[A-Za-z0-9]+|Rgemmtr|Rsbmv|Rspmv|Rgbmv|Rtbmv|Rtpmv|Rspr|Rspr2)\\.cpp$")
   list(FILTER _mplapack_mpfr_cuda_cblas EXCLUDE REGEX "/Cblas_bridge_cuda\\.cpp$")
-  mplapack_add_accelerator_backend(mpfr cuda
+  mplapack_add_accelerator_backend(mpfr cuda ${_solver_mpfr_sources}
     "${_mplapack_mpfr_cuda_dir}/Rgetrf.cpp"
     "${_mplapack_mpfr_cuda_dir}/Cgetrf.cpp"
     "${_mplapack_mpfr_cuda_dir}/Rpotrf.cpp"
@@ -535,6 +543,8 @@ if(MPLAPACK_ENABLE_MPFR_CUDA)
   mplapack_add_unique_symbol_post_build(mplapack_mpfr_opt_cuda)
   list(APPEND MPLAPACK_INSTALL_TARGETS mplapack_mpfr_opt_cuda)
 endif()
+
+include(cmake/MplapackSolverTests.cmake)
 
 if(MPLAPACK_ENABLE_OPENCL)
   file(GLOB _mplapack_opencl_sources CONFIGURE_DEPENDS

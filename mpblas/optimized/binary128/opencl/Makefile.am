@@ -91,6 +91,10 @@ libmplapack_binary128_opt_opencl_la_SOURCES = \
 ../../common/blas/iRamax.cpp ../../common/blas/iRamax_omp.cpp \
 ../../../reference/mplapackinit.cpp \
 $(MPLAPACK_ACCEL_REFERENCE_SOURCES) \
+../../../../mplapack/reference/Rgetrs.cpp ../../../../mplapack/reference/Cgetrs.cpp \
+../../../../mplapack/reference/Rpotrs.cpp ../../../../mplapack/reference/Cpotrs.cpp \
+../../../../mplapack/reference/Rgesv.cpp ../../../../mplapack/reference/Cgesv.cpp \
+../../../../mplapack/reference/Rposv.cpp ../../../../mplapack/reference/Cposv.cpp \
 ../../../../mplapack/optimized/common/Rlaswp.cpp \
 ../../../../mplapack/optimized/common/Claswp.cpp \
 ../../../../mplapack/optimized/common/Rgetrf.cpp \

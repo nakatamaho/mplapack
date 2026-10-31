@@ -60,7 +60,6 @@ MPLAPACK_ACCEL_REFERENCE_SOURCES = \
 ../../../../mplapack/reference/Cgerqf.cpp \
 ../../../../mplapack/reference/Cgesc2.cpp \
 ../../../../mplapack/reference/Cgesdd.cpp \
-../../../../mplapack/reference/Cgesv.cpp \
 ../../../../mplapack/reference/Cgesvd.cpp \
 ../../../../mplapack/reference/Cgesvdq.cpp \
 ../../../../mplapack/reference/Cgesvdx.cpp \
@@ -69,7 +68,6 @@ MPLAPACK_ACCEL_REFERENCE_SOURCES = \
 ../../../../mplapack/reference/Cgetc2.cpp \
 ../../../../mplapack/reference/Cgetf2.cpp \
 ../../../../mplapack/reference/Cgetri.cpp \
-../../../../mplapack/reference/Cgetrs.cpp \
 ../../../../mplapack/reference/Cgetsls.cpp \
 ../../../../mplapack/reference/Cgetsqrhrt.cpp \
 ../../../../mplapack/reference/Cggbak.cpp \
@@ -307,12 +305,10 @@ MPLAPACK_ACCEL_REFERENCE_SOURCES = \
 ../../../../mplapack/reference/Cpoequ.cpp \
 ../../../../mplapack/reference/Cpoequb.cpp \
 ../../../../mplapack/reference/Cporfs.cpp \
-../../../../mplapack/reference/Cposv.cpp \
 ../../../../mplapack/reference/Cposvx.cpp \
 ../../../../mplapack/reference/Cpotf2.cpp \
 ../../../../mplapack/reference/Cpotrf2.cpp \
 ../../../../mplapack/reference/Cpotri.cpp \
-../../../../mplapack/reference/Cpotrs.cpp \
 ../../../../mplapack/reference/Cppcon.cpp \
 ../../../../mplapack/reference/Cppequ.cpp \
 ../../../../mplapack/reference/Cpprfs.cpp \
@@ -534,7 +530,6 @@ MPLAPACK_ACCEL_REFERENCE_SOURCES = \
 ../../../../mplapack/reference/Rgerqf.cpp \
 ../../../../mplapack/reference/Rgesc2.cpp \
 ../../../../mplapack/reference/Rgesdd.cpp \
-../../../../mplapack/reference/Rgesv.cpp \
 ../../../../mplapack/reference/Rgesvd.cpp \
 ../../../../mplapack/reference/Rgesvdq.cpp \
 ../../../../mplapack/reference/Rgesvdx.cpp \
@@ -543,7 +538,6 @@ MPLAPACK_ACCEL_REFERENCE_SOURCES = \
 ../../../../mplapack/reference/Rgetc2.cpp \
 ../../../../mplapack/reference/Rgetf2.cpp \
 ../../../../mplapack/reference/Rgetri.cpp \
-../../../../mplapack/reference/Rgetrs.cpp \
 ../../../../mplapack/reference/Rgetsls.cpp \
 ../../../../mplapack/reference/Rgetsqrhrt.cpp \
 ../../../../mplapack/reference/Rggbak.cpp \
@@ -787,12 +781,10 @@ MPLAPACK_ACCEL_REFERENCE_SOURCES = \
 ../../../../mplapack/reference/Rpoequ.cpp \
 ../../../../mplapack/reference/Rpoequb.cpp \
 ../../../../mplapack/reference/Rporfs.cpp \
-../../../../mplapack/reference/Rposv.cpp \
 ../../../../mplapack/reference/Rposvx.cpp \
 ../../../../mplapack/reference/Rpotf2.cpp \
 ../../../../mplapack/reference/Rpotrf2.cpp \
 ../../../../mplapack/reference/Rpotri.cpp \
-../../../../mplapack/reference/Rpotrs.cpp \
 ../../../../mplapack/reference/Rppcon.cpp \
 ../../../../mplapack/reference/Rppequ.cpp \
 ../../../../mplapack/reference/Rpprfs.cpp \
@@ -965,9 +957,18 @@ MPLAPACK_ACCEL_REFERENCE_SOURCES = \
 ../../../../mplapack/reference/iMparam2stage.cpp \
 ../../../../mplapack/reference/iMparmq.cpp
 
-# Replaced in the optimized libraries by mplapack/optimized/common (same
-# basenames); listed here so that the manifest names every reference file.
+# Replaced by mplapack/optimized/common or the CUDA solver dispatchers
+# (same basenames); listed here so the manifest names every reference file.
+# The OpenCL library retains the reference solvers explicitly.
 MPLAPACK_ACCEL_REFERENCE_SOURCES_SHADOWED = \
+../../../../mplapack/reference/Rgetrs.cpp \
+../../../../mplapack/reference/Cgetrs.cpp \
+../../../../mplapack/reference/Rpotrs.cpp \
+../../../../mplapack/reference/Cpotrs.cpp \
+../../../../mplapack/reference/Rgesv.cpp \
+../../../../mplapack/reference/Cgesv.cpp \
+../../../../mplapack/reference/Rposv.cpp \
+../../../../mplapack/reference/Cposv.cpp \
 ../../../../mplapack/reference/Cgetrf2.cpp \
 ../../../../mplapack/reference/Rgetrf2.cpp \
 ../../../../mplapack/reference/Cgetrf.cpp \

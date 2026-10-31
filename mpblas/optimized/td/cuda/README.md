@@ -1,5 +1,8 @@
 # Device-resident Cholesky (td)
 
+Resident getrs/potrs/gesv/posv (real and complex):
+[API, controls, verification and timings](../../../../mplapack/optimized/common/Rsolver_cuda.md).
+
 `Rpotrf_td_cuda` / `Cpotrf_td_cuda` are declared in `mpblas_td_cuda.h`.
 See [the dd implementation notes](../../dd/cuda/README.md) for the contract,
 reference ordering, memory limits and timing definitions.

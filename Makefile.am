@@ -425,7 +425,7 @@ $(MPLAPACK_PKGCONFIG_FILES): cmake/mplapack.pc.cmake.in
 	    -e "s|@PC_LIBS_PRIVATE@|$$pc_libs_private|g" \
 	    $(srcdir)/cmake/mplapack.pc.cmake.in > '$@'
 
-EXTRA_DIST = \
+EXTRA_DIST = cmake/MplapackSolverTests.cmake \
 benchmark/README.Rfactor.md \
 mplapack/optimized/common/test/README.md \
 backends.txt \

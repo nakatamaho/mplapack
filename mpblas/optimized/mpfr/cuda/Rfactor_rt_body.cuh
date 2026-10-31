@@ -2,6 +2,7 @@
 #ifndef MPLAPACK_MPFR_FACTOR_RT_BODY_CUH
 #define MPLAPACK_MPFR_FACTOR_RT_BODY_CUH
 #include "Rfactor_device_body.cuh"
+#include "Rsolver_device_body.cuh"
 namespace mplapack_mpfr_cuda {
 namespace {
 struct factor_runtime_engine : l3_rt_engine {
@@ -45,7 +46,7 @@ struct factor_arena_guard {
 int factor_runtime(const factor_shape &s,long prec,rt_pack &a,const rt_pack &safe,long *piv,long &info,factor_times &times) {
     using E=factor_runtime_engine; using Clock=std::chrono::steady_clock;
     int nl=(int)((prec+63)/64);
-    size_t count=(size_t)s.m*s.n;
+    size_t count=(size_t)s.m*(s.n+s.nrhs);
     E e; e.prec=prec; e.nl=nl;
 #ifdef MPLAPACK_MPFR_CUDA_HOST_EMULATION
     std::vector<cu_mp_limb_t> work(8*nl), limbs(4*nl);
@@ -99,13 +100,17 @@ int factor_runtime(const factor_shape &s,long prec,rt_pack &a,const rt_pack &saf
     if(!matrix.upload(a,count,nl) || cudaStreamSynchronize(nullptr)!=cudaSuccess) return 1;
 #endif
     auto uploaded=Clock::now();
-    long result=ctx.factor(s,E::M{mat,s.m,nl});
+    long result=s.nrhs?factor_and_solve(ctx,s,E::M{mat,s.m,nl},piv):ctx.factor(s,E::M{mat,s.m,nl});
     if(ctx.error) return ctx.error;
     auto factored=Clock::now();
 #ifndef MPLAPACK_MPFR_CUDA_HOST_EMULATION
-    if(!matrix.download(a,count,nl)) return 1;
+    if(s.nrhs && !s.factorize) {
+        size_t offset=size_t(s.m)*s.n, nc=size_t(s.m)*s.nrhs;
+        if(solver_download(a.limbs,reinterpret_cast<const unsigned long long*>(mat.L),nc*nl,offset*nl) ||
+           solver_download(a.exp,mat.E,nc,offset) || solver_download(a.kind,mat.K,nc,offset)) return 1;
+    } else if(!matrix.download(a,count,nl)) return 1;
 #endif
-    if(!s.chol && ctx.pivots.download(piv,std::min(s.m,s.n))) return 1;
+    if(s.factorize && !s.chol && ctx.pivots.download(piv,std::min(s.m,s.n))) return 1;
     auto downloaded=Clock::now();
 #ifndef MPLAPACK_MPFR_CUDA_HOST_EMULATION
     if(stack.restore()) return 1;

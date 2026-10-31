@@ -1,5 +1,8 @@
 # Device-resident Cholesky (dd)
 
+Resident getrs/potrs/gesv/posv (real and complex):
+[API, controls, verification and timings](../../../../mplapack/optimized/common/Rsolver_cuda.md).
+
 `Rpotrf_dd_cuda` / `Cpotrf_dd_cuda` (in `mpblas_dd_cuda.h`) return true
 when the GPU computed A and info. Invalid arguments, n=0, ineligible calls,
 allocation/transfer/kernel failures return false without publishing any output.

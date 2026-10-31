@@ -114,7 +114,10 @@ overhead makes GPU BLAS tasks unsuitable as the default schedule. LU and Cholesk
 CPU libraries keep their existing gates. No accelerator dispatch or kernel
 arithmetic is changed by this CPU work.
 
-The other LAPACK routines (`Rgetrs`, `Rtrtri`, `Rlauum`,
+The CUDA libraries additionally provide [resident real/complex solvers](Rsolver_cuda.md)
+for dd/td/qd/mpfr; the CPU solvers are unchanged.
+
+The other CPU LAPACK routines (`Rgetrs`, `Rtrtri`, `Rlauum`,
 `Rsygst`, ...) are the reference ones; they spend their time in the Level 3
 BLAS (`Rgemm`, `Rtrsm`, `Rsyrk`, `Rtrmm`, `Cherk`, ...), which the optimized
 libraries run in parallel (and with AVX2 for dd, td, qd) with the reference

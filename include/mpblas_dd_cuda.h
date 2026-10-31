@@ -45,6 +45,14 @@ bool Rpotrf_dd_cuda(const char *uplo, mplapackint const n, dd_real *a, mplapacki
 bool Cpotrf_dd_cuda(const char *uplo, mplapackint const n, dd_complex *a, mplapackint const lda, mplapackint &info);
 bool Rgetrf_dd_cuda(mplapackint const m, mplapackint const n, dd_real *a, mplapackint const lda, mplapackint *ipiv, mplapackint &info);
 bool Cgetrf_dd_cuda(mplapackint const m, mplapackint const n, dd_complex *a, mplapackint const lda, mplapackint *ipiv, mplapackint &info);
+bool Rgetrs_dd_cuda(const char *trans, mplapackint const n, mplapackint const nrhs, dd_real *a, mplapackint const lda, mplapackint *ipiv, dd_real *b, mplapackint const ldb, mplapackint &info);
+bool Rpotrs_dd_cuda(const char *uplo, mplapackint const n, mplapackint const nrhs, dd_real *a, mplapackint const lda, dd_real *b, mplapackint const ldb, mplapackint &info);
+bool Rgesv_dd_cuda(mplapackint const n, mplapackint const nrhs, dd_real *a, mplapackint const lda, mplapackint *ipiv, dd_real *b, mplapackint const ldb, mplapackint &info);
+bool Rposv_dd_cuda(const char *uplo, mplapackint const n, mplapackint const nrhs, dd_real *a, mplapackint const lda, dd_real *b, mplapackint const ldb, mplapackint &info);
+bool Cgetrs_dd_cuda(const char *trans, mplapackint const n, mplapackint const nrhs, dd_complex *a, mplapackint const lda, mplapackint *ipiv, dd_complex *b, mplapackint const ldb, mplapackint &info);
+bool Cpotrs_dd_cuda(const char *uplo, mplapackint const n, mplapackint const nrhs, dd_complex *a, mplapackint const lda, dd_complex *b, mplapackint const ldb, mplapackint &info);
+bool Cgesv_dd_cuda(mplapackint const n, mplapackint const nrhs, dd_complex *a, mplapackint const lda, mplapackint *ipiv, dd_complex *b, mplapackint const ldb, mplapackint &info);
+bool Cposv_dd_cuda(const char *uplo, mplapackint const n, mplapackint const nrhs, dd_complex *a, mplapackint const lda, dd_complex *b, mplapackint const ldb, mplapackint &info);
 bool Rsyrk_dd_cuda(const char *uplo, const char *trans, mplapackint const n, mplapackint const k, dd_real const alpha, dd_real *a, mplapackint const lda, dd_real const beta, dd_real *c, mplapackint const ldc);
 bool Rsyr2k_dd_cuda(const char *uplo, const char *trans, mplapackint const n, mplapackint const k, dd_real const alpha, dd_real *a, mplapackint const lda, dd_real *b, mplapackint const ldb, dd_real const beta, dd_real *c, mplapackint const ldc);
 bool Rsymm_dd_cuda(const char *side, const char *uplo, mplapackint const m, mplapackint const n, dd_real const alpha, dd_real *a, mplapackint const lda, dd_real *b, mplapackint const ldb, dd_real const beta, dd_real *c, mplapackint const ldc);

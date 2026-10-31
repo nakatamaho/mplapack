@@ -14,14 +14,14 @@ using namespace mplapack_mpfr_cuda_host;
 using Clock=std::chrono::steady_clock;
 // A private deleter keeps this ownership template out of the shared ABI.
 struct pivot_array_delete { void operator()(long *p) const { delete[] p; } };
-static bool referenced(const factor_shape &s,long i,long j) { return !s.chol || (s.upper?i<=j:i>=j); }
+static bool referenced(const factor_shape &s,long i,long j) { return j>=s.n || !s.chol || (s.upper?i<=j:i>=j); }
 template<int PB> bool fixed_call(const factor_shape &s,mpfr_class *a,long lda,long *piv,long &info,factor_times &t) {
     std::vector<real_t<PB>> packed;
     auto start=Clock::now();
-    if(!pack_matrix<PB>(a,lda,s.m,s.n,packed,RT_DEVICE_EMAX)) return false;
+    if(!pack_matrix<PB>(a,lda,s.m,s.n+s.nrhs,packed,RT_DEVICE_EMAX)) return false;
     // pack() intentionally drops zero signs for the old GEMM convention.
     // The factorization engine, like fixed Rtrsm, retains signed zeros.
-    for(long j=0;j<s.n;++j) for(long i=0;i<s.m;++i)
+    for(long j=0;j<s.n+s.nrhs;++j) for(long i=0;i<s.m;++i)
         if(packed[i+j*s.m].is_zero()) packed[i+j*s.m].sign=mpfr_signbit(a[i+j*lda].get_mpfr_t())?-1:1;
     real_t<PB> safe;
     mpfr_class sfmin=Rlamch_mpfr("S");
@@ -30,7 +30,7 @@ template<int PB> bool fixed_call(const factor_shape &s,mpfr_class *a,long lda,lo
     if(factor_fixed<PB>(s,packed.data(),safe,piv,info,t)) return false;
     for(const auto &v:packed) if(!fits<PB>(v)) return false;
     auto before=Clock::now();
-    for(long j=0;j<s.n;++j) for(long i=0;i<s.m;++i) if(referenced(s,i,j)) {
+    for(long j=0;j<s.n+s.nrhs;++j) for(long i=0;i<s.m;++i) if(referenced(s,i,j)) {
         const auto &v=packed[i+j*s.m]; mpfr_ptr x=a[i+j*lda].get_mpfr_t();
         if(v.is_zero()) mpfr_set_zero(x,v.sign); else unpack<PB>(v,x);
     }
@@ -41,14 +41,14 @@ template<int PB> bool fixed_call(const factor_shape &s,mpfr_class *a,long lda,lo
 static bool runtime_call(const factor_shape &s,long prec,mpfr_class *a,long lda,long *piv,long &info,factor_times &t) {
     int nl=(prec+63)/64; rt_storage packed,safe;
     auto start=Clock::now();
-    if(!rt_pack_matrix(a,lda,s.m,s.n,prec,nl,packed,RT_DEVICE_EMAX)) return false;
+    if(!rt_pack_matrix(a,lda,s.m,s.n+s.nrhs,prec,nl,packed,RT_DEVICE_EMAX)) return false;
     safe.resize(1,nl); mpfr_class sfmin=Rlamch_mpfr("S");
     if(!rt_pack_value(sfmin.get_mpfr_t(),prec,nl,safe,0,RT_DEVICE_EMAX)) return false;
     auto packed_at=Clock::now();
     if(factor_runtime(s,prec,packed.pack,safe.pack,piv,info,t)) return false;
-    for(size_t i=0;i<(size_t)s.m*s.n;++i) if(!rt_fits(packed,i)) return false;
+    for(size_t i=0;i<(size_t)s.m*(s.n+s.nrhs);++i) if(!rt_fits(packed,i)) return false;
     auto before=Clock::now();
-    for(long j=0;j<s.n;++j) for(long i=0;i<s.m;++i) if(referenced(s,i,j))
+    for(long j=0;j<s.n+s.nrhs;++j) for(long i=0;i<s.m;++i) if(referenced(s,i,j))
         rt_unpack(packed,i+j*s.m,prec,nl,a[i+j*lda].get_mpfr_t());
     t.upload+=std::chrono::duration<double>(packed_at-start).count();
     t.download+=std::chrono::duration<double>(Clock::now()-before).count();
@@ -113,3 +113,5 @@ bool Rgetrf_mpfr_cuda(mplapackint const m,mplapackint const n,mpfr_class *a,mpla
 bool Rpotrf_mpfr_cuda(const char *uplo,mplapackint const n,mpfr_class *a,mplapackint const lda,mplapackint &info) {
     return factor_call(true,uplo,n,n,a,lda,nullptr,info);
 }
+#define MPLAPACK_SOLVER_REAL_ONLY
+#include "Rsolver_bridge_body.h"

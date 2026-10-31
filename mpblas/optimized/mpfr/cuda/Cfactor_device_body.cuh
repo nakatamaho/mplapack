@@ -6,6 +6,7 @@
 #include <type_traits>
 #define MPLAPACK_MPFR_FACTOR_COMPLEX
 #include "Rfactor_device_body.cuh"
+#include "Rsolver_device_body.cuh"
 #undef MPLAPACK_MPFR_FACTOR_COMPLEX
 #include "../../common/blas_dev/blas_dev.h"
 namespace mplapack_mpfr_cuda {
@@ -118,7 +119,7 @@ template<class Tag> struct complex_factor_engine {
     L3_HD void root(V &r,const V &a) const { if(!Traits::root(r,a)) ok=false; checked(r); }
     template<class X> L3_HD void trsm(const l3_shape &s,X &x,long lane) const {
         const char *side=s.left?"L":"R", *uplo=s.upper?"U":"L";
-        const char *trans=s.trans?"C":"N", *diag=s.nounit?"N":"U";
+        const char *trans=s.trans==2?"T":s.trans?"C":"N", *diag=s.nounit?"N":"U";
         if(s.left) {
             V *b=x.c.p+lane*x.c.ld;
             Ctrsm_dev<DR,V>(side,uplo,trans,diag,s.m,1,V(1),x.a.p,x.a.ld,b,x.c.ld);
@@ -168,7 +169,7 @@ template<class Tag> int factor_complex(const factor_shape &s,long prec,typename 
     const typename cgpu_types<Tag>::DC &safe,long *piv,long &info,factor_times &times) {
     using E=complex_factor_engine<Tag>; using V=typename E::V;
     using Clock=std::chrono::steady_clock;
-    size_t count=size_t(s.m)*s.n;
+    size_t count=size_t(s.m)*(s.n+s.nrhs);
 #ifndef MPLAPACK_MPFR_CUDA_HOST_EMULATION
     int ndev=0; if(cudaGetDeviceCount(&ndev)!=cudaSuccess || !ndev) return 1;
     // Complex MPC call chains need their own measured stack policy.
@@ -196,10 +197,11 @@ template<class Tag> int factor_complex(const factor_shape &s,long prec,typename 
     if(cudaStreamSynchronize(nullptr)!=cudaSuccess) return 1;
 #endif
     auto uploaded=Clock::now();
-    long result=ctx.factor(s,typename E::M{matrix.p,s.m});
+    long result=s.nrhs?factor_and_solve(ctx,s,typename E::M{matrix.p,s.m},piv):ctx.factor(s,typename E::M{matrix.p,s.m});
     if(ctx.error) return ctx.error;
     auto factored=Clock::now();
-    if(matrix.download(a,count) || (!s.chol && ctx.pivots.download(piv,std::min(s.m,s.n)))) return 1;
+    int down=s.nrhs && !s.factorize?solver_download(a,matrix.p,size_t(s.m)*s.nrhs,size_t(s.m)*s.n):matrix.download(a,count);
+    if(down || (s.factorize && !s.chol && ctx.pivots.download(piv,std::min(s.m,s.n)))) return 1;
     auto downloaded=Clock::now();
 #ifndef MPLAPACK_MPFR_CUDA_HOST_EMULATION
     if(guard.restore() || stack.restore()) return 1;

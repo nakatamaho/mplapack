@@ -123,6 +123,8 @@ libmplapack_mpfr_opt_cuda_la_SOURCES = \
 $(MPLAPACK_ACCEL_REFERENCE_SOURCES) \
 ../../../../mplapack/optimized/common/Rlaswp.cpp \
 ../../../../mplapack/optimized/common/Claswp.cpp \
+Rgetrs.cpp Rpotrs.cpp Rgesv.cpp Rposv.cpp Cgetrs.cpp Cpotrs.cpp Cgesv.cpp Cposv.cpp \
+Rsolver_device_body.cuh Rsolver_bridge_body.h \
 Rgetrf.cpp \
 Cgetrf.cpp \
 ../../../../mplapack/optimized/common/Rgetrf2.cpp \
@@ -145,8 +147,8 @@ libmplapack_mpfr_opt_cuda_la_LIBADD = Rgemm_dlink_cuda.lo $(MPC_CUDA_LIBRARY) $(
 EXTRA_libmplapack_mpfr_opt_cuda_la_DEPENDENCIES = Rgemm_dlink_cuda.lo
 CLEANFILES = Rgemm_dlink_cuda.lo .libs/Rgemm_dlink_cuda.o Rgemm_dlink_cuda.o
 
-check_PROGRAMS = Rfactor_gpu_host_test_mpfr Cfactor_gpu_host_test_mpfr
-TESTS = $(check_PROGRAMS)
+check_PROGRAMS = Rfactor_gpu_host_test_mpfr Cfactor_gpu_host_test_mpfr solver_gpu_host_test_mpfr
+TESTS = Rfactor_gpu_host_test_mpfr Cfactor_gpu_host_test_mpfr test/solver_host_sweep.sh
 Rfactor_gpu_host_test_mpfr_SOURCES = test/Rfactor_cuda_test.cpp Rfactor_bridge_cuda.cpp test/Rfactor_fixed_host.cpp test/Rfactor_runtime_host.cpp
 Rfactor_gpu_host_test_mpfr_CPPFLAGS = $(MPLAPACK_MPFR_CUDA_CPPFLAGS) -DMPLAPACK_MPFR_CUDA_HOST_EMULATION
 Rfactor_gpu_host_test_mpfr_LDADD = ../libmplapack_mpfr_opt.la $(MPLAPACK_MPFR_LIBS) $(OPENMP_LIBS)
@@ -155,6 +157,10 @@ Cfactor_gpu_host_test_mpfr_SOURCES = test/Cfactor_cuda_test.cpp Cfactor_bridge_c
 Cfactor_gpu_host_test_mpfr_CPPFLAGS = $(MPLAPACK_MPFR_CUDA_CPPFLAGS) -DMPLAPACK_MPFR_CUDA_HOST_EMULATION
 Cfactor_gpu_host_test_mpfr_LDADD = ../libmplapack_mpfr_opt.la $(MPLAPACK_MPFR_LIBS) $(OPENMP_LIBS)
 Cfactor_gpu_host_test_mpfr_LDFLAGS = -static -Wl,--disable-new-dtags -Wl,-rpath,$(MPC_LIBDIR):$(MPFR_LIBDIR):$(GMP_LIBDIR)
+solver_gpu_host_test_mpfr_SOURCES = ../../../../mplapack/optimized/common/test/Rsolver_gpu_test.cpp Rfactor_bridge_cuda.cpp Cfactor_bridge_cuda.cpp test/Rfactor_fixed_host.cpp test/Rfactor_runtime_host.cpp test/Cfactor_fixed_host.cpp test/Cfactor_runtime_host.cpp
+solver_gpu_host_test_mpfr_CPPFLAGS = $(MPLAPACK_MPFR_CUDA_CPPFLAGS) -DMPLAPACK_MPFR_CUDA_HOST_EMULATION
+solver_gpu_host_test_mpfr_LDADD = ../libmplapack_mpfr_opt.la $(MPLAPACK_MPFR_LIBS) $(OPENMP_LIBS)
+solver_gpu_host_test_mpfr_LDFLAGS = -static -Wl,--disable-new-dtags -Wl,-rpath,$(MPC_LIBDIR):$(MPFR_LIBDIR):$(GMP_LIBDIR)
 TESTS_ENVIRONMENT = OMP_NUM_THREADS=1
 
 clean-local:
@@ -166,5 +172,5 @@ if IS_MINGW
 libmplapack_mpfr_opt_cuda_la_LDFLAGS += -fopenmp -no-undefined
 endif
 
-EXTRA_DIST = test/Cfactor_device_globals.cu README.md Rgemm_host_cuda.cpp test/Rgemm_cuda_test.cpp test/Rgemm_winograd_cuda_test.cpp test/blas3_cuda_test.cpp \
+EXTRA_DIST = test/solver_host_sweep.sh test/solver_pivot_publication.cpp test/Cfactor_device_globals.cu README.md Rgemm_host_cuda.cpp test/Rgemm_cuda_test.cpp test/Rgemm_winograd_cuda_test.cpp test/blas3_cuda_test.cpp \
     test/Rfactor_cuda_test.cpp test/Rfactor_bench.cpp test/Cfactor_bench.cpp test/Rfactor_panel_bench.cpp test/Cfactor_panel_bench.cpp test/run_factor_bench.py test/cu_fround_test.cpp test/cu_fround_device_test.cu test/cu_fround_bench.cu test/Rtrsm_round_bench.cpp test/run_round_bench.py

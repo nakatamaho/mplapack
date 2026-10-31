@@ -21,7 +21,7 @@ NVCC_DD_CUDA_FLAGS = -std=c++17 -fmad=false -I$(srcdir) -I$(top_builddir)/includ
 .cu.lo:
 	$(top_srcdir)/misc/cudalt.py $@ $(NVCC) $(NVCC_GLIBC_FEATURE_FLAGS) $(NVCC_DD_CUDA_FLAGS) --compiler-options=\"$(CFLAGS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) \" $(AMPERE_FLAGS) $(HOPPER_FLAGS) -c $<
 
-Rpotrf_gpu_cuda.lo Rpotrf_gpu_cuda.o Rgetrf_gpu_cuda.lo Rgetrf_gpu_cuda.o: NVCC_DD_CUDA_FLAGS += -Xcompiler=-ffp-contract=off
+Rpotrf_gpu_cuda.lo Rpotrf_gpu_cuda.o Rgetrf_gpu_cuda.lo Rgetrf_gpu_cuda.o Rsolver_gpu_cuda.lo Rsolver_gpu_cuda.o: NVCC_DD_CUDA_FLAGS += -Xcompiler=-ffp-contract=off
 
 # Header dependencies of the .cu objects, written by nvcc through
 # misc/cudalt.py (automake does not track the .cu.lo suffix rule).
@@ -120,6 +120,7 @@ libmplapack_dd_opt_cuda_la_SOURCES = \
 $(MPLAPACK_ACCEL_REFERENCE_SOURCES) \
 ../../../../mplapack/optimized/common/Rlaswp.cpp \
 ../../../../mplapack/optimized/common/Claswp.cpp \
+Rgetrs.cpp Rpotrs.cpp Rgesv.cpp Rposv.cpp Cgetrs.cpp Cpotrs.cpp Cgesv.cpp Cposv.cpp Rsolver_gpu_cuda.cu \
 Rgetrf.cpp Cgetrf.cpp Rgetrf_gpu_cuda.cu \
 ../../../../mplapack/optimized/common/Rgetrf2.cpp \
 ../../../../mplapack/optimized/common/Cgetrf2.cpp \
@@ -163,6 +164,15 @@ Rsyrk_TL_0.cu \
 Rsyrk_TL_p.cu \
 Rsyrk_TU_0.cu \
 Rsyrk_TU_p.cu
+
+check_PROGRAMS = solver_gpu_host_test_dd
+TESTS = $(check_PROGRAMS)
+solver_gpu_host_test_dd_SOURCES = ../../../../mplapack/optimized/common/test/Rsolver_gpu_test.cpp
+solver_gpu_host_test_dd_CPPFLAGS = $(MPLAPACK_DD_CUDA_CPPFLAGS) -DMPLAPACK_GEMM_CUDA_HOST_EMULATION
+solver_gpu_host_test_dd_CXXFLAGS = $(DD_CXXFLAGS)
+solver_gpu_host_test_dd_LDADD = ../libmplapack_dd_opt.la $(QD_LIBADD) $(OPENMP_LIBS)
+solver_gpu_host_test_dd_LDFLAGS = -static -Wl,--disable-new-dtags -Wl,-rpath,$(QD_LIBDIR)
+TESTS_ENVIRONMENT = OMP_NUM_THREADS=1
 
 clean-local:
 	rm -f *.lo.d

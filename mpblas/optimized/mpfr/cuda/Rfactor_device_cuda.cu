@@ -1,5 +1,6 @@
 // MPFR-only real device-resident factorizations, fixed-precision engine.
 #include "Rfactor_device_body.cuh"
+#include "Rsolver_device_body.cuh"
 namespace mplapack_mpfr_cuda {
 namespace {
 template<int PB> struct factor_fixed_update : l3_fixed_engine<PB,true> {
@@ -59,7 +60,7 @@ bool factor_memory_fits(long m,long n,long prec,bool fixed) {
 template<int PB> int factor_fixed(const factor_shape &s,real_t<PB> *a,const real_t<PB> &safe,long *piv,long &info,factor_times &times) {
     using E=factor_fixed_engine<PB>; using V=real_t<PB>;
     using Clock=std::chrono::steady_clock;
-    size_t count=(size_t)s.m*s.n;
+    size_t count=(size_t)s.m*(s.n+s.nrhs);
 #ifndef MPLAPACK_MPFR_CUDA_HOST_EMULATION
     int ndev=0;
     if(cudaGetDeviceCount(&ndev)!=cudaSuccess || !ndev) return 1;
@@ -81,10 +82,11 @@ template<int PB> int factor_fixed(const factor_shape &s,real_t<PB> *a,const real
     if(cudaStreamSynchronize(nullptr)!=cudaSuccess) return 1;
 #endif
     auto uploaded=Clock::now();
-    long result=ctx.factor(s,typename E::M{matrix.p,s.m});
+    long result=s.nrhs?factor_and_solve(ctx,s,typename E::M{matrix.p,s.m},piv):ctx.factor(s,typename E::M{matrix.p,s.m});
     if(ctx.error) return ctx.error;
     auto factored=Clock::now();
-    if(matrix.download(a,count) || (!s.chol && ctx.pivots.download(piv,std::min(s.m,s.n)))) return 1;
+    int down=s.nrhs && !s.factorize?solver_download(a,matrix.p,size_t(s.m)*s.nrhs,size_t(s.m)*s.n):matrix.download(a,count);
+    if(down || (s.factorize && !s.chol && ctx.pivots.download(piv,std::min(s.m,s.n)))) return 1;
     auto downloaded=Clock::now();
 #ifndef MPLAPACK_MPFR_CUDA_HOST_EMULATION
     if(stack.restore()) return 1;

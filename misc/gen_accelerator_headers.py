@@ -30,11 +30,13 @@ CBLAS_CUDA = [r for r in CBLAS_CUDA_SOURCES if not r.endswith("_bridge_cuda")]
 MPFR_CUDA = ["Rsyrk", "Rsyr2k", "Rsymm", "Rtrmm", "Rtrsm", "Rgemv", "Rsymv", "Rtrmv", "Rger",
              "Rsyr", "Rsyr2", "Rscal", "Rswap", "Rrot"]
 
+SOLVERS = [kind + routine for kind in ("R", "C") for routine in ("getrs", "potrs", "gesv", "posv")]
+
 LIBRARIES = [
-    ("dd", "cuda", "ENABLE_CUDA", ["Rgemm", "Rpotrf", "Cpotrf", "Rgetrf", "Cgetrf"] + BLAS_CUDA + CBLAS_CUDA),
-    ("td", "cuda", "ENABLE_TD_CUDA", ["Rgemm", "Rpotrf", "Cpotrf", "Rgetrf", "Cgetrf"] + BLAS_CUDA + CBLAS_CUDA),
-    ("qd", "cuda", "ENABLE_QD_CUDA", ["Rgemm", "Rpotrf", "Cpotrf", "Rgetrf", "Cgetrf"] + BLAS_CUDA + CBLAS_CUDA),
-    ("mpfr", "cuda", "ENABLE_MPFR_CUDA", ["Rgemm", "Rpotrf", "Cpotrf", "Rgetrf", "Cgetrf"] + MPFR_CUDA + CBLAS_CUDA),
+    ("dd", "cuda", "ENABLE_CUDA", ["Rgemm", "Rpotrf", "Cpotrf", "Rgetrf", "Cgetrf"] + SOLVERS + BLAS_CUDA + CBLAS_CUDA),
+    ("td", "cuda", "ENABLE_TD_CUDA", ["Rgemm", "Rpotrf", "Cpotrf", "Rgetrf", "Cgetrf"] + SOLVERS + BLAS_CUDA + CBLAS_CUDA),
+    ("qd", "cuda", "ENABLE_QD_CUDA", ["Rgemm", "Rpotrf", "Cpotrf", "Rgetrf", "Cgetrf"] + SOLVERS + BLAS_CUDA + CBLAS_CUDA),
+    ("mpfr", "cuda", "ENABLE_MPFR_CUDA", ["Rgemm", "Rpotrf", "Cpotrf", "Rgetrf", "Cgetrf"] + SOLVERS + MPFR_CUDA + CBLAS_CUDA),
     ("binary128", "opencl", "ENABLE_OPENCL_BINARY128", ["Rgemm"]),
 ]
 
@@ -80,8 +82,11 @@ def main():
             lines.append("bool %s_%s_%s(%s);" % (r, backend, accel, decls[r]))
         lines += ["", "#endif", ""]
         out = TOP / "include" / ("mpblas_%s_%s.h" % (backend, accel))
-        out.write_text("\n".join(lines))
-        print("wrote %s (%d entry points; Makefile.am conditional %s)" % (out.relative_to(TOP), len(routines), conditional))
+        content = "\n".join(lines)
+        changed = not out.exists() or out.read_text() != content
+        if changed:
+            out.write_text(content)
+        print("%s %s (%d entry points; Makefile.am conditional %s)" % ("wrote" if changed else "unchanged", out.relative_to(TOP), len(routines), conditional))
 
 
 if __name__ == "__main__":

@@ -21,7 +21,9 @@ dist_bench_DATA = \
 # -----------------------------------------------------------------------------
 # Source templates for go.*.sh (included in "make dist").
 # -----------------------------------------------------------------------------
-EXTRA_DIST = \
+EXTRA_DIST = run_solver_bench.py Rsolver_legacy_bench.h \
+    results/factorization-goal08/solvers.csv \
+    results/factorization-goal08/mpfr-factor-regression.csv \
     go.Raxpy.sh.in       \
     go.Rcopy.sh.in       \
     go.Rdot.sh.in        \

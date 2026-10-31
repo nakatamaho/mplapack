@@ -51,8 +51,8 @@ template<int NL> struct complex_pack<factor_runtime_tag<NL>> {
 };
 template<class Tag> bool call(const factor_shape &s,long prec,mpc_class *a,long lda,long *piv,long &info,factor_times &times) {
     using Pack=complex_pack<Tag>; using V=typename cgpu_types<Tag>::DC;
-    auto start=Clock::now(); std::vector<V> packed(size_t(s.m)*s.n);
-    for(long j=0;j<s.n;++j) for(long i=0;i<s.m;++i) {
+    auto start=Clock::now(); std::vector<V> packed(size_t(s.m)*(s.n+s.nrhs));
+    for(long j=0;j<s.n+s.nrhs;++j) for(long i=0;i<s.m;++i) {
         auto z=a[i+j*lda].mpc_data(); auto &v=packed[i+j*s.m];
         if(!Pack::get(mpc_realref(z),v.re_,prec) || !Pack::get(mpc_imagref(z),v.im_,prec)) return false;
     }
@@ -62,7 +62,7 @@ template<class Tag> bool call(const factor_shape &s,long prec,mpc_class *a,long 
     if(factor_complex<Tag>(s,prec,packed.data(),safe,piv,info,times)) return false;
     for(const auto &v:packed) if(!Pack::fits(v.re_) || !Pack::fits(v.im_)) return false;
     auto before=Clock::now();
-    for(long j=0;j<s.n;++j) for(long i=0;i<s.m;++i) if(!s.chol || (s.upper?i<=j:i>=j)) {
+    for(long j=0;j<s.n+s.nrhs;++j) for(long i=0;i<s.m;++i) if(j>=s.n || !s.chol || (s.upper?i<=j:i>=j)) {
         auto z=a[i+j*lda].mpc_data(); const auto &v=packed[i+j*s.m];
         Pack::put(v.re_,mpc_realref(z),prec); Pack::put(v.im_,mpc_imagref(z),prec);
     }
@@ -124,3 +124,5 @@ bool Cgetrf_mpfr_cuda(mplapackint const m,mplapackint const n,mpc_class *a,mplap
 bool Cpotrf_mpfr_cuda(const char *uplo,mplapackint const n,mpc_class *a,mplapackint const lda,mplapackint &info) {
     return factor_call(true,uplo,n,n,a,lda,nullptr,info);
 }
+#define MPLAPACK_SOLVER_COMPLEX_ONLY
+#include "Rsolver_bridge_body.h"

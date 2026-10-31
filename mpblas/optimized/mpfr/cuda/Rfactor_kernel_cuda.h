@@ -7,6 +7,10 @@ namespace mplapack_mpfr_cuda {
 struct factor_shape {
     bool chol, upper;
     long m, n, nb;
+    // Optional solver continuation. Old factor-only calls leave these defaults.
+    long nrhs=0;
+    bool factorize=true;
+    char trans='N';
 };
 struct factor_times { double upload=0, factor=0, download=0; };
 __attribute__((visibility("hidden"))) size_t factor_stack_bytes(long prec,bool runtime);

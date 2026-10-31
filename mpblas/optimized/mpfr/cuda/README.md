@@ -11,7 +11,10 @@ band/packed/Hermitian/triangular Level 2 routines (`Chemv`, `Chbmv`, `Chpmv`,
 `Rsbmv`, `Rspmv`, `Rgbmv`, `Cgbmv`, `Ctrmv`, `Rtbmv`, `Ctbmv`, `Rtpmv`,
 `Ctpmv`, `Rspr`, `Rspr2`, `Chpr`, `Chpr2`; Level 1 and 2 on request).
 `Rgetrf`, `Rpotrf`, `Cgetrf` and `Cpotrf` also have device-resident factorization
-entries (described below). Every other routine, and every call that is not eligible, uses the same code as
+entries (described below). Real/complex getrs/potrs/gesv/posv now have
+[resident solver entries](../../../../mplapack/optimized/common/Rsolver_cuda.md),
+reusing these factors without a device round trip before solving.
+Every other routine, and every call that is not eligible, uses the same code as
 `libmplapack_mpfr_opt`.
 
 The GPU arithmetic comes from [mpc_cuda](https://github.com/tkouya/mpc_cuda)
@@ -671,7 +674,8 @@ The device-precision restoration failure was injected and tested explicitly.
 
 - Accelerated: `Rgemm`, `Rsyrk`, `Rsyr2k`, `Rsymm`, `Rtrmm`, `Rtrsm`, the
   complex Level 3 routines and `Rgemmtr` (Level 1 and 2 on request), and
-  resident `Rgetrf` / `Cgetrf` / `Rpotrf` / `Cpotrf`.
+  resident `Rgetrf` / `Cgetrf` / `Rpotrf` / `Cpotrf`, and real/complex
+  `getrs` / `potrs` / `gesv` / `posv`.
 - One thread per element of `C`, no shared-memory tiling yet.
 - The Winograd variant exists for the fixed precisions only (not for the
   `cu_mpfr` kernels) and allocates its temporaries with `cudaMalloc` at every level.

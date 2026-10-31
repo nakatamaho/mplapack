@@ -45,6 +45,14 @@ bool Rpotrf_td_cuda(const char *uplo, mplapackint const n, td_real *a, mplapacki
 bool Cpotrf_td_cuda(const char *uplo, mplapackint const n, td_complex *a, mplapackint const lda, mplapackint &info);
 bool Rgetrf_td_cuda(mplapackint const m, mplapackint const n, td_real *a, mplapackint const lda, mplapackint *ipiv, mplapackint &info);
 bool Cgetrf_td_cuda(mplapackint const m, mplapackint const n, td_complex *a, mplapackint const lda, mplapackint *ipiv, mplapackint &info);
+bool Rgetrs_td_cuda(const char *trans, mplapackint const n, mplapackint const nrhs, td_real *a, mplapackint const lda, mplapackint *ipiv, td_real *b, mplapackint const ldb, mplapackint &info);
+bool Rpotrs_td_cuda(const char *uplo, mplapackint const n, mplapackint const nrhs, td_real *a, mplapackint const lda, td_real *b, mplapackint const ldb, mplapackint &info);
+bool Rgesv_td_cuda(mplapackint const n, mplapackint const nrhs, td_real *a, mplapackint const lda, mplapackint *ipiv, td_real *b, mplapackint const ldb, mplapackint &info);
+bool Rposv_td_cuda(const char *uplo, mplapackint const n, mplapackint const nrhs, td_real *a, mplapackint const lda, td_real *b, mplapackint const ldb, mplapackint &info);
+bool Cgetrs_td_cuda(const char *trans, mplapackint const n, mplapackint const nrhs, td_complex *a, mplapackint const lda, mplapackint *ipiv, td_complex *b, mplapackint const ldb, mplapackint &info);
+bool Cpotrs_td_cuda(const char *uplo, mplapackint const n, mplapackint const nrhs, td_complex *a, mplapackint const lda, td_complex *b, mplapackint const ldb, mplapackint &info);
+bool Cgesv_td_cuda(mplapackint const n, mplapackint const nrhs, td_complex *a, mplapackint const lda, mplapackint *ipiv, td_complex *b, mplapackint const ldb, mplapackint &info);
+bool Cposv_td_cuda(const char *uplo, mplapackint const n, mplapackint const nrhs, td_complex *a, mplapackint const lda, td_complex *b, mplapackint const ldb, mplapackint &info);
 bool Rsyrk_td_cuda(const char *uplo, const char *trans, mplapackint const n, mplapackint const k, td_real const alpha, td_real *a, mplapackint const lda, td_real const beta, td_real *c, mplapackint const ldc);
 bool Rsyr2k_td_cuda(const char *uplo, const char *trans, mplapackint const n, mplapackint const k, td_real const alpha, td_real *a, mplapackint const lda, td_real *b, mplapackint const ldb, td_real const beta, td_real *c, mplapackint const ldc);
 bool Rsymm_td_cuda(const char *side, const char *uplo, mplapackint const m, mplapackint const n, td_real const alpha, td_real *a, mplapackint const lda, td_real *b, mplapackint const ldb, td_real const beta, td_real *c, mplapackint const ldc);

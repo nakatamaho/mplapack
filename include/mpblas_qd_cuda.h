@@ -45,6 +45,14 @@ bool Rpotrf_qd_cuda(const char *uplo, mplapackint const n, qd_real *a, mplapacki
 bool Cpotrf_qd_cuda(const char *uplo, mplapackint const n, qd_complex *a, mplapackint const lda, mplapackint &info);
 bool Rgetrf_qd_cuda(mplapackint const m, mplapackint const n, qd_real *a, mplapackint const lda, mplapackint *ipiv, mplapackint &info);
 bool Cgetrf_qd_cuda(mplapackint const m, mplapackint const n, qd_complex *a, mplapackint const lda, mplapackint *ipiv, mplapackint &info);
+bool Rgetrs_qd_cuda(const char *trans, mplapackint const n, mplapackint const nrhs, qd_real *a, mplapackint const lda, mplapackint *ipiv, qd_real *b, mplapackint const ldb, mplapackint &info);
+bool Rpotrs_qd_cuda(const char *uplo, mplapackint const n, mplapackint const nrhs, qd_real *a, mplapackint const lda, qd_real *b, mplapackint const ldb, mplapackint &info);
+bool Rgesv_qd_cuda(mplapackint const n, mplapackint const nrhs, qd_real *a, mplapackint const lda, mplapackint *ipiv, qd_real *b, mplapackint const ldb, mplapackint &info);
+bool Rposv_qd_cuda(const char *uplo, mplapackint const n, mplapackint const nrhs, qd_real *a, mplapackint const lda, qd_real *b, mplapackint const ldb, mplapackint &info);
+bool Cgetrs_qd_cuda(const char *trans, mplapackint const n, mplapackint const nrhs, qd_complex *a, mplapackint const lda, mplapackint *ipiv, qd_complex *b, mplapackint const ldb, mplapackint &info);
+bool Cpotrs_qd_cuda(const char *uplo, mplapackint const n, mplapackint const nrhs, qd_complex *a, mplapackint const lda, qd_complex *b, mplapackint const ldb, mplapackint &info);
+bool Cgesv_qd_cuda(mplapackint const n, mplapackint const nrhs, qd_complex *a, mplapackint const lda, mplapackint *ipiv, qd_complex *b, mplapackint const ldb, mplapackint &info);
+bool Cposv_qd_cuda(const char *uplo, mplapackint const n, mplapackint const nrhs, qd_complex *a, mplapackint const lda, qd_complex *b, mplapackint const ldb, mplapackint &info);
 bool Rsyrk_qd_cuda(const char *uplo, const char *trans, mplapackint const n, mplapackint const k, qd_real const alpha, qd_real *a, mplapackint const lda, qd_real const beta, qd_real *c, mplapackint const ldc);
 bool Rsyr2k_qd_cuda(const char *uplo, const char *trans, mplapackint const n, mplapackint const k, qd_real const alpha, qd_real *a, mplapackint const lda, qd_real *b, mplapackint const ldb, qd_real const beta, qd_real *c, mplapackint const ldc);
 bool Rsymm_qd_cuda(const char *side, const char *uplo, mplapackint const m, mplapackint const n, qd_real const alpha, qd_real *a, mplapackint const lda, qd_real *b, mplapackint const ldb, qd_real const beta, qd_real *c, mplapackint const ldc);

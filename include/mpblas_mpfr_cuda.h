@@ -45,6 +45,14 @@ bool Rpotrf_mpfr_cuda(const char *uplo, mplapackint const n, mpfr_class *a, mpla
 bool Cpotrf_mpfr_cuda(const char *uplo, mplapackint const n, mpc_class *a, mplapackint const lda, mplapackint &info);
 bool Rgetrf_mpfr_cuda(mplapackint const m, mplapackint const n, mpfr_class *a, mplapackint const lda, mplapackint *ipiv, mplapackint &info);
 bool Cgetrf_mpfr_cuda(mplapackint const m, mplapackint const n, mpc_class *a, mplapackint const lda, mplapackint *ipiv, mplapackint &info);
+bool Rgetrs_mpfr_cuda(const char *trans, mplapackint const n, mplapackint const nrhs, mpfr_class *a, mplapackint const lda, mplapackint *ipiv, mpfr_class *b, mplapackint const ldb, mplapackint &info);
+bool Rpotrs_mpfr_cuda(const char *uplo, mplapackint const n, mplapackint const nrhs, mpfr_class *a, mplapackint const lda, mpfr_class *b, mplapackint const ldb, mplapackint &info);
+bool Rgesv_mpfr_cuda(mplapackint const n, mplapackint const nrhs, mpfr_class *a, mplapackint const lda, mplapackint *ipiv, mpfr_class *b, mplapackint const ldb, mplapackint &info);
+bool Rposv_mpfr_cuda(const char *uplo, mplapackint const n, mplapackint const nrhs, mpfr_class *a, mplapackint const lda, mpfr_class *b, mplapackint const ldb, mplapackint &info);
+bool Cgetrs_mpfr_cuda(const char *trans, mplapackint const n, mplapackint const nrhs, mpc_class *a, mplapackint const lda, mplapackint *ipiv, mpc_class *b, mplapackint const ldb, mplapackint &info);
+bool Cpotrs_mpfr_cuda(const char *uplo, mplapackint const n, mplapackint const nrhs, mpc_class *a, mplapackint const lda, mpc_class *b, mplapackint const ldb, mplapackint &info);
+bool Cgesv_mpfr_cuda(mplapackint const n, mplapackint const nrhs, mpc_class *a, mplapackint const lda, mplapackint *ipiv, mpc_class *b, mplapackint const ldb, mplapackint &info);
+bool Cposv_mpfr_cuda(const char *uplo, mplapackint const n, mplapackint const nrhs, mpc_class *a, mplapackint const lda, mpc_class *b, mplapackint const ldb, mplapackint &info);
 bool Rsyrk_mpfr_cuda(const char *uplo, const char *trans, mplapackint const n, mplapackint const k, mpfr_class const alpha, mpfr_class *a, mplapackint const lda, mpfr_class const beta, mpfr_class *c, mplapackint const ldc);
 bool Rsyr2k_mpfr_cuda(const char *uplo, const char *trans, mplapackint const n, mplapackint const k, mpfr_class const alpha, mpfr_class *a, mplapackint const lda, mpfr_class *b, mplapackint const ldb, mpfr_class const beta, mpfr_class *c, mplapackint const ldc);
 bool Rsymm_mpfr_cuda(const char *side, const char *uplo, mplapackint const m, mplapackint const n, mpfr_class const alpha, mpfr_class *a, mplapackint const lda, mpfr_class *b, mplapackint const ldb, mpfr_class const beta, mpfr_class *c, mplapackint const ldc);
