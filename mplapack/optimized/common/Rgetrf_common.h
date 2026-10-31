@@ -9,7 +9,7 @@ namespace mplapack_getrf {
 inline bool tasks_allowed()
 {
 #ifdef _OPENMP
-#ifdef MPLAPACK_ACCELERATOR_LIBRARY
+#if defined(MPLAPACK_ACCELERATOR_LIBRARY) && !defined(MPLAPACK_FACTOR_CPU_BLAS)
     return mplapack_lapack::la_env("MPLAPACK_LAPACK_LOOKAHEAD", 0) >= 2;
 #else
     return mplapack_lapack::la_env("MPLAPACK_LAPACK_LOOKAHEAD", 1) != 0;

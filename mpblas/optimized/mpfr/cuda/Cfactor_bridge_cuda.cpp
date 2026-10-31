@@ -75,8 +75,9 @@ static bool factor_call(bool chol,const char *uplo,long m,long n,mpc_class *a,lo
     bool upper=chol && uplo && (*uplo=='U' || *uplo=='u');
     if(chol && !upper && (!uplo || (*uplo!='L' && *uplo!='l'))) return false;
     // Three interleaved 512-bit rounds: LU loses to old CUDA at 512,
-    // wins from 1024; Cholesky beats both old CUDA and CPU at 2048.
-    long default_minimum=chol?2048:1024;
+    // wins from 1024. Goal 08b compares directly with the CPU library:
+    // Cholesky loses at 2048 and wins at 4096 (both triangles).
+    long default_minimum=chol?4096:1024;
     long minimum=env_long("MPLAPACK_MPFR_LAPACK_CUDA_MIN",default_minimum);
     if(minimum<0) minimum=default_minimum;
     if(!env_long("MPLAPACK_MPFR_CUDA",1) || !env_long("MPLAPACK_MPFR_LAPACK_CUDA",1) || std::min(m,n)<minimum) return false;

@@ -1,0 +1,7 @@
+backend,routine,n,nrhs,uplo,round,mode,repeats,seconds,entry_trace,status
+mpfr,Cpotrf,4096,-1,U,0,cpu,1,813.931216,False,PASS
+mpfr,Cpotrf,4096,-1,U,0,forced,1,332.048643,True,PASS
+mpfr,Cpotrf,4096,-1,U,1,forced,1,331.622798,True,PASS
+mpfr,Cpotrf,4096,-1,U,1,cpu,1,810.859391,False,PASS
+mpfr,Cpotrf,4096,-1,U,2,cpu,1,802.102901,False,PASS
+mpfr,Cpotrf,4096,-1,U,2,forced,1,332.534366,True,PASS

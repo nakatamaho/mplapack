@@ -621,14 +621,21 @@ exclude initialization/allocation/cleanup and need not sum to end-to-end.
 |Cgetrf|2048|224.521175|66.598606|26.025302|0.722346|24.273885|0.229904|2.559|
 |Cpotrf L|2048|103.614952|117.505976|77.481797|0.729390|75.830973|0.156368|1.517|
 
-Complex defaults: **Cgetrf 1024**, **Cpotrf 2048**. LU loses to old CUDA at
-512 but wins at 1024 and 2048; Cholesky beats both CPU and old CUDA at 2048,
-while the CPU wins at 512/1024. Keep those losing points above. These are
-measured eligibility points, not an extrapolated exact crossover; other
-precisions retain this conservative shared policy. One explicit
-`MPLAPACK_MPFR_LAPACK_CUDA_MIN` overrides all four routines. Real defaults
-remain Rgetrf 512 / Rpotrf 2048. Natural-default complex calls at 1024/2048
-succeed; one below each rejects without changing outputs.
+The table above and its original 1024/2048 natural-default receipts are
+historical goal-07b measurements. **Current complex defaults: Cgetrf 1024,
+Cpotrf 4096** (goal 08b). Direct CPU-library comparisons now give Cpotrf L
+2048: CPU 69.698 s / entry 76.852 s; 4096: CPU 490.306 s / entry 315.620 s.
+The 4096-point upper-triangle crossover was checked separately. See the
+[complete goal-08b measurements](../../../../benchmark/results/factorization-goal08b/README.md).
+
+Rejected public factors now use optimized CPU BLAS throughout their panels,
+not GPU BLAS per call. Driver rejection uses public factor + CPU solve;
+fused posv is opt-in, while gesv retains its real/complex 512/1024 defaults.
+See [solver controls](../../../../mplapack/optimized/common/Rsolver_cuda.md).
+These are measured eligibility points, not extrapolated exact crossovers;
+other precisions retain the conservative shared policy. One explicit
+`MPLAPACK_MPFR_LAPACK_CUDA_MIN` overrides all four factors. Real defaults
+remain Rgetrf 512 / Rpotrf 2048.
 
 Panel comparison: `mpfr_cuda_Cfactor_panel_bench`, 512 bits, five interleaved
 rounds reversing fixed/runtime/hybrid order, **45 successful calls**.

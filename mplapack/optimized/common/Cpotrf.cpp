@@ -32,6 +32,9 @@
 // result bit for bit. The diagonal recursion has task-tiled solves and
 // reductions; FAST=1 uses a separately blocked whole-matrix recursion.
 
+#ifdef MPLAPACK_ACCELERATOR_LIBRARY
+#include "Rfactor_cpu_blas.h"
+#endif
 #define Cpotrf Cpotrf_reference_cpu
 #include "../../reference/Cpotrf.cpp"
 #undef Cpotrf
@@ -66,6 +69,9 @@ void potrf_diagonal(const char *uplo, INTEGER n, COMPLEX *a, INTEGER ld, INTEGER
                              mplapack_potrf::tile_size(), tasks, false, op);
 }
 #define Cpotrf potrf_blocked
+#ifdef Cpotrf2
+#undef Cpotrf2
+#endif
 #define Cpotrf2 potrf_diagonal
 #include "../../reference/Cpotrf.cpp"
 #undef Cpotrf2

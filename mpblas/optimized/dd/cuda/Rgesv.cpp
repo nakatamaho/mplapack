@@ -4,12 +4,10 @@
 #include <mpblas_dd_cuda.h>
 #include "../../../../mplapack/optimized/common/Rsolver_cpu_factor_fallback.h"
 namespace {
-#define Rgetrf solver_Rgetrf_cpu
 #define Rgetrs solver_Rgetrs_cpu
 #define Rgesv solver_reference_cpu
 #include "../../../../mplapack/reference/Rgesv.cpp"
 #undef Rgesv
-#undef Rgetrf
 #undef Rgetrs
 }
 void Rgesv(mplapackint const n, mplapackint const nrhs, dd_real *a, mplapackint const lda, mplapackint *ipiv, dd_real *b, mplapackint const ldb, mplapackint &info) {

@@ -32,6 +32,9 @@
 // result bit for bit. The diagonal recursion has task-tiled solves and
 // reductions; FAST=1 uses a separately blocked whole-matrix recursion.
 
+#ifdef MPLAPACK_ACCELERATOR_LIBRARY
+#include "Rfactor_cpu_blas.h"
+#endif
 #define Rpotrf Rpotrf_reference_cpu
 #include "../../reference/Rpotrf.cpp"
 #undef Rpotrf
@@ -77,6 +80,9 @@ void potrf_diagonal(const char *uplo, INTEGER n, REAL *a, INTEGER ld, INTEGER &i
 }
 // Reuse the generated blocked loop, without changing its oracle above.
 #define Rpotrf potrf_blocked
+#ifdef Rpotrf2
+#undef Rpotrf2
+#endif
 #define Rpotrf2 potrf_diagonal
 #include "../../reference/Rpotrf.cpp"
 #undef Rpotrf2

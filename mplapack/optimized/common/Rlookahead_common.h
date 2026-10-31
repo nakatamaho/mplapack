@@ -49,6 +49,12 @@
 
 #include "../../../mpblas/optimized/common/Rblas_cpu_common.h"
 
+// These CUDA flavors now bind every CPU factor/panel BLAS call to CPU
+// implementations; their look-ahead policy can match the CPU library.
+#if defined(MPLAPACK_ACCELERATOR_LIBRARY) && (defined(MPLAPACK_BUILD_WITH_DD) || defined(MPLAPACK_BUILD_WITH_TD) || defined(MPLAPACK_BUILD_WITH_QD) || defined(MPLAPACK_BUILD_WITH_MPFR))
+#define MPLAPACK_FACTOR_CPU_BLAS
+#endif
+
 namespace mplapack_lapack {
 
 // Recursive panels may share a team only when every worker has installed
@@ -71,23 +77,20 @@ inline bool la_fast() { return la_env("MPLAPACK_LAPACK_FAST", 0) != 0; }
 //     1.0-1.1x), Cholesky never (the left-looking order of the reference
 //     puts the diagonal blocks on a serial path: 0.66-1.17x)
 //   MPLAPACK_LAPACK_LOOKAHEAD=2: always;  0: never
-// In the accelerator libraries (MPLAPACK_ACCELERATOR_LIBRARY) the default is
-// never: each BLAS call of a task copies its operands to the GPU, and the
-// GPU calls do not overlap (the MPFR ones are serialized), so the tasks only
-// wait for each other (A100, 32 threads: dd LU n = 4096 15.7 s without, 40.3
-// s with; MPFR 512 bits n = 1024 11.3 s without, 146 s with).  =2 still
-// selects the tasks, with correct results.
+// Accelerator flavors still using per-call GPU BLAS default to no tasks:
+// transfers/serialized GPU calls do not overlap. CUDA CPU-factor bindings
+// instead use the CPU library policy (no transfers in these tasks).
 inline bool la_lookahead(bool lu, long mn, long nb)
 {
 #ifdef _OPENMP
-#ifdef MPLAPACK_ACCELERATOR_LIBRARY
+#if defined(MPLAPACK_ACCELERATOR_LIBRARY) && !defined(MPLAPACK_FACTOR_CPU_BLAS)
     const long mode = la_env("MPLAPACK_LAPACK_LOOKAHEAD", 0);
 #else
     const long mode = la_env("MPLAPACK_LAPACK_LOOKAHEAD", 1);
 #endif
     if (mode == 0 || omp_get_max_threads() < 2 || omp_get_level() != 0)
         return false;
-#ifdef MPLAPACK_ACCELERATOR_LIBRARY
+#if defined(MPLAPACK_ACCELERATOR_LIBRARY) && !defined(MPLAPACK_FACTOR_CPU_BLAS)
     return mode >= 2;
 #else
     return mode >= 2 || (lu && mn >= 12 * nb);

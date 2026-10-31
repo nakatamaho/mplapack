@@ -31,15 +31,15 @@ using namespace mplapack_lapack_gpu;
 #if defined(MPLAPACK_BUILD_WITH_DD)
 using SolveOps=mplapack_gemm::dd_ops;
 constexpr const char *solve_prefix="MPLAPACK_DD";
-constexpr long solve_lu_min=2048,solve_chol_min=4096,solve_cchol_min=4096;
+constexpr long solve_lu_min=std::numeric_limits<long>::max(),solve_chol_min=solve_lu_min,solve_cchol_min=solve_lu_min;
 #elif defined(MPLAPACK_BUILD_WITH_TD)
 using SolveOps=mplapack_gemm::td_ops;
 constexpr const char *solve_prefix="MPLAPACK_TD";
-constexpr long solve_lu_min=1024,solve_chol_min=2048,solve_cchol_min=2048;
+constexpr long solve_lu_min=std::numeric_limits<long>::max(),solve_chol_min=solve_lu_min,solve_cchol_min=solve_lu_min;
 #else
 using SolveOps=mplapack_gemm::qd_ops;
 constexpr const char *solve_prefix="MPLAPACK_QD";
-constexpr long solve_lu_min=1024,solve_chol_min=2048,solve_cchol_min=4096;
+constexpr long solve_lu_min=std::numeric_limits<long>::max(),solve_chol_min=solve_lu_min,solve_cchol_min=solve_lu_min;
 #endif
 using SR=dreal<SolveOps>; using SC=dcomplex<SR>;
 static SR pack_solve(const REAL &a) {
@@ -96,8 +96,11 @@ template<class Host> static bool solver_call(const char *name,bool factorize,boo
        (chol?(f!='U' && f!='L'):(f!='N' && f!='T' && f!='C'))) return false;
     // The measured BF standalone solves did not beat the existing path:
     // opt in with a common/solve-specific minimum instead of guessing a
-    // profitable crossover beyond the measured range. Drivers retain the
-    // resident factorization gates (see Rsolver_cuda.md and its timing CSV).
+    // profitable crossover beyond the measured range. Fused drivers are also
+    // opt-in: factor eligibility alone does not establish a CPU-library-speed
+    // crossover for the subsequent GPU solve (especially narrow RHS). Their
+    // default fallback still offloads the public factor where profitable.
+    // See Rsolver_cuda.md and the goal-08b CPU comparisons.
     long minimum=factorize?(chol?(name[0]=='C'?solve_cchol_min:solve_chol_min):solve_lu_min):std::numeric_limits<long>::max();
     minimum=solve_setting("_LAPACK_CUDA_MIN",minimum);
     minimum=solve_setting(factorize?"_LAPACK_DRIVER_CUDA_MIN":"_LAPACK_SOLVE_CUDA_MIN",minimum);

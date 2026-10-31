@@ -21,9 +21,18 @@ dist_bench_DATA = \
 # -----------------------------------------------------------------------------
 # Source templates for go.*.sh (included in "make dist").
 # -----------------------------------------------------------------------------
-EXTRA_DIST = run_solver_bench.py Rsolver_legacy_bench.h \
+EXTRA_DIST = run_solver_bench.py run_factor_dispatch_bench.py Rsolver_legacy_bench.h \
     results/factorization-goal08/solvers.csv \
     results/factorization-goal08/mpfr-factor-regression.csv \
+    results/factorization-goal08b/README.md \
+    results/factorization-goal08b/factors.csv results/factorization-goal08b/factors-samples.csv \
+    results/factorization-goal08b/factors-before-gates.csv results/factorization-goal08b/factors-before-gates-samples.csv \
+    results/factorization-goal08b/drivers.csv results/factorization-goal08b/drivers-samples.csv \
+    results/factorization-goal08b/cpu-fallback-stability.csv results/factorization-goal08b/cpu-fallback-stability-samples.csv \
+    results/factorization-goal08b/upper-crossover.csv results/factorization-goal08b/upper-crossover-samples.csv \
+    results/factorization-goal08b/retuned-factors.csv results/factorization-goal08b/retuned-factors-samples.csv \
+    results/factorization-goal08b/driver-gates.csv results/factorization-goal08b/driver-gates-samples.csv \
+    results/factorization-goal08b/gpu-phase-samples.csv \
     go.Raxpy.sh.in       \
     go.Rcopy.sh.in       \
     go.Rdot.sh.in        \

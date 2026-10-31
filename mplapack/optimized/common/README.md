@@ -22,7 +22,7 @@ reference ones bit for bit (`mpblas/optimized/common/test/Rlapack_omp_test.cpp`)
 
 | Variable | Meaning |
 |---|---|
-| `MPLAPACK_LAPACK_LOOKAHEAD=1` | CPU default: tasks for LU with min(m,n) >= 12 nb (768); accelerator libraries require mode 2 |
+| `MPLAPACK_LAPACK_LOOKAHEAD=1` | CPU default: tasks for LU with min(m,n) >= 12 nb (768); also the CPU-only fallback of dd/td/qd/MPFR CUDA factors |
 | `MPLAPACK_LAPACK_LOOKAHEAD=2` | tasks also for smaller LU and for Cholesky |
 | `MPLAPACK_LAPACK_LOOKAHEAD=0` | the reference loop |
 | `MPLAPACK_LAPACK_FAST=1` | dedicated LU / Cholesky algorithms described below; different rounding |
@@ -106,13 +106,14 @@ Fast mode may round differently; its correctness gate is backward error
 | `MPLAPACK_POTRF_LEAF` | fast recursion leaf size/alignment; default 64 for fixed-precision backends, 32 for GMP/MPFR; clamped to at least 1 |
 
 **Accelerator scheduling:** both build systems define only
-`MPLAPACK_ACCELERATOR_LIBRARY` for accelerator targets. Since b626121f,
-the known CUDA concurrency defects are fixed, but transfer/serialization
-overhead makes GPU BLAS tasks unsuitable as the default schedule. LU and Cholesky tasks
-(including recursive panel tasks) therefore require explicit
-`MPLAPACK_LAPACK_LOOKAHEAD=2` in accelerator libraries, in both result modes.
-CPU libraries keep their existing gates. No accelerator dispatch or kernel
-arithmetic is changed by this CPU work.
+`MPLAPACK_ACCELERATOR_LIBRARY` for accelerator targets. The dd/td/qd/MPFR
+CUDA factor dispatchers now use CPU BLAS throughout their rejected-entry
+path, including recursive panels (`Rfactor_cpu_blas.h`, goal 08b). Their
+CPU scheduling therefore matches the CPU library, without GPU transfers or
+process-wide environment overrides. Other accelerator flavors still require
+explicit `MPLAPACK_LAPACK_LOOKAHEAD=2`: transfer/serialization overhead makes
+per-call GPU BLAS tasks unsuitable as their default schedule. CPU libraries
+and resident GPU arithmetic are unchanged.
 
 The CUDA libraries additionally provide [resident real/complex solvers](Rsolver_cuda.md)
 for dd/td/qd/mpfr; the CPU solvers are unchanged.

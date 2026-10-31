@@ -1,7 +1,7 @@
 // Strict public-dispatcher fallback oracle, independent of the bool API tests.
 #include <mpblas.h>
 #include <mplapack.h>
-#include <cuda_runtime_api.h>
+#include <algorithm>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -74,14 +74,31 @@ void solve(bool oracle,bool driver,bool chol,const char *f,INTEGER n,INTEGER rhs
 SOLVE(REAL,R)
 SOLVE(COMPLEX,C)
 #undef SOLVE
-template<class H> void test(bool driver,bool chol,const char *f,INTEGER rhs) {
-    constexpr INTEGER n=257,lda=n+2,ldb=n+3;
+template<class H> H dense(INTEGER i,INTEGER j) { return H(double((i*17+j*11)%31-15)/256.0); }
+template<> COMPLEX dense<COMPLEX>(INTEGER i,INTEGER j) {
+    return COMPLEX(dense<REAL>(i,j),dense<REAL>(j,i));
+}
+template<class H> void test(bool driver,bool chol,const char *f,INTEGER rhs,INTEGER n=257,int kind=0) {
+    const INTEGER lda=n+2,ldb=n+3;
     std::vector<H> a(lda*n,H(19)),b(ldb*rhs,H(23)); std::vector<INTEGER> p(n+2,777);
     for(INTEGER j=0;j<n;++j) for(INTEGER i=0;i<n;++i) a[i+j*lda]=i==j?H(chol?1:-1):zero<H>(i+3*j);
     for(INTEGER j=0;j<rhs;++j) for(INTEGER i=0;i<n;++i) b[i+j*ldb]=zero<H>(i+3*j);
     for(INTEGER i=0;i<n;++i) p[i]=i+1;
+    if(kind) {
+        for(INTEGER j=0;j<n;++j) for(INTEGER i=0;i<n;++i)
+            a[i+j*lda]=i==j?H(n+1):dense<H>(std::min(i,j),std::max(i,j));
+        for(INTEGER j=0;j<rhs;++j) for(INTEGER i=0;i<n;++i) b[i+j*ldb]=dense<H>(i,j);
+        if(!chol && n>1) for(INTEGER j=0;j<n;++j) std::swap(a[j*lda],a[1+j*lda]);
+        if(kind==2 && n) {
+            if(chol) a[0]=H(-1);
+            else for(INTEGER i=0;i<n;++i) a[i+(n-1)*lda]=H(0);
+        }
+    }
     auto expected=a,expected_b=b; auto expected_p=p; INTEGER info=-777,expected_info=-777;
-    setenv(PREFIX "_CUDA","0",1); // Oracle factors use the existing optimized CPU path.
+    // Drivers must match public factor + CPU solve, including the public
+    // factor's existing zero-sign policy. Only standalone solve oracles
+    // disable per-call GPU BLAS; drivers use identical factor controls.
+    setenv(PREFIX "_CUDA",driver?"1":"0",1);
     solve(true,driver,chol,f,n,rhs,expected.data(),lda,expected_p.data(),expected_b.data(),ldb,expected_info);
     setenv(PREFIX "_CUDA","1",1); // Catch accidental re-entry into legacy CUDA BLAS.
     solve(false,driver,chol,f,n,rhs,a.data(),lda,p.data(),b.data(),ldb,info);
@@ -94,7 +111,8 @@ template<class H> void test(bool driver,bool chol,const char *f,INTEGER rhs) {
 }
 }
 int main(int argc,char **argv) {
-    int devices=0; if(cudaGetDeviceCount(&devices)!=cudaSuccess || !devices) return 77;
+    // This is a CPU fallback oracle, not a device test. It also exercises
+    // public factors' runtime-error rejection when no GPU is visible.
     setenv("MPLAPACK_LAPACK_FAST","0",1); setenv(PREFIX "_LAPACK_CUDA","0",1);
     long precision=0;
 #if defined(MPLAPACK_BUILD_WITH_MPFR)
@@ -103,10 +121,21 @@ int main(int argc,char **argv) {
 #else
     (void)argc; (void)argv;
 #endif
+    for (bool threshold : {false, true}) {
+    setenv(PREFIX "_LAPACK_CUDA",threshold?"1":"0",1);
+    setenv(PREFIX "_LAPACK_CUDA_MIN","0",1); // Public factors may use GPU.
+    setenv(PREFIX "_LAPACK_DRIVER_CUDA_MIN","1000000",1);
+    setenv(PREFIX "_LAPACK_SOLVE_CUDA_MIN","1000000",1);
     for(bool driver:{false,true}) for(bool chol:{false,true}) for(INTEGER rhs:{INTEGER(1),INTEGER(3)})
         for(const char *f:chol?std::vector<const char*>{"U","L"}:driver?std::vector<const char*>{"N"}:std::vector<const char*>{"N","T","C"}) {
             test<REAL>(driver,chol,f,rhs); test<COMPLEX>(driver,chol,f,rhs);
         }
+    for(bool chol:{false,true}) for(const char *f:chol?std::vector<const char*>{"U","L"}:std::vector<const char*>{"N"})
+        for(INTEGER n:{INTEGER(0),INTEGER(3),INTEGER(65),INTEGER(257)}) for(INTEGER rhs:{INTEGER(0),INTEGER(1),INTEGER(3)})
+            for(int kind:{1,2}) {
+                test<REAL>(true,chol,f,rhs,n,kind); test<COMPLEX>(true,chol,f,rhs,n,kind);
+            }
+    }
     std::printf("fallback p=%ld cases=%ld elements=%ld errors=%ld zero-sign-errors=%ld\n",precision,cases,elements,errors,zero_sign_errors);
     return errors?1:0;
 }

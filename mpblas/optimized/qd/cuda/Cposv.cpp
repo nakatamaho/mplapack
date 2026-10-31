@@ -8,12 +8,10 @@
 #undef MPLAPACK_SOLVER_CPU_COMPLEX
 #undef MPLAPACK_SOLVER_CPU_CHOLESKY
 namespace {
-#define Cpotrf solver_Cpotrf_cpu
 #define Cpotrs solver_Cpotrs_cpu
 #define Cposv solver_reference_cpu
 #include "../../../../mplapack/reference/Cposv.cpp"
 #undef Cposv
-#undef Cpotrf
 #undef Cpotrs
 }
 void Cposv(const char *uplo, mplapackint const n, mplapackint const nrhs, qd_complex *a, mplapackint const lda, qd_complex *b, mplapackint const ldb, mplapackint &info) {

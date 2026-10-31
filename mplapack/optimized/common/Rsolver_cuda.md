@@ -38,22 +38,31 @@ per backend; the ordinary LAPACK names are dispatchers in that same library.
   existing signed/checked inline BLAS update policy; panel arithmetic is
   unchanged. Complex solve arithmetic is the existing signed factor policy.
 
-### The CPU fallback is actually CPU-only
+### Fallback composition: public factors and CPU-only solves
 
-A dispatcher calls its bool entry and, on false, runs the reference routine
-text bound to CPU BLAS (`*_omp`, then the native reference). Driver fallbacks
-also bind their private reference factors to CPU BLAS. Real GEMM predates
-the common bool adapters (`Rgemm_omp`/`Rgemm_reference_cpu` do not exist).
-Its legacy `Rgemm_ref` skips zero B entries, unlike the current reference;
-that changes signed zeros. The fallback therefore includes the **current
-reference GEMM text** under a private name. It neither uses that legacy
-zero shortcut nor introduces a CPU-only blocked GEMM dependency.
+A rejected getrs/potrs runs the reference outer solve bound to CPU BLAS
+(`*_omp`, then the native reference), unchanged from goal 08. A rejected
+gesv/posv instead calls the **public factor dispatcher**, then that CPU solve.
+It does not privately duplicate LU/Cholesky or use a serial reference GEMM.
+This restores the pre-goal-08 driver composition.
+
+The CPU side of the dd/td/qd/MPFR public factor dispatchers now binds its
+BLAS to CPU implementations too (`Rfactor_cpu_blas.h`), including recursive
+panels. Real GEMM reuses the backend's optimized CPU dispatcher under an
+internal name, with its existing blocked/OpenMP engines. The CPU look-ahead
+policy matches the CPU library. No environment variables are temporarily
+changed, and unrelated BLAS calls retain their usual accelerator policy.
+Generated reference bodies and resident GPU factor/solve arithmetic are
+unchanged.
 
 This matters for MPFR: the legacy fixed complex CUDA BLAS normalizes computed
 zeros. A public Cgetrs(C) probe at 512 bits/n=256 lost **256 negative zeros**
 when the rejected solver accidentally re-entered that BLAS path. The new CPU
-binding avoids that path. Existing **public factor** implementations,
-thresholds, arithmetic and schedules are not changed by these private copies.
+binding avoids that path. Drivers are compared against **public factor +
+CPU solve**, not a private reference factor chosen to hide the public factor's
+established zero-sign conventions. Fixing the signed-zero policy of legacy
+fixed-precision complex GPU BLAS is separate work; no solver tolerance is
+relaxed here.
 
 ## Eligibility and controls
 
@@ -74,22 +83,29 @@ Negative/invalid minimum overrides retain the applicable default. Defaults:
 
 | Backend | gesv real/complex n | posv real/complex n | standalone n / nrhs |
 |---|---:|---:|---|
-| dd | 2048 / 2048 | 4096 / 4096 | opt-in / 0 |
-| td | 1024 / 1024 | 2048 / 2048 | opt-in / 0 |
-| qd | 1024 / 1024 | 2048 / 4096 | opt-in / 0 |
-| mpfr | 512 / 1024 | 2048 / 2048 | 2048 / 2048 |
+| dd | opt-in / opt-in | opt-in / opt-in | opt-in / 0 |
+| td | opt-in / opt-in | opt-in / opt-in | opt-in / 0 |
+| qd | opt-in / opt-in | opt-in / opt-in | opt-in / 0 |
+| mpfr | 512 / 1024 | opt-in / opt-in | 2048 / 2048 |
 
 BF standalone solves showed no profitable measured CPU/old-GPU crossover;
 there is no invented default crossover beyond the measurements. They require
 an explicit common or solve-specific n minimum. MPFR standalone 512-point
 narrow-RHS calls lose badly to CPU; the measured full-RHS 2048-point calls
 beat CPU, though not every one beats the legacy GPU BLAS. These are
-conservative policies, **not universal speedup claims**. Driver gates retain
-the corresponding factor gates, supported by the measurements below; some
-near-break-even complex points and narrow RHS still lose to pure CPU.
-The qd complex Cholesky 4096 gate is inherited from the factor measurements,
-not a newly measured 4096-point solver crossover. Other MPFR precisions share
-this conservative gate; their performance crossover is unmeasured.
+conservative policies, **not universal speedup claims**.
+
+Goal 08b no longer infers fused-driver eligibility from factor eligibility:
+BF gesv/posv and MPFR posv require an explicit common or driver-specific n
+minimum. The old defaults lose to the CPU library for narrow RHS; marginal
+lower-triangle wins do not establish a safe crossover for every supported
+orientation/RHS. Do not invent a larger unmeasured crossover. This does **not**
+disable GPU factorization in ordinary gesv/posv: on rejection they call the
+public resident-factor dispatcher, followed by the CPU solve. MPFR gesv keeps
+its measured real/complex CPU-library crossovers. Standalone solve controls
+are unchanged. Other MPFR precisions share these conservative policies; their
+performance crossover is unmeasured. See the
+[goal-08b CPU comparisons and verification](../../../benchmark/results/factorization-goal08b/README.md).
 
 To force all eligible small cases in numerical tests, set all three n
 minimums **and** `<P>_LAPACK_SOLVE_CUDA_MIN_RHS=0`. The benchmark runner does
@@ -139,7 +155,7 @@ cases require the production wait; expected-failing controls skip it and
 must expose wrong results. `RUN_SERIAL` keeps these timing-sensitive negative
 controls isolated from other tests in one CTest invocation.
 
-## Measurements
+## Historical goal-08 measurements (before the goal-08b correction)
 
 A100 80 GB PCIe (driver 580.178.04), CUDA 13.1.115, GCC 15.2.0,
 Threadripper 3970X (32 cores / 64 logical CPUs), 32 CPU threads, MPFR 512
@@ -195,6 +211,8 @@ Selected standalone full-RHS n=2048 medians, seconds:
 
 The historical baseline is explicitly `--legacy` plus
 `<P>_LAPACK_CUDA=0`: reference outer solvers calling CUDA BLAS per call.
+After goal 08b, the benchmark also includes private generated factors/panels
+for this comparator: public factor CPU fallbacks no longer call GPU BLAS.
 It is **not** the new CPU-only dispatcher fallback. `Rsolver_legacy_bench.h`
 preserves that comparator without weakening production fallback semantics.
 Matrices/RHS use deterministic 16-bit dyadic random values; standalone factors
@@ -217,7 +235,11 @@ python3 benchmark/run_solver_bench.py --bin-dir build/benchmark \
   --rounds 3 --threads 32 --output solves.jsonl
 ```
 
-## Verification
+## Historical goal-08 verification
+
+Goal-08b verification, including strict public-factor-plus-CPU-solve oracles,
+is recorded in the linked goal-08b report above. The results below are the
+original goal-08 receipts, not additional goal-08b runs.
 
 The new solver/fallback comparisons are strict, not tolerance-based (including
 zero signs, A/B padding, unused triangles, pivots and info). Existing

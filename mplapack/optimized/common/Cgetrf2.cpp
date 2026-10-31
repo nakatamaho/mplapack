@@ -1,4 +1,7 @@
 /* Copyright (c) 2026 Nakata, Maho. BSD-2-Clause (see Rgetrf.cpp). */
+#ifdef MPLAPACK_ACCELERATOR_LIBRARY
+#include "Rfactor_cpu_blas.h"
+#endif
 #define Cgetrf2 Cgetrf2_reference_cpu
 #include "../../reference/Cgetrf2.cpp"
 #undef Cgetrf2

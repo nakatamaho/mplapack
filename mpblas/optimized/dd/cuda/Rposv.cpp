@@ -6,12 +6,10 @@
 #include "../../../../mplapack/optimized/common/Rsolver_cpu_factor_fallback.h"
 #undef MPLAPACK_SOLVER_CPU_CHOLESKY
 namespace {
-#define Rpotrf solver_Rpotrf_cpu
 #define Rpotrs solver_Rpotrs_cpu
 #define Rposv solver_reference_cpu
 #include "../../../../mplapack/reference/Rposv.cpp"
 #undef Rposv
-#undef Rpotrf
 #undef Rpotrs
 }
 void Rposv(const char *uplo, mplapackint const n, mplapackint const nrhs, dd_real *a, mplapackint const lda, dd_real *b, mplapackint const ldb, mplapackint &info) {

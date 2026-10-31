@@ -31,6 +31,9 @@
 
 #include <mpblas.h>
 #include <mplapack.h>
+#ifdef MPLAPACK_ACCELERATOR_LIBRARY
+#include "Rfactor_cpu_blas.h"
+#endif
 
 void Cgetrf2_reference_cpu(INTEGER, INTEGER, COMPLEX *, INTEGER, INTEGER *, INTEGER &);
 #define Cgetrf Cgetrf_reference_cpu
