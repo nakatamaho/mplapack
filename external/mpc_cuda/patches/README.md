@@ -1,6 +1,8 @@
 # mpc_cuda patches / proposed upstream PR
 
-Status: **not yet submitted**. Do not submit on behalf of the maintainer.
+Status: **submitted upstream** as https://github.com/tkouya/mpc_cuda/pull/1
+(2026-10-30; the upstream branch also adds tools/test_fround.cu to
+`make check-fixed`, and documents the API in doc/manual.md and manual.ja.md).
 Base: upstream https://github.com/tkouya/mpc_cuda commit **abd9407**, bundled
 as `mpc_cuda-0.0.1-abd9407.tar.xz`. The distfile and its recorded SHA256 are
 unchanged. Remove the patch when the bundled upstream revision contains it.
@@ -334,5 +336,4 @@ UNVERIFIED: execution on **sm_90 hardware** (only an A100/sm_80 is available;
 both build systems successfully generated sm_80 and sm_90 code). All
 requested A100 numerical/stack checks are verified, with the handled legacy
 runtime API diagnostic explicitly qualified above. Goal 07 can now measure
-cu_freal panels against cu_mpfr and host panels. No upstream submission or
-git push was performed.
+cu_freal panels against cu_mpfr and host panels.

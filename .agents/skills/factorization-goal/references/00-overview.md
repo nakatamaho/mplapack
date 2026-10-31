@@ -71,6 +71,21 @@ per call; retune after device residency, goals 05-07): MPLAPACK_DD 4096,
 MPLAPACK_QD 512, MPLAPACK_TD 512 (QD proxy, not measured), MPLAPACK_MPFR 2048
 (MPFR LU timings above 512 were unverified because of defect 2; remeasure).
 
+## Known issues found by the goal 08 review (open; goal 08b)
+
+Measured on the A100, OMP_NUM_THREADS=32, dd, n = 1024, nrhs = 1:
+
+1. Below the driver gates, the CUDA libraries' gesv/posv fall back to the
+   reference factorization with a private single-threaded copy of the
+   reference Rgemm (a86ee4fc5): dd Rgesv 3.29 s, against 0.17 s in the CPU
+   library and about 0.6 s before goal 08 (public Rgetrf + Rgetrs). The
+   fallback must use the public factor dispatchers again.
+2. The dd/td/qd factor gates of goals 05/06 were chosen against the per-call
+   GPU BLAS path, not against the CPU library: dd Rgetrf n = 1024 takes
+   0.13 s in the CPU library and 0.58-1.15 s in the CUDA library (0.87 s
+   with the entry disabled, as the CPU path still calls the GPU BLAS per
+   call). Gates must keep the CUDA library no slower than the CPU library.
+
 ## Routine table (what to implement)
 
 Backends: CPU paths are generic (mplapack/optimized/common, every backend);
