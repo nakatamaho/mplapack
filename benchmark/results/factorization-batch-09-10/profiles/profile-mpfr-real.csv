@@ -1,0 +1,6 @@
+Generating SQLite file /tmp/batch0910/profile-mpfr-real.sqlite from /tmp/batch0910/profile-mpfr-real.nsys-rep
+Processing [/tmp/batch0910/profile-mpfr-real.sqlite] with [/opt/nvidia/nsight-systems/2025.5.2/host-linux-x64/reports/cuda_gpu_kern_sum.py]... 
+Time (%),Total Time (ns),Instances,Avg (ns),Med (ns),Min (ns),Max (ns),StdDev (ns),Name
+74.6,949060346,2061,460485.4,82817.0,53889,19998108,2250644.9,"void mplapack_mpfr_cuda::<unnamed>::factor_kernel<mplapack_mpfr_cuda::<unnamed>::factor_job<mplapack_mpfr_cuda::<unnamed>::factor_fixed_engine<(int)512>>>(T1, long, int *, long)"
+25.4,323195687,1050,307805.4,23920.5,16384,13216488,1520351.9,"void mplapack_mpfr_cuda::<unnamed>::factor_kernel<mplapack_mpfr_cuda::<unnamed>::factor_update_job<mplapack_mpfr_cuda::<unnamed>::factor_fixed_update<(int)512>>>(T1, long, int *, long)"
+

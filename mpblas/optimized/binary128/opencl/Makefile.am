@@ -91,6 +91,10 @@ libmplapack_binary128_opt_opencl_la_SOURCES = \
 ../../common/blas/iRamax.cpp ../../common/blas/iRamax_omp.cpp \
 ../../../reference/mplapackinit.cpp \
 $(MPLAPACK_ACCEL_REFERENCE_SOURCES) \
+../../../../mplapack/optimized/common/Rtrtri.cpp \
+../../../../mplapack/optimized/common/Ctrtri.cpp \
+../../../../mplapack/optimized/common/Rlauum.cpp \
+../../../../mplapack/optimized/common/Clauum.cpp \
 ../../../../mplapack/reference/Rgetrs.cpp ../../../../mplapack/reference/Cgetrs.cpp \
 ../../../../mplapack/reference/Rpotrs.cpp ../../../../mplapack/reference/Cpotrs.cpp \
 ../../../../mplapack/reference/Rgesv.cpp ../../../../mplapack/reference/Cgesv.cpp \

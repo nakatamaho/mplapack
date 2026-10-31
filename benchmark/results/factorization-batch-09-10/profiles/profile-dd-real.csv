@@ -1,0 +1,9 @@
+Generating SQLite file /tmp/batch0910/profile-dd-real.sqlite from /tmp/batch0910/profile-dd-real.nsys-rep
+Processing [/tmp/batch0910/profile-dd-real.sqlite] with [/opt/nvidia/nsight-systems/2025.5.2/host-linux-x64/reports/cuda_gpu_kern_sum.py]... 
+Time (%),Total Time (ns),Instances,Avg (ns),Med (ns),Min (ns),Max (ns),StdDev (ns),Name
+52.5,68886626,2077,33166.4,4064.0,2432,1012104,137376.1,"void mplapack_blas::k_blas_lanes<mplapack_gemm::dd_ops>(mplapack_blas::gpu_lane_args<T1>, long)"
+28.0,36748692,2047,17952.5,3136.0,2656,2792438,144095.6,void mplapack_blas::k_syrk_tiled<mplapack_gemm::dd_ops>(mplapack_blas::gpu_lane_args<T1>)
+15.8,20709726,59,351012.3,347074.0,17408,779622,204423.6,"void mplapack_gemm::k_tiled<mplapack_gemm::dd_ops>(mplapack_gemm::shape, mplapack_gemm::gpu_scalars<T1::F>, const T1::F *, const T1::F *, T1::F *, int)"
+3.6,4766001,2048,2327.1,2336.0,2080,4640,95.2,"void mplapack_lapack_gpu::k_elements<mplapack_lapack_gpu::base_chol<mplapack_gemm::dd_ops>>(T1, long)"
+0.2,212130,59,3595.4,3776.0,2496,4736,709.5,"void mplapack_gemm::k_alpha_opB<mplapack_gemm::dd_ops>(mplapack_gemm::shape, T1::F, const T1::F *, T1::F *)"
+

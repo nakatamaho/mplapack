@@ -1,0 +1,8 @@
+Generating SQLite file /tmp/batch0910/profile-dd-complex.sqlite from /tmp/batch0910/profile-dd-complex.nsys-rep
+Processing [/tmp/batch0910/profile-dd-complex.sqlite] with [/opt/nvidia/nsight-systems/2025.5.2/host-linux-x64/reports/cuda_gpu_kern_sum.py]... 
+Time (%),Total Time (ns),Instances,Avg (ns),Med (ns),Min (ns),Max (ns),StdDev (ns),Name
+83.2,1345203108,2047,657158.3,3648.0,3072,79380943,5884366.3,"void mplapack_lapack_gpu::k_elements<mplapack_blas_dev::job_Cherk<mplapack_gemm::dd_ops>>(T1, long)"
+9.6,154487008,2077,74379.9,6880.0,4160,2061777,320682.5,"void mplapack_lapack_gpu::k_elements<mplapack_blas_dev::job_Ctrsm<mplapack_gemm::dd_ops>>(T1, long)"
+7.0,113423387,59,1922430.3,1569421.0,62689,4993511,1392526.5,"void mplapack_lapack_gpu::k_elements<mplapack_blas_dev::job_Cgemm<mplapack_gemm::dd_ops>>(T1, long)"
+0.3,4516447,2048,2205.3,2208.0,2080,3296,99.9,"void mplapack_lapack_gpu::k_elements<mplapack_lapack_gpu::complex_chol_base<mplapack_gemm::dd_ops>>(T1, long)"
+

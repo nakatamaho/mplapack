@@ -1,6 +1,7 @@
 SUBDIRS = gmp mpfr qd dd td double binary80 binary128
 
 EXTRA_DIST = README.md common/README.md common/Rlookahead_common.h common/Rpotrf_common.h common/Rgetrf_common.h \
+common/Rinverse_cpu_common.h common/Rinverse_cpu_blas.h common/test/Rinverse_test.h \
 common/Rpotrf_gpu_common.cuh common/Rpotrf_cuda_entry.cuh \
 common/Rgetrf_gpu_common.cuh common/Rgetrf_cuda_entry.cuh \
 common/Rsolver_cuda_entry.cuh common/Rsolver_entries.h common/Rsolver_cpu_fallback.h common/Rsolver_cpu_factor_fallback.h common/Rfactor_cpu_blas.h common/Rsolver_cuda.md \

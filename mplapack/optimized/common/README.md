@@ -130,8 +130,33 @@ and resident GPU arithmetic are unchanged.
 The CUDA libraries additionally provide [resident real/complex solvers](Rsolver_cuda.md)
 for dd/td/qd/mpfr; the CPU solvers are unchanged.
 
-The other CPU LAPACK routines (`Rgetrs`, `Rtrtri`, `Rlauum`,
-`Rsygst`, ...) are the reference ones; they spend their time in the Level 3
+## Dedicated CPU triangular inverses and products
+
+`Rtrtri` / `Ctrtri` and `Rlauum` / `Clauum` use `Rinverse_cpu_common.h`.
+Default mode keeps the exact reference block width, diagonal TRTI2/LAUU2
+leaves, singularity scan, flags, scalar representations and full reductions.
+Recursive tasks split only independent output lanes: left TRMM columns,
+right TRSM rows, and the independent rows/columns of the LAUUM updates.
+Workers inherit the caller's arithmetic context. No triangular dependency
+or GEMM/SYRK/HERK reduction axis is split. The normal LAPACK look-ahead
+controls select the shared team; LOOKAHEAD=0 uses CPU BLAS directly.
+
+`MPLAPACK_LAPACK_FAST=1` selects a whole-matrix binary recursion with 32-wide
+reference leaves. This may round differently and is checked by inverse or
+product residuals, not bit identity. Unit diagonal storage, the opposite
+triangle and padding remain untouched. A non-unit singular TRTRI returns the
+first zero diagonal index before changing A in either mode.
+
+POTRI and GETRI retain their generated reference outer algorithms and call
+the public optimized TRTRI/LAUUM routines. CUDA-library CPU branches use
+`Rinverse_cpu_blas.h`, extending the factor CPU-BLAS binding to TRMM and the
+leaf BLAS too; they do not route fallback arithmetic through GPU BLAS.
+`Rfactor_test --inverse-quick` exercises all four inverse families in real
+and complex arithmetic; `--inverses` extends the sizes through 599. Default
+tests compare the complete storage and GETRI workspace, with zero-sign-sensitive
+component checks; fast tests check products/inverse residuals.
+
+The other CPU LAPACK routines (`Rgetrs`, `Rsygst`, ...) are the reference ones; they spend their time in the Level 3
 BLAS (`Rgemm`, `Rtrsm`, `Rsyrk`, `Rtrmm`, `Cherk`, ...), which the optimized
 libraries run in parallel (and with AVX2 for dd, td, qd) with the reference
 results bit for bit, so these routines are faster with unchanged results.

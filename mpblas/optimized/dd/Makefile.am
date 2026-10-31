@@ -106,6 +106,10 @@ $(MPLAPACK_OPT_REFERENCE_SOURCES) \
 ../../../mplapack/optimized/common/Cgetrf2.cpp \
 ../../../mplapack/optimized/common/Rpotrf.cpp \
 ../../../mplapack/optimized/common/Cpotrf.cpp \
+../../../mplapack/optimized/common/Rtrtri.cpp \
+../../../mplapack/optimized/common/Ctrtri.cpp \
+../../../mplapack/optimized/common/Rlauum.cpp \
+../../../mplapack/optimized/common/Clauum.cpp \
 $(MPLAPACK_DD_OPTIMIZED_SOURCES)
 
 libmplapack_dd_opt_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO) -Wl,-rpath,$(libdir)

@@ -288,7 +288,6 @@ MPLAPACK_ACCEL_REFERENCE_SOURCES = \
 ../../../../mplapack/reference/Claunhr_col_getrfnp.cpp \
 ../../../../mplapack/reference/Claunhr_col_getrfnp2.cpp \
 ../../../../mplapack/reference/Clauu2.cpp \
-../../../../mplapack/reference/Clauum.cpp \
 ../../../../mplapack/reference/Cpbcon.cpp \
 ../../../../mplapack/reference/Cpbequ.cpp \
 ../../../../mplapack/reference/Cpbrfs.cpp \
@@ -418,7 +417,6 @@ MPLAPACK_ACCEL_REFERENCE_SOURCES = \
 ../../../../mplapack/reference/Ctrsyl.cpp \
 ../../../../mplapack/reference/Ctrsyl3.cpp \
 ../../../../mplapack/reference/Ctrti2.cpp \
-../../../../mplapack/reference/Ctrtri.cpp \
 ../../../../mplapack/reference/Ctrtrs.cpp \
 ../../../../mplapack/reference/Ctrttf.cpp \
 ../../../../mplapack/reference/Ctrttp.cpp \
@@ -725,7 +723,6 @@ MPLAPACK_ACCEL_REFERENCE_SOURCES = \
 ../../../../mplapack/reference/Rlatrz.cpp \
 ../../../../mplapack/reference/Rlatsqr.cpp \
 ../../../../mplapack/reference/Rlauu2.cpp \
-../../../../mplapack/reference/Rlauum.cpp \
 ../../../../mplapack/reference/Ropgtr.cpp \
 ../../../../mplapack/reference/Ropmtr.cpp \
 ../../../../mplapack/reference/Rorbdb.cpp \
@@ -936,7 +933,6 @@ MPLAPACK_ACCEL_REFERENCE_SOURCES = \
 ../../../../mplapack/reference/Rtrsyl.cpp \
 ../../../../mplapack/reference/Rtrsyl3.cpp \
 ../../../../mplapack/reference/Rtrti2.cpp \
-../../../../mplapack/reference/Rtrtri.cpp \
 ../../../../mplapack/reference/Rtrtrs.cpp \
 ../../../../mplapack/reference/Rtrttf.cpp \
 ../../../../mplapack/reference/Rtrttp.cpp \
@@ -961,6 +957,10 @@ MPLAPACK_ACCEL_REFERENCE_SOURCES = \
 # (same basenames); listed here so the manifest names every reference file.
 # The OpenCL library retains the reference solvers explicitly.
 MPLAPACK_ACCEL_REFERENCE_SOURCES_SHADOWED = \
+../../../../mplapack/reference/Rtrtri.cpp \
+../../../../mplapack/reference/Ctrtri.cpp \
+../../../../mplapack/reference/Rlauum.cpp \
+../../../../mplapack/reference/Clauum.cpp \
 ../../../../mplapack/reference/Rgetrs.cpp \
 ../../../../mplapack/reference/Cgetrs.cpp \
 ../../../../mplapack/reference/Rpotrs.cpp \

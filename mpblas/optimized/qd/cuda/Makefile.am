@@ -116,6 +116,10 @@ libmplapack_qd_opt_cuda_la_SOURCES = \
 ../../common/blas/iRamax.cpp ../../common/blas/iRamax_omp.cpp \
 ../../../reference/mplapackinit.cpp \
 $(MPLAPACK_ACCEL_REFERENCE_SOURCES) \
+../../../../mplapack/optimized/common/Rtrtri.cpp \
+../../../../mplapack/optimized/common/Ctrtri.cpp \
+../../../../mplapack/optimized/common/Rlauum.cpp \
+../../../../mplapack/optimized/common/Clauum.cpp \
 ../../../../mplapack/optimized/common/Rlaswp.cpp \
 ../../../../mplapack/optimized/common/Claswp.cpp \
 Rgetrs.cpp Rpotrs.cpp Rgesv.cpp Rposv.cpp Cgetrs.cpp Cpotrs.cpp Cgesv.cpp Cposv.cpp Rsolver_gpu_cuda.cu \
