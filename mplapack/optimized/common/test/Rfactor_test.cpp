@@ -224,7 +224,12 @@ template<class T> void test_chol(INTEGER n, const char *up, int bad) {
     product(n,n,n,l.data(),u.data(),p.data()); residual(a,p,n,n,ld,bad);
 }
 }
-int main() {
+int main(int argc, char **argv) {
+    // Separate scheduling regression: production mode, not the test's usual
+    // forced look-ahead. Keep costly medium-size cases out of quick sweeps.
+    const bool scheduling = argc == 2 && std::strcmp(argv[1], "--scheduling") == 0;
+    if (scheduling && !std::getenv("MPLAPACK_LAPACK_LOOKAHEAD"))
+        setenv("MPLAPACK_LAPACK_LOOKAHEAD", "1", 1);
 #ifndef MPLAPACK_FACTOR_CUDA
     // CPU: exercise tasks at block boundaries too. CUDA uses production
     // defaults; also run with LOOKAHEAD=2 to exercise concurrent GPU BLAS.
@@ -242,6 +247,14 @@ int main() {
     fast=env && std::strcmp(env,"1")==0;
     INTEGER nb=iMlaenv(1,"Rgetrf"," ",600,600,-1,-1);
     std::set<INTEGER> sizes={1,2,3,nb-1,nb,nb+1,2*nb+3,257,599};
+    if (scheduling) {
+        for (INTEGER n : {256, 384, 512, 768, 1024}) {
+            test_lu<REAL>(n,n,0); test_lu<COMPLEX>(n,n,0);
+            for (const char *up : {"U", "L"}) {
+                test_chol<REAL>(n,up,0); test_chol<COMPLEX>(n,up,0);
+            }
+        }
+    } else {
     for (INTEGER n:sizes) {
         if (n<1) continue;
         for (auto m: {n,n+7,std::max(INTEGER(1),n-7)}) {
@@ -266,6 +279,7 @@ int main() {
     }
     fast = saved_fast;
     test_signed_zeros();
+    }
 #ifdef MPLAPACK_FACTOR_CUDA
     ++checks;
     cudaError_t status = cudaDeviceSynchronize();
