@@ -22,6 +22,7 @@ misc/gen_blas_l2_gpu.py \
 misc/gen_blas_l1_reductions.py \
 misc/gen_blas_tri_solves.py \
 misc/gen_blas_device_reference.py \
+misc/gen_inverse_device_reference.py \
 misc/check_mpfr_shared_load.py \
 misc/check_mpfr_elf_dependencies.sh \
 misc/check_mpfr_pkgconfig.sh \
@@ -425,7 +426,7 @@ $(MPLAPACK_PKGCONFIG_FILES): cmake/mplapack.pc.cmake.in
 	    -e "s|@PC_LIBS_PRIVATE@|$$pc_libs_private|g" \
 	    $(srcdir)/cmake/mplapack.pc.cmake.in > '$@'
 
-EXTRA_DIST = cmake/MplapackSolverTests.cmake \
+EXTRA_DIST = cmake/MplapackSolverTests.cmake cmake/MplapackInverseTests.cmake \
 benchmark/README.Rfactor.md \
 mplapack/optimized/common/test/README.md \
 backends.txt \

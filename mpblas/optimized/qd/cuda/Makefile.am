@@ -19,7 +19,7 @@ NVCC_QD_CUDA_FLAGS = -std=c++17 -fmad=false -I$(srcdir) -I$(top_builddir)/includ
 .cu.lo:
 	$(top_srcdir)/misc/cudalt.py $@ $(NVCC) $(NVCC_GLIBC_FEATURE_FLAGS) $(NVCC_QD_CUDA_FLAGS) --compiler-options=\"$(CFLAGS) $(DEFAULT_INCLUDES) $(INCLUDES) $(CPPFLAGS) \" $(AMPERE_FLAGS) $(HOPPER_FLAGS) -c $<
 
-Rpotrf_gpu_cuda.lo Rpotrf_gpu_cuda.o Rgetrf_gpu_cuda.lo Rgetrf_gpu_cuda.o Rsolver_gpu_cuda.lo Rsolver_gpu_cuda.o: NVCC_QD_CUDA_FLAGS += -Xcompiler=-ffp-contract=off
+Rpotrf_gpu_cuda.lo Rpotrf_gpu_cuda.o Rgetrf_gpu_cuda.lo Rgetrf_gpu_cuda.o Rsolver_gpu_cuda.lo Rsolver_gpu_cuda.o Rinverse_gpu_cuda.lo Rinverse_gpu_cuda.o: NVCC_QD_CUDA_FLAGS += -Xcompiler=-ffp-contract=off
 
 # Header dependencies of the .cu objects, written by nvcc through
 # misc/cudalt.py (automake does not track the .cu.lo suffix rule).
@@ -116,10 +116,7 @@ libmplapack_qd_opt_cuda_la_SOURCES = \
 ../../common/blas/iRamax.cpp ../../common/blas/iRamax_omp.cpp \
 ../../../reference/mplapackinit.cpp \
 $(MPLAPACK_ACCEL_REFERENCE_SOURCES) \
-../../../../mplapack/optimized/common/Rtrtri.cpp \
-../../../../mplapack/optimized/common/Ctrtri.cpp \
-../../../../mplapack/optimized/common/Rlauum.cpp \
-../../../../mplapack/optimized/common/Clauum.cpp \
+Rtrtri.cpp Ctrtri.cpp Rlauum.cpp Clauum.cpp Rpotri.cpp Cpotri.cpp Rgetri.cpp Cgetri.cpp Rinverse_gpu_cuda.cu \
 ../../../../mplapack/optimized/common/Rlaswp.cpp \
 ../../../../mplapack/optimized/common/Claswp.cpp \
 Rgetrs.cpp Rpotrs.cpp Rgesv.cpp Rposv.cpp Cgetrs.cpp Cpotrs.cpp Cgesv.cpp Cposv.cpp Rsolver_gpu_cuda.cu \
@@ -148,6 +145,13 @@ solver_gpu_host_test_qd_CPPFLAGS = $(MPLAPACK_QD_CUDA_CPPFLAGS) -DMPLAPACK_GEMM_
 solver_gpu_host_test_qd_CXXFLAGS = $(DD_CXXFLAGS)
 solver_gpu_host_test_qd_LDADD = ../libmplapack_qd_opt.la $(QD_LIBADD) $(OPENMP_LIBS)
 solver_gpu_host_test_qd_LDFLAGS = -static -Wl,--disable-new-dtags -Wl,-rpath,$(QD_LIBDIR)
+check_PROGRAMS += inverse_gpu_host_test_qd
+inverse_gpu_host_test_qd_SOURCES = ../../../../mplapack/optimized/common/test/Rinverse_gpu_test.cpp
+inverse_gpu_host_test_qd_CPPFLAGS = $(MPLAPACK_QD_CUDA_CPPFLAGS) -DMPLAPACK_GEMM_CUDA_HOST_EMULATION
+inverse_gpu_host_test_qd_CXXFLAGS = $(DD_CXXFLAGS)
+inverse_gpu_host_test_qd_LDADD = ../libmplapack_qd_opt.la $(QD_LIBADD) $(OPENMP_LIBS)
+inverse_gpu_host_test_qd_LDFLAGS = -static $(QD_RPATH_LDFLAGS)
+
 TESTS_ENVIRONMENT = OMP_NUM_THREADS=1
 
 clean-local:

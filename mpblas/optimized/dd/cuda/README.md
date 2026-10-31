@@ -1,5 +1,10 @@
 # Device-resident Cholesky (dd)
 
+Resident R/C TRTRI/LAUUM/POTRI/GETRI (goal 09):
+[API and CPU-library-speed fallback](../../../../mplapack/optimized/common/Rinverse_cuda.md).
+Default is opt-in; `MPLAPACK_DD_LAPACK_INVERSE_CUDA_MIN=0` forces eligible
+small calls. The factor/solver gates below are unchanged.
+
 Resident getrs/potrs/gesv/posv (real and complex):
 [API, controls, verification and timings](../../../../mplapack/optimized/common/Rsolver_cuda.md).
 

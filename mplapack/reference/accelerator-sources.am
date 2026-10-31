@@ -67,7 +67,6 @@ MPLAPACK_ACCEL_REFERENCE_SOURCES = \
 ../../../../mplapack/reference/Cgesvx.cpp \
 ../../../../mplapack/reference/Cgetc2.cpp \
 ../../../../mplapack/reference/Cgetf2.cpp \
-../../../../mplapack/reference/Cgetri.cpp \
 ../../../../mplapack/reference/Cgetsls.cpp \
 ../../../../mplapack/reference/Cgetsqrhrt.cpp \
 ../../../../mplapack/reference/Cggbak.cpp \
@@ -307,7 +306,6 @@ MPLAPACK_ACCEL_REFERENCE_SOURCES = \
 ../../../../mplapack/reference/Cposvx.cpp \
 ../../../../mplapack/reference/Cpotf2.cpp \
 ../../../../mplapack/reference/Cpotrf2.cpp \
-../../../../mplapack/reference/Cpotri.cpp \
 ../../../../mplapack/reference/Cppcon.cpp \
 ../../../../mplapack/reference/Cppequ.cpp \
 ../../../../mplapack/reference/Cpprfs.cpp \
@@ -535,7 +533,6 @@ MPLAPACK_ACCEL_REFERENCE_SOURCES = \
 ../../../../mplapack/reference/Rgesvx.cpp \
 ../../../../mplapack/reference/Rgetc2.cpp \
 ../../../../mplapack/reference/Rgetf2.cpp \
-../../../../mplapack/reference/Rgetri.cpp \
 ../../../../mplapack/reference/Rgetsls.cpp \
 ../../../../mplapack/reference/Rgetsqrhrt.cpp \
 ../../../../mplapack/reference/Rggbak.cpp \
@@ -781,7 +778,6 @@ MPLAPACK_ACCEL_REFERENCE_SOURCES = \
 ../../../../mplapack/reference/Rposvx.cpp \
 ../../../../mplapack/reference/Rpotf2.cpp \
 ../../../../mplapack/reference/Rpotrf2.cpp \
-../../../../mplapack/reference/Rpotri.cpp \
 ../../../../mplapack/reference/Rppcon.cpp \
 ../../../../mplapack/reference/Rppequ.cpp \
 ../../../../mplapack/reference/Rpprfs.cpp \
@@ -953,10 +949,15 @@ MPLAPACK_ACCEL_REFERENCE_SOURCES = \
 ../../../../mplapack/reference/iMparam2stage.cpp \
 ../../../../mplapack/reference/iMparmq.cpp
 
-# Replaced by mplapack/optimized/common or the CUDA solver dispatchers
+# Replaced by mplapack/optimized/common or CUDA solver/inverse dispatchers
 # (same basenames); listed here so the manifest names every reference file.
-# The OpenCL library retains the reference solvers explicitly.
+# OpenCL retains the reference solvers/inverses explicitly; MPFR retains the
+# reference GETRI/POTRI (GPU inverse entries are BF-only).
 MPLAPACK_ACCEL_REFERENCE_SOURCES_SHADOWED = \
+../../../../mplapack/reference/Rgetri.cpp \
+../../../../mplapack/reference/Cgetri.cpp \
+../../../../mplapack/reference/Rpotri.cpp \
+../../../../mplapack/reference/Cpotri.cpp \
 ../../../../mplapack/reference/Rtrtri.cpp \
 ../../../../mplapack/reference/Ctrtri.cpp \
 ../../../../mplapack/reference/Rlauum.cpp \

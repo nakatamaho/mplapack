@@ -5,6 +5,13 @@ requested **stage 1 only**: no aggregate stage-2 QA, stage-3 benchmark matrix,
 gate retuning, or push. The measurements below diagnose item 0; they are not
 crossover measurements or a substitute for deferred QA.
 
+Stage-1 status: CPU LU follow-up and goal-09 CPU/GPU implementations are
+committed separately. Goal 10 was **paused after its mixed initial profile**,
+not reported as an implementation success. Receipts:
+[Cholesky initial profile](chol-profile.md),
+[goal-09 CPU](cpu-inverses.md), [goal-09 GPU](gpu-inverses.md).
+Stage 2 and stage 3 were not run; existing gates were not retuned.
+
 ## Item 0: small CPU LU
 
 Reproduced without CUDA: with 32 threads, dd Rgetrf n=256/384/512 took

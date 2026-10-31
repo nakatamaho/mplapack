@@ -31,11 +31,12 @@ MPFR_CUDA = ["Rsyrk", "Rsyr2k", "Rsymm", "Rtrmm", "Rtrsm", "Rgemv", "Rsymv", "Rt
              "Rsyr", "Rsyr2", "Rscal", "Rswap", "Rrot"]
 
 SOLVERS = [kind + routine for kind in ("R", "C") for routine in ("getrs", "potrs", "gesv", "posv")]
+INVERSES = [kind + routine for kind in ("R", "C") for routine in ("trtri", "lauum", "potri", "getri")]
 
 LIBRARIES = [
-    ("dd", "cuda", "ENABLE_CUDA", ["Rgemm", "Rpotrf", "Cpotrf", "Rgetrf", "Cgetrf"] + SOLVERS + BLAS_CUDA + CBLAS_CUDA),
-    ("td", "cuda", "ENABLE_TD_CUDA", ["Rgemm", "Rpotrf", "Cpotrf", "Rgetrf", "Cgetrf"] + SOLVERS + BLAS_CUDA + CBLAS_CUDA),
-    ("qd", "cuda", "ENABLE_QD_CUDA", ["Rgemm", "Rpotrf", "Cpotrf", "Rgetrf", "Cgetrf"] + SOLVERS + BLAS_CUDA + CBLAS_CUDA),
+    ("dd", "cuda", "ENABLE_CUDA", ["Rgemm", "Rpotrf", "Cpotrf", "Rgetrf", "Cgetrf"] + SOLVERS + INVERSES + BLAS_CUDA + CBLAS_CUDA),
+    ("td", "cuda", "ENABLE_TD_CUDA", ["Rgemm", "Rpotrf", "Cpotrf", "Rgetrf", "Cgetrf"] + SOLVERS + INVERSES + BLAS_CUDA + CBLAS_CUDA),
+    ("qd", "cuda", "ENABLE_QD_CUDA", ["Rgemm", "Rpotrf", "Cpotrf", "Rgetrf", "Cgetrf"] + SOLVERS + INVERSES + BLAS_CUDA + CBLAS_CUDA),
     ("mpfr", "cuda", "ENABLE_MPFR_CUDA", ["Rgemm", "Rpotrf", "Cpotrf", "Rgetrf", "Cgetrf"] + SOLVERS + MPFR_CUDA + CBLAS_CUDA),
     ("binary128", "opencl", "ENABLE_OPENCL_BINARY128", ["Rgemm"]),
 ]

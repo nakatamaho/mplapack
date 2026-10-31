@@ -128,7 +128,8 @@ per-call GPU BLAS tasks unsuitable as their default schedule. CPU libraries
 and resident GPU arithmetic are unchanged.
 
 The CUDA libraries additionally provide [resident real/complex solvers](Rsolver_cuda.md)
-for dd/td/qd/mpfr; the CPU solvers are unchanged.
+for dd/td/qd/mpfr, and [resident real/complex inverses](Rinverse_cuda.md) for
+dd/td/qd (opt-in until crossovers are measured); the CPU solvers are unchanged.
 
 ## Dedicated CPU triangular inverses and products
 

@@ -24,11 +24,15 @@ namespace {
 #undef Cpotri
 #undef Rgetri
 #undef Cgetri
+#ifndef MPLAPACK_INVERSE_TEST_ACTUAL
+#define MPLAPACK_INVERSE_TEST_ACTUAL(R) R
+#define MPLAPACK_INVERSE_TEST_OWN_ACTUAL
+#endif
 #define INVERSE_TEST_OVERLOAD(T,P) \
-void inverse_tri(const char *u,const char *d,INTEGER n,T *a,INTEGER ld,INTEGER &i,bool ref) { if(ref) P##trtri_reference_cpu(u,d,n,a,ld,i); else P##trtri(u,d,n,a,ld,i); } \
-void inverse_lauum(const char *u,INTEGER n,T *a,INTEGER ld,INTEGER &i,bool ref) { if(ref) P##lauum_reference_cpu(u,n,a,ld,i); else P##lauum(u,n,a,ld,i); } \
-void inverse_potri(const char *u,INTEGER n,T *a,INTEGER ld,INTEGER &i,bool ref) { if(ref) inverse_##P##potri_reference(u,n,a,ld,i); else P##potri(u,n,a,ld,i); } \
-void inverse_getri(INTEGER n,T *a,INTEGER ld,INTEGER *p,T *w,INTEGER lw,INTEGER &i,bool ref) { if(ref) inverse_##P##getri_reference(n,a,ld,p,w,lw,i); else P##getri(n,a,ld,p,w,lw,i); }
+void inverse_tri(const char *u,const char *d,INTEGER n,T *a,INTEGER ld,INTEGER &i,bool ref) { if(ref) P##trtri_reference_cpu(u,d,n,a,ld,i); else MPLAPACK_INVERSE_TEST_ACTUAL(P##trtri)(u,d,n,a,ld,i); } \
+void inverse_lauum(const char *u,INTEGER n,T *a,INTEGER ld,INTEGER &i,bool ref) { if(ref) P##lauum_reference_cpu(u,n,a,ld,i); else MPLAPACK_INVERSE_TEST_ACTUAL(P##lauum)(u,n,a,ld,i); } \
+void inverse_potri(const char *u,INTEGER n,T *a,INTEGER ld,INTEGER &i,bool ref) { if(ref) inverse_##P##potri_reference(u,n,a,ld,i); else MPLAPACK_INVERSE_TEST_ACTUAL(P##potri)(u,n,a,ld,i); } \
+void inverse_getri(INTEGER n,T *a,INTEGER ld,INTEGER *p,T *w,INTEGER lw,INTEGER &i,bool ref) { if(ref) inverse_##P##getri_reference(n,a,ld,p,w,lw,i); else MPLAPACK_INVERSE_TEST_ACTUAL(P##getri)(n,a,ld,p,w,lw,i); }
 INVERSE_TEST_OVERLOAD(REAL,R)
 INVERSE_TEST_OVERLOAD(COMPLEX,C)
 #undef INVERSE_TEST_OVERLOAD
@@ -75,7 +79,13 @@ template<class T> void inverse_case(INTEGER n,const char *up,bool unit,int kind)
         for(INTEGER j=0;j<n;++j) for(INTEGER i=0;i<n;++i) if(upper?i<=j:i>=j) inv[i+j*n]=i==j && unit?T(1):g[i+j*ld];
         inverse_residual(tri,inv,n);
     }
-    if(unit || kind==1) return;
+    if(unit) return;
+    if(kind==1) {
+        routine=std::is_same<T,REAL>::value?"Rpotri":"Cpotri";
+        r=a;g=a;inverse_potri(up,n,r.data(),ld,ir,true);inverse_potri(up,n,g.data(),ld,ig,false);
+        check(ir==ig,"singular POTRI info",n,n,kind);identical(r,g,n,n,kind);
+        return;
+    }
     routine=std::is_same<T,REAL>::value?"Rlauum":"Clauum";
     r=a;g=a;inverse_lauum(up,n,r.data(),ld,ir,true);inverse_lauum(up,n,g.data(),ld,ig,false);
     check(ir==ig,"info",n,n,kind); if(!fast) identical(r,g,n,n,kind);
@@ -95,9 +105,9 @@ template<class T> void inverse_case(INTEGER n,const char *up,bool unit,int kind)
         inverse_residual(original,inv,n);
     }
 }
-template<class T> void inverse_general(INTEGER n,bool singular) {
+template<class T> void inverse_general(INTEGER n,bool singular,INTEGER work_columns=0) {
     routine=std::is_same<T,REAL>::value?"Rgetri":"Cgetri";triangle='-';
-    INTEGER ld=n+3,nb=iMlaenv(1,routine," ",n,-1,-1,-1),lw=std::max(INTEGER(1),n*nb);
+    INTEGER ld=n+3,nb=iMlaenv(1,routine," ",n,-1,-1,-1),lw=std::max(INTEGER(1),n*(work_columns?work_columns:nb));
     std::vector<T> a(size_t(ld)*n,T(19)),l(size_t(n)*n,T(0)),u(l.size(),T(0));
     std::vector<INTEGER> p(n,n);
     for(INTEGER j=0;j<n;++j) for(INTEGER i=0;i<n;++i) {
@@ -121,13 +131,19 @@ template<class T> void inverse_general(INTEGER n,bool singular) {
         inverse_residual(original,inv,n);
     }
 }
+#ifdef MPLAPACK_INVERSE_TEST_OWN_ACTUAL
+#undef MPLAPACK_INVERSE_TEST_ACTUAL
+#undef MPLAPACK_INVERSE_TEST_OWN_ACTUAL
+#endif
 void test_inverses(bool quick) {
-    std::vector<INTEGER> sizes=quick?std::vector<INTEGER>{0,3,65}:std::vector<INTEGER>{0,1,2,3,31,32,33,63,64,65,131,257,599};
+    std::vector<INTEGER> sizes=quick?std::vector<INTEGER>{0,3,65,131}:std::vector<INTEGER>{0,1,2,3,31,32,33,63,64,65,131,257,599};
     for(INTEGER n:sizes) {
         for(const char *up:{"U","L"}) for(bool unit:{false,true}) for(int kind:{0,1,2}) {
             inverse_case<REAL>(n,up,unit,kind);inverse_case<COMPLEX>(n,up,unit,kind);
         }
-        for(bool singular:{false,true}) { inverse_general<REAL>(n,singular);inverse_general<COMPLEX>(n,singular); }
+        for(bool singular:{false,true}) for(INTEGER columns:{INTEGER(0),INTEGER(1),INTEGER(2)}) {
+            inverse_general<REAL>(n,singular,columns);inverse_general<COMPLEX>(n,singular,columns);
+        }
     }
 }
 }

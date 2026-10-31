@@ -1,5 +1,10 @@
 # Resident CUDA solvers (factorization goal 08)
 
+Resident dd/td/qd TRTRI/LAUUM/POTRI/GETRI (real/complex), added by goal 09,
+are documented in [Rinverse_cuda.md](Rinverse_cuda.md). Their separate
+inverse minimum is opt-in pending measurements; the solver/factor gates
+below are unchanged.
+
 The dd, td, qd and MPFR CUDA flavors provide the real and complex
 `getrs`, `potrs`, `gesv` and `posv` entry points. For example:
 
