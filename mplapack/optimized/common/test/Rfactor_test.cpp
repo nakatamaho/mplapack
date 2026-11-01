@@ -228,7 +228,8 @@ template<class T> void test_chol(INTEGER n, const char *up, int bad) {
 int main(int argc, char **argv) {
     // Separate scheduling regression: production mode, not the test's usual
     // forced look-ahead. Keep costly medium-size cases out of quick sweeps.
-    const bool scheduling = argc == 2 && std::strcmp(argv[1], "--scheduling") == 0;
+    const bool lu_scheduling = argc == 2 && std::strcmp(argv[1], "--lu-scheduling") == 0;
+    const bool scheduling = lu_scheduling || (argc == 2 && std::strcmp(argv[1], "--scheduling") == 0);
     const bool inverse_only = argc == 2 && (!std::strcmp(argv[1], "--inverses") || !std::strcmp(argv[1], "--inverse-quick"));
     if (scheduling && !std::getenv("MPLAPACK_LAPACK_LOOKAHEAD"))
         setenv("MPLAPACK_LAPACK_LOOKAHEAD", "1", 1);
@@ -254,7 +255,7 @@ int main(int argc, char **argv) {
     } else if (scheduling) {
         for (INTEGER n : {256, 384, 512, 768, 1024}) {
             test_lu<REAL>(n,n,0); test_lu<COMPLEX>(n,n,0);
-            for (const char *up : {"U", "L"}) {
+            if (!lu_scheduling) for (const char *up : {"U", "L"}) {
                 test_chol<REAL>(n,up,0); test_chol<COMPLEX>(n,up,0);
             }
         }

@@ -37,6 +37,17 @@ checked separately, excluding any object padding. The existing reference CPU
 symbols use the BLAS of the linked library, as in Rlapack_omp_test; these tests
 are not an independent test of BLAS kernels.
 
+## Production LU scheduling regression
+
+`--scheduling` selects production-policy medium-size real/complex LU and
+Cholesky checks at n=256/384/512/768/1024. `--lu-scheduling` selects exactly
+the LU subset, avoiding costly unchanged Cholesky work in the all-backend
+CPU-LU follow-up. Both use LOOKAHEAD=1 unless explicitly overridden and retain
+the same exact A/pivot/info and backward-error checks. Run at 1/8/32 threads;
+for CUDA-library CPU fallback, also disable that backend's LAPACK_CUDA entry.
+Current CPU-bound CUDA fallbacks share the CPU library's scheduling policy,
+including the bounded small-real-LU team added by the batch follow-up.
+
 ## Device-resident Cholesky (goal 05)
 
 `Rpotrf_gpu_test.cpp` exercises the six dd/td/qd entry points directly;
