@@ -39,7 +39,7 @@
 +    REAL small = Rlamch("Safe minimum");
 +    REAL large = one / small;
 +    //
-+#if defined MPLAPACK_BUILD_WITH_BINARY128 ||  defined MPLAPACK_BUILD_WITH_BINARY80
++#if defined MPLAPACK_BUILD_WITH_BINARY128 || defined MPLAPACK_BUILD_WITH_BINARY80 || defined MPLAPACK_BUILD_WITH_MPFR
 +    Rlabad(small, large);
 +#endif
 +    //

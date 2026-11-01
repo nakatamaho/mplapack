@@ -63,7 +63,7 @@ void Rlatb4(fem::str_cref path, INTEGER const imat, INTEGER const m, INTEGER con
     REAL small = Rlamch("Safe minimum");
     REAL large = one / small;
     //
-#if defined MPLAPACK_BUILD_WITH_GMP
+#if defined MPLAPACK_BUILD_WITH_GMP || defined MPLAPACK_BUILD_WITH_MPFR
     Rlabad(small, large);
 #endif
     small = shrink * (small / eps);
