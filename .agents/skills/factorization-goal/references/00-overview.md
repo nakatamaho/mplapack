@@ -108,7 +108,7 @@ cu_mpfr). P0 = first, P1 = next, P2 = later.
 | trtri, lauum (trti2, lauu2) | triangular inverse, U·U^T | reference | dedicated recursive versions | `Rtrtri_<b>_cuda`, `Rlauum_<b>_cuda` | P2 | 09 |
 | potri, getri | inverse from the factors | reference | keep (calls trtri / lauum) | `Rpotri_<b>_cuda`, `Rgetri_<b>_cuda` | P2 | 09 |
 | trtrs | triangular solve with checks | reference | keep | (Rtrsm is already on the GPU) | — | — |
-| (support) cu_freal div / sqrt | correctly rounded division and square root for the MPFR fixed-precision device type | additive cu_fround.cuh patch provides RNDN APIs; cu_fmath stays approximate | — | `cu_fdiv_rn`, `cu_sqrt_rn` available as a patch to the bundled mpc_cuda (upstream proposal prepared, not submitted, carried on 3.1); MPFR Rtrsm on cu_freal | P0 for mpfr | 07a |
+| (support) cu_freal div / sqrt | correctly rounded division and square root for the MPFR fixed-precision device type | additive cu_fround.cuh patch provides RNDN APIs; cu_fmath stays approximate | — | `cu_fdiv_rn`, `cu_sqrt_rn` available as a patch to the bundled mpc_cuda (submitted upstream as tkouya/mpc_cuda#1; carried as a patch until merged); MPFR Rtrsm on cu_freal | P0 for mpfr | 07a |
 
 Out of scope: QR, eigenvalue and SVD routines, pivoted Cholesky (pstrf),
 band and packed storage, mixed precision refinement.
