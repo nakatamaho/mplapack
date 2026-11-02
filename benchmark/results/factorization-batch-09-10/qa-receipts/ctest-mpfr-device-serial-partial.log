@@ -1,0 +1,18 @@
+Test project /tmp/factor01-cmake
+      Start  1: mpfr_cuda_solver_fallback_256
+ 1/38 Test  #1: mpfr_cuda_solver_fallback_256 ..........   Passed   77.75 sec
+      Start  2: mpfr_cuda_solver_fallback_512
+ 2/38 Test  #2: mpfr_cuda_solver_fallback_512 ..........   Passed  108.09 sec
+      Start  3: mpfr_cuda_solver_fallback_768
+ 3/38 Test  #3: mpfr_cuda_solver_fallback_768 ..........   Passed  150.54 sec
+      Start  4: mpfr_cuda_solver_fallback_1024
+ 4/38 Test  #4: mpfr_cuda_solver_fallback_1024 .........   Passed  201.16 sec
+      Start  5: mpfr_cuda_solver_fallback_2048
+ 5/38 Test  #5: mpfr_cuda_solver_fallback_2048 .........   Passed  535.63 sec
+      Start  6: mpfr_cuda_solver_fallback_200
+ 6/38 Test  #6: mpfr_cuda_solver_fallback_200 ..........   Passed  134.55 sec
+      Start 19: mpfr_cuda_solver_device_256
+ 7/38 Test #19: mpfr_cuda_solver_device_256 ............   Passed  574.40 sec
+      Start 20: mpfr_cuda_solver_device_runtime_256
+ 8/38 Test #20: mpfr_cuda_solver_device_runtime_256 ....   Passed  806.21 sec
+      Start 21: mpfr_cuda_solver_device_512

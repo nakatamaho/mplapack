@@ -1,0 +1,8 @@
+Rlatb4 anorm=1.25215321e+323228343 cndnum=2.00000000e+00
+Rlattr type=6 U n=2 info=0 diag=N
+D[0]=1.25215321e+323228343 D[1]=6.26076605e+323228342
+A[0]: zero=1 inf=0 nan=0 value=-0.00000000e+00
+A[1]: zero=1 inf=0 nan=0 value=0.00000000e+00
+A[2]: zero=1 inf=0 nan=0 value=0.00000000e+00
+A[3]: zero=1 inf=0 nan=0 value=-0.00000000e+00
+reference Rtrtri info=1

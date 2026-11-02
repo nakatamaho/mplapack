@@ -1,4 +1,35 @@
-# Batch 09/10 — implementation-stage receipts
+# Batch 09/10 — implementation receipts and QA follow-up
+
+## Follow-up status: GPU hold requested 2026-11-02
+
+Numerical QA and archive/shared-library audits are complete: [QA table](qa.csv),
+[raw execution receipts](qa-receipts/), and the
+[MPFR LIN generator fix](qa-mpfr-latb4-fix.md). Two follow-up commits fix the
+MPFR test-input scaling and add a LU-only production scheduling sweep.
+No production arithmetic or goal-10 implementation was added.
+
+The amended CPU comparison is complete for n=256/512/1024, threads=8/32,
+all eight CPU types: **48 points / 288 paired R/C exact-output comparisons**,
+zero identity failures. [Medians](cpu-lu-comparison.csv) and
+[all completed samples](cpu-lu-comparison-samples.csv) distinguish required
+points from extra measurements completed before the amendment.
+
+For n>=2048 and one thread: **修正の対象外の経路なので省略**. The active
+MPFR 4096/1 run was stopped; /8 and /32 were never started
+([omissions](cpu-lu-omitted.csv)). Already completed GMP 4096 and MPFR 2048
+values remain as extra references; they are not rerun or acceptance prerequisites.
+
+Timing nonregression is **not** asserted for every backend: MPFR Rgetrf
+512/32 shows an apparent ~9% slowdown (3.173 -> 3.457 s), requiring CPU-only
+follow-up. Output identity passed. See [pause/resume details](gpu-hold.md).
+
+**GPU benchmarks have not started; all gates are unchanged.** The maintainer
+is using the GPU for OCR. All automatic computation/benchmark continuation
+has stopped; wait for an explicit resume instruction. OCR-period GPU process
+observations are recorded only and are not anomalies. The mandatory stage-3
+retuning commit is still pending.
+
+## Original implementation-stage record (historical)
 
 Base: `573645db3`, branch `claude/mpfr-cuda-rgemm`. The maintainer subsequently
 requested **stage 1 only**: no aggregate stage-2 QA, stage-3 benchmark matrix,

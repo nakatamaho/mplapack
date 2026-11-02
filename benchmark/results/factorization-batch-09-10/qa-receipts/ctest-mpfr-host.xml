@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="(empty)"
+	tests="25"
+	failures="2"
+	disabled="0"
+	skipped="0"
+	hostname=""
+	time="8722"
+	timestamp="2026-11-01T10:06:04"
+	>
+	<testcase name="mpfr_cuda_solver_host_256" classname="mpfr_cuda_solver_host_256" time="587.341" status="run">
+		<properties/>
+		<system-out>PASS p=256 cumulative checks=2513 elements=15684422 zero-sign-errors=0
+</system-out>
+	</testcase>
+	<testcase name="mpfr_cuda_solver_host_runtime_256" classname="mpfr_cuda_solver_host_runtime_256" time="606.119" status="run">
+		<properties/>
+		<system-out>PASS p=256 cumulative checks=2513 elements=15684422 zero-sign-errors=0
+</system-out>
+	</testcase>
+	<testcase name="mpfr_cuda_solver_host_512" classname="mpfr_cuda_solver_host_512" time="799.722" status="run">
+		<properties/>
+		<system-out>PASS p=512 cumulative checks=2513 elements=15684422 zero-sign-errors=0
+</system-out>
+	</testcase>
+	<testcase name="mpfr_cuda_solver_host_runtime_512" classname="mpfr_cuda_solver_host_runtime_512" time="745.939" status="run">
+		<properties/>
+		<system-out>PASS p=512 cumulative checks=2513 elements=15684422 zero-sign-errors=0
+</system-out>
+	</testcase>
+	<testcase name="mpfr_cuda_solver_host_768" classname="mpfr_cuda_solver_host_768" time="1094.78" status="run">
+		<properties/>
+		<system-out>PASS p=768 cumulative checks=2513 elements=15684422 zero-sign-errors=0
+</system-out>
+	</testcase>
+	<testcase name="mpfr_cuda_solver_host_runtime_768" classname="mpfr_cuda_solver_host_runtime_768" time="1008.58" status="run">
+		<properties/>
+		<system-out>PASS p=768 cumulative checks=2513 elements=15684422 zero-sign-errors=0
+</system-out>
+	</testcase>
+	<testcase name="mpfr_cuda_solver_host_1024" classname="mpfr_cuda_solver_host_1024" time="1480.33" status="run">
+		<properties/>
+		<system-out>PASS p=1024 cumulative checks=2513 elements=15684422 zero-sign-errors=0
+</system-out>
+	</testcase>
+	<testcase name="mpfr_cuda_solver_host_runtime_1024" classname="mpfr_cuda_solver_host_runtime_1024" time="1219.9" status="run">
+		<properties/>
+		<system-out>PASS p=1024 cumulative checks=2513 elements=15684422 zero-sign-errors=0
+</system-out>
+	</testcase>
+	<testcase name="mpfr_cuda_solver_host_2048" classname="mpfr_cuda_solver_host_2048" time="3873.25" status="run">
+		<properties/>
+		<system-out>PASS p=2048 cumulative checks=2513 elements=15684422 zero-sign-errors=0
+</system-out>
+	</testcase>
+	<testcase name="mpfr_cuda_solver_host_runtime_2048" classname="mpfr_cuda_solver_host_runtime_2048" time="2825.86" status="run">
+		<properties/>
+		<system-out>PASS p=2048 cumulative checks=2513 elements=15684422 zero-sign-errors=0
+</system-out>
+	</testcase>
+	<testcase name="mpfr_cuda_solver_host_200" classname="mpfr_cuda_solver_host_200" time="592.945" status="run">
+		<properties/>
+		<system-out>PASS p=200 cumulative checks=2513 elements=15684422 zero-sign-errors=0
+</system-out>
+	</testcase>
+	<testcase name="mpfr_cuda_solver_host_runtime_200" classname="mpfr_cuda_solver_host_runtime_200" time="590.509" status="run">
+		<properties/>
+		<system-out>PASS p=200 cumulative checks=2513 elements=15684422 zero-sign-errors=0
+</system-out>
+	</testcase>
+	<testcase name="mpfr_cuda_Rfactor_host" classname="mpfr_cuda_Rfactor_host" time="2765.65" status="run">
+		<properties/>
+		<system-out>p=256 routine=Rgetrf cases=241 elements=2832648 errors=0 signed_zero_diffs=0
+p=256 routine=Rpotrf cases=84 elements=1361932 errors=0 signed_zero_diffs=0
+p=256 checks=710 elements=4194760 errors=0 signed_zero_diffs=0
+p=512 routine=Rgetrf cases=241 elements=2832648 errors=0 signed_zero_diffs=0
+p=512 routine=Rpotrf cases=84 elements=1361932 errors=0 signed_zero_diffs=0
+p=512 checks=710 elements=4194760 errors=0 signed_zero_diffs=0
+p=768 routine=Rgetrf cases=241 elements=2832648 errors=0 signed_zero_diffs=0
+p=768 routine=Rpotrf cases=84 elements=1361932 errors=0 signed_zero_diffs=0
+p=768 checks=710 elements=4194760 errors=0 signed_zero_diffs=0
+p=1024 routine=Rgetrf cases=241 elements=2832648 errors=0 signed_zero_diffs=0
+p=1024 routine=Rpotrf cases=84 elements=1361932 errors=0 signed_zero_diffs=0
+p=1024 checks=710 elements=4194760 errors=0 signed_zero_diffs=0
+p=2048 routine=Rgetrf cases=241 elements=2832648 errors=0 signed_zero_diffs=0
+p=2048 routine=Rpotrf cases=84 elements=1361932 errors=0 signed_zero_diffs=0
+p=...
+[This part of the test output was removed since it exceeds the threshold of 1024 bytes.]
+</system-out>
+	</testcase>
+	<testcase name="mpfr_cuda_Rfactor_host_runtime" classname="mpfr_cuda_Rfactor_host_runtime" time="1614.65" status="run">
+		<properties/>
+		<system-out>p=256 routine=Rgetrf cases=241 elements=2832648 errors=0 signed_zero_diffs=0
+p=256 routine=Rpotrf cases=84 elements=1361932 errors=0 signed_zero_diffs=0
+p=256 checks=710 elements=4194760 errors=0 signed_zero_diffs=0
+p=512 routine=Rgetrf cases=241 elements=2832648 errors=0 signed_zero_diffs=0
+p=512 routine=Rpotrf cases=84 elements=1361932 errors=0 signed_zero_diffs=0
+p=512 checks=710 elements=4194760 errors=0 signed_zero_diffs=0
+p=768 routine=Rgetrf cases=241 elements=2832648 errors=0 signed_zero_diffs=0
+p=768 routine=Rpotrf cases=84 elements=1361932 errors=0 signed_zero_diffs=0
+p=768 checks=710 elements=4194760 errors=0 signed_zero_diffs=0
+p=1024 routine=Rgetrf cases=241 elements=2832648 errors=0 signed_zero_diffs=0
+p=1024 routine=Rpotrf cases=84 elements=1361932 errors=0 signed_zero_diffs=0
+p=1024 checks=710 elements=4194760 errors=0 signed_zero_diffs=0
+p=2048 routine=Rgetrf cases=241 elements=2832648 errors=0 signed_zero_diffs=0
+p=2048 routine=Rpotrf cases=84 elements=1361932 errors=0 signed_zero_diffs=0
+p=...
+[This part of the test output was removed since it exceeds the threshold of 1024 bytes.]
+</system-out>
+	</testcase>
+	<testcase name="mpfr_cuda_Cfactor_host" classname="mpfr_cuda_Cfactor_host" time="7200.23" status="fail">
+		<failure message="Timeout"/>
+		<properties/>
+		<system-out>p=256 LU=241 Cholesky=136 checks=813 components=9062456 errors=0 signed_zero_diffs=0
+p=512 LU=241 Cholesky=136 checks=813 components=9062456 errors=0 signed_zero_diffs=0
+p=768 LU=241 Cholesky=136 checks=813 components=9062456 errors=0 signed_zero_diffs=0
+p=1024 LU=241 Cholesky=136 checks=813 components=9062456 errors=0 signed_zero_diffs=0
+</system-out>
+	</testcase>
+	<testcase name="mpfr_cuda_Cfactor_host_runtime" classname="mpfr_cuda_Cfactor_host_runtime" time="7200.15" status="fail">
+		<failure message="Timeout"/>
+		<properties/>
+		<system-out>p=256 LU=241 Cholesky=136 checks=813 components=9062456 errors=0 signed_zero_diffs=0
+p=512 LU=241 Cholesky=136 checks=813 components=9062456 errors=0 signed_zero_diffs=0
+p=768 LU=241 Cholesky=136 checks=813 components=9062456 errors=0 signed_zero_diffs=0
+p=1024 LU=241 Cholesky=136 checks=813 components=9062456 errors=0 signed_zero_diffs=0
+p=2048 LU=241 Cholesky=136 checks=813 components=9062456 errors=0 signed_zero_diffs=0
+</system-out>
+	</testcase>
+	<testcase name="mpfr_cuda_cu_fround_host" classname="mpfr_cuda_cu_fround_host" time="13.3487" status="run">
+		<properties/>
+		<system-out>PB=224 pairs=100256 checked=200496 mismatches=0 exact_div=80 exact_sqrt=48
+PB=256 pairs=100256 checked=200496 mismatches=0 exact_div=80 exact_sqrt=48
+PB=512 pairs=100256 checked=200496 mismatches=0 exact_div=80 exact_sqrt=48
+PB=768 pairs=100256 checked=200496 mismatches=0 exact_div=80 exact_sqrt=48
+PB=1024 pairs=100256 checked=200496 mismatches=0 exact_div=80 exact_sqrt=48
+PB=2048 pairs=100256 checked=200496 mismatches=0 exact_div=80 exact_sqrt=48
+</system-out>
+	</testcase>
+	<testcase name="mpfr_cuda_Rgemm_host" classname="mpfr_cuda_Rgemm_host" time="19.9368" status="run">
+		<properties/>
+		<system-out>PASSED: 1006992 elements compared, 2 zeros differing only in sign, 0 failures
+</system-out>
+	</testcase>
+	<testcase name="mpfr_cuda_Rgemm_host_runtime" classname="mpfr_cuda_Rgemm_host_runtime" time="17.0203" status="run">
+		<properties/>
+		<system-out>PASSED: 1006992 elements compared, 0 zeros differing only in sign, 0 failures
+</system-out>
+	</testcase>
+	<testcase name="mpfr_cuda_Rgemm_winograd_host" classname="mpfr_cuda_Rgemm_winograd_host" time="56.2307" status="run">
+		<properties/>
+		<system-out>--- cutoff 1
+PASSED: cutoff 1, 263619 elements compared, 0 failures
+--- cutoff 2
+PASSED: cutoff 2, 263619 elements compared, 0 failures
+--- cutoff 3
+PASSED: cutoff 3, 263619 elements compared, 0 failures
+--- cutoff 8
+PASSED: cutoff 8, 263619 elements compared, 0 failures
+</system-out>
+	</testcase>
+	<testcase name="mpfr_cuda_Rblas_host" classname="mpfr_cuda_Rblas_host" time="136.096" status="run">
+		<properties/>
+		<system-out>lane BLAS (GPU): 41505 checks, 0 failures
+</system-out>
+	</testcase>
+	<testcase name="mpfr_cuda_Cblas_host" classname="mpfr_cuda_Cblas_host" time="164.205" status="run">
+		<properties/>
+		<system-out>complex BLAS (GPU): 45996 checks, 0 failures, 0 zeros differing only in sign
+</system-out>
+	</testcase>
+	<testcase name="mpfr_cuda_Cblas_host_fixed" classname="mpfr_cuda_Cblas_host_fixed" time="183.334" status="run">
+		<properties/>
+		<system-out>complex BLAS (GPU): 45996 checks, 0 failures, 1096 zeros differing only in sign
+</system-out>
+	</testcase>
+	<testcase name="mpfr_cuda_blas3_host" classname="mpfr_cuda_blas3_host" time="5.42011" status="run">
+		<properties/>
+		<system-out>PASSED: 524672 elements compared, 580 zeros differing only in sign, 0 failures
+</system-out>
+	</testcase>
+	<testcase name="mpfr_cuda_blas3_host_runtime" classname="mpfr_cuda_blas3_host_runtime" time="3.02628" status="run">
+		<properties/>
+		<system-out>PASSED: 524672 elements compared, 0 zeros differing only in sign, 0 failures
+</system-out>
+	</testcase>
+</testsuite>
