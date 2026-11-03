@@ -22,7 +22,7 @@ reference ones bit for bit (`mpblas/optimized/common/test/Rlapack_omp_test.cpp`)
 
 | Variable | Meaning |
 |---|---|
-| `MPLAPACK_LAPACK_LOOKAHEAD=1` | CPU default: LU tasks at min(m,n) >= 12 nb (768), or real LU >= 2 nb with more than eight requested threads; also the CPU-only fallback of dd/td/qd/MPFR CUDA factors |
+| `MPLAPACK_LAPACK_LOOKAHEAD=1` | CPU default: tasks for LU with min(m,n) >= 12 nb (768); also the CPU-only fallback of dd/td/qd/MPFR CUDA factors |
 | `MPLAPACK_LAPACK_LOOKAHEAD=2` | tasks also for smaller LU and for Cholesky |
 | `MPLAPACK_LAPACK_LOOKAHEAD=0` | the reference loop |
 | `MPLAPACK_LAPACK_FAST=1` | dedicated LU / Cholesky algorithms described below; different rounding |
@@ -30,19 +30,13 @@ reference ones bit for bit (`mpblas/optimized/common/test/Rlapack_omp_test.cpp`)
 Measured on 4 cores (median of 5), against the reference loop on the same
 parallel BLAS: `Rgetrf` double 1.6x (n = 1000), 1.23x (2000), 1.10x (3000),
 dd 1.0x (600), 1.08x (1000); slower below n = 768 (0.65-0.74x), hence the
-original default. On a loaded 32-core host, however, repeatedly launching
-32-thread BLAS teams below that boundary costs far more than the arithmetic:
-dd LU n=512 takes about 1.4 s, versus 0.15 s at n=1024. With more than eight
-requested threads, small real LU now shares a single task team, bounded by the
-number of column tiles (or 1024-row panel chunks for tall matrices). The
-n=512 time becomes about 0.034 s with unchanged arithmetic. No process-wide
-environment or OpenMP ICV is changed; explicit LOOKAHEAD=0 remains serial
-outer scheduling. `Rfactor_test --scheduling` covers n=256/384/512/768/1024
-in production scheduling mode, including real/complex LU and both Cholesky
-triangles. Complex LU did not exhibit the same extreme slowdown and retains
-its existing default gate; Cholesky scheduling itself is unchanged.
-
-Cholesky with tasks: 0.66-1.17x, because the left-looking order of
+default. On a heavily loaded shared host (load average about 64 on 64
+hardware threads), 32-thread LU below that boundary can be very slow (dd n =
+512: about 1.4-1.9 s, versus 0.025 s on a quiet host) because the OpenMP
+teams wait on busy cores. Capping the team at the number of column tiles
+(cdc38b323) fixed that case but made heavy-arithmetic types 1.4-5.4x slower
+on a quiet host (qd/gmp/mpfr, n = 256-512) and was reverted; a fix must be
+measured on both a quiet and a loaded host. Cholesky with tasks: 0.66-1.17x, because the left-looking order of
 the reference puts the diagonal blocks and their updates on a serial path,
 which the reference loop runs on the parallel BLAS; it is therefore off by
 default. The old whole-matrix reference recursion measured 0.85-1.2x of the blocked routine.
@@ -68,7 +62,7 @@ pivot search to retain its comparison behavior.
 
 Within an existing LU team, recursive updates fuse LASWP/TRSM/GEMM on
 independent column tiles with local taskgroups. No reduction dimension is
-split. The default outer loop keeps `iMlaenv` and the look-ahead policy above;
+split. The default outer loop keeps `iMlaenv` and the old look-ahead gate;
 standalone tall panels can create their own team. Workers inherit the
 caller's MPFR/GMP precision, rounding, and exponent range. LOOKAHEAD=0
 also disables panel tasks. The independent `*_reference_cpu` routines call

@@ -59,7 +59,7 @@ void Rgetrf(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, INTEGE
     }
     const bool fast = mplapack_lapack::la_fast();
     const INTEGER nb = fast ? mplapack_getrf::width() : iMlaenv(1, "Rgetrf", " ", m, n, -1, -1);
-    const bool tasks = mplapack_lapack::la_lookahead(true, std::min(m, n), nb, true);
+    const bool tasks = mplapack_lapack::la_lookahead(true, std::min(m, n), nb);
     if (nb <= 1 || nb >= std::min(m, n)) {
         Rgetrf2(m, n, a, lda, ipiv, info);
         return;

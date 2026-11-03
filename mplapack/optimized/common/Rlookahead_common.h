@@ -72,16 +72,15 @@ inline bool la_fast() { return la_env("MPLAPACK_LAPACK_FAST", 0) != 0; }
 
 // Whether the look-ahead (task) form is used: two threads or more, not
 // already inside a parallel region, and
-//   MPLAPACK_LAPACK_LOOKAHEAD=1 (default): LU with min(m,n) >= 12*nb;
-//     also real LU >= 2*nb with more than eight requested threads. It then
-//     shares one bounded team instead of repeatedly synchronizing full
-//     BLAS teams. Cholesky never (the left-looking order of the reference
+//   MPLAPACK_LAPACK_LOOKAHEAD=1 (default): LU with min(m,n) >= 12*nb (on 4
+//     cores, double: 1.1-1.6x for n = 1000-3000, slower below 768; dd:
+//     1.0-1.1x), Cholesky never (the left-looking order of the reference
 //     puts the diagonal blocks on a serial path: 0.66-1.17x)
 //   MPLAPACK_LAPACK_LOOKAHEAD=2: always;  0: never
 // Accelerator flavors still using per-call GPU BLAS default to no tasks:
 // transfers/serialized GPU calls do not overlap. CUDA CPU-factor bindings
 // instead use the CPU library policy (no transfers in these tasks).
-inline bool la_lookahead(bool lu, long mn, long nb, bool small_real_lu = false)
+inline bool la_lookahead(bool lu, long mn, long nb)
 {
 #ifdef _OPENMP
 #if defined(MPLAPACK_ACCELERATOR_LIBRARY) && !defined(MPLAPACK_FACTOR_CPU_BLAS)
@@ -94,10 +93,10 @@ inline bool la_lookahead(bool lu, long mn, long nb, bool small_real_lu = false)
 #if defined(MPLAPACK_ACCELERATOR_LIBRARY) && !defined(MPLAPACK_FACTOR_CPU_BLAS)
     return mode >= 2;
 #else
-    return mode >= 2 || (lu && (mn >= 12 * nb || (small_real_lu && omp_get_max_threads() > 8 && mn >= 2 * nb)));
+    return mode >= 2 || (lu && mn >= 12 * nb);
 #endif
 #else
-    (void)lu, (void)mn, (void)nb, (void)small_real_lu;
+    (void)lu, (void)mn, (void)nb;
     return false;
 #endif
 }
@@ -119,16 +118,7 @@ template <class FP, class FL, class FS> void la_getrf(long m, long n, long nb, I
     std::vector<char> dep((size_t)tiles);
     char *d = dep.data();
     const mplapack_blas::blas_thread_context ctx;
-#ifdef _OPENMP
-    // At most one update per column tile is ready at a time. Tall panels
-    // can additionally expose independent 1024-row tasks. Do not wake a
-    // full machine's team for a handful of small tiles (especially costly
-    // with libgomp's active waits on a loaded host). No ICV is modified.
-    const int threads = mn < 12 * nb
-        ? int(std::min(long(omp_get_max_threads()), std::max(tiles, (m + 1023) / 1024)))
-        : omp_get_max_threads();
-#pragma omp parallel num_threads(threads)
-#endif
+#pragma omp parallel
     {
         const mplapack_blas::blas_thread_context::scope sc(ctx);
         const lu_team_scope team;
