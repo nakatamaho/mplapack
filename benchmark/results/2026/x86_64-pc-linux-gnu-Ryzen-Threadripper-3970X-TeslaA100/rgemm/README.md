@@ -10,9 +10,9 @@ the host-device transfers and, for MPFR, the packing into the device format.
 
 | File | Contents |
 |---|---|
-| `../../Rgemm_gpu_compare.cpp` | Rgemm/Cgemm("N","N",n,n,n), best of R runs, GFLOPS; `cmp` mode compares two result dumps |
-| `../../Rgemm_mpfr_sweep.cpp` | MPFR Rgemm("N","N",n,n,n) for n = powers of two and multiples of 13 up to NMAX |
-| `../../plot_sweep.py` | draws a sweep CSV as in `mpfr512_sweep10k.png` |
+| `benchmark/Rgemm_gpu_compare.cpp` | Rgemm/Cgemm("N","N",n,n,n), best of R runs, GFLOPS; `cmp` mode compares two result dumps |
+| `benchmark/Rgemm_mpfr_sweep.cpp` | MPFR Rgemm("N","N",n,n,n) for n = powers of two and multiples of 13 up to NMAX |
+| `benchmark/plot_sweep.py` | draws a sweep CSV as in `mpfr512_sweep10k.png` |
 | `build.sh` | builds both programs against the autotools libraries |
 | `run_gemm_compare.sh` | runs the comparison for one type (CPU, default GPU kernel, other kernels, accuracy) |
 | `gemm_compare_{dd,td,qd,mpfr}.txt` | its output (October 24-26, 2026) |
@@ -29,9 +29,9 @@ the host-device transfers and, for MPFR, the packing into the device format.
 
 ## Reproduce
 
-    benchmark/results/rgemm-a100-2026-10/build.sh ./bin
+    benchmark/results/2026/x86_64-pc-linux-gnu-Ryzen-Threadripper-3970X-TeslaA100/rgemm/build.sh ./bin
     ./bin/mpfr_sweep 512 10000 3 1 > sweep.csv 2> sweep.log      # PREC NMAX REPS REPS_LARGE [NSTART]
-    benchmark/results/rgemm-a100-2026-10/run_gemm_compare.sh dd ./bin > gemm_compare_dd.txt
+    benchmark/results/2026/x86_64-pc-linux-gnu-Ryzen-Threadripper-3970X-TeslaA100/rgemm/run_gemm_compare.sh dd ./bin > gemm_compare_dd.txt
 
 Plot (needs matplotlib and the Noto Sans CJK JP font):
 

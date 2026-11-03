@@ -4,7 +4,7 @@
 # autotools build of this tree with --enable-{dd,td,qd,mpfr}-cuda.
 #   usage: build.sh [OUTDIR=./bin]
 set -eu
-R=$(cd "$(dirname "$0")/../../.." && pwd)
+R=$(cd "$(dirname "$0")/../../../../.." && pwd)
 O=${1:-./bin}; mkdir -p "$O"
 T=$R/mpblas/optimized
 I="-I$R/include -I$R/external/i/QD/include -I$R/external/i/GMPFRXX_MKII/include -I$R/external/i/MPFR/include -I$R/external/i/GMP/include -I$R/external/i/MPC/include -I/usr/local/cuda/include"

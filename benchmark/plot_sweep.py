@@ -6,7 +6,7 @@
 Draws the GPU sweep as a line, marks the powers of two with dots and their
 values, and draws the CPU reference as a dashed line (one value: horizontal;
 several "n:gflops" values: a dashed polyline through them).  Used for
-benchmark/results/rgemm-a100-2026-10/mpfr512_sweep10k.png and as the model of
+benchmark/results/2026/x86_64-pc-linux-gnu-Ryzen-Threadripper-3970X-TeslaA100/rgemm/mpfr512_sweep10k.png and as the model of
 the kernel benchmark graphs.  Needs matplotlib and a Japanese font (Noto Sans
 CJK JP) for Japanese labels.
 """
