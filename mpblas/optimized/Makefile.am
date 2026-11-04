@@ -36,6 +36,7 @@ endif
 EXTRA_DIST = common/README.md \
 common/Rblas1_policy.h common/Rblas1_reduction_common.h common/Rblas1_fast_common.h \
 common/Rblas1_jobs_common.h common/Rblas1_entries.h common/Rblas1_cuda_common.cuh \
+common/Rtrisolve_jobs.h common/Rtrisolve_policy.h common/Rtrisolve_entries.h common/Rtrisolve_cuda_common.cuh common/blas_dev/tri_arithmetic.h \
 common/Rlapack_cuda_common.cuh common/Rlapack_sqrt_common.h common/test/Rlapack_gpu_test.cpp \
 dd/cuda/Rlapack_device_test.cu td/cuda/Rlapack_device_test.cu qd/cuda/Rlapack_device_test.cu \
 common/Rblas_lanes_common.h common/Rblas_calls_common.h common/Rblas_cpu_common.h \

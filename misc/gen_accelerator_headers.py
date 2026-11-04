@@ -86,7 +86,9 @@ def main():
             lines += ["// BLAS1 reductions: CPU MPLAPACK_MPBLAS_FAST=1; GPU",
                       "// %s_MPBLAS_FAST=1 (read per call). GPU dot/asum/nrm2" % ("MPLAPACK_" + backend.upper()),
                       "// return false by default. Non-void results use a final result reference.", ""]
-            routines = routines + BLAS1
+            lines += ["// Triangular solves: opt-in via %s;" % ("MPLAPACK_MPFR_CUDA_L12=1" if backend == "mpfr" else "MPLAPACK_%s_BLAS_CUDA_L12=1" % backend.upper()),
+                      "// existing enable/minimum gates apply. No CPU fallback on false.", ""]
+            routines = routines + BLAS1 + [p + r for p in ("R", "C") for r in ("trsv", "tbsv", "tpsv")]
         for r in routines:
             if r not in decls:
                 sys.exit("%s is not declared in the BLAS/LAPACK headers for %s" % (r, backend))

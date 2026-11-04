@@ -44,6 +44,9 @@
 // MPLAPACK_DD_MPBLAS_FAST=1 (read per call). GPU dot/asum/nrm2
 // return false by default. Non-void results use a final result reference.
 
+// Triangular solves: opt-in via MPLAPACK_DD_BLAS_CUDA_L12=1;
+// existing enable/minimum gates apply. No CPU fallback on false.
+
 bool Rgemm_dd_cuda(const char *transa, const char *transb, mplapackint const m, mplapackint const n, mplapackint const k, dd_real const alpha, dd_real *a, mplapackint const lda, dd_real *b, mplapackint const ldb, dd_real const beta, dd_real *c, mplapackint const ldc);
 bool Rpotrf_dd_cuda(const char *uplo, mplapackint const n, dd_real *a, mplapackint const lda, mplapackint &info);
 bool Cpotrf_dd_cuda(const char *uplo, mplapackint const n, dd_complex *a, mplapackint const lda, mplapackint &info);
@@ -128,5 +131,11 @@ bool Rasum_dd_cuda(mplapackint const n, dd_real *dx, mplapackint const incx, dd_
 bool RCasum_dd_cuda(mplapackint const n, dd_complex *zx, mplapackint const incx, dd_real &result);
 bool Rnrm2_dd_cuda(mplapackint const n, dd_real *x, mplapackint const incx, dd_real &result);
 bool RCnrm2_dd_cuda(mplapackint const n, dd_complex *x, mplapackint const incx, dd_real &result);
+bool Rtrsv_dd_cuda(const char *uplo, const char *trans, const char *diag, mplapackint const n, dd_real *a, mplapackint const lda, dd_real *x, mplapackint const incx);
+bool Rtbsv_dd_cuda(const char *uplo, const char *trans, const char *diag, mplapackint const n, mplapackint const k, dd_real *a, mplapackint const lda, dd_real *x, mplapackint const incx);
+bool Rtpsv_dd_cuda(const char *uplo, const char *trans, const char *diag, mplapackint const n, dd_real *ap, dd_real *x, mplapackint const incx);
+bool Ctrsv_dd_cuda(const char *uplo, const char *trans, const char *diag, mplapackint const n, dd_complex *a, mplapackint const lda, dd_complex *x, mplapackint const incx);
+bool Ctbsv_dd_cuda(const char *uplo, const char *trans, const char *diag, mplapackint const n, mplapackint const k, dd_complex *a, mplapackint const lda, dd_complex *x, mplapackint const incx);
+bool Ctpsv_dd_cuda(const char *uplo, const char *trans, const char *diag, mplapackint const n, dd_complex *ap, dd_complex *x, mplapackint const incx);
 
 #endif

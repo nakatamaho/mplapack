@@ -613,6 +613,44 @@ mutex, scoped arena/stack and dynamic real precision above 4096 bits;
 complex eligibility retains the factor adapter's 4096-bit cap. See the
 [MPFR README](../mpfr/cuda/README.md) for eligibility details.
 
+## Opt-in GPU triangular vector solves (goal 11)
+
+`Rtrsv`, `Rtbsv`, `Rtpsv`, `Ctrsv`, `Ctbsv`, `Ctpsv` now have
+`_<backend>_cuda` entries for dd/td/qd/MPFR. Public dispatchers keep the
+existing CPU `_omp`/reference path by default. Enable attempts with
+`<P>_BLAS_CUDA_L12=1` (BF) or `MPLAPACK_MPFR_CUDA_L12=1` (MPFR).
+The existing enable/minimum variables from the BLAS1 section apply; the
+minimum is compared with n*n (full/packed) or n*(k+1) (band). FAST does not
+change solve arithmetic. `<P>_CUDA_VERBOSE=1` reports launch errors.
+
+`Rtrisolve_jobs.h` solves columns in reference order. N launches a pivot
+then parallel independent updates, preserving the **pre-division** zero
+skip. T/C launches independent products then subtracts in reference order
+(upper ascending, lower descending), followed by division. Expressions are
+extracted from the unchanged reference TRSV bodies by
+`misc/gen_blas_tri_cuda.py`; no existing arithmetic or CPU solve is changed.
+All U/L, N/T/C, unit/nonunit, negative/nonunit increments and native band/
+packed column layouts are supported. One residency includes all columns;
+extra workspace is O(n). The internal `schedule` takes device pointers for
+kernel-only timing; the public entry also includes allocations/transfers.
+
+False leaves every output untouched: invalid/overflowing sizes or strides,
+n=0, disabled/below-threshold calls, ineligible values, allocation/runtime
+errors, or nonfinite output. Only referenced matrix entries are read; unit
+diagonals and padding are ignored. Vector gaps/guards and A are never written.
+BLAS does **not** precheck singularity: a zero RHS in N skips a zero pivot
+and may succeed; an actually executed division by zero rejects publication
+(the ordinary dispatcher then runs the unchanged CPU implementation).
+MPFR additionally checks every intermediate, using the inverse-local signed,
+correctly rounded fixed/runtime arithmetic, mutex/arena/stack/memory policy.
+
+Focused CMake tests: `<b>_cuda_Rtrisolve_{host,device}` (MPFR suffix 512/200).
+Autotools: `Rtrisolve_gpu_host_test_<b>` (MPFR in its `cuda/` directory).
+Tests cover n=0/1/7/64/200, every flag/stride/layout, k=0/3/203, zero skips,
+strict signed-zero identity, guard/matrix preservation, singular rejection,
+invalid/overflowing inputs and unchanged CPU fallback. Device tests skip 77
+without a device. These are correctness-first kernels, not tuned defaults.
+
 ## Benchmarks
 
 `benchmark/go.Rgemm_algo.sh` runs `Rgemm.{dd,td,qd,binary128}_opt` once per

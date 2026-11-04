@@ -791,6 +791,31 @@ Focused CMake tests: `mpfr_cuda_Rblas1_{host,device}_{512,200,4097,8192}`;
 `make -C mpblas/optimized/mpfr/cuda Rblas1_gpu_host_test_mpfr` builds the
 matching autotools executable. 4097/8192 test the dynamic real path only.
 
+## Triangular vector solves (goal 11)
+
+`Rtrsv/Rtbsv/Rtpsv/Ctrsv/Ctbsv/Ctpsv_mpfr_cuda` follow the
+[shared solve contract](../../common/README.md#opt-in-gpu-triangular-vector-solves-goal-11).
+The ordinary symbols remain CPU by default: `MPLAPACK_MPFR_CUDA_L12=1`
+enables GPU attempts, subject to `MPLAPACK_MPFR_CUDA` and
+`MPLAPACK_MPFR_CUDA_MIN_MNK` (n*n or band n*(k+1), default 32768).
+No new crossover or LAPACK dispatch policy is introduced.
+
+They use inverse-local checked values, fixed256/512/768/1024/2048 with
+correctly rounded real division, cu_mpfr otherwise/forced, dynamically
+sized real precision above4096 and the existing complex4096 cap. Runtime
+can be disabled with `MPLAPACK_MPFR_CUDA_RUNTIME=0`. Uniform default
+precision/RNDN, finite inputs, default exponent bounds and per-operation
+exponent guards match the inverse/BLAS1 entries. The common mutex, scoped
+arena/stack, inherited-stack memory preflight and all-or-nothing publication
+are reused. Legacy fixed-BLAS signed-zero exceptions are not used.
+
+CMake: `mpfr_cuda_Rtrisolve_{host,device}_{512,200}`; autotools:
+`make -C mpblas/optimized/mpfr/cuda Rtrisolve_gpu_host_test_mpfr`.
+Run with `MPFRXX_DEFAULT_PRECISION_BITS=P`; above4096 tests use real n<=7.
+`MPLAPACK_MPFR_CUDA_FORCE_RUNTIME=1` exercises runtime arithmetic at a
+fixed-tier precision. Device-pointer schedules use `Rtrisolve_jobs.h`;
+`Rtrisolve_device_body.cuh` and the dynamic residency adapter launch them.
+
 ## Limitations
 
 - Accelerated: `Rgemm`, `Rsyrk`, `Rsyr2k`, `Rsymm`, `Rtrmm`, `Rtrsm`, the

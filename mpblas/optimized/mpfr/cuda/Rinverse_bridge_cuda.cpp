@@ -196,3 +196,4 @@ ENTRIES(mpc_class,C)
 #undef ENTRIES
 
 #include "Rblas1_bridge_body.h"
+#include "Rtrisolve_bridge_body.h"

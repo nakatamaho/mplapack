@@ -44,6 +44,9 @@
 // MPLAPACK_MPFR_MPBLAS_FAST=1 (read per call). GPU dot/asum/nrm2
 // return false by default. Non-void results use a final result reference.
 
+// Triangular solves: opt-in via MPLAPACK_MPFR_CUDA_L12=1;
+// existing enable/minimum gates apply. No CPU fallback on false.
+
 bool Rgemm_mpfr_cuda(const char *transa, const char *transb, mplapackint const m, mplapackint const n, mplapackint const k, mpfr_class const alpha, mpfr_class *a, mplapackint const lda, mpfr_class *b, mplapackint const ldb, mpfr_class const beta, mpfr_class *c, mplapackint const ldc);
 bool Rpotrf_mpfr_cuda(const char *uplo, mplapackint const n, mpfr_class *a, mplapackint const lda, mplapackint &info);
 bool Cpotrf_mpfr_cuda(const char *uplo, mplapackint const n, mpc_class *a, mplapackint const lda, mplapackint &info);
@@ -128,5 +131,11 @@ bool Rasum_mpfr_cuda(mplapackint const n, mpfr_class *dx, mplapackint const incx
 bool RCasum_mpfr_cuda(mplapackint const n, mpc_class *zx, mplapackint const incx, mpfr_class &result);
 bool Rnrm2_mpfr_cuda(mplapackint const n, mpfr_class *x, mplapackint const incx, mpfr_class &result);
 bool RCnrm2_mpfr_cuda(mplapackint const n, mpc_class *x, mplapackint const incx, mpfr_class &result);
+bool Rtrsv_mpfr_cuda(const char *uplo, const char *trans, const char *diag, mplapackint const n, mpfr_class *a, mplapackint const lda, mpfr_class *x, mplapackint const incx);
+bool Rtbsv_mpfr_cuda(const char *uplo, const char *trans, const char *diag, mplapackint const n, mplapackint const k, mpfr_class *a, mplapackint const lda, mpfr_class *x, mplapackint const incx);
+bool Rtpsv_mpfr_cuda(const char *uplo, const char *trans, const char *diag, mplapackint const n, mpfr_class *ap, mpfr_class *x, mplapackint const incx);
+bool Ctrsv_mpfr_cuda(const char *uplo, const char *trans, const char *diag, mplapackint const n, mpc_class *a, mplapackint const lda, mpc_class *x, mplapackint const incx);
+bool Ctbsv_mpfr_cuda(const char *uplo, const char *trans, const char *diag, mplapackint const n, mplapackint const k, mpc_class *a, mplapackint const lda, mpc_class *x, mplapackint const incx);
+bool Ctpsv_mpfr_cuda(const char *uplo, const char *trans, const char *diag, mplapackint const n, mpc_class *ap, mpc_class *x, mplapackint const incx);
 
 #endif

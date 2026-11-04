@@ -53,8 +53,21 @@ struct dynamic_blas1_job {
 };
 }
 bool dynamic_blas1_memory_fits(long n,long p) { return dynamic_storage_fits(4*size_t(n)+1,n,p); }
-int run_dynamic_blas1(mplapack_blas1::operation op,long n,long prec,rt_pack &packed,long &index) {
-    const size_t count=4*size_t(n)+1,nl=(prec+63)/64;
+namespace {
+template<class J> struct dynamic_tri_job {
+    dynamic_engine e;J job;
+    L3_HD void operator()(long lane) {
+        job(lane);
+        if(slots()!=0) failure()=true;
+        if(failure()) e.ok=false;
+    }
+};
+struct dynamic_tri_launcher : dynamic_launcher {
+    template<class J> void launch(J j,long n) { this->execute(dynamic_tri_job<J>{dynamic_engine{},j},n); }
+};
+// Shared residency only: the BLAS1 and solve schedules remain separate.
+int run_dynamic_work(mplapack_blas1::operation op,long n,long prec,rt_pack &packed,long &index,const mplapack_trisolve::shape *tri) {
+    const size_t count=tri?size_t(tri->count())+2*size_t(n)+1:4*size_t(n)+1,nl=(prec+63)/64;
     if(!dynamic_storage_fits(count,n,prec)) return 1;
 #ifndef MPLAPACK_MPFR_CUDA_HOST_EMULATION
     int devices=0;if(cudaGetDeviceCount(&devices) || !devices) return 1;
@@ -80,7 +93,7 @@ int run_dynamic_blas1(mplapack_blas1::operation op,long n,long prec,rt_pack &pac
     auto old_values=values_host,old_one=one_host;values_host=values.p;one_host=one.p;
     struct state_guard {mplapack_rt_limb *v,*o;~state_guard(){values_host=v;one_host=o;}} state{old_values,old_one};
 #endif
-    dynamic_launcher ctx;if(ctx.error) return ctx.error;
+    dynamic_tri_launcher ctx;if(ctx.error) return ctx.error;
     std::vector<dynamic_cell> cells(count);
     for(size_t i=0;i<count;++i) cells[i]={limbs.p+i*nl,packed.exp[i],packed.kind[i],-2};
 #ifndef MPLAPACK_MPFR_CUDA_HOST_EMULATION
@@ -93,8 +106,11 @@ int run_dynamic_blas1(mplapack_blas1::operation op,long n,long prec,rt_pack &pac
 #endif
     bool element=op==mplapack_blas1::axpy || op==mplapack_blas1::copy;
     dynamic_blas1_job job{dynamic_engine{},op,n,1,element?3:0,matrix.p,indices.p};
-    ctx.execute(job,n);
-    if(!element) {
+    if(tri) {
+        auto *x=matrix.p+tri->count();
+        mplapack_trisolve::schedule<dynamic_real,mplapack_trisolve::Rarithmetic<dynamic_real>>(ctx,*tri,matrix.p,x,x+n);
+    } else ctx.execute(job,n);
+    if(!tri && !element) {
         for(long stride=1;stride<n;) {
             job.phase=1;job.stride=stride;ctx.execute(job,(n-1)/stride/2+1);
             if(stride>n/2) break;stride*=2;
@@ -102,7 +118,7 @@ int run_dynamic_blas1(mplapack_blas1::operation op,long n,long prec,rt_pack &pac
         job.phase=2;ctx.execute(job,1);
     }
     ctx.finish();if(ctx.error) return ctx.error;
-    long found=0;if(!element && indices.download(&found,1)) return 1;
+    long found=0;if(!tri && !element && indices.download(&found,1)) return 1;
 #ifndef MPLAPACK_MPFR_CUDA_HOST_EMULATION
     if(cudaMemcpy(cells.data(),matrix.p,count*sizeof(dynamic_cell),cudaMemcpyDeviceToHost) ||
        limbs.download(reinterpret_cast<mplapack_rt_limb*>(packed.limbs),count*nl)) return 1;
@@ -115,4 +131,14 @@ int run_dynamic_blas1(mplapack_blas1::operation op,long n,long prec,rt_pack &pac
     if(state.restore() || guard.restore() || stack.restore()) return 1;
 #endif
     index=found;return 0;
+}
+} // namespace
+int run_dynamic_blas1(mplapack_blas1::operation op,long n,long prec,rt_pack &packed,long &index) {
+    return run_dynamic_work(op,n,prec,packed,index,nullptr);
+}
+bool dynamic_tri_memory_fits(const mplapack_trisolve::shape &s,long prec) {
+    return dynamic_storage_fits(size_t(s.count())+2*size_t(s.n)+1,s.n,prec);
+}
+int run_dynamic_tri(const mplapack_trisolve::shape &s,long prec,rt_pack &packed) {
+    long unused=0;return run_dynamic_work(mplapack_blas1::copy,s.n,prec,packed,unused,&s);
 }

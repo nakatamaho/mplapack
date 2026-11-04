@@ -22,6 +22,7 @@ misc/gen_blas_l2_gpu.py \
 misc/gen_blas_l1_reductions.py \
 misc/gen_blas1_cuda_dispatchers.py \
 misc/gen_blas_tri_solves.py \
+misc/gen_blas_tri_cuda.py \
 misc/gen_blas_device_reference.py \
 misc/gen_inverse_device_reference.py \
 misc/check_mpfr_shared_load.py \

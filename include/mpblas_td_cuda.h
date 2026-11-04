@@ -44,6 +44,9 @@
 // MPLAPACK_TD_MPBLAS_FAST=1 (read per call). GPU dot/asum/nrm2
 // return false by default. Non-void results use a final result reference.
 
+// Triangular solves: opt-in via MPLAPACK_TD_BLAS_CUDA_L12=1;
+// existing enable/minimum gates apply. No CPU fallback on false.
+
 bool Rgemm_td_cuda(const char *transa, const char *transb, mplapackint const m, mplapackint const n, mplapackint const k, td_real const alpha, td_real *a, mplapackint const lda, td_real *b, mplapackint const ldb, td_real const beta, td_real *c, mplapackint const ldc);
 bool Rpotrf_td_cuda(const char *uplo, mplapackint const n, td_real *a, mplapackint const lda, mplapackint &info);
 bool Cpotrf_td_cuda(const char *uplo, mplapackint const n, td_complex *a, mplapackint const lda, mplapackint &info);
@@ -128,5 +131,11 @@ bool Rasum_td_cuda(mplapackint const n, td_real *dx, mplapackint const incx, td_
 bool RCasum_td_cuda(mplapackint const n, td_complex *zx, mplapackint const incx, td_real &result);
 bool Rnrm2_td_cuda(mplapackint const n, td_real *x, mplapackint const incx, td_real &result);
 bool RCnrm2_td_cuda(mplapackint const n, td_complex *x, mplapackint const incx, td_real &result);
+bool Rtrsv_td_cuda(const char *uplo, const char *trans, const char *diag, mplapackint const n, td_real *a, mplapackint const lda, td_real *x, mplapackint const incx);
+bool Rtbsv_td_cuda(const char *uplo, const char *trans, const char *diag, mplapackint const n, mplapackint const k, td_real *a, mplapackint const lda, td_real *x, mplapackint const incx);
+bool Rtpsv_td_cuda(const char *uplo, const char *trans, const char *diag, mplapackint const n, td_real *ap, td_real *x, mplapackint const incx);
+bool Ctrsv_td_cuda(const char *uplo, const char *trans, const char *diag, mplapackint const n, td_complex *a, mplapackint const lda, td_complex *x, mplapackint const incx);
+bool Ctbsv_td_cuda(const char *uplo, const char *trans, const char *diag, mplapackint const n, mplapackint const k, td_complex *a, mplapackint const lda, td_complex *x, mplapackint const incx);
+bool Ctpsv_td_cuda(const char *uplo, const char *trans, const char *diag, mplapackint const n, td_complex *ap, td_complex *x, mplapackint const incx);
 
 #endif

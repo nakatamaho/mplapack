@@ -77,8 +77,8 @@ libmplapack_dd_opt_cuda_la_SOURCES = \
 ../../common/blas/Csyr2k_omp.cpp ../../common/blas_cuda/Csyr2k.cpp \
 ../../common/blas/Cher2k_omp.cpp ../../common/blas_cuda/Cher2k.cpp \
 ../../common/blas/Cgemmtr_omp.cpp ../../common/blas_cuda/Cgemmtr.cpp \
-../../common/blas/Rtrsv.cpp ../../common/blas/Rtrsv_omp.cpp \
-../../common/blas/Ctrsv.cpp ../../common/blas/Ctrsv_omp.cpp \
+../../common/blas_cuda/Rtrsv.cpp ../../common/blas/Rtrsv_omp.cpp \
+../../common/blas_cuda/Ctrsv.cpp ../../common/blas/Ctrsv_omp.cpp \
 ../../common/blas/Cher_omp.cpp ../../common/blas_cuda/Cher.cpp \
 ../../common/blas/Cher2_omp.cpp ../../common/blas_cuda/Cher2.cpp \
 ../../common/blas_cuda/Cdotc.cpp ../../common/blas/Cdotc_omp.cpp \
@@ -91,9 +91,9 @@ libmplapack_dd_opt_cuda_la_SOURCES = \
 ../../common/blas_cuda/Chpr2.cpp ../../common/blas/Chpr2_omp.cpp \
 ../../../reference/Crotg.cpp \
 ../../common/blas_cuda/Ctbmv.cpp ../../common/blas/Ctbmv_omp.cpp \
-../../common/blas/Ctbsv.cpp ../../common/blas/Ctbsv_omp.cpp \
+../../common/blas_cuda/Ctbsv.cpp ../../common/blas/Ctbsv_omp.cpp \
 ../../common/blas_cuda/Ctpmv.cpp ../../common/blas/Ctpmv_omp.cpp \
-../../common/blas/Ctpsv.cpp ../../common/blas/Ctpsv_omp.cpp \
+../../common/blas_cuda/Ctpsv.cpp ../../common/blas/Ctpsv_omp.cpp \
 ../../common/blas_cuda/Ctrmv.cpp ../../common/blas/Ctrmv_omp.cpp \
 ../../../reference/Mlsame.cpp \
 ../../../reference/Mxerbla.cpp \
@@ -111,9 +111,9 @@ libmplapack_dd_opt_cuda_la_SOURCES = \
 ../../common/blas_cuda/Rspr.cpp ../../common/blas/Rspr_omp.cpp \
 ../../common/blas_cuda/Rspr2.cpp ../../common/blas/Rspr2_omp.cpp \
 ../../common/blas_cuda/Rtbmv.cpp ../../common/blas/Rtbmv_omp.cpp \
-../../common/blas/Rtbsv.cpp ../../common/blas/Rtbsv_omp.cpp \
+../../common/blas_cuda/Rtbsv.cpp ../../common/blas/Rtbsv_omp.cpp \
 ../../common/blas_cuda/Rtpmv.cpp ../../common/blas/Rtpmv_omp.cpp \
-../../common/blas/Rtpsv.cpp ../../common/blas/Rtpsv_omp.cpp \
+../../common/blas_cuda/Rtpsv.cpp ../../common/blas/Rtpsv_omp.cpp \
 ../../common/blas_cuda/iCamax.cpp ../../common/blas/iCamax_omp.cpp \
 ../../common/blas_cuda/iRamax.cpp ../../common/blas/iRamax_omp.cpp \
 ../../../reference/mplapackinit.cpp \
@@ -127,7 +127,7 @@ Rgetrf.cpp Cgetrf.cpp Rgetrf_gpu_cuda.cu \
 ../../../../mplapack/optimized/common/Cgetrf2.cpp \
 Rpotrf.cpp Cpotrf.cpp Rpotrf_gpu_cuda.cu \
 $(MPLAPACK_DD_CUDA_LAPACK_OPTIMIZED_SOURCES) \
-Rgemm.cpp Rgemm_bridge_cuda.cpp Rgemm_gpu_cuda.cu ../../common/blas_cuda/Rblas_bridge_cuda.cpp ../../common/blas_cuda/Rblas1_bridge_cuda.cpp ../../common/blas_cuda/Cblas_bridge_cuda.cpp \
+Rgemm.cpp Rgemm_bridge_cuda.cpp Rgemm_gpu_cuda.cu ../../common/blas_cuda/Rblas_bridge_cuda.cpp ../../common/blas_cuda/Rblas1_bridge_cuda.cpp ../../common/blas_cuda/Rtrisolve_bridge_cuda.cpp ../../common/blas_cuda/Cblas_bridge_cuda.cpp \
 Rgemm_cuda.cu Rgemm_fermi.cu Rgemm_tesla.cu \
 Rsyrk_legacy_cuda.cu Rsyrk_cuda.cu dd_real_cuda.h
 

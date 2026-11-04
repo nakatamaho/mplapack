@@ -159,6 +159,13 @@ def values(name, traits, conf):
         if gpu_host:
             programs.append("Rgemm_gpu_host_test")
             programs.append("Rblas_gpu_host_test_%%b%%")
+            programs.append("Rtrisolve_gpu_host_test_%%b%%")
+            tests += ["Rtrisolve_gpu_host_test_%%b%%_SOURCES = ../common/test/Rtrisolve_gpu_test.cpp ../common/blas_cuda/Rtrisolve_bridge_cuda.cpp " + " ".join(
+                          "../common/blas_cuda/%s.cpp" % r for r in "Rtrsv Rtbsv Rtpsv Ctrsv Ctbsv Ctpsv".split()),
+                      "Rtrisolve_gpu_host_test_%%b%%_CPPFLAGS = $(libmplapack_%%b%%_opt_la_CPPFLAGS) -DMPLAPACK_GEMM_CUDA_HOST_EMULATION",
+                      "Rtrisolve_gpu_host_test_%%b%%_CXXFLAGS = $(DD_CXXFLAGS)",
+                      "Rtrisolve_gpu_host_test_%%b%%_LDFLAGS = -static $(QD_RPATH_LDFLAGS)",
+                      "Rtrisolve_gpu_host_test_%%b%%_LDADD = libmplapack_%%b%%_opt.la $(libmplapack_%%b%%_opt_la_LIBADD)"]
             programs.append("Rblas1_gpu_host_test_%%b%%")
             tests += ["Rblas1_gpu_host_test_%%b%%_SOURCES = ../common/test/Rblas1_gpu_test.cpp ../common/blas_cuda/Rblas_bridge_cuda.cpp ../common/blas_cuda/Rblas1_bridge_cuda.cpp " + " ".join(
                           "../common/blas_cuda/%s.cpp" % r for r in "Raxpy Rcopy Rdot Cdotc Cdotu Rasum RCasum Rnrm2 RCnrm2 iRamax iCamax".split()),

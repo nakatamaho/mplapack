@@ -45,6 +45,15 @@ template int run_bf<OPS,false>(operation,long,const DR *,const DR *,state<DR> &)
 template int run_bf<OPS,true>(operation,long,const DC *,const DC *,state<DR> &);
 }
 
+#include "../../common/Rtrisolve_cuda_common.cuh"
+namespace mplapack_trisolve {
+using OPS=mplapack_gemm::qd_ops;
+using DR=mplapack_blas_dev::cgpu_types<OPS>::DR;
+using DC=mplapack_blas_dev::cgpu_types<OPS>::DC;
+template int run_bf<OPS,false>(const shape &,const DR *,DR *);
+template int run_bf<OPS,true>(const shape &,const DC *,DC *);
+}
+
 namespace mplapack_gemm {
 template int gemm_cuda<qd_ops>(const shape &, int, long, const ozaki_plan *, const gpu_scalars<qd_ops::F> &, const qd_ops::F *, const qd_ops::F *, qd_ops::F *);
 template int gemm_cuda<sloppy_ops<qd_ops, true, false> >(const shape &, int, long, const ozaki_plan *, const gpu_scalars<qd_ops::F> &, const qd_ops::F *, const qd_ops::F *, qd_ops::F *);

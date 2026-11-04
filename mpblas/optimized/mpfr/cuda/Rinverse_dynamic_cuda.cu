@@ -5,6 +5,7 @@
 #include "Rinverse_dynamic_cuda.h"
 #include "Rinverse_device_body.cuh"
 #include "Rblas1_kernel_cuda.h"
+#include "Rtrisolve_kernel_cuda.h"
 #include <new>
 #include <cstring>
 namespace mplapack_mpfr_inverse {
