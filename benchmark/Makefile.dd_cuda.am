@@ -46,3 +46,18 @@ Rpotrf_dd_cuda_total_CXXFLAGS= $(dd_cuda_cxxflags)
 Rgetrf_dd_cuda_total_SOURCES=  Rgetrf.cpp
 Rgetrf_dd_cuda_total_LINK=     $(dd_cuda_link)
 Rgetrf_dd_cuda_total_CXXFLAGS= $(dd_cuda_cxxflags)
+
+# Rkernel_bench.dd_cuda_kernel: the dd GPU kernels of the factorizations,
+# solvers and inverses alone, on device-resident matrices (CUDA events), built
+# from the library's internal headers (Rkernel_bench_dd_cuda.cu);
+# Rkernel_bench.dd_opt: the same routines of libmplapack_dd_opt on the
+# CPU.  Driven by kernel_bench.py, see README.kernel_bench.md.
+bench_PROGRAMS += Rkernel_bench.dd_cuda_kernel Rkernel_bench.dd_opt
+Rkernel_bench_dd_cuda_kernel_SOURCES = Rkernel_bench_dd_cuda.cu
+nodist_EXTRA_Rkernel_bench_dd_cuda_kernel_SOURCES = kernel_bench_cxx_link.cpp
+Rkernel_bench_dd_cuda_kernel_LINK = $(LIBTOOL) --mode=link $(CXX) -o $@
+Rkernel_bench_dd_cuda_kernel_LDADD = -L$(top_builddir)/mpblas/optimized/dd -lmplapack_dd_opt \
+                     $(CUDA_LDFLAGS) -lcublas -lcudart -L$(QD_LIBDIR) -lqd $(DYLD) $(OPENMP_CXXFLAGS)
+Rkernel_bench_dd_opt_SOURCES = Rkernel_bench.cpp
+Rkernel_bench_dd_opt_CXXFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) -DMPLAPACK_BUILD_WITH_DD $(DD_CXXFLAGS)
+Rkernel_bench_dd_opt_LDFLAGS = -L$(top_builddir)/mpblas/optimized/dd -lmplapack_dd_opt -L$(QD_LIBDIR) -lqd $(DYLD)

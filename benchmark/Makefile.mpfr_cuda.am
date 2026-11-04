@@ -28,3 +28,16 @@ Rpotrf_mpfr_cuda_total_CXXFLAGS= $(mpfr_cuda_cxxflags)
 Rgetrf_mpfr_cuda_total_SOURCES=  Rgetrf.cpp
 Rgetrf_mpfr_cuda_total_LINK=     $(mpfr_cuda_link)
 Rgetrf_mpfr_cuda_total_CXXFLAGS= $(mpfr_cuda_cxxflags)
+
+# Rkernel_bench.mpfr_cuda_kernel: the MPFR GPU kernels of the factorizations
+# alone, called through the entry points <R>_mpfr_cuda and timed with CUPTI
+# (span of the call's kernels: no packing, no transfers); Rkernel_bench.mpfr_opt:
+# the same routines of libmplapack_mpfr_opt on the CPU.  Driven by
+# kernel_bench.py, see README.kernel_bench.md.
+bench_PROGRAMS += Rkernel_bench.mpfr_cuda_kernel Rkernel_bench.mpfr_opt
+Rkernel_bench_mpfr_cuda_kernel_SOURCES = Rkernel_bench.cpp
+Rkernel_bench_mpfr_cuda_kernel_LINK = $(LIBTOOL) --mode=link $(CXX) -o $@ $(CUDA_LDFLAGS) $(mpfr_cuda_libdepends) -lcupti $(OPENMP_CXXFLAGS)
+Rkernel_bench_mpfr_cuda_kernel_CXXFLAGS = $(mpfr_cuda_cxxflags) -DKERNEL_BENCH_MPFR_CUDA
+Rkernel_bench_mpfr_opt_SOURCES = Rkernel_bench.cpp
+Rkernel_bench_mpfr_opt_CXXFLAGS = $(GMPFRXX_MKII_CPPFLAGS) $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR) -DMPLAPACK_BUILD_WITH_MPFR
+Rkernel_bench_mpfr_opt_LDFLAGS = -L$(top_builddir)/mpblas/optimized/mpfr -lmplapack_mpfr_opt -L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(GMP_LIBDIR) -lmpfr -lmpc -lgmp $(DYLD)

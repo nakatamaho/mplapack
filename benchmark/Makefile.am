@@ -22,6 +22,7 @@ dist_bench_DATA = \
 # Source templates for go.*.sh (included in "make dist").
 # -----------------------------------------------------------------------------
 EXTRA_DIST = run_solver_bench.py run_factor_dispatch_bench.py test_factor_dispatch_bench.py test_factor_gate_smoke.py Rsolver_legacy_bench.h \
+    kernel_bench.py kernel_bench_compare.py plot_kernel_bench.py plot_sweep.py README.kernel_bench.md \
     results/2026/x86_64-pc-linux-gnu-Ryzen-Threadripper-3970X-TeslaA100/factorization-goal08/solvers.csv \
     results/2026/x86_64-pc-linux-gnu-Ryzen-Threadripper-3970X-TeslaA100/factorization-goal08/mpfr-factor-regression.csv \
     results/2026/x86_64-pc-linux-gnu-Ryzen-Threadripper-3970X-TeslaA100/factorization-goal08b/README.md \
@@ -91,6 +92,17 @@ go.%.sh: $(srcdir)/go.%.sh.in
 	  -e "s|%%PREFIX%%|$(prefix)|g" \
 	  $< > $@
 	chmod +x $@
+
+# -----------------------------------------------------------------------------
+# CUDA sources of the kernel benchmark (Rkernel_bench_<b>_cuda.cu): nvcc with
+# the flags of the dd/td/qd CUDA libraries (no contraction, sm_80 and sm_90).
+# -----------------------------------------------------------------------------
+SUFFIXES = .cu
+KERNEL_BENCH_NVCC_FLAGS = -U_GNU_SOURCE -D_XOPEN_SOURCE=700 -std=c++17 -fmad=false -Xcompiler=-ffp-contract=off -O3 -m64 \
+    -gencode arch=compute_80,code=sm_80 -gencode arch=compute_90,code=sm_90 \
+    -I$(top_builddir)/include -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) $(CUDA_CFLAGS)
+.cu.o:
+	$(NVCC) $(KERNEL_BENCH_NVCC_FLAGS) -o $@ -c $<
 
 # -----------------------------------------------------------------------------
 # Install destination

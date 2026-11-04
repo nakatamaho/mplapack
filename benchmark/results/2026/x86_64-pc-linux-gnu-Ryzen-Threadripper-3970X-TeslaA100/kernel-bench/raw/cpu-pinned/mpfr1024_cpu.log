@@ -1,0 +1,129 @@
+$ taskset -c 0-31 /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt gemm NN 128,256 --label mpfr1024 --reps 1
+# mpfr1024 gemm NN: data for n <= 256 in 0.1 s
+# exit 0, 0.5 s
+$ taskset -c 0-31 /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt gemm NT 128,256 --label mpfr1024 --reps 1
+# mpfr1024 gemm NT: data for n <= 256 in 0.1 s
+# exit 0, 0.6 s
+$ taskset -c 0-31 /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt gemm TN 128,256 --label mpfr1024 --reps 1
+# mpfr1024 gemm TN: data for n <= 256 in 0.1 s
+# exit 0, 0.5 s
+$ taskset -c 0-31 /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt gemm_update NN 128,256 --label mpfr1024 --reps 1
+# mpfr1024 gemm_update NN: data for n <= 256 in 0.0 s
+# exit 0, 0.2 s
+$ taskset -c 0-31 /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt syrk LN 128,256 --label mpfr1024 --reps 1
+# mpfr1024 syrk LN: data for n <= 256 in 0.1 s
+# exit 0, 1.0 s
+$ taskset -c 0-31 /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt syrk UT 128,256 --label mpfr1024 --reps 1
+# mpfr1024 syrk UT: data for n <= 256 in 0.1 s
+# exit 0, 0.3 s
+$ taskset -c 0-31 /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt syrk LN_k64 128,256 --label mpfr1024 --reps 1
+# mpfr1024 syrk LN_k64: data for n <= 256 in 0.0 s
+# exit 0, 0.2 s
+$ taskset -c 0-31 /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt syrk UT_k64 128,256 --label mpfr1024 --reps 1
+# mpfr1024 syrk UT_k64: data for n <= 256 in 0.0 s
+# exit 0, 0.2 s
+$ taskset -c 0-31 /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt trsm LLNU 128,256 --label mpfr1024 --reps 1
+# mpfr1024 trsm LLNU: data for n <= 256 in 0.1 s
+# exit 0, 0.3 s
+$ taskset -c 0-31 /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt trsm RLTN 128,256 --label mpfr1024 --reps 1
+# mpfr1024 trsm RLTN: data for n <= 256 in 0.1 s
+# exit 0, 0.4 s
+$ taskset -c 0-31 /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt trsm LUTN 128,256 --label mpfr1024 --reps 1
+# mpfr1024 trsm LUTN: data for n <= 256 in 0.1 s
+# exit 0, 0.3 s
+$ taskset -c 0-31 /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt trsm LUNN 128,256 --label mpfr1024 --reps 1
+# mpfr1024 trsm LUNN: data for n <= 256 in 0.1 s
+# exit 0, 0.4 s
+$ taskset -c 0-31 /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt trsm LLNU_p64 128,256 --label mpfr1024 --reps 1
+# mpfr1024 trsm LLNU_p64: data for n <= 256 in 0.0 s
+# exit 0, 0.1 s
+$ taskset -c 0-31 /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt trsm RLTN_p64 128,256 --label mpfr1024 --reps 1
+# mpfr1024 trsm RLTN_p64: data for n <= 256 in 0.0 s
+# exit 0, 0.1 s
+$ taskset -c 0-31 /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt trsm LUTN_p64 128,256 --label mpfr1024 --reps 1
+# mpfr1024 trsm LUTN_p64: data for n <= 256 in 0.0 s
+# exit 0, 0.1 s
+$ taskset -c 0-31 /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt trsm LUNN_p64 128,256 --label mpfr1024 --reps 1
+# mpfr1024 trsm LUNN_p64: data for n <= 256 in 0.0 s
+# exit 0, 0.1 s
+$ taskset -c 0-31 /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt getrf2 P64 128,256 --label mpfr1024 --reps 1
+# mpfr1024 getrf2 P64: data for n <= 256 in 0.0 s
+# exit 0, 0.9 s
+$ taskset -c 0-31 /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt potrf2 L 64,256 --label mpfr1024 --reps 1
+# mpfr1024 potrf2 L: data for n <= 256 in 0.0 s
+# exit 0, 0.3 s
+$ taskset -c 0-31 /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt laswp R64 128,256 --label mpfr1024 --reps 1
+# mpfr1024 laswp R64: data for n <= 256 in 0.1 s
+# exit 0, 0.1 s
+$ taskset -c 0-31 /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt trtri UN 128,256 --label mpfr1024 --reps 1
+# mpfr1024 trtri UN: data for n <= 256 in 0.1 s
+# exit 0, 0.4 s
+$ taskset -c 0-31 /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt lauum L 128,256 --label mpfr1024 --reps 1
+# mpfr1024 lauum L: data for n <= 256 in 0.1 s
+# exit 0, 0.4 s
+$ taskset -c 0-31 /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt cgemm NN 128,256 --label mpfr1024 --reps 1
+# mpfr1024 cgemm NN: data for n <= 256 in 0.2 s
+# exit 0, 1.5 s
+$ taskset -c 0-31 /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt cgemm NC 128,256 --label mpfr1024 --reps 1
+# mpfr1024 cgemm NC: data for n <= 256 in 0.2 s
+# exit 0, 1.6 s
+$ taskset -c 0-31 /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt cgemm CN 128,256 --label mpfr1024 --reps 1
+# mpfr1024 cgemm CN: data for n <= 256 in 0.2 s
+# exit 0, 2.1 s
+$ taskset -c 0-31 /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt cherk LN 128,256 --label mpfr1024 --reps 1
+# mpfr1024 cherk LN: data for n <= 256 in 0.2 s
+# exit 0, 0.8 s
+$ taskset -c 0-31 /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt cherk UC 128,256 --label mpfr1024 --reps 1
+# mpfr1024 cherk UC: data for n <= 256 in 0.1 s
+# exit 0, 1.3 s
+$ taskset -c 0-31 /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt cherk LN_k64 128,256 --label mpfr1024 --reps 1
+# mpfr1024 cherk LN_k64: data for n <= 256 in 0.1 s
+# exit 0, 0.4 s
+$ taskset -c 0-31 /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt cherk UC_k64 128,256 --label mpfr1024 --reps 1
+# mpfr1024 cherk UC_k64: data for n <= 256 in 0.1 s
+# exit 0, 0.5 s
+$ taskset -c 0-31 /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt ctrsm LLNU 128,256 --label mpfr1024 --reps 1
+# mpfr1024 ctrsm LLNU: data for n <= 256 in 0.3 s
+# exit 0, 1.0 s
+$ taskset -c 0-31 /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt ctrsm RLCN 128,256 --label mpfr1024 --reps 1
+# mpfr1024 ctrsm RLCN: data for n <= 256 in 0.3 s
+# exit 0, 1.2 s
+$ taskset -c 0-31 /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt ctrsm LUCN 128,256 --label mpfr1024 --reps 1
+# mpfr1024 ctrsm LUCN: data for n <= 256 in 0.3 s
+# exit 0, 1.3 s
+$ taskset -c 0-31 /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt ctrsm LUNN 128,256 --label mpfr1024 --reps 1
+# mpfr1024 ctrsm LUNN: data for n <= 256 in 0.3 s
+# exit 0, 1.0 s
+$ taskset -c 0-31 /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt ctrsm LLNU_p64 128,256 --label mpfr1024 --reps 1
+# mpfr1024 ctrsm LLNU_p64: data for n <= 256 in 0.0 s
+# exit 0, 0.1 s
+$ taskset -c 0-31 /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt ctrsm RLCN_p64 128,256 --label mpfr1024 --reps 1
+# mpfr1024 ctrsm RLCN_p64: data for n <= 256 in 0.0 s
+# exit 0, 0.2 s
+$ taskset -c 0-31 /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt ctrsm LUCN_p64 128,256 --label mpfr1024 --reps 1
+# mpfr1024 ctrsm LUCN_p64: data for n <= 256 in 0.0 s
+# exit 0, 0.2 s
+$ taskset -c 0-31 /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt ctrsm LUNN_p64 128,256 --label mpfr1024 --reps 1
+# mpfr1024 ctrsm LUNN_p64: data for n <= 256 in 0.0 s
+# exit 0, 0.2 s
+$ taskset -c 0-31 /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt gemm NN 128,256,512,1024,2048 --label mpfr1024
+# mpfr1024 gemm NN: data for n <= 2048 in 5.2 s
+# exit 0, 139.7 s
+$ taskset -c 0-31 /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt gemm_update NN 128,256,512,1024,2048 --label mpfr1024
+# mpfr1024 gemm_update NN: data for n <= 2048 in 2.2 s
+# exit 0, 19.5 s
+$ taskset -c 0-31 /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt syrk LN 128,256,512,1024,2048 --label mpfr1024
+# mpfr1024 syrk LN: data for n <= 2048 in 3.7 s
+# exit 0, 97.0 s
+$ taskset -c 0-31 /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt syrk LN_k64 128,256,512,1024,2048 --label mpfr1024
+# mpfr1024 syrk LN_k64: data for n <= 2048 in 2.2 s
+# exit 0, 12.0 s
+$ taskset -c 0-31 /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt trsm LLNU 128,256,512,1024,2048 --label mpfr1024
+# mpfr1024 trsm LLNU: data for n <= 2048 in 7.4 s
+# exit 0, 87.9 s
+$ taskset -c 0-31 /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt trsm RLTN_p64 128,256,512,1024,2048 --label mpfr1024
+# mpfr1024 trsm RLTN_p64: data for n <= 2048 in 0.1 s
+# exit 0, 1.0 s
+$ taskset -c 0-31 /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt getrf2 P64 128,256,512,1024,2048 --label mpfr1024
+# mpfr1024 getrf2 P64: data for n <= 2048 in 0.1 s
+# exit 0, 6.3 s

@@ -7,7 +7,7 @@ Draws the GPU sweep as a line, marks the powers of two with dots and their
 values, and draws the CPU reference as a dashed line (one value: horizontal;
 several "n:gflops" values: a dashed polyline through them).  Used for
 benchmark/results/2026/x86_64-pc-linux-gnu-Ryzen-Threadripper-3970X-TeslaA100/rgemm/mpfr512_sweep10k.png and as the model of
-the kernel benchmark graphs.  Needs matplotlib and a Japanese font (Noto Sans
+the kernel benchmark graphs (plot_kernel_bench.py calls draw()).  Needs matplotlib and a Japanese font (Noto Sans
 CJK JP) for Japanese labels.
 """
 
@@ -20,22 +20,15 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
 
 
-def main():
-    p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    p.add_argument("csv")
-    p.add_argument("png")
-    p.add_argument("--title", default="MPFR 512ビット Rgemm、GPU 固定精度 (cu_freal) の速度とサイズ (NVIDIA A100)")
-    p.add_argument("--subtitle", default="")
-    p.add_argument("--xlabel", default="n (m = n = k)")
-    p.add_argument("--ylabel", default="GFLOPS (2n³ / 時間)")
-    p.add_argument("--series", default="GPU", help="legend label of the sweep line")
-    p.add_argument("--cpu", default="", help='CPU reference: "GFLOPS" or "n:GFLOPS,n:GFLOPS,..."')
-    p.add_argument("--cpu-label", default="CPU 32コア")
-    p.add_argument("--min-n", type=int, default=1)
-    p.add_argument("--dark", action="store_true")
-    a = p.parse_args()
+DEFAULTS = dict(title="MPFR 512ビット Rgemm、GPU 固定精度 (cu_freal) の速度とサイズ (NVIDIA A100)", subtitle="",
+                xlabel="n (m = n = k)", ylabel="GFLOPS (2n³ / 時間)", series="GPU", cpu="", cpu_label="CPU 32コア",
+                min_n=1, dark=False, annotate_min=1024, ymax=None, subtitle_lines=1)
 
-    rows = [(int(r["n"]), float(r["gflops"])) for r in csv.DictReader(open(a.csv))]
+
+def draw(rows, png, **options):
+    """rows: (n, gflops); options: the command line options (DEFAULTS)."""
+    a = argparse.Namespace(**dict(DEFAULTS, **options))
+
     rows = sorted(r for r in rows if r[0] >= a.min_n)
     pow2 = [r for r in rows if r[0] & (r[0] - 1) == 0]
 
@@ -60,9 +53,9 @@ def main():
     ax.scatter([r[0] for r in pow2], [r[1] for r in pow2], color=s2, s=60, zorder=3,
                label="n = 2 の冪 (%d点)" % len(pow2))
     for n, g in pow2:
-        if n >= 1024:
+        if n >= a.annotate_min:
             ax.annotate("%d: %.2f" % (n, g), (n, g), xytext=(8, -16), textcoords="offset points", fontsize=11)
-    if rows:
+    if rows and not (rows[-1] in pow2 and rows[-1][0] >= a.annotate_min):  # the last point, unless annotated above
         n, g = rows[-1]
         ax.annotate("%d: %.2f" % (n, g), (n, g), xytext=(-60, 12), textcoords="offset points", fontsize=11)
 
@@ -78,15 +71,36 @@ def main():
 
     ax.set_xlabel(a.xlabel)
     ax.set_ylabel(a.ylabel)
-    ax.set_ylim(0, None)
+    ax.set_ylim(0, a.ymax)
     leg = ax.legend(loc="upper left", frameon=False)
     for t in leg.get_texts():
         t.set_color(text)
     fig.suptitle(a.title, x=0.02, ha="left", fontsize=17, fontweight="bold", color=text)
     if a.subtitle:
-        fig.text(0.05, 0.915, a.subtitle, fontsize=12, color=sub)
-    fig.tight_layout(rect=(0, 0, 1, 0.92))
-    fig.savefig(a.png, facecolor=page)
+        fig.text(0.05, 0.915, a.subtitle, fontsize=12, color=sub, va="top" if a.subtitle_lines > 1 else "baseline")
+    fig.tight_layout(rect=(0, 0, 1, 0.92 - 0.035 * (a.subtitle_lines - 1)))
+    fig.savefig(png, facecolor=page)
+    plt.close(fig)
+
+
+def main():
+    p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    p.add_argument("csv")
+    p.add_argument("png")
+    p.add_argument("--title", default="MPFR 512ビット Rgemm、GPU 固定精度 (cu_freal) の速度とサイズ (NVIDIA A100)")
+    p.add_argument("--subtitle", default="")
+    p.add_argument("--xlabel", default="n (m = n = k)")
+    p.add_argument("--ylabel", default="GFLOPS (2n³ / 時間)")
+    p.add_argument("--series", default="GPU", help="legend label of the sweep line")
+    p.add_argument("--cpu", default="", help='CPU reference: "GFLOPS" or "n:GFLOPS,n:GFLOPS,..."')
+    p.add_argument("--cpu-label", default="CPU 32コア")
+    p.add_argument("--min-n", type=int, default=1)
+    p.add_argument("--dark", action="store_true")
+    a = p.parse_args()
+    rows = [(int(r["n"]), float(r["gflops"])) for r in csv.DictReader(open(a.csv))]
+    options = vars(a)
+    options.pop("csv")
+    draw(rows, options.pop("png"), **options)
 
 
 if __name__ == "__main__":

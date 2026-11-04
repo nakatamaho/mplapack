@@ -12,3 +12,4 @@ Same machine as ../../2022/x86_64-pc-linux-gnu-Ryzen-Threadripper-3970X-TeslaA10
 | `factorization-goal08b/` | October-November 2026: below-gate CPU-library speed; factor table before and after the gate changes |
 | `factorization-batch-09-10/` | November 2026: CPU LU small-n follow-up, CPU/GPU inverses, Cholesky profile, batch QA receipts |
 | `gate-retune/` | November 2026: factor/solver gates retuned against the CPU library (measurements cut short; inverses not finished) |
+| `kernel-bench/` | November 2026: the kernels of LU / Cholesky / inverses alone (GEMM, SYRK/HERK, TRSM, panels, laswp, trtri, lauum), GPU (no transfers) against CPU for dd/td/qd/MPFR, with graphs; part of the CPU values are loaded-host reference values |

@@ -74,6 +74,46 @@ foreach(_b dd td qd mpfr)
   endforeach()
 endforeach()
 
+# Kernel benchmark (Rkernel_bench.cpp, driven by kernel_bench.py): the CPU
+# routines of mplapack_<b>_opt (Rkernel_bench.<b>_opt) against the GPU kernels:
+# dd/td/qd from the library's internal headers on device-resident matrices
+# (Rkernel_bench_<b>_cuda.cu), MPFR through the entry points of
+# mplapack_mpfr_opt_cuda timed with CUPTI.  See README.kernel_bench.md.
+foreach(_b dd td qd mpfr)
+  if(NOT TARGET mplapack_${_b}_opt_cuda OR NOT TARGET mplapack_${_b}_opt)
+    continue()
+  endif()
+  set(_name "bench_Rkernel_bench_${_b}_opt")
+  add_executable(${_name} "${CMAKE_CURRENT_SOURCE_DIR}/Rkernel_bench.cpp")
+  target_link_libraries(${_name} PRIVATE mplapack::mplapack_${_b}_opt)
+  if(TARGET OpenMP::OpenMP_CXX)
+    target_link_libraries(${_name} PRIVATE OpenMP::OpenMP_CXX)
+  endif()
+  set_target_properties(${_name} PROPERTIES
+    OUTPUT_NAME "Rkernel_bench.${_b}_opt"
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}")
+  set(_name "bench_Rkernel_bench_${_b}_cuda_kernel")
+  if(_b STREQUAL "mpfr")
+    add_executable(${_name} "${CMAKE_CURRENT_SOURCE_DIR}/Rkernel_bench.cpp")
+    target_compile_definitions(${_name} PRIVATE KERNEL_BENCH_MPFR_CUDA)
+    target_link_libraries(${_name} PRIVATE mplapack::mplapack_mpfr_opt_cuda CUDA::cupti CUDA::cudart)
+  else()
+    add_executable(${_name} "${CMAKE_CURRENT_SOURCE_DIR}/Rkernel_bench_${_b}_cuda.cu")
+    target_compile_options(${_name} PRIVATE
+      "$<$<COMPILE_LANGUAGE:CUDA>:-fmad=false>"
+      "$<$<COMPILE_LANGUAGE:CUDA>:-Xcompiler=-ffp-contract=off>")
+    target_link_libraries(${_name} PRIVATE mplapack::mplapack_${_b}_opt CUDA::cudart CUDA::cublas)
+    mplapack_configure_dd_arithmetic(${_name})
+    set_target_properties(${_name} PROPERTIES
+      CUDA_ARCHITECTURES "${MPLAPACK_CUDA_ARCHITECTURES}"
+      CUDA_STANDARD 17
+      CUDA_STANDARD_REQUIRED ON)
+  endif()
+  set_target_properties(${_name} PROPERTIES
+    OUTPUT_NAME "Rkernel_bench.${_b}_cuda_kernel"
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}")
+endforeach()
+
 # Runner scripts go.<op>.sh from go.<op>.sh.in, with the gnuplot templates
 # next to them (the autotools build does the same at "make" time).
 string(TOLOWER "${CMAKE_C_COMPILER_ID}${CMAKE_C_COMPILER_VERSION}" _bench_cc_tag)

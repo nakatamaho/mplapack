@@ -1,0 +1,21 @@
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt gemm NN 128,256,512,1024,2048 --label mpfr512
+# mpfr512 gemm NN: data for n <= 2048 in 3.7 s
+# exit 0, 79.4 s
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt gemm_update NN 128,256,512,1024,2048 --label mpfr512
+# mpfr512 gemm_update NN: data for n <= 2048 in 1.5 s
+# exit 0, 8.8 s
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt syrk LN 128,256,512,1024,2048 --label mpfr512
+# mpfr512 syrk LN: data for n <= 2048 in 2.6 s
+# exit 0, 39.7 s
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt syrk LN_k64 128,256,512,1024,2048 --label mpfr512
+# mpfr512 syrk LN_k64: data for n <= 2048 in 1.6 s
+# exit 0, 5.5 s
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt trsm LLNU 128,256,512,1024,2048 --label mpfr512
+# mpfr512 trsm LLNU: data for n <= 2048 in 4.6 s
+# exit 0, 36.1 s
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt trsm RLTN_p64 128,256,512,1024,2048 --label mpfr512
+# mpfr512 trsm RLTN_p64: data for n <= 2048 in 0.1 s
+# exit 0, 0.5 s
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt getrf2 P64 128,256,512,1024,2048 --label mpfr512
+# mpfr512 getrf2 P64: data for n <= 2048 in 0.0 s
+# exit 0, 0.9 s

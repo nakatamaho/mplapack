@@ -1,0 +1,135 @@
+$ taskset -c 0-31 /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_opt gemm NN 256,512 --label dd --reps 1
+# dd gemm NN: data for n <= 512 in 0.0 s
+# exit 0, 0.2 s
+$ taskset -c 0-31 /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_opt gemm NT 256,512 --label dd --reps 1
+# dd gemm NT: data for n <= 512 in 0.0 s
+# exit 0, 0.2 s
+$ taskset -c 0-31 /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_opt gemm TN 256,512 --label dd --reps 1
+# dd gemm TN: data for n <= 512 in 0.0 s
+# exit 0, 0.2 s
+$ taskset -c 0-31 /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_opt gemm_update NN 256,512 --label dd --reps 1
+# dd gemm_update NN: data for n <= 512 in 0.0 s
+# exit 0, 0.2 s
+$ taskset -c 0-31 /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_opt syrk LN 256,512 --label dd --reps 1
+# dd syrk LN: data for n <= 512 in 0.0 s
+# exit 0, 0.1 s
+$ taskset -c 0-31 /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_opt syrk UT 256,512 --label dd --reps 1
+# dd syrk UT: data for n <= 512 in 0.0 s
+# exit 0, 0.1 s
+$ taskset -c 0-31 /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_opt syrk LN_k64 256,512 --label dd --reps 1
+# dd syrk LN_k64: data for n <= 512 in 0.0 s
+# exit 0, 0.1 s
+$ taskset -c 0-31 /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_opt syrk UT_k64 256,512 --label dd --reps 1
+# dd syrk UT_k64: data for n <= 512 in 0.0 s
+# exit 0, 0.1 s
+$ taskset -c 0-31 /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_opt trsm LLNU 256,512 --label dd --reps 1
+# dd trsm LLNU: data for n <= 512 in 0.0 s
+# exit 0, 0.1 s
+$ taskset -c 0-31 /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_opt trsm RLTN 256,512 --label dd --reps 1
+# dd trsm RLTN: data for n <= 512 in 0.0 s
+# exit 0, 0.2 s
+$ taskset -c 0-31 /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_opt trsm LUTN 256,512 --label dd --reps 1
+# dd trsm LUTN: data for n <= 512 in 0.0 s
+# exit 0, 0.1 s
+$ taskset -c 0-31 /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_opt trsm LUNN 256,512 --label dd --reps 1
+# dd trsm LUNN: data for n <= 512 in 0.0 s
+# exit 0, 0.1 s
+$ taskset -c 0-31 /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_opt trsm LLNU_p64 256,512 --label dd --reps 1
+# dd trsm LLNU_p64: data for n <= 512 in 0.0 s
+# exit 0, 0.1 s
+$ taskset -c 0-31 /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_opt trsm RLTN_p64 256,512 --label dd --reps 1
+# dd trsm RLTN_p64: data for n <= 512 in 0.0 s
+# exit 0, 0.1 s
+$ taskset -c 0-31 /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_opt trsm LUTN_p64 256,512 --label dd --reps 1
+# dd trsm LUTN_p64: data for n <= 512 in 0.0 s
+# exit 0, 0.1 s
+$ taskset -c 0-31 /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_opt trsm LUNN_p64 256,512 --label dd --reps 1
+# dd trsm LUNN_p64: data for n <= 512 in 0.0 s
+# exit 0, 0.1 s
+$ taskset -c 0-31 /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_opt getrf2 P64 256,512 --label dd --reps 1
+# dd getrf2 P64: data for n <= 512 in 0.0 s
+# exit 0, 0.8 s
+$ taskset -c 0-31 /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_opt potrf2 L 64,256 --label dd --reps 1
+# dd potrf2 L: data for n <= 256 in 0.0 s
+# exit 0, 0.1 s
+$ taskset -c 0-31 /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_opt laswp R64 256,512 --label dd --reps 1
+# dd laswp R64: data for n <= 512 in 0.0 s
+# exit 0, 0.1 s
+$ taskset -c 0-31 /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_opt trtri UN 256,512 --label dd --reps 1
+# dd trtri UN: data for n <= 512 in 0.0 s
+# exit 0, 0.2 s
+$ taskset -c 0-31 /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_opt lauum L 256,512 --label dd --reps 1
+# dd lauum L: data for n <= 512 in 0.0 s
+# exit 0, 0.4 s
+$ taskset -c 0-31 /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_opt cgemm NN 256,512 --label dd --reps 1
+# dd cgemm NN: data for n <= 512 in 0.0 s
+# exit 0, 0.2 s
+$ taskset -c 0-31 /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_opt cgemm NC 256,512 --label dd --reps 1
+# dd cgemm NC: data for n <= 512 in 0.0 s
+# exit 0, 0.2 s
+$ taskset -c 0-31 /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_opt cgemm CN 256,512 --label dd --reps 1
+# dd cgemm CN: data for n <= 512 in 0.0 s
+# exit 0, 0.2 s
+$ taskset -c 0-31 /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_opt cherk LN 256,512 --label dd --reps 1
+# dd cherk LN: data for n <= 512 in 0.0 s
+# exit 0, 0.1 s
+$ taskset -c 0-31 /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_opt cherk UC 256,512 --label dd --reps 1
+# dd cherk UC: data for n <= 512 in 0.0 s
+# exit 0, 0.2 s
+$ taskset -c 0-31 /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_opt cherk LN_k64 256,512 --label dd --reps 1
+# dd cherk LN_k64: data for n <= 512 in 0.0 s
+# exit 0, 0.1 s
+$ taskset -c 0-31 /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_opt cherk UC_k64 256,512 --label dd --reps 1
+# dd cherk UC_k64: data for n <= 512 in 0.0 s
+# exit 0, 0.1 s
+$ taskset -c 0-31 /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_opt ctrsm LLNU 256,512 --label dd --reps 1
+# dd ctrsm LLNU: data for n <= 512 in 0.0 s
+# exit 0, 0.2 s
+$ taskset -c 0-31 /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_opt ctrsm RLCN 256,512 --label dd --reps 1
+# dd ctrsm RLCN: data for n <= 512 in 0.0 s
+# exit 0, 0.3 s
+$ taskset -c 0-31 /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_opt ctrsm LUCN 256,512 --label dd --reps 1
+# dd ctrsm LUCN: data for n <= 512 in 0.0 s
+# exit 0, 0.3 s
+$ taskset -c 0-31 /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_opt ctrsm LUNN 256,512 --label dd --reps 1
+# dd ctrsm LUNN: data for n <= 512 in 0.1 s
+# exit 0, 0.2 s
+$ taskset -c 0-31 /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_opt ctrsm LLNU_p64 256,512 --label dd --reps 1
+# dd ctrsm LLNU_p64: data for n <= 512 in 0.0 s
+# exit 0, 0.1 s
+$ taskset -c 0-31 /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_opt ctrsm RLCN_p64 256,512 --label dd --reps 1
+# dd ctrsm RLCN_p64: data for n <= 512 in 0.0 s
+# exit 0, 0.1 s
+$ taskset -c 0-31 /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_opt ctrsm LUCN_p64 256,512 --label dd --reps 1
+# dd ctrsm LUCN_p64: data for n <= 512 in 0.0 s
+# exit 0, 0.1 s
+$ taskset -c 0-31 /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_opt ctrsm LUNN_p64 256,512 --label dd --reps 1
+# dd ctrsm LUNN_p64: data for n <= 512 in 0.0 s
+# exit 0, 0.1 s
+$ taskset -c 0-31 /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_opt gemm NN 128,256,512,1024,2048,4096 --label dd
+# dd gemm NN: data for n <= 4096 in 1.1 s
+# exit 0, 20.3 s
+$ taskset -c 0-31 /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_opt gemm_update NN 128,256,512,1024,2048,4096 --label dd
+# dd gemm_update NN: data for n <= 4096 in 0.5 s
+# exit 0, 1.7 s
+$ taskset -c 0-31 /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_opt syrk LN 128,256,512,1024,2048,4096 --label dd
+# dd syrk LN: data for n <= 4096 in 0.7 s
+# exit 0, 9.5 s
+$ taskset -c 0-31 /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_opt syrk LN_k64 128,256,512,1024,2048,4096 --label dd
+# dd syrk LN_k64: data for n <= 4096 in 0.4 s
+# exit 0, 1.0 s
+$ taskset -c 0-31 /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_opt trsm LLNU 128,256,512,1024,2048,4096 --label dd
+# dd trsm LLNU: data for n <= 4096 in 1.4 s
+# exit 0, 10.8 s
+$ taskset -c 0-31 /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_opt trsm RLTN_p64 128,256,512,1024,2048,4096 --label dd
+# dd trsm RLTN_p64: data for n <= 4096 in 0.0 s
+# exit 0, 0.2 s
+$ taskset -c 0-31 /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_opt getrf2 P64 128,256,512,1024,2048,4096 --label dd
+# dd getrf2 P64: data for n <= 4096 in 0.0 s
+# exit 0, 4.7 s
+$ taskset -c 0-31 /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_opt cgemm NN 128,256,512,1024,2048,4096 --label dd
+# dd cgemm NN: data for n <= 4096 in 1.9 s
+# exit 0, 27.2 s
+$ taskset -c 0-31 /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_opt gemm NT 128,256,512,1024,2048,4096 --label dd
+# dd gemm NT: data for n <= 4096 in 1.0 s
+# exit 0, 17.7 s
