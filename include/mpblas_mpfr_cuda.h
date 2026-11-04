@@ -40,6 +40,10 @@
 
 #include <mpblas_mpfr.h>
 
+// BLAS1 reductions: CPU MPLAPACK_MPBLAS_FAST=1; GPU
+// MPLAPACK_MPFR_MPBLAS_FAST=1 (read per call). GPU dot/asum/nrm2
+// return false by default. Non-void results use a final result reference.
+
 bool Rgemm_mpfr_cuda(const char *transa, const char *transb, mplapackint const m, mplapackint const n, mplapackint const k, mpfr_class const alpha, mpfr_class *a, mplapackint const lda, mpfr_class *b, mplapackint const ldb, mpfr_class const beta, mpfr_class *c, mplapackint const ldc);
 bool Rpotrf_mpfr_cuda(const char *uplo, mplapackint const n, mpfr_class *a, mplapackint const lda, mplapackint &info);
 bool Cpotrf_mpfr_cuda(const char *uplo, mplapackint const n, mpc_class *a, mplapackint const lda, mplapackint &info);
@@ -113,5 +117,16 @@ bool Rspr_mpfr_cuda(const char *uplo, mplapackint const n, mpfr_class const alph
 bool Rspr2_mpfr_cuda(const char *uplo, mplapackint const n, mpfr_class const alpha, mpfr_class *x, mplapackint const incx, mpfr_class *y, mplapackint const incy, mpfr_class *ap);
 bool Chpr_mpfr_cuda(const char *uplo, mplapackint const n, mpfr_class const alpha, mpc_class *x, mplapackint const incx, mpc_class *ap);
 bool Chpr2_mpfr_cuda(const char *uplo, mplapackint const n, mpc_class const alpha, mpc_class *x, mplapackint const incx, mpc_class *y, mplapackint const incy, mpc_class *ap);
+bool Raxpy_mpfr_cuda(mplapackint const n, mpfr_class const da, mpfr_class *dx, mplapackint const incx, mpfr_class *dy, mplapackint const incy);
+bool Rcopy_mpfr_cuda(mplapackint const n, mpfr_class *dx, mplapackint const incx, mpfr_class *dy, mplapackint const incy);
+bool iRamax_mpfr_cuda(mplapackint const n, mpfr_class *dx, mplapackint const incx, mplapackint &result);
+bool iCamax_mpfr_cuda(mplapackint const n, mpc_class *zx, mplapackint const incx, mplapackint &result);
+bool Rdot_mpfr_cuda(mplapackint const n, mpfr_class *dx, mplapackint const incx, mpfr_class *dy, mplapackint const incy, mpfr_class &result);
+bool Cdotc_mpfr_cuda(mplapackint const n, mpc_class *zx, mplapackint const incx, mpc_class *zy, mplapackint const incy, mpc_class &result);
+bool Cdotu_mpfr_cuda(mplapackint const n, mpc_class *zx, mplapackint const incx, mpc_class *zy, mplapackint const incy, mpc_class &result);
+bool Rasum_mpfr_cuda(mplapackint const n, mpfr_class *dx, mplapackint const incx, mpfr_class &result);
+bool RCasum_mpfr_cuda(mplapackint const n, mpc_class *zx, mplapackint const incx, mpfr_class &result);
+bool Rnrm2_mpfr_cuda(mplapackint const n, mpfr_class *x, mplapackint const incx, mpfr_class &result);
+bool RCnrm2_mpfr_cuda(mplapackint const n, mpc_class *x, mplapackint const incx, mpfr_class &result);
 
 #endif

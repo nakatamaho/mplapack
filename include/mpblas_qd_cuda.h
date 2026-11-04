@@ -40,6 +40,10 @@
 
 #include <mpblas_qd.h>
 
+// BLAS1 reductions: CPU MPLAPACK_MPBLAS_FAST=1; GPU
+// MPLAPACK_QD_MPBLAS_FAST=1 (read per call). GPU dot/asum/nrm2
+// return false by default. Non-void results use a final result reference.
+
 bool Rgemm_qd_cuda(const char *transa, const char *transb, mplapackint const m, mplapackint const n, mplapackint const k, qd_real const alpha, qd_real *a, mplapackint const lda, qd_real *b, mplapackint const ldb, qd_real const beta, qd_real *c, mplapackint const ldc);
 bool Rpotrf_qd_cuda(const char *uplo, mplapackint const n, qd_real *a, mplapackint const lda, mplapackint &info);
 bool Cpotrf_qd_cuda(const char *uplo, mplapackint const n, qd_complex *a, mplapackint const lda, mplapackint &info);
@@ -113,5 +117,16 @@ bool Rspr_qd_cuda(const char *uplo, mplapackint const n, qd_real const alpha, qd
 bool Rspr2_qd_cuda(const char *uplo, mplapackint const n, qd_real const alpha, qd_real *x, mplapackint const incx, qd_real *y, mplapackint const incy, qd_real *ap);
 bool Chpr_qd_cuda(const char *uplo, mplapackint const n, qd_real const alpha, qd_complex *x, mplapackint const incx, qd_complex *ap);
 bool Chpr2_qd_cuda(const char *uplo, mplapackint const n, qd_complex const alpha, qd_complex *x, mplapackint const incx, qd_complex *y, mplapackint const incy, qd_complex *ap);
+bool Raxpy_qd_cuda(mplapackint const n, qd_real const da, qd_real *dx, mplapackint const incx, qd_real *dy, mplapackint const incy);
+bool Rcopy_qd_cuda(mplapackint const n, qd_real *dx, mplapackint const incx, qd_real *dy, mplapackint const incy);
+bool iRamax_qd_cuda(mplapackint const n, qd_real *dx, mplapackint const incx, mplapackint &result);
+bool iCamax_qd_cuda(mplapackint const n, qd_complex *zx, mplapackint const incx, mplapackint &result);
+bool Rdot_qd_cuda(mplapackint const n, qd_real *dx, mplapackint const incx, qd_real *dy, mplapackint const incy, qd_real &result);
+bool Cdotc_qd_cuda(mplapackint const n, qd_complex *zx, mplapackint const incx, qd_complex *zy, mplapackint const incy, qd_complex &result);
+bool Cdotu_qd_cuda(mplapackint const n, qd_complex *zx, mplapackint const incx, qd_complex *zy, mplapackint const incy, qd_complex &result);
+bool Rasum_qd_cuda(mplapackint const n, qd_real *dx, mplapackint const incx, qd_real &result);
+bool RCasum_qd_cuda(mplapackint const n, qd_complex *zx, mplapackint const incx, qd_real &result);
+bool Rnrm2_qd_cuda(mplapackint const n, qd_real *x, mplapackint const incx, qd_real &result);
+bool RCnrm2_qd_cuda(mplapackint const n, qd_complex *x, mplapackint const incx, qd_real &result);
 
 #endif

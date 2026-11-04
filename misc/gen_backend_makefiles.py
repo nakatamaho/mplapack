@@ -43,7 +43,7 @@ CONF_KEYS = {
 }
 
 # Sources of mpblas/optimized/common/blas_cuda (the dd/td/qd CUDA BLAS).
-BLAS_CUDA_SOURCES = ["Rblas_bridge_cuda", "Rsyrk", "Rsyr2k", "Rsymm", "Rtrmm", "Rtrsm", "Rgemv",
+BLAS_CUDA_SOURCES = ["Rblas_bridge_cuda", "Rblas1_bridge_cuda", "Rsyrk", "Rsyr2k", "Rsymm", "Rtrmm", "Rtrsm", "Rgemv",
                      "Rsymv", "Rtrmv", "Rger", "Rsyr", "Rsyr2", "Rscal", "Rswap", "Rrot"]
 CBLAS_CUDA_SOURCES = ["Cblas_bridge_cuda", "Cgemm", "Csymm", "Chemm", "Ctrmm", "Ctrsm", "Cgemv", "Cgeru",
                       "Cgerc", "Caxpy", "Ccopy", "Cswap", "CRrot", "Cscal", "CRscal", "Csyrk", "Cherk",
@@ -116,7 +116,7 @@ def values(name, traits, conf):
     v["opt_rgemm_sources"] = ""
     # Program names carry the backend: their objects of ../common/test/*.cpp
     # are built in that shared directory.
-    programs = ["Rblas_omp_test_%%b%%", "Cblas_omp_test_%%b%%", "Rlapack_omp_test_%%b%%", "Rgemm_winograd_omp_test_%%b%%"]
+    programs = ["Rblas1_fast_test_%%b%%", "Rblas_omp_test_%%b%%", "Cblas_omp_test_%%b%%", "Rlapack_omp_test_%%b%%", "Rgemm_winograd_omp_test_%%b%%"]
     tests = ["",
              "# Parallel Level 1/2/3 BLAS (../common/blas), real and complex:",
              "# bit-identical to the reference routines.",
@@ -159,6 +159,13 @@ def values(name, traits, conf):
         if gpu_host:
             programs.append("Rgemm_gpu_host_test")
             programs.append("Rblas_gpu_host_test_%%b%%")
+            programs.append("Rblas1_gpu_host_test_%%b%%")
+            tests += ["Rblas1_gpu_host_test_%%b%%_SOURCES = ../common/test/Rblas1_gpu_test.cpp ../common/blas_cuda/Rblas_bridge_cuda.cpp ../common/blas_cuda/Rblas1_bridge_cuda.cpp " + " ".join(
+                          "../common/blas_cuda/%s.cpp" % r for r in "Raxpy Rcopy Rdot Cdotc Cdotu Rasum RCasum Rnrm2 RCnrm2 iRamax iCamax".split()),
+                      "Rblas1_gpu_host_test_%%b%%_CPPFLAGS = $(libmplapack_%%b%%_opt_la_CPPFLAGS) -DMPLAPACK_GEMM_CUDA_HOST_EMULATION",
+                      "Rblas1_gpu_host_test_%%b%%_CXXFLAGS = $(DD_CXXFLAGS)",
+                      "Rblas1_gpu_host_test_%%b%%_LDFLAGS = -static $(QD_RPATH_LDFLAGS)",
+                      "Rblas1_gpu_host_test_%%b%%_LDADD = libmplapack_%%b%%_opt.la $(libmplapack_%%b%%_opt_la_LIBADD)"]
             programs.append("Cblas_gpu_host_test_%%b%%")
             programs.append("Rlapack_gpu_host_test_%%b%%")
             programs.append("Rpotrf_gpu_host_test_%%b%%")
@@ -201,6 +208,11 @@ def values(name, traits, conf):
                       "Rgemm_gpu_host_test_CXXFLAGS = $(DD_CXXFLAGS)",
                       "Rgemm_gpu_host_test_LDFLAGS = -static $(QD_RPATH_LDFLAGS)",
                       "Rgemm_gpu_host_test_LDADD = libmplapack_%%b%%_opt.la $(libmplapack_%%b%%_opt_la_LIBADD)"]
+    tests += ["Rblas1_fast_test_%%b%%_SOURCES = ../common/test/Rblas1_fast_test.cpp",
+              "Rblas1_fast_test_%%b%%_CPPFLAGS = $(libmplapack_%%b%%_opt_la_CPPFLAGS)",
+              "Rblas1_fast_test_%%b%%_CXXFLAGS = $(DD_CXXFLAGS)",
+              "Rblas1_fast_test_%%b%%_LDFLAGS = -static" + (" $(QD_RPATH_LDFLAGS)" if qd else ""),
+              "Rblas1_fast_test_%%b%%_LDADD = libmplapack_%%b%%_opt.la $(libmplapack_%%b%%_opt_la_LIBADD)"]
     tests.insert(3, "check_PROGRAMS = " + " ".join(programs))
     tests.append("TESTS = " + " ".join(programs))
     v["opt_rgemm_tests"] = tests

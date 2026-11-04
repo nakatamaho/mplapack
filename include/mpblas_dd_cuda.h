@@ -40,6 +40,10 @@
 
 #include <mpblas_dd.h>
 
+// BLAS1 reductions: CPU MPLAPACK_MPBLAS_FAST=1; GPU
+// MPLAPACK_DD_MPBLAS_FAST=1 (read per call). GPU dot/asum/nrm2
+// return false by default. Non-void results use a final result reference.
+
 bool Rgemm_dd_cuda(const char *transa, const char *transb, mplapackint const m, mplapackint const n, mplapackint const k, dd_real const alpha, dd_real *a, mplapackint const lda, dd_real *b, mplapackint const ldb, dd_real const beta, dd_real *c, mplapackint const ldc);
 bool Rpotrf_dd_cuda(const char *uplo, mplapackint const n, dd_real *a, mplapackint const lda, mplapackint &info);
 bool Cpotrf_dd_cuda(const char *uplo, mplapackint const n, dd_complex *a, mplapackint const lda, mplapackint &info);
@@ -113,5 +117,16 @@ bool Rspr_dd_cuda(const char *uplo, mplapackint const n, dd_real const alpha, dd
 bool Rspr2_dd_cuda(const char *uplo, mplapackint const n, dd_real const alpha, dd_real *x, mplapackint const incx, dd_real *y, mplapackint const incy, dd_real *ap);
 bool Chpr_dd_cuda(const char *uplo, mplapackint const n, dd_real const alpha, dd_complex *x, mplapackint const incx, dd_complex *ap);
 bool Chpr2_dd_cuda(const char *uplo, mplapackint const n, dd_complex const alpha, dd_complex *x, mplapackint const incx, dd_complex *y, mplapackint const incy, dd_complex *ap);
+bool Raxpy_dd_cuda(mplapackint const n, dd_real const da, dd_real *dx, mplapackint const incx, dd_real *dy, mplapackint const incy);
+bool Rcopy_dd_cuda(mplapackint const n, dd_real *dx, mplapackint const incx, dd_real *dy, mplapackint const incy);
+bool iRamax_dd_cuda(mplapackint const n, dd_real *dx, mplapackint const incx, mplapackint &result);
+bool iCamax_dd_cuda(mplapackint const n, dd_complex *zx, mplapackint const incx, mplapackint &result);
+bool Rdot_dd_cuda(mplapackint const n, dd_real *dx, mplapackint const incx, dd_real *dy, mplapackint const incy, dd_real &result);
+bool Cdotc_dd_cuda(mplapackint const n, dd_complex *zx, mplapackint const incx, dd_complex *zy, mplapackint const incy, dd_complex &result);
+bool Cdotu_dd_cuda(mplapackint const n, dd_complex *zx, mplapackint const incx, dd_complex *zy, mplapackint const incy, dd_complex &result);
+bool Rasum_dd_cuda(mplapackint const n, dd_real *dx, mplapackint const incx, dd_real &result);
+bool RCasum_dd_cuda(mplapackint const n, dd_complex *zx, mplapackint const incx, dd_real &result);
+bool Rnrm2_dd_cuda(mplapackint const n, dd_real *x, mplapackint const incx, dd_real &result);
+bool RCnrm2_dd_cuda(mplapackint const n, dd_complex *x, mplapackint const incx, dd_real &result);
 
 #endif

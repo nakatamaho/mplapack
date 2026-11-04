@@ -47,7 +47,9 @@ calls the accelerator directly, named
   that defines it, libmplapack_<backend>_opt_<accelerator> (cuda, opencl).
 - Arguments: those of `<Routine>`, in the same order and with the same
   types (`const char *` flags, `mplapackint` sizes, the backend's scalar
-  types).
+  types). For a non-void routine, append one final reference argument named
+  `result`, of the original return type. Only a true return may write it;
+  false leaves `result` untouched along with every other output.
 - Result: `bool`.  true: the accelerator computed the result.  false: it did
   not (invalid arguments, quick-return cases, calls that are not eligible,
   device or runtime errors); every output is then left untouched.  The entry

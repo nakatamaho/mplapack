@@ -4,6 +4,7 @@
 // invalidating a live reference-template temporary. No device heap is used.
 #include "Rinverse_dynamic_cuda.h"
 #include "Rinverse_device_body.cuh"
+#include "Rblas1_kernel_cuda.h"
 #include <new>
 #include <cstring>
 namespace mplapack_mpfr_inverse {
@@ -189,20 +190,24 @@ struct dynamic_state_guard {
 };
 #endif
 }
-bool dynamic_real_memory_fits(const shape &s,long p) {
+static bool dynamic_storage_fits(size_t count,long n,long p) {
 #ifndef MPLAPACK_MPFR_CUDA_HOST_EMULATION
     size_t free=0,total=0,old=0;int device=0;cudaDeviceProp prop{};
     if(cudaGetDevice(&device) || cudaGetDeviceProperties(&prop,device) || cudaMemGetInfo(&free,&total) ||
        cudaDeviceGetLimit(&old,cudaLimitStackSize)) return false;
-    size_t nl=(p+63)/64,count=size_t(s.n)*(s.n+(s.kind==3?s.columns:0));
+    size_t nl=(p+63)/64;
     size_t overhead=size_t(prop.multiProcessorCount)*prop.maxThreadsPerMultiProcessor*std::max(old,inverse_stack_bytes(p,false));
     overhead+=size_t(factor_pool)*(16384*((p+1023)/1024)+sizeof(size_t)+scalar_slots*nl*sizeof(mplapack_rt_limb));
-    overhead+=1048576+size_t(s.n)*sizeof(long)+nl*sizeof(mplapack_rt_limb);
+    overhead+=1048576+size_t(n)*sizeof(long)+nl*sizeof(mplapack_rt_limb);
     return free>=overhead && count<=(free-overhead)/(nl*sizeof(mplapack_rt_limb)+sizeof(dynamic_real)+sizeof(dynamic_cell));
 #else
-    (void)s;(void)p;return true;
+    (void)count;(void)n;(void)p;return true;
 #endif
 }
+bool dynamic_real_memory_fits(const shape &s,long p) {
+    return dynamic_storage_fits(size_t(s.n)*(s.n+(s.kind==3?s.columns:0)),s.n,p);
+}
+#include "Rblas1_dynamic_body.cuh"
 int run_dynamic_real(const shape &s,long prec,rt_pack &packed,const long *piv,long &info,factor_times &times) {
     using Clock=std::chrono::steady_clock;
     const size_t acount=size_t(s.n)*s.n,wcount=s.kind==3?size_t(s.n)*s.columns:0,count=acount+wcount,nl=(prec+63)/64;

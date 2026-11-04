@@ -30,6 +30,8 @@ CBLAS_CUDA = [r for r in CBLAS_CUDA_SOURCES if not r.endswith("_bridge_cuda")]
 MPFR_CUDA = ["Rsyrk", "Rsyr2k", "Rsymm", "Rtrmm", "Rtrsm", "Rgemv", "Rsymv", "Rtrmv", "Rger",
              "Rsyr", "Rsyr2", "Rscal", "Rswap", "Rrot"]
 
+BLAS1 = ["Raxpy", "Rcopy", "iRamax", "iCamax", "Rdot", "Cdotc", "Cdotu", "Rasum", "RCasum", "Rnrm2", "RCnrm2"]
+
 SOLVERS = [kind + routine for kind in ("R", "C") for routine in ("getrs", "potrs", "gesv", "posv")]
 INVERSES = [kind + routine for kind in ("R", "C") for routine in ("trtri", "lauum", "potri", "getri")]
 
@@ -51,9 +53,12 @@ def declarations(backend):
     decls = {}
     for header in ("mpblas", "mplapack"):
         for line in (TOP / "include" / ("%s_%s.h" % (header, backend))).read_text().splitlines():
-            m = re.match(r"void ([RC][A-Za-z0-9]+)\((.*)\);\s*$", line)
+            m = re.match(r"(.+?) ((?:[RC]|i[RC])[A-Za-z0-9]+)\((.*)\);\s*$", line)
             if m:
-                decls[m.group(1)] = m.group(2)
+                result_type, routine, args = m.groups()
+                if result_type != "void":
+                    args += (", " if args else "") + result_type + " &result"
+                decls[routine] = args
     return decls
 
 
@@ -77,6 +82,11 @@ def main():
                  "",
                  "#include <mpblas_%s.h>" % backend,
                  ""]
+        if accel == "cuda":
+            lines += ["// BLAS1 reductions: CPU MPLAPACK_MPBLAS_FAST=1; GPU",
+                      "// %s_MPBLAS_FAST=1 (read per call). GPU dot/asum/nrm2" % ("MPLAPACK_" + backend.upper()),
+                      "// return false by default. Non-void results use a final result reference.", ""]
+            routines = routines + BLAS1
         for r in routines:
             if r not in decls:
                 sys.exit("%s is not declared in the BLAS/LAPACK headers for %s" % (r, backend))

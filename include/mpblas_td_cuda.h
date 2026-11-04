@@ -40,6 +40,10 @@
 
 #include <mpblas_td.h>
 
+// BLAS1 reductions: CPU MPLAPACK_MPBLAS_FAST=1; GPU
+// MPLAPACK_TD_MPBLAS_FAST=1 (read per call). GPU dot/asum/nrm2
+// return false by default. Non-void results use a final result reference.
+
 bool Rgemm_td_cuda(const char *transa, const char *transb, mplapackint const m, mplapackint const n, mplapackint const k, td_real const alpha, td_real *a, mplapackint const lda, td_real *b, mplapackint const ldb, td_real const beta, td_real *c, mplapackint const ldc);
 bool Rpotrf_td_cuda(const char *uplo, mplapackint const n, td_real *a, mplapackint const lda, mplapackint &info);
 bool Cpotrf_td_cuda(const char *uplo, mplapackint const n, td_complex *a, mplapackint const lda, mplapackint &info);
@@ -113,5 +117,16 @@ bool Rspr_td_cuda(const char *uplo, mplapackint const n, td_real const alpha, td
 bool Rspr2_td_cuda(const char *uplo, mplapackint const n, td_real const alpha, td_real *x, mplapackint const incx, td_real *y, mplapackint const incy, td_real *ap);
 bool Chpr_td_cuda(const char *uplo, mplapackint const n, td_real const alpha, td_complex *x, mplapackint const incx, td_complex *ap);
 bool Chpr2_td_cuda(const char *uplo, mplapackint const n, td_complex const alpha, td_complex *x, mplapackint const incx, td_complex *y, mplapackint const incy, td_complex *ap);
+bool Raxpy_td_cuda(mplapackint const n, td_real const da, td_real *dx, mplapackint const incx, td_real *dy, mplapackint const incy);
+bool Rcopy_td_cuda(mplapackint const n, td_real *dx, mplapackint const incx, td_real *dy, mplapackint const incy);
+bool iRamax_td_cuda(mplapackint const n, td_real *dx, mplapackint const incx, mplapackint &result);
+bool iCamax_td_cuda(mplapackint const n, td_complex *zx, mplapackint const incx, mplapackint &result);
+bool Rdot_td_cuda(mplapackint const n, td_real *dx, mplapackint const incx, td_real *dy, mplapackint const incy, td_real &result);
+bool Cdotc_td_cuda(mplapackint const n, td_complex *zx, mplapackint const incx, td_complex *zy, mplapackint const incy, td_complex &result);
+bool Cdotu_td_cuda(mplapackint const n, td_complex *zx, mplapackint const incx, td_complex *zy, mplapackint const incy, td_complex &result);
+bool Rasum_td_cuda(mplapackint const n, td_real *dx, mplapackint const incx, td_real &result);
+bool RCasum_td_cuda(mplapackint const n, td_complex *zx, mplapackint const incx, td_real &result);
+bool Rnrm2_td_cuda(mplapackint const n, td_real *x, mplapackint const incx, td_real &result);
+bool RCnrm2_td_cuda(mplapackint const n, td_complex *x, mplapackint const incx, td_real &result);
 
 #endif

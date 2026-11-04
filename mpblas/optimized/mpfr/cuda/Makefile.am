@@ -41,11 +41,11 @@ AM_CPPFLAGS = $(MPLAPACK_MPFR_CUDA_CPPFLAGS)
 lib_LTLIBRARIES = libmplapack_mpfr_opt_cuda.la
 libmplapack_mpfr_opt_cuda_la_CPPFLAGS = $(MPLAPACK_MPFR_CUDA_CPPFLAGS)
 libmplapack_mpfr_opt_cuda_la_SOURCES = \
-../Rcopy.cpp ../Rcopy_ref.cpp ../openmp/Rcopy_omp.cpp \
-../Rdot.cpp  ../Rdot_ref.cpp  ../openmp/Rdot_omp.cpp \
+../../common/blas_cuda/Rcopy.cpp ../Rcopy_ref.cpp ../openmp/Rcopy_omp.cpp \
+../../common/blas_cuda/Rdot.cpp ../Rdot_ref.cpp  ../openmp/Rdot_omp.cpp \
 ../../common/blas/Rdot_par.cpp \
 ../Rgemm_ref.cpp ../openmp/Rgemm_NN_omp.cpp ../openmp/Rgemm_NT_omp.cpp ../openmp/Rgemm_TN_omp.cpp ../openmp/Rgemm_TT_omp.cpp \
-../Raxpy.cpp ../Raxpy_ref.cpp ../openmp/Raxpy_omp.cpp \
+../../common/blas_cuda/Raxpy.cpp ../Raxpy_ref.cpp ../openmp/Raxpy_omp.cpp \
 ../../common/blas/Rsyrk_omp.cpp \
 ../../common/blas/Rsyr2k_omp.cpp \
 ../../common/blas/Rsymm_omp.cpp \
@@ -84,8 +84,8 @@ libmplapack_mpfr_opt_cuda_la_SOURCES = \
 ../../common/blas/Ctrsv.cpp ../../common/blas/Ctrsv_omp.cpp \
 ../../common/blas_cuda/Cher.cpp ../../common/blas/Cher_omp.cpp \
 ../../common/blas_cuda/Cher2.cpp ../../common/blas/Cher2_omp.cpp \
-../../common/blas/Cdotc.cpp ../../common/blas/Cdotc_omp.cpp \
-../../common/blas/Cdotu.cpp ../../common/blas/Cdotu_omp.cpp \
+../../common/blas_cuda/Cdotc.cpp ../../common/blas/Cdotc_omp.cpp \
+../../common/blas_cuda/Cdotu.cpp ../../common/blas/Cdotu_omp.cpp \
 ../../common/blas_cuda/Cgbmv.cpp ../../common/blas/Cgbmv_omp.cpp \
 ../../common/blas_cuda/Chbmv.cpp ../../common/blas/Chbmv_omp.cpp \
 ../../common/blas_cuda/Chemv.cpp ../../common/blas/Chemv_omp.cpp \
@@ -101,11 +101,11 @@ libmplapack_mpfr_opt_cuda_la_SOURCES = \
 ../../../reference/Mlsame.cpp \
 ../../../reference/Mxerbla.cpp \
 ../../../reference/RCabs1.cpp \
-../../common/blas/RCasum.cpp ../../common/blas/RCasum_omp.cpp \
-../../common/blas/RCnrm2.cpp ../../common/blas/RCnrm2_omp.cpp \
-../../common/blas/Rasum.cpp ../../common/blas/Rasum_omp.cpp \
+../../common/blas_cuda/RCasum.cpp ../../common/blas/RCasum_omp.cpp \
+../../common/blas_cuda/RCnrm2.cpp ../../common/blas/RCnrm2_omp.cpp \
+../../common/blas_cuda/Rasum.cpp ../../common/blas/Rasum_omp.cpp \
 ../../common/blas_cuda/Rgbmv.cpp ../../common/blas/Rgbmv_omp.cpp \
-../../common/blas/Rnrm2.cpp ../../common/blas/Rnrm2_omp.cpp \
+../../common/blas_cuda/Rnrm2.cpp ../../common/blas/Rnrm2_omp.cpp \
 ../../../reference/Rrotg.cpp \
 ../../../reference/Rrotm.cpp \
 ../../../reference/Rrotmg.cpp \
@@ -117,13 +117,14 @@ libmplapack_mpfr_opt_cuda_la_SOURCES = \
 ../../common/blas/Rtbsv.cpp ../../common/blas/Rtbsv_omp.cpp \
 ../../common/blas_cuda/Rtpmv.cpp ../../common/blas/Rtpmv_omp.cpp \
 ../../common/blas/Rtpsv.cpp ../../common/blas/Rtpsv_omp.cpp \
-../../common/blas/iCamax.cpp ../../common/blas/iCamax_omp.cpp \
-../../common/blas/iRamax.cpp ../../common/blas/iRamax_omp.cpp \
+../../common/blas_cuda/iCamax.cpp ../../common/blas/iCamax_omp.cpp \
+../../common/blas_cuda/iRamax.cpp ../../common/blas/iRamax_omp.cpp \
 ../../../reference/mplapackinit.cpp \
 $(MPLAPACK_ACCEL_REFERENCE_SOURCES) \
 Rgetri.cpp Cgetri.cpp Rpotri.cpp Cpotri.cpp Rtrtri.cpp Ctrtri.cpp Rlauum.cpp Clauum.cpp \
 Rinverse_bridge_cuda.cpp Rinverse_device_cuda.cu Rinverse_rt_cuda.cu Rinverse_dynamic_cuda.cu \
 Rinverse_types.h Rinverse_kernel_cuda.h Rinverse_device_body.cuh Rinverse_dynamic_cuda.h \
+Rblas1_kernel_cuda.h Rblas1_device_body.cuh Rblas1_bridge_body.h Rblas1_dynamic_body.cuh \
 ../../../../mplapack/optimized/common/Rlaswp.cpp \
 ../../../../mplapack/optimized/common/Claswp.cpp \
 Rgetrs.cpp Rpotrs.cpp Rgesv.cpp Rposv.cpp Cgetrs.cpp Cpotrs.cpp Cgesv.cpp Cposv.cpp \
@@ -150,8 +151,18 @@ libmplapack_mpfr_opt_cuda_la_LIBADD = Rgemm_dlink_cuda.lo $(MPC_CUDA_LIBRARY) $(
 EXTRA_libmplapack_mpfr_opt_cuda_la_DEPENDENCIES = Rgemm_dlink_cuda.lo
 CLEANFILES = Rgemm_dlink_cuda.lo .libs/Rgemm_dlink_cuda.o Rgemm_dlink_cuda.o
 
-check_PROGRAMS = Rfactor_gpu_host_test_mpfr Cfactor_gpu_host_test_mpfr solver_gpu_host_test_mpfr inverse_gpu_host_test_mpfr
+check_PROGRAMS = Rfactor_gpu_host_test_mpfr Cfactor_gpu_host_test_mpfr solver_gpu_host_test_mpfr inverse_gpu_host_test_mpfr Rblas1_gpu_host_test_mpfr
 TESTS = Rfactor_gpu_host_test_mpfr Cfactor_gpu_host_test_mpfr test/solver_host_sweep.sh test/inverse_host_sweep.sh
+Rblas1_gpu_host_test_mpfr_SOURCES = ../../common/test/Rblas1_gpu_test.cpp Rinverse_bridge_cuda.cpp test/Rinverse_fixed_host.cpp test/Rinverse_runtime_host.cpp test/Rinverse_dynamic_host.cpp \
+../../common/blas_cuda/Raxpy.cpp ../../common/blas_cuda/Rcopy.cpp ../../common/blas_cuda/Rdot.cpp \
+../../common/blas_cuda/Cdotc.cpp ../../common/blas_cuda/Cdotu.cpp ../../common/blas_cuda/Rasum.cpp \
+../../common/blas_cuda/RCasum.cpp ../../common/blas_cuda/Rnrm2.cpp ../../common/blas_cuda/RCnrm2.cpp \
+../../common/blas_cuda/iRamax.cpp ../../common/blas_cuda/iCamax.cpp
+Rblas1_gpu_host_test_mpfr_CPPFLAGS = $(MPLAPACK_MPFR_CUDA_CPPFLAGS) -DMPLAPACK_MPFR_CUDA_HOST_EMULATION
+Rblas1_gpu_host_test_mpfr_CXXFLAGS = $(AM_CXXFLAGS) -std=c++17
+Rblas1_gpu_host_test_mpfr_LDADD = ../libmplapack_mpfr_opt.la $(MPLAPACK_MPFR_LIBS) $(OPENMP_LIBS)
+Rblas1_gpu_host_test_mpfr_LDFLAGS = -static -Wl,--disable-new-dtags -Wl,-rpath,$(MPC_LIBDIR):$(MPFR_LIBDIR):$(GMP_LIBDIR)
+
 inverse_gpu_host_test_mpfr_SOURCES = test/Rinverse_cuda_test.cpp Rinverse_bridge_cuda.cpp test/Rinverse_fixed_host.cpp test/Rinverse_runtime_host.cpp test/Rinverse_dynamic_host.cpp
 inverse_gpu_host_test_mpfr_CPPFLAGS = $(MPLAPACK_MPFR_CUDA_CPPFLAGS) -DMPLAPACK_MPFR_CUDA_HOST_EMULATION
 inverse_gpu_host_test_mpfr_CXXFLAGS = $(AM_CXXFLAGS) -std=c++17

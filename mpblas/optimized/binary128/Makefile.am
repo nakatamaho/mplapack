@@ -122,7 +122,7 @@ endif
 
 # Parallel Level 1/2/3 BLAS (../common/blas), real and complex:
 # bit-identical to the reference routines.
-check_PROGRAMS = Rblas_omp_test_binary128 Cblas_omp_test_binary128 Rlapack_omp_test_binary128 Rgemm_winograd_omp_test_binary128 Rgemm_opt_test
+check_PROGRAMS = Rblas1_fast_test_binary128 Rblas_omp_test_binary128 Cblas_omp_test_binary128 Rlapack_omp_test_binary128 Rgemm_winograd_omp_test_binary128 Rgemm_opt_test
 Rblas_omp_test_binary128_SOURCES = ../common/test/Rblas_omp_test.cpp
 Rblas_omp_test_binary128_CPPFLAGS = $(libmplapack_binary128_opt_la_CPPFLAGS)
 Rblas_omp_test_binary128_LDFLAGS = -static
@@ -148,7 +148,12 @@ Rgemm_opt_test_CPPFLAGS = $(libmplapack_binary128_opt_la_CPPFLAGS) -DRGEMM_TEST_
 Rgemm_opt_test_CXXFLAGS = $(DD_CXXFLAGS)
 Rgemm_opt_test_LDFLAGS = -static $(QD_RPATH_LDFLAGS)
 Rgemm_opt_test_LDADD = libmplapack_binary128_opt.la $(libmplapack_binary128_opt_la_LIBADD)
-TESTS = Rblas_omp_test_binary128 Cblas_omp_test_binary128 Rlapack_omp_test_binary128 Rgemm_winograd_omp_test_binary128 Rgemm_opt_test
+Rblas1_fast_test_binary128_SOURCES = ../common/test/Rblas1_fast_test.cpp
+Rblas1_fast_test_binary128_CPPFLAGS = $(libmplapack_binary128_opt_la_CPPFLAGS)
+Rblas1_fast_test_binary128_CXXFLAGS = $(DD_CXXFLAGS)
+Rblas1_fast_test_binary128_LDFLAGS = -static
+Rblas1_fast_test_binary128_LDADD = libmplapack_binary128_opt.la $(libmplapack_binary128_opt_la_LIBADD)
+TESTS = Rblas1_fast_test_binary128 Rblas_omp_test_binary128 Cblas_omp_test_binary128 Rlapack_omp_test_binary128 Rgemm_winograd_omp_test_binary128 Rgemm_opt_test
 
 # Shared LU / Cholesky verification gates (default mode; also run with
 # MPLAPACK_LAPACK_FAST=1 to check the opt-in algorithm).

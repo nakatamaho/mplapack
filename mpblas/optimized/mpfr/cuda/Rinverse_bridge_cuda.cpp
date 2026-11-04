@@ -194,3 +194,5 @@ bool P##getri_mpfr_cuda(mplapackint const n,H *a,mplapackint const lda,mplapacki
 ENTRIES(mpfr_class,R)
 ENTRIES(mpc_class,C)
 #undef ENTRIES
+
+#include "Rblas1_bridge_body.h"

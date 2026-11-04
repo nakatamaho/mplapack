@@ -38,9 +38,13 @@
 
 #include <vector>
 #include "../Rblas_split_common.h"
+#include "../Rblas1_fast_common.h"
 
 bool Rdot_par(INTEGER const n, REAL *dx, INTEGER const incx, REAL *dy, INTEGER const incy, REAL &result)
 {
+    REAL ignored;
+    if (mplapack_blas1::fast<REAL, REAL, false>(mplapack_blas1::dot, n, dx, incx, dy, incy, ignored, result))
+        return true;
     using namespace mplapack_blas;
     if (n < 10 || incx != 1 || incy != 1)
         return false;

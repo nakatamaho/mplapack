@@ -37,6 +37,7 @@
 
 #include <vector>
 #include "../Rblas_split_common.h"
+#include "../Rblas1_fast_common.h"
 
 namespace {
 
@@ -148,6 +149,9 @@ REAL RCnrm2_terms(INTEGER const n, COMPLEX *x, INTEGER const incx, const signed 
 
 bool RCnrm2_omp(INTEGER const n, COMPLEX *x, INTEGER const incx, REAL &result)
 {
+    COMPLEX ignored;
+    if (mplapack_blas1::fast<REAL, COMPLEX, true>(mplapack_blas1::norm, n, x, incx, static_cast<COMPLEX *>(nullptr), 1, result, ignored))
+        return true;
     using namespace mplapack_blas;
     if (n <= 0 || incx != 1)
         return false;

@@ -758,6 +758,39 @@ CMake registers them as `_larger_real` and `_large_real`, respectively.
 Device tests skip with 77 without a GPU. Full LAPACK QA, performance gates,
 and untested hardware remain outside this focused check.
 
+## BLAS1 entries and fast reductions (goal 11)
+
+`Raxpy`, `Rcopy`, `iRamax`, `iCamax`, `Rdot`, `Cdotc`, `Cdotu`, `Rasum`,
+`RCasum`, `Rnrm2`, `RCnrm2` have `_mpfr_cuda` entries. Non-void results
+use the final `result` reference in the generated header. New dispatchers
+remain CPU by default: `MPLAPACK_MPFR_CUDA_L12=1` enables GPU attempts,
+subject to `MPLAPACK_MPFR_CUDA` and `MPLAPACK_MPFR_CUDA_MIN_MNK` (vector
+length, default 32768). The seven summation entries additionally require
+`MPLAPACK_MPFR_MPBLAS_FAST=1`. CPU fast reductions use the separate
+`MPLAPACK_MPBLAS_FAST=1`. These new-entry settings are read on every call.
+
+The new kernels share the deterministic adjacent-pair tree and scaled norm
+algebra with the CPU and BF backends; see the [common README](../../common/README.md#opt-in-blas1-reductions-goal-11)
+for error bounds and tests. The MPFR adapters reuse the inverse-local signed
+and checked values: fixed 256/512/768/1024/2048, runtime cu_mpfr otherwise
+or with `MPLAPACK_MPFR_CUDA_FORCE_RUNTIME=1`. Real precision is dynamically
+sized above 4096; complex retains the factor adapter's 4096-bit cap.
+`MPLAPACK_MPFR_CUDA_RUNTIME=0` disables runtime precision, and
+`MPLAPACK_MPFR_CUDA_VERBOSE=1` reports runtime/launch failures.
+
+Uniform default precision, RNDN, finite inputs, default exponent limits,
+and the inverse per-operation exponent guard apply. All operations use the
+common GPU mutex; memory preflight includes operands/tree, bounded scratch,
+scalar pool and inherited/scoped stack. Final results are downloaded and
+validated before publication; failures leave every caller output unchanged.
+Copy's output values are not read. No legacy signed-zero allowance is used.
+The inverse driver translation units instantiate these shared internal
+adapters; no inverse schedule or numerical operation was changed.
+
+Focused CMake tests: `mpfr_cuda_Rblas1_{host,device}_{512,200,4097,8192}`;
+`make -C mpblas/optimized/mpfr/cuda Rblas1_gpu_host_test_mpfr` builds the
+matching autotools executable. 4097/8192 test the dynamic real path only.
+
 ## Limitations
 
 - Accelerated: `Rgemm`, `Rsyrk`, `Rsyr2k`, `Rsymm`, `Rtrmm`, `Rtrsm`, the

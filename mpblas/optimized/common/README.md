@@ -544,6 +544,75 @@ The reference LAPACK routines (`Rgetrf`, `Rpotrf`, `Rgetrs`, `Rtrtri`,
 `Rlauum`, `Rsygst`, `Rsytrf`, ...) call these BLAS routines, so they run
 faster with unchanged results.
 
+## Opt-in BLAS1 reductions (goal 11)
+
+The same public `Rdot`, `Cdotc`, `Cdotu`, `Rasum`, `RCasum`, `Rnrm2`,
+`RCnrm2` dispatchers support **CPU `MPLAPACK_MPBLAS_FAST=1`**, read on
+every call. Absent/zero/other values retain the previous reference-order
+implementation bit for bit. Fast mode uses OpenMP with the caller's
+precision context; `MPLAPACK_BLAS_OMP=0` runs the same tree serially.
+
+The dd/td/qd/MPFR CUDA libraries also provide those seven entries plus
+`Raxpy`, `Rcopy`, `iRamax`, `iCamax`, named `<Routine>_<backend>_cuda`.
+Non-void routines append a final reference `result` of the original return
+type. False leaves it and all operands untouched, including runtime errors;
+there is no CPU fallback inside an entry. The public dispatchers try the
+entry and otherwise retain their former CPU implementation. No default
+crossover or LAPACK policy was changed.
+
+GPU reductions require **`<P>_MPBLAS_FAST=1`** (read per call); otherwise
+all seven return false. They also honor the existing opt-in Level 1 gate:
+BF `<P>_BLAS_CUDA_L12=1`, `<P>_BLAS_CUDA`, `<P>_BLAS_CUDA_MIN` (default
+32768); MPFR `MPLAPACK_MPFR_CUDA_L12=1`, `MPLAPACK_MPFR_CUDA`,
+`MPLAPACK_MPFR_CUDA_MIN_MNK` (32768). New reductions interpret the minimum
+as vector length. `<P>_CUDA_VERBOSE` reports launch errors. Element-wise
+operations and iamax do not need FAST. Invalid/zero increments and n<=0
+are rejected; negative increments work for copy/axpy/dot/nrm2; asum/iamax
+retain their positive-increment contract. NaN/infinite GPU inputs are
+ineligible. CPU iamax is unchanged.
+
+`Rblas1_reduction_common.h` defines adjacent-pair combination. Each tree
+level has a separate synchronization boundary, with no floating-point
+atomics, races, or scheduling-dependent accumulation. Consequently repeated
+runs, and CPU thread-count changes, have the same summation order. GPU
+operands are staged once; all tree levels and the final square root stay on
+the device. `Rblas1_jobs_common.h` exposes internal device-pointer jobs for
+kernel-only measurements. Workspace is O(n), launches O(log n); this is a
+correctness-first baseline, not a tuned crossover claim.
+
+Norm nodes carry `(scale, sumsq)` and combine the smaller scale through a
+ratio no greater than one. No original input is squared without scaling.
+Complex norm leaves are real/imaginary components in that order. Iamax
+combines exact scores with strict greater-than, keeping the first tie.
+
+Error checks assume finite inputs and a representable result; dot/asum
+also require no intermediate overflow/underflow. Use effective unit
+roundoff `u=4*Rlamch("E")`, conservatively allowing BF arithmetic error.
+Dot/asum use absolute bounds of order `4*n*u*sum(abs(terms))` (complex
+products allow twice that for their components); division by the exact
+result gives the corresponding relative bound when it is nonzero. The
+focused bounded-input tests use the conservative envelope `32*n*n*u`.
+For scaled norms in normal arithmetic the test bound is
+`(16+8*ceil(log2(max(2,2*n))))*u*reference_norm`; this allows the tree's
+logarithmic number of divisions, squares and additions, rather than claiming
+an n-independent correctly-rounded result. Near binary64 underflow the BF
+expansions lose low words. The huge/tiny three-component checks use
+`64*u*reference_norm` plus 32 minimum binary64 subnormals. That floor is a
+focused test allowance, not a uniform all-n subnormal error bound. No
+relative-error claim is made for cancellation to zero or lost-low-word
+underflow.
+
+Focused tests: CMake `<b>_opt_Rblas1_fast`, `<b>_cuda_Rblas1_host` and
+`<b>_cuda_Rblas1_device` (MPFR suffixes 512/200/4097/8192); autotools
+`Rblas1_fast_test_<b>` and `Rblas1_gpu_host_test_<b>`. They check default
+identity, per-call switches, repeatability, odd tree sizes, nonunit/negative
+increments, zero/huge/tiny norms, first ties, padding, and untouched outputs.
+Device executables skip with 77 without a device. MPFR reuses the checked
+inverse adapters, including signed zeros, fixed/runtime precision, the GPU
+mutex, scoped arena/stack and dynamic real precision above 4096 bits;
+complex eligibility retains the factor adapter's 4096-bit cap. See the
+[MPFR README](../mpfr/cuda/README.md) for eligibility details.
+
 ## Benchmarks
 
 `benchmark/go.Rgemm_algo.sh` runs `Rgemm.{dd,td,qd,binary128}_opt` once per

@@ -37,9 +37,13 @@
 
 #include <vector>
 #include "../Rblas_split_common.h"
+#include "../Rblas1_fast_common.h"
 
 bool Rasum_omp(INTEGER const n, REAL *dx, INTEGER const incx, REAL &result)
 {
+    REAL ignored;
+    if (mplapack_blas1::fast<REAL, REAL, false>(mplapack_blas1::asum, n, dx, incx, static_cast<REAL *>(nullptr), 1, result, ignored))
+        return true;
     using namespace mplapack_blas;
     if (n < 12 || incx != 1)
         return false;

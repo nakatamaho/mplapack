@@ -251,6 +251,24 @@ bool %(r)s_omp(%(sig)s, REAL &result)
 """ % dict(r=r, sig=sig, body=body.rstrip("\n"), w=w, pre=pre)
     files[r + ".cpp"] = dispatcher(r, "REAL", sig, "n, x, incx", "")
 
+# Fast mode is an additional, per-call opt-in branch. The reference-order
+# kernels below it (and every dispatcher/default gate) remain unchanged.
+fast_ops = {"Cdotc": "dotc", "Cdotu": "dotu", "Rasum": "asum",
+            "RCasum": "asum", "Rnrm2": "norm", "RCnrm2": "norm"}
 for f, s in files.items():
+    r = f.removesuffix("_omp.cpp")
+    if r in fast_ops:
+        complex_ = r.startswith("C") or r.startswith("RC")
+        product = r.startswith("Cdot")
+        x = "zx" if product or r == "RCasum" else "dx" if r == "Rasum" else "x"
+        xtype = "COMPLEX" if complex_ else "REAL"
+        out = "ignored, result" if product else "result, ignored"
+        ignored = "REAL ignored;" if product else xtype + " ignored;"
+        y = "zy, incy" if product else "static_cast<%s *>(nullptr), 1" % xtype
+        hook = ("    %s\n    if (mplapack_blas1::fast<REAL, %s, %s>(mplapack_blas1::%s, n, %s, incx, %s, %s))\n"
+                "        return true;\n") % (ignored, xtype, str(complex_).lower(), fast_ops[r], x, y, out)
+        s = s.replace('#include "../Rblas_split_common.h"', '#include "../Rblas_split_common.h"\n#include "../Rblas1_fast_common.h"')
+        start = s.index("    using namespace mplapack_blas;", s.index("bool " + r + "_omp("))
+        s = s[:start] + hook + s[start:]
     open(os.path.join(OUT, f), "w").write(s)
     print("wrote", os.path.join(OUT, f))

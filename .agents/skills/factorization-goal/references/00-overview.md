@@ -131,7 +131,14 @@ band and packed storage, mixed precision refinement.
    or sloppy GEMM). Gate: backward error (below), and the same pivots as
    the default mode on the test matrices whenever the pivot choice is not
    a tie.
-3. No silent CPU fallback inside a GPU entry point (AGENTS.md): it returns
+3. **BLAS1 reduction fast mode (goal 11).** `MPLAPACK_MPBLAS_FAST=1`
+   enables deterministic parallel CPU dot/dotc/dotu/asum/nrm2; the default
+   keeps the reference-order CPU implementation unchanged. GPU entries use
+   `<P>_MPBLAS_FAST=1` instead, and return false when it is off. Both switches
+   are read at every call. The fixed reduction tree permits other rounding,
+   preserves reproducibility, and uses scaled sums of squares for nrm2.
+   Element-wise operations and iamax (first tie) still require bit identity.
+4. No silent CPU fallback inside a GPU entry point (AGENTS.md): it returns
    false and leaves every output untouched; the dispatcher then computes on
    the CPU.
 

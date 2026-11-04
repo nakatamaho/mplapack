@@ -37,9 +37,13 @@
 
 #include <vector>
 #include "../Rblas_split_common.h"
+#include "../Rblas1_fast_common.h"
 
 bool Cdotc_omp(INTEGER const n, COMPLEX *zx, INTEGER const incx, COMPLEX *zy, INTEGER const incy, COMPLEX &result)
 {
+    REAL ignored;
+    if (mplapack_blas1::fast<REAL, COMPLEX, true>(mplapack_blas1::dotc, n, zx, incx, zy, incy, ignored, result))
+        return true;
     using namespace mplapack_blas;
     if (n <= 0 || incx != 1 || incy != 1)
         return false;

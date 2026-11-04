@@ -21,7 +21,7 @@ NVCC_DD_CUDA_FLAGS = -std=c++17 -fmad=false -I$(srcdir) -I$(top_builddir)/includ
 .cu.lo:
 	$(top_srcdir)/misc/cudalt.py $@ $(NVCC) $(NVCC_GLIBC_FEATURE_FLAGS) $(NVCC_DD_CUDA_FLAGS) --compiler-options=\"$(CFLAGS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) \" $(AMPERE_FLAGS) $(HOPPER_FLAGS) -c $<
 
-Rpotrf_gpu_cuda.lo Rpotrf_gpu_cuda.o Rgetrf_gpu_cuda.lo Rgetrf_gpu_cuda.o Rsolver_gpu_cuda.lo Rsolver_gpu_cuda.o Rinverse_gpu_cuda.lo Rinverse_gpu_cuda.o: NVCC_DD_CUDA_FLAGS += -Xcompiler=-ffp-contract=off
+Rgemm_gpu_cuda.lo Rgemm_gpu_cuda.o Rpotrf_gpu_cuda.lo Rpotrf_gpu_cuda.o Rgetrf_gpu_cuda.lo Rgetrf_gpu_cuda.o Rsolver_gpu_cuda.lo Rsolver_gpu_cuda.o Rinverse_gpu_cuda.lo Rinverse_gpu_cuda.o: NVCC_DD_CUDA_FLAGS += -Xcompiler=-ffp-contract=off
 
 # Header dependencies of the .cu objects, written by nvcc through
 # misc/cudalt.py (automake does not track the .cu.lo suffix rule).
@@ -38,11 +38,11 @@ lib_LTLIBRARIES = libmplapack_dd_opt_cuda.la
 libmplapack_dd_opt_cuda_la_CPPFLAGS = $(MPLAPACK_DD_CUDA_CPPFLAGS)
 libmplapack_dd_opt_cuda_la_CXXFLAGS = $(DD_CXXFLAGS)
 libmplapack_dd_opt_cuda_la_SOURCES = \
-../Rcopy.cpp ../Rcopy_ref.cpp ../openmp/Rcopy_omp.cpp \
-../Rdot.cpp  ../Rdot_ref.cpp  ../openmp/Rdot_omp.cpp \
+../../common/blas_cuda/Rcopy.cpp ../Rcopy_ref.cpp ../openmp/Rcopy_omp.cpp \
+../../common/blas_cuda/Rdot.cpp ../Rdot_ref.cpp  ../openmp/Rdot_omp.cpp \
 ../../common/blas/Rdot_par.cpp \
 ../Rgemm_ref.cpp ../../common/blas/Rgemm_blocked_omp.cpp ../openmp/Rgemm_NN_omp.cpp ../openmp/Rgemm_NT_omp.cpp ../openmp/Rgemm_TN_omp.cpp ../openmp/Rgemm_TT_omp.cpp \
-../Raxpy.cpp ../Raxpy_ref.cpp ../openmp/Raxpy_omp.cpp \
+../../common/blas_cuda/Raxpy.cpp ../Raxpy_ref.cpp ../openmp/Raxpy_omp.cpp \
 ../../common/blas/Rsyrk_omp.cpp ../../common/blas_cuda/Rsyrk.cpp \
 ../../common/blas/Rsyr2k_omp.cpp ../../common/blas_cuda/Rsyr2k.cpp \
 ../../common/blas/Rsymm_omp.cpp ../../common/blas_cuda/Rsymm.cpp \
@@ -81,8 +81,8 @@ libmplapack_dd_opt_cuda_la_SOURCES = \
 ../../common/blas/Ctrsv.cpp ../../common/blas/Ctrsv_omp.cpp \
 ../../common/blas/Cher_omp.cpp ../../common/blas_cuda/Cher.cpp \
 ../../common/blas/Cher2_omp.cpp ../../common/blas_cuda/Cher2.cpp \
-../../common/blas/Cdotc.cpp ../../common/blas/Cdotc_omp.cpp \
-../../common/blas/Cdotu.cpp ../../common/blas/Cdotu_omp.cpp \
+../../common/blas_cuda/Cdotc.cpp ../../common/blas/Cdotc_omp.cpp \
+../../common/blas_cuda/Cdotu.cpp ../../common/blas/Cdotu_omp.cpp \
 ../../common/blas_cuda/Cgbmv.cpp ../../common/blas/Cgbmv_omp.cpp \
 ../../common/blas_cuda/Chbmv.cpp ../../common/blas/Chbmv_omp.cpp \
 ../../common/blas_cuda/Chemv.cpp ../../common/blas/Chemv_omp.cpp \
@@ -98,11 +98,11 @@ libmplapack_dd_opt_cuda_la_SOURCES = \
 ../../../reference/Mlsame.cpp \
 ../../../reference/Mxerbla.cpp \
 ../../../reference/RCabs1.cpp \
-../../common/blas/RCasum.cpp ../../common/blas/RCasum_omp.cpp \
-../../common/blas/RCnrm2.cpp ../../common/blas/RCnrm2_omp.cpp \
-../../common/blas/Rasum.cpp ../../common/blas/Rasum_omp.cpp \
+../../common/blas_cuda/RCasum.cpp ../../common/blas/RCasum_omp.cpp \
+../../common/blas_cuda/RCnrm2.cpp ../../common/blas/RCnrm2_omp.cpp \
+../../common/blas_cuda/Rasum.cpp ../../common/blas/Rasum_omp.cpp \
 ../../common/blas_cuda/Rgbmv.cpp ../../common/blas/Rgbmv_omp.cpp \
-../../common/blas/Rnrm2.cpp ../../common/blas/Rnrm2_omp.cpp \
+../../common/blas_cuda/Rnrm2.cpp ../../common/blas/Rnrm2_omp.cpp \
 ../../../reference/Rrotg.cpp \
 ../../../reference/Rrotm.cpp \
 ../../../reference/Rrotmg.cpp \
@@ -114,8 +114,8 @@ libmplapack_dd_opt_cuda_la_SOURCES = \
 ../../common/blas/Rtbsv.cpp ../../common/blas/Rtbsv_omp.cpp \
 ../../common/blas_cuda/Rtpmv.cpp ../../common/blas/Rtpmv_omp.cpp \
 ../../common/blas/Rtpsv.cpp ../../common/blas/Rtpsv_omp.cpp \
-../../common/blas/iCamax.cpp ../../common/blas/iCamax_omp.cpp \
-../../common/blas/iRamax.cpp ../../common/blas/iRamax_omp.cpp \
+../../common/blas_cuda/iCamax.cpp ../../common/blas/iCamax_omp.cpp \
+../../common/blas_cuda/iRamax.cpp ../../common/blas/iRamax_omp.cpp \
 ../../../reference/mplapackinit.cpp \
 $(MPLAPACK_ACCEL_REFERENCE_SOURCES) \
 Rtrtri.cpp Ctrtri.cpp Rlauum.cpp Clauum.cpp Rpotri.cpp Cpotri.cpp Rgetri.cpp Cgetri.cpp Rinverse_gpu_cuda.cu \
@@ -127,7 +127,7 @@ Rgetrf.cpp Cgetrf.cpp Rgetrf_gpu_cuda.cu \
 ../../../../mplapack/optimized/common/Cgetrf2.cpp \
 Rpotrf.cpp Cpotrf.cpp Rpotrf_gpu_cuda.cu \
 $(MPLAPACK_DD_CUDA_LAPACK_OPTIMIZED_SOURCES) \
-Rgemm.cpp Rgemm_bridge_cuda.cpp Rgemm_gpu_cuda.cu ../../common/blas_cuda/Rblas_bridge_cuda.cpp ../../common/blas_cuda/Cblas_bridge_cuda.cpp \
+Rgemm.cpp Rgemm_bridge_cuda.cpp Rgemm_gpu_cuda.cu ../../common/blas_cuda/Rblas_bridge_cuda.cpp ../../common/blas_cuda/Rblas1_bridge_cuda.cpp ../../common/blas_cuda/Cblas_bridge_cuda.cpp \
 Rgemm_cuda.cu Rgemm_fermi.cu Rgemm_tesla.cu \
 Rsyrk_legacy_cuda.cu Rsyrk_cuda.cu dd_real_cuda.h
 

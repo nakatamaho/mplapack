@@ -34,6 +34,9 @@
 #include <mpblas.h>
 #include "../Rblas_cuda_entry_common.h"
 #include "../Rblas_cuda_bridge_common.h"
+#include "../Rblas1_policy.h"
+#include <vector>
+#include <stdexcept>
 
 #if defined(MPLAPACK_BUILD_WITH_DD)
 typedef mplapack_gemm::dd_ops OPS;
@@ -151,6 +154,34 @@ bool MPLAPACK_CUDA_ENTRY(Rsyr2)(const char *uplo, INTEGER const n, REAL const al
     if (!make_rank<REAL>(c, ls, 2, uplo, n, n, alpha, x, incx, y, incy, a, lda))
         return false;
     return blas_gpu_bridge<REAL, OPS>(PREFIX, c);
+}
+
+namespace {
+bool blas1_element(int op,INTEGER n,REAL alpha,REAL *x,INTEGER incx,REAL *y,INTEGER incy) {
+    if(!x || !y || !mplapack_blas1::stride_ok(n,incx) || !mplapack_blas1::stride_ok(n,incy) ||
+       (op==L1_AXPY && alpha==REAL(0.0))) return false;
+    if(!mplapack_gemm::env_long(PREFIX "_BLAS_CUDA",1) ||
+       !mplapack_gemm::env_long(PREFIX "_BLAS_CUDA_L12",0) ||
+       n<mplapack_gemm::env_long(PREFIX "_BLAS_CUDA_MIN",32768)) return false;
+    blas_call<REAL> original;
+    if(!make_level1<REAL>(original,op,n,alpha,REAL(0.0),x,incx,y,incy)) return false;
+    try {
+        std::vector<REAL> a(n),b(n);
+        long ix=incx<0?-(n-1)*incx:0,iy=incy<0?-(n-1)*incy:0;
+        for(long i=0;i<n;++i) { a[i]=x[ix+i*incx];if(op==L1_AXPY) b[i]=y[iy+i*incy]; }
+        blas_call<REAL> call;
+        if(!make_level1<REAL>(call,op,n,alpha,REAL(0.0),a.data(),1,b.data(),1) ||
+           !blas_gpu_bridge<REAL,OPS>(PREFIX,call)) return false;
+        for(long i=0;i<n;++i) y[iy+i*incy]=b[i];
+        return true;
+    } catch(const std::bad_alloc &) { return false; } catch(const std::length_error &) { return false; }
+}
+}
+bool MPLAPACK_CUDA_ENTRY(Raxpy)(INTEGER const n,REAL const da,REAL *dx,INTEGER const incx,REAL *dy,INTEGER const incy) {
+    return blas1_element(L1_AXPY,n,da,dx,incx,dy,incy);
+}
+bool MPLAPACK_CUDA_ENTRY(Rcopy)(INTEGER const n,REAL *dx,INTEGER const incx,REAL *dy,INTEGER const incy) {
+    return blas1_element(L1_COPY,n,REAL(0.0),dx,incx,dy,incy);
 }
 
 bool MPLAPACK_CUDA_ENTRY(Rscal)(INTEGER const n, REAL const da, REAL *dx, INTEGER const incx)
