@@ -1,5 +1,122 @@
 # Kernel benchmark: CPU against GPU, per precision class
 
+## Goal11 extension (new routines only)
+
+Upper-case routine names select `Rkernel_new.h` from `Rkernel_bench.cpp`.
+Lower-case legacy names and their original timing paths are unchanged.
+
+```
+Rkernel_bench.dd_opt Rdot fast 1024,2048
+Rkernel_bench.dd_cuda_kernel Rtrsv fast 1024,2048
+MPFRXX_DEFAULT_PRECISION_BITS=512 Rkernel_bench.mpfr_cuda_resident Cgetri fast 128
+```
+
+The new path covers all11 BLAS1 entries and all6 triangular solves for
+DD/TD/QD/MPFR, and all8 MPFR inverses. BF inverses are existing work and are
+not included. `fast`/`default` select the CPU reduction switch; GPU reductions
+accept only `fast`. Non-reductions retain reference arithmetic. CPU executables
+link only the optimized CPU library. The separate MPFR resident executable
+instantiates the production **checked512-bit** adapters and links the CPU
+library plus libmpc_cuda; it never calls a public accelerator entry. Runtime200
+is a correctness target, not a performance series. Both build systems build it.
+
+Device operands, scalar constants, streams, events, tree/scratch, pivots, MPFR
+stack and bounded arenas are allocated/packed before timing. Operands are
+restored before each run. CUDA events surround only the shared device-pointer
+schedules (`Rblas1_jobs_common.h`, `Rtrisolve_jobs.h`, `Rinverse_schedule.h`),
+on their actual launch stream. BF AXPY/COPY use the existing lane engine;
+MPFR uses the inverse-local checked element job. The stop event precedes final
+status/download validation. No CUDA allocation, pack/unpack or operand transfer is
+inside the interval. Inverse singular-status feedback, launch gaps and scheduler
+latency between kernels **are** included: this is elapsed resident computation,
+not the sum of isolated kernel durations. Arenas/stack use the production
+scoped policy; memory checks cover operands, tree, workspace and arena. There
+is no arithmetic optimization or gate/default change.
+
+Data use the existing deterministic full-precision generator, independently
+seeded by n. Vectors use unit strides; AXPY uses alpha=1. Solves use
+Upper/NoTrans/Nonunit/inc1; TBSV has k=64, including
+n<64. The shared CSV solve form `UNN_k64` records this band parameter;
+it is ignored for full/packed TRSV/TPSV. Matrix storage is native
+full/band/packed. Inverses use Upper/Nonunit,
+well-conditioned factors, reference iMlaenv blocking; GETRI has identity pivots
+and optimal workspace. Lower/T/C/unit/stride/pivoted correctness is checked by
+the focused production tests, not additional performance curves.
+
+Default repetitions: warmup1 + best3 at matrix n<=2000 / vector n<=2^21;
+larger sizes one measurement (CPU without warmup, GPU with one untimed
+warmup). GPU modules load eagerly before event intervals: no first-launch
+module-loading latency masquerades as kernel time. A warmup exceeding10s
+reduces to one measured call; a measured call exceeding10s ends further
+repetitions. Options `--reps R --warmup W` override defaults for pilots/checks,
+not this10s guard;
+`--dump FILE` writes actual output component representations outside timing.
+Failures have nonzero exits, never a fabricated zero time.
+
+FLOPs (conventional high-precision operations, not hardware-double operations):
+AXPY/DOT2n, complex DOT8n, ASUM n (complex2n), NRM2 nominal2n (complex4n,
+scaled-tree implementation does more work), TRSV/TPSV n² (complex4n²),
+TBSV n(2k'+1)-k'(k'+1), k'=min(64,n-1), complex×4. TRTRI n³/3+2n/3,
+LAUUM n³/3+n²/2+n/6, POTRI leading2n³/3, GETRI leading4n³/3; complex×4.
+COPY and IAMAX do not have meaningful FLOP counts: their CSV GFLOPS is0 and
+plots use **G elements/s**, not fictitious GFLOPS. Compare times for speedup.
+
+```
+# Configure both CUDA libraries + benchmarks first; CPU32, GPU1 host thread.
+make -C benchmark Rkernel_bench.{dd,td,qd,mpfr}_opt \
+  Rkernel_bench.{dd,td,qd}_cuda_kernel Rkernel_bench.mpfr_cuda_resident
+# CMake targets: bench_Rkernel_bench_<b>_opt / <b>_cuda_kernel,
+#               bench_Rkernel_bench_mpfr_cuda_resident
+python3 benchmark/test_kernel_new.py
+python3 benchmark/test_kernel_new.py --bindir benchmark --type mpfr512
+D=benchmark/results/2026/x86_64-pc-linux-gnu-Ryzen-Threadripper-3970X-TeslaA100/kernel-bench-2
+python3 benchmark/kernel_bench.py new --out "$D" --phase pilot --methods cpu
+# After the maintainer's GPU gate and focused tests/sanitizer:
+python3 benchmark/test_kernel_new.py --gpu-check --bindir benchmark \
+  --mpfr-bindir benchmark --out "$D/checks"
+python3 benchmark/kernel_bench.py new --out "$D" --hours 5.8
+# Optional: use remaining budget to replace conservative MPFR caps by actual10s stops.
+python3 benchmark/kernel_bench.py new --out "$D" --types mpfr512 --methods gpu,cpu --phase extend-mpfr
+PYTHONPATH=/home/docker/plotlib python3 benchmark/kernel_bench.py new --out "$D" --phase plot
+python3 benchmark/kernel_bench.py new --out "$D" --phase bundle  # after all runners stop
+```
+
+`kernel_new.py` runs sequentially, never pins cores, checks the external
+`/tmp/gemm-sweep-forms.done` marker (never creates it), and logs uptime before,
+after and every30s, plus GPU compute applications for GPU runs. Every point's
+CSV records maximum sampled load, load>=16, other GPU application, exit status,
+phase, and point wall time (subprocess plus condition probes). Load includes the benchmark's own threads;
+it is not an estimate of external CPU utilization. Contaminated points are ×
+on graphs; no unmeasured slowdown correction is applied. CPU requests32 OpenMP
+threads but retains library-internal serial/SIMD paths and cutoffs. Files in `raw/` retain
+commands/output/exit receipts. `bundle` consolidates owned point logs by series,
+retaining every command/output/exit, without changing CSV data. Pilot points are
+not plotted as sweep points.
+
+Two pilot sizes per series drive per-call10s MPFR/30s BF forecasts and a global
+wall-budget forecast. All point wall time (including setup/pilots/probes) is
+charged against a cumulative <=6h budget, retained across restarts. An optional
+`budget-overhead.json` receipt can conservatively charge interruptions or older
+records that did not include probe overhead; this never changes kernel times. Default
+matrix grid is reduced to powers64..4096 and nearby multiples7/31 plus7/31;
+`--dense` requests every multiple7/31. Vectors request all57 powers/quarter
+points1024..2^24. Forecast caps, global thinning and actual MPFR>10s stops are
+explicit in plan/forecast JSON and reductions.log; see the result README for
+what actually ran. Restart resumes completed points, including failed receipts.
+`extend-mpfr` advances existing MPFR curves toward their requested maxima,
+stopping at the first reported>10s point/error or insufficient remaining budget
+(twice the next point's size-scaled cost forecast, minimum60s reserve).
+`extend-inverses` limits that operation to inverses. Extensions are logged;
+this avoids treating a pessimistic small-size pilot as proof that1024/2048
+cannot be measured.
+
+`test_kernel_new.py --gpu-check` compares the actual benchmark operands at
+n64/200 to CPU32: exact representations (including zeros) except reductions,
+which additionally allow the production test envelopes (dot/asum32n²u_eff,
+norm(16+8ceil(log2(2n)))u_eff|reference|, u_eff=4u). It does not replace the
+production reference/oracle/error-path tests. No GPU checks run during sweeps.
+
+
 `Rkernel_bench` times, alone, the kernels from which the LU / Cholesky
 factorizations, the solvers and the inverses are built (GEMM, SYRK/HERK,
 TRSM, the getrf2 / potrf2 panels, laswp, trtri, lauum), on the CPU and on

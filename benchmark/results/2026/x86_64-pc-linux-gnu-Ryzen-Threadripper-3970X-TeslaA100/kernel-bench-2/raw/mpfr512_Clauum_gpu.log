@@ -1,0 +1,158 @@
+
+### mpfr512_Clauum_gpu_64_pilot-pre-eager
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Clauum fast 64 --reps 1 --warmup 1
+OMP_NUM_THREADS=1
+mpfr512,Clauum,UN,64,gpu,1.68955396,0.000211748195,1
+
+exit=0, elapsed=3.669457
+
+exit receipt: 0
+
+### mpfr512_Clauum_gpu_128_pilot-pre-eager
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Clauum fast 128 --reps 1 --warmup 1
+OMP_NUM_THREADS=1
+mpfr512,Clauum,UN,128,gpu,3.69455811,0.000765735961,1
+
+exit=0, elapsed=7.710645
+
+exit receipt: 0
+
+### mpfr512_Clauum_gpu_64_pilot
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Clauum fast 64 --reps 1 --warmup 1
+OMP_NUM_THREADS=1
+mpfr512,Clauum,UN,64,gpu,1.70507776,0.000209820343,1
+
+exit=0, process_elapsed=3.690120
+charged_point_wall=3.738049
+
+exit receipt: 0
+
+### mpfr512_Clauum_gpu_128_pilot
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Clauum fast 128 --reps 1 --warmup 1
+OMP_NUM_THREADS=1
+mpfr512,Clauum,UN,128,gpu,3.72235376,0.000760018038,1
+
+exit=0, process_elapsed=7.770130
+charged_point_wall=7.822751
+
+exit receipt: 0
+
+### mpfr512_Clauum_gpu_7_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Clauum fast 7
+OMP_NUM_THREADS=1
+mpfr512,Clauum,UN,7,gpu,0.002504704,0.000223579313,3
+
+exit=0, process_elapsed=0.307479
+charged_point_wall=0.359104
+
+exit receipt: 0
+
+### mpfr512_Clauum_gpu_31_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Clauum fast 31
+OMP_NUM_THREADS=1
+mpfr512,Clauum,UN,31,gpu,0.195597305,0.00021300907,3
+
+exit=0, process_elapsed=1.055587
+charged_point_wall=1.104354
+
+exit receipt: 0
+
+### mpfr512_Clauum_gpu_62_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Clauum fast 62
+OMP_NUM_THREADS=1
+mpfr512,Clauum,UN,62,gpu,1.55293701,0.000209602835,3
+
+exit=0, process_elapsed=6.495632
+charged_point_wall=6.547609
+
+exit receipt: 0
+
+### mpfr512_Clauum_gpu_63_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Clauum fast 63
+OMP_NUM_THREADS=1
+mpfr512,Clauum,UN,63,gpu,1.62905396,0.000209554754,3
+
+exit=0, process_elapsed=6.799927
+charged_point_wall=6.848368
+
+exit receipt: 0
+
+### mpfr512_Clauum_gpu_64_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Clauum fast 64
+OMP_NUM_THREADS=1
+mpfr512,Clauum,UN,64,gpu,1.70505725,0.000209822867,3
+
+exit=0, process_elapsed=7.102825
+charged_point_wall=7.152595
+
+exit receipt: 0
+
+### mpfr512_Clauum_gpu_124_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Clauum fast 124
+OMP_NUM_THREADS=1
+mpfr512,Clauum,UN,124,gpu,3.39955005,0.000756864868,3
+
+exit=0, process_elapsed=13.910337
+charged_point_wall=13.961623
+
+exit receipt: 0
+
+### mpfr512_Clauum_gpu_126_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Clauum fast 126
+OMP_NUM_THREADS=1
+mpfr512,Clauum,UN,126,gpu,3.55582471,0.000759037417,3
+
+exit=0, process_elapsed=14.533208
+charged_point_wall=14.584734
+
+exit receipt: 0
+
+### mpfr512_Clauum_gpu_128_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Clauum fast 128
+OMP_NUM_THREADS=1
+mpfr512,Clauum,UN,128,gpu,3.72425122,0.000759630818,3
+
+exit=0, process_elapsed=15.218867
+charged_point_wall=15.266190
+
+exit receipt: 0
+
+### mpfr512_Clauum_gpu_248_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Clauum fast 248
+OMP_NUM_THREADS=1
+mpfr512,Clauum,UN,248,gpu,7.69099268,0.00266031927,3
+
+exit=0, process_elapsed=31.194704
+charged_point_wall=31.247010
+
+exit receipt: 0
+
+### mpfr512_Clauum_gpu_252_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Clauum fast 252
+OMP_NUM_THREADS=1
+mpfr512,Clauum,UN,252,gpu,7.99801123,0.00268373217,3
+
+exit=0, process_elapsed=32.416260
+charged_point_wall=32.463346
+
+exit receipt: 0
+
+### mpfr512_Clauum_gpu_256_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Clauum fast 256
+OMP_NUM_THREADS=1
+mpfr512,Clauum,UN,256,gpu,8.35184473,0.00269411905,3
+
+exit=0, process_elapsed=33.860162
+charged_point_wall=33.911389
+
+exit receipt: 0
+
+### mpfr512_Clauum_gpu_496_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Clauum fast 496
+OMP_NUM_THREADS=1
+mpfr512,Clauum,UN,496,gpu,18.6403965,0.00875469275,1
+
+exit=0, process_elapsed=38.138356
+charged_point_wall=38.183935
+
+exit receipt: 0

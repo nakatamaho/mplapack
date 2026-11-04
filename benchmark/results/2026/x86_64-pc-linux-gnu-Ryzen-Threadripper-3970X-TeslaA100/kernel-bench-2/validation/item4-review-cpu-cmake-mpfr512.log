@@ -1,0 +1,83 @@
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Raxpy fast 7 --reps 1 --warmup 0 --dump /tmp/tmpbt2p9e51/result exit= 0 mpfr512,Raxpy,inc1,7,cpu,0.001895545,7.38573867e-06,1
+ 
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rcopy fast 7 --reps 1 --warmup 0 --dump /tmp/tmpbt2p9e51/result exit= 0 mpfr512,Rcopy,inc1,7,cpu,0.001060552,0,1
+ 
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt iRamax fast 7 --reps 1 --warmup 0 --dump /tmp/tmpbt2p9e51/result exit= 0 mpfr512,iRamax,inc1,7,cpu,1.6181e-05,0,1
+ 
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt iCamax fast 7 --reps 1 --warmup 0 --dump /tmp/tmpbt2p9e51/result exit= 0 mpfr512,iCamax,inc1,7,cpu,4.8943e-05,0,1
+ 
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rdot fast 7 --reps 1 --warmup 0 --dump /tmp/tmpbt2p9e51/result exit= 0 mpfr512,Rdot,inc1,7,cpu,6.0806e-05,0.000230240437,1
+ 
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rdot default 7 --reps 1 --warmup 0 --dump /tmp/tmpbt2p9e51/result exit= 0 mpfr512,Rdot,inc1,7,cpu-default,2.641e-05,0.000530102234,1
+ 
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Cdotc fast 7 --reps 1 --warmup 0 --dump /tmp/tmpbt2p9e51/result exit= 0 mpfr512,Cdotc,inc1,7,cpu,4.1308e-05,0.0013556696,1
+ 
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Cdotc default 7 --reps 1 --warmup 0 --dump /tmp/tmpbt2p9e51/result exit= 0 mpfr512,Cdotc,inc1,7,cpu-default,6.0295e-05,0.000928766896,1
+ 
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Cdotu fast 7 --reps 1 --warmup 0 --dump /tmp/tmpbt2p9e51/result exit= 0 mpfr512,Cdotu,inc1,7,cpu,4.4044e-05,0.00127145582,1
+ 
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Cdotu default 7 --reps 1 --warmup 0 --dump /tmp/tmpbt2p9e51/result exit= 0 mpfr512,Cdotu,inc1,7,cpu-default,2.2864e-05,0.00244926522,1
+ 
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rasum fast 7 --reps 1 --warmup 0 --dump /tmp/tmpbt2p9e51/result exit= 0 mpfr512,Rasum,inc1,7,cpu,5.9564e-05,0.00011752065,1
+ 
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rasum default 7 --reps 1 --warmup 0 --dump /tmp/tmpbt2p9e51/result exit= 0 mpfr512,Rasum,inc1,7,cpu-default,3.7391e-05,0.000187210826,1
+ 
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt RCasum fast 7 --reps 1 --warmup 0 --dump /tmp/tmpbt2p9e51/result exit= 0 mpfr512,RCasum,inc1,7,cpu,5.7269e-05,0.000244460354,1
+ 
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt RCasum default 7 --reps 1 --warmup 0 --dump /tmp/tmpbt2p9e51/result exit= 0 mpfr512,RCasum,inc1,7,cpu-default,5.1979e-05,0.000269339541,1
+ 
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rnrm2 fast 7 --reps 1 --warmup 0 --dump /tmp/tmpbt2p9e51/result exit= 0 mpfr512,Rnrm2,inc1,7,cpu,0.000107055,0.000130773901,1
+ 
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rnrm2 default 7 --reps 1 --warmup 0 --dump /tmp/tmpbt2p9e51/result exit= 0 mpfr512,Rnrm2,inc1,7,cpu-default,0.00010501,0.000133320636,1
+ 
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt RCnrm2 fast 7 --reps 1 --warmup 0 --dump /tmp/tmpbt2p9e51/result exit= 0 mpfr512,RCnrm2,inc1,7,cpu,0.000131772,0.000212488237,1
+ 
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt RCnrm2 default 7 --reps 1 --warmup 0 --dump /tmp/tmpbt2p9e51/result exit= 0 mpfr512,RCnrm2,inc1,7,cpu-default,0.000133295,0.000210060392,1
+ 
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rtrsv fast 7 --reps 1 --warmup 0 --dump /tmp/tmpbt2p9e51/result exit= 0 mpfr512,Rtrsv,UNN_k64,7,cpu,3.5147e-05,0.00139414459,1
+ 
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rtbsv fast 7 --reps 1 --warmup 0 --dump /tmp/tmpbt2p9e51/result exit= 0 mpfr512,Rtbsv,UNN_k64,7,cpu,3.0067e-05,0.00162969368,1
+ 
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rtpsv fast 7 --reps 1 --warmup 0 --dump /tmp/tmpbt2p9e51/result exit= 0 mpfr512,Rtpsv,UNN_k64,7,cpu,2.9456e-05,0.0016634981,1
+ 
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Ctrsv fast 7 --reps 1 --warmup 0 --dump /tmp/tmpbt2p9e51/result exit= 0 mpfr512,Ctrsv,UNN_k64,7,cpu,3.4436e-05,0.00569171797,1
+ 
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Ctbsv fast 7 --reps 1 --warmup 0 --dump /tmp/tmpbt2p9e51/result exit= 0 mpfr512,Ctbsv,UNN_k64,7,cpu,8.9361e-05,0.00219335057,1
+ 
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Ctpsv fast 7 --reps 1 --warmup 0 --dump /tmp/tmpbt2p9e51/result exit= 0 mpfr512,Ctpsv,UNN_k64,7,cpu,6.1567e-05,0.00318352364,1
+ 
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rtrtri fast 7 --reps 1 --warmup 0 --dump /tmp/tmpbt2p9e51/result exit= 0 mpfr512,Rtrtri,UN,7,cpu,9.0973e-05,0.00130808042,1
+ 
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rtrtri default 7 --reps 1 --warmup 0 --dump /tmp/tmpbt2p9e51/result exit= 0 mpfr512,Rtrtri,UN,7,cpu-default,9.935e-05,0.00119778561,1
+ 
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rlauum fast 7 --reps 1 --warmup 0 --dump /tmp/tmpbt2p9e51/result exit= 0 mpfr512,Rlauum,UN,7,cpu,0.000120189,0.00116483206,1
+ 
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rlauum default 7 --reps 1 --warmup 0 --dump /tmp/tmpbt2p9e51/result exit= 0 mpfr512,Rlauum,UN,7,cpu-default,0.000110491,0.00126707153,1
+ 
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rpotri fast 7 --reps 1 --warmup 0 --dump /tmp/tmpbt2p9e51/result exit= 0 mpfr512,Rpotri,UN,7,cpu,0.000177849,0.0012857349,1
+ 
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rpotri default 7 --reps 1 --warmup 0 --dump /tmp/tmpbt2p9e51/result exit= 0 mpfr512,Rpotri,UN,7,cpu-default,0.000159884,0.00143020356,1
+ 
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rgetri fast 7 --reps 1 --warmup 0 --dump /tmp/tmpbt2p9e51/result exit= 0 mpfr512,Rgetri,UN,7,cpu,0.000164904,0.00277333075,1
+ 
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rgetri default 7 --reps 1 --warmup 0 --dump /tmp/tmpbt2p9e51/result exit= 0 mpfr512,Rgetri,UN,7,cpu-default,0.000187908,0.00243381513,1
+ 
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Ctrtri fast 7 --reps 1 --warmup 0 --dump /tmp/tmpbt2p9e51/result exit= 0 mpfr512,Ctrtri,UN,7,cpu,0.000187498,0.00253869375,1
+ 
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Ctrtri default 7 --reps 1 --warmup 0 --dump /tmp/tmpbt2p9e51/result exit= 0 mpfr512,Ctrtri,UN,7,cpu-default,0.000135237,0.00351974681,1
+ 
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Clauum fast 7 --reps 1 --warmup 0 --dump /tmp/tmpbt2p9e51/result exit= 0 mpfr512,Clauum,UN,7,cpu,0.000275415,0.00203329521,1
+ 
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Clauum default 7 --reps 1 --warmup 0 --dump /tmp/tmpbt2p9e51/result exit= 0 mpfr512,Clauum,UN,7,cpu-default,0.000273642,0.00204646947,1
+ 
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Cpotri fast 7 --reps 1 --warmup 0 --dump /tmp/tmpbt2p9e51/result exit= 0 mpfr512,Cpotri,UN,7,cpu,0.000378743,0.00241500613,1
+ 
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Cpotri default 7 --reps 1 --warmup 0 --dump /tmp/tmpbt2p9e51/result exit= 0 mpfr512,Cpotri,UN,7,cpu-default,0.000357171,0.00256086487,1
+ 
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Cgetri fast 7 --reps 1 --warmup 0 --dump /tmp/tmpbt2p9e51/result exit= 0 mpfr512,Cgetri,UN,7,cpu,0.000210502,0.00869033707,1
+ 
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Cgetri default 7 --reps 1 --warmup 0 --dump /tmp/tmpbt2p9e51/result exit= 0 mpfr512,Cgetri,UN,7,cpu-default,0.000311514,0.00587239525,1
+ 
+reject ['Rdot', 'invalid', '7'] exit= 1
+reject ['Rdot', 'fast', '0'] exit= 1
+reject ['Rdot', 'fast', '1024', '--reps', '0'] exit= 1

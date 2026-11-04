@@ -114,6 +114,21 @@ foreach(_b dd td qd mpfr)
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}")
 endforeach()
 
+# Goal11: separate MPFR512 resident/event adapter; do not change legacy CUPTI.
+if(TARGET mplapack_mpfr_opt_cuda AND TARGET mplapack_mpfr_opt)
+  add_executable(bench_Rkernel_bench_mpfr_cuda_resident Rkernel_bench_mpfr_resident.cu)
+  target_include_directories(bench_Rkernel_bench_mpfr_cuda_resident PRIVATE "${MPLAPACK_MPC_CUDA_INCLUDE_DIR}")
+  target_link_libraries(bench_Rkernel_bench_mpfr_cuda_resident PRIVATE mplapack_mpfr_opt "${MPLAPACK_MPC_CUDA_LIBRARY}" CUDA::cudart)
+  target_compile_options(bench_Rkernel_bench_mpfr_cuda_resident PRIVATE "$<$<COMPILE_LANGUAGE:CUDA>:-fmad=false;-Xcompiler=-ffp-contract=off>")
+  set_target_properties(bench_Rkernel_bench_mpfr_cuda_resident PROPERTIES
+    CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED ON CUDA_SEPARABLE_COMPILATION ON CUDA_RESOLVE_DEVICE_SYMBOLS ON
+    CUDA_ARCHITECTURES "${MPLAPACK_CUDA_ARCHITECTURES}" OUTPUT_NAME "Rkernel_bench.mpfr_cuda_resident"
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}")
+  if(_mplapack_mpc_cuda_bundled)
+    add_dependencies(bench_Rkernel_bench_mpfr_cuda_resident mpc_cuda_bundled)
+  endif()
+endif()
+
 # Runner scripts go.<op>.sh from go.<op>.sh.in, with the gnuplot templates
 # next to them (the autotools build does the same at "make" time).
 string(TOLOWER "${CMAKE_C_COMPILER_ID}${CMAKE_C_COMPILER_VERSION}" _bench_cc_tag)

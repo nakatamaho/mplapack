@@ -1,0 +1,10 @@
+/home/docker/mplapack-acceralation/benchmark/kernel_new.py:273: ResourceWarning: unclosed file <_io.TextIOWrapper name='/tmp/tmpkjvug_jv/kernels.csv' mode='r' encoding='UTF-8'>
+  rows = list(csv.DictReader((out / 'kernels.csv').open()))
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+.....
+----------------------------------------------------------------------
+Ran 5 tests in 0.003s
+
+OK
+point logs consolidated by series; commands/output/exits retained
+point logs consolidated by series; commands/output/exits retained

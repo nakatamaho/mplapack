@@ -1,0 +1,608 @@
+
+### mpfr512_iRamax_gpu_1024_pilot-pre-eager
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iRamax fast 1024 --reps 1 --warmup 1
+OMP_NUM_THREADS=1
+mpfr512,iRamax,inc1,1024,gpu,8.29439983e-05,0,1
+
+exit=0, elapsed=0.269677
+
+exit receipt: 0
+
+### mpfr512_iRamax_gpu_32768_pilot-pre-eager
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iRamax fast 32768 --reps 1 --warmup 1
+OMP_NUM_THREADS=1
+mpfr512,iRamax,inc1,32768,gpu,0.000208895996,0,1
+
+exit=0, elapsed=0.294295
+
+exit receipt: 0
+
+### mpfr512_iRamax_gpu_1024_pilot
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iRamax fast 1024 --reps 1 --warmup 1
+OMP_NUM_THREADS=1
+mpfr512,iRamax,inc1,1024,gpu,8.29439983e-05,0,1
+
+exit=0, process_elapsed=0.278547
+charged_point_wall=0.329933
+
+exit receipt: 0
+
+### mpfr512_iRamax_gpu_32768_pilot
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iRamax fast 32768 --reps 1 --warmup 1
+OMP_NUM_THREADS=1
+mpfr512,iRamax,inc1,32768,gpu,0.000207872003,0,1
+
+exit=0, process_elapsed=0.299740
+charged_point_wall=0.346628
+
+exit receipt: 0
+
+### mpfr512_iRamax_gpu_1024_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iRamax fast 1024
+OMP_NUM_THREADS=1
+mpfr512,iRamax,inc1,1024,gpu,8.39679986e-05,0,3
+
+exit=0, process_elapsed=0.267472
+charged_point_wall=0.315724
+
+exit receipt: 0
+
+### mpfr512_iRamax_gpu_1280_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iRamax fast 1280
+OMP_NUM_THREADS=1
+mpfr512,iRamax,inc1,1280,gpu,8.70399997e-05,0,3
+
+exit=0, process_elapsed=0.270357
+charged_point_wall=0.318767
+
+exit receipt: 0
+
+### mpfr512_iRamax_gpu_1536_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iRamax fast 1536
+OMP_NUM_THREADS=1
+mpfr512,iRamax,inc1,1536,gpu,8.70399997e-05,0,3
+
+exit=0, process_elapsed=0.276394
+charged_point_wall=0.321688
+
+exit receipt: 0
+
+### mpfr512_iRamax_gpu_1792_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iRamax fast 1792
+OMP_NUM_THREADS=1
+mpfr512,iRamax,inc1,1792,gpu,9.01120007e-05,0,3
+
+exit=0, process_elapsed=0.275547
+charged_point_wall=0.324123
+
+exit receipt: 0
+
+### mpfr512_iRamax_gpu_2048_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iRamax fast 2048
+OMP_NUM_THREADS=1
+mpfr512,iRamax,inc1,2048,gpu,9.11360011e-05,0,3
+
+exit=0, process_elapsed=0.263928
+charged_point_wall=0.314994
+
+exit receipt: 0
+
+### mpfr512_iRamax_gpu_2560_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iRamax fast 2560
+OMP_NUM_THREADS=1
+mpfr512,iRamax,inc1,2560,gpu,9.72800031e-05,0,3
+
+exit=0, process_elapsed=0.262264
+charged_point_wall=0.310074
+
+exit receipt: 0
+
+### mpfr512_iRamax_gpu_3072_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iRamax fast 3072
+OMP_NUM_THREADS=1
+mpfr512,iRamax,inc1,3072,gpu,9.83040035e-05,0,3
+
+exit=0, process_elapsed=0.266267
+charged_point_wall=0.313563
+
+exit receipt: 0
+
+### mpfr512_iRamax_gpu_3584_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iRamax fast 3584
+OMP_NUM_THREADS=1
+mpfr512,iRamax,inc1,3584,gpu,0.000100351997,0,3
+
+exit=0, process_elapsed=0.270049
+charged_point_wall=0.316238
+
+exit receipt: 0
+
+### mpfr512_iRamax_gpu_4096_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iRamax fast 4096
+OMP_NUM_THREADS=1
+mpfr512,iRamax,inc1,4096,gpu,0.000103423998,0,3
+
+exit=0, process_elapsed=0.272021
+charged_point_wall=0.323316
+
+exit receipt: 0
+
+### mpfr512_iRamax_gpu_5120_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iRamax fast 5120
+OMP_NUM_THREADS=1
+mpfr512,iRamax,inc1,5120,gpu,0.000111616001,0,3
+
+exit=0, process_elapsed=0.263563
+charged_point_wall=0.310794
+
+exit receipt: 0
+
+### mpfr512_iRamax_gpu_6144_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iRamax fast 6144
+OMP_NUM_THREADS=1
+mpfr512,iRamax,inc1,6144,gpu,0.000115712002,0,3
+
+exit=0, process_elapsed=0.272155
+charged_point_wall=0.320125
+
+exit receipt: 0
+
+### mpfr512_iRamax_gpu_7168_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iRamax fast 7168
+OMP_NUM_THREADS=1
+mpfr512,iRamax,inc1,7168,gpu,0.000120832004,0,3
+
+exit=0, process_elapsed=0.262324
+charged_point_wall=0.311224
+
+exit receipt: 0
+
+### mpfr512_iRamax_gpu_8192_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iRamax fast 8192
+OMP_NUM_THREADS=1
+mpfr512,iRamax,inc1,8192,gpu,0.000123903997,0,3
+
+exit=0, process_elapsed=0.272800
+charged_point_wall=0.324465
+
+exit receipt: 0
+
+### mpfr512_iRamax_gpu_10240_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iRamax fast 10240
+OMP_NUM_THREADS=1
+mpfr512,iRamax,inc1,10240,gpu,0.000135168001,0,3
+
+exit=0, process_elapsed=0.282907
+charged_point_wall=0.331518
+
+exit receipt: 0
+
+### mpfr512_iRamax_gpu_12288_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iRamax fast 12288
+OMP_NUM_THREADS=1
+mpfr512,iRamax,inc1,12288,gpu,0.000137216002,0,3
+
+exit=0, process_elapsed=0.268355
+charged_point_wall=0.315782
+
+exit receipt: 0
+
+### mpfr512_iRamax_gpu_14336_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iRamax fast 14336
+OMP_NUM_THREADS=1
+mpfr512,iRamax,inc1,14336,gpu,0.000145408005,0,3
+
+exit=0, process_elapsed=0.269840
+charged_point_wall=0.318204
+
+exit receipt: 0
+
+### mpfr512_iRamax_gpu_16384_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iRamax fast 16384
+OMP_NUM_THREADS=1
+mpfr512,iRamax,inc1,16384,gpu,0.000152575999,0,3
+
+exit=0, process_elapsed=0.273970
+charged_point_wall=0.324346
+
+exit receipt: 0
+
+### mpfr512_iRamax_gpu_20480_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iRamax fast 20480
+OMP_NUM_THREADS=1
+mpfr512,iRamax,inc1,20480,gpu,0.000169983998,0,3
+
+exit=0, process_elapsed=0.286397
+charged_point_wall=0.336008
+
+exit receipt: 0
+
+### mpfr512_iRamax_gpu_24576_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iRamax fast 24576
+OMP_NUM_THREADS=1
+mpfr512,iRamax,inc1,24576,gpu,0.000180224001,0,3
+
+exit=0, process_elapsed=0.282009
+charged_point_wall=0.330040
+
+exit receipt: 0
+
+### mpfr512_iRamax_gpu_28672_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iRamax fast 28672
+OMP_NUM_THREADS=1
+mpfr512,iRamax,inc1,28672,gpu,0.000194560006,0,3
+
+exit=0, process_elapsed=0.297278
+charged_point_wall=0.346765
+
+exit receipt: 0
+
+### mpfr512_iRamax_gpu_32768_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iRamax fast 32768
+OMP_NUM_THREADS=1
+mpfr512,iRamax,inc1,32768,gpu,0.000206847996,0,3
+
+exit=0, process_elapsed=0.295697
+charged_point_wall=0.345677
+
+exit receipt: 0
+
+### mpfr512_iRamax_gpu_40960_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iRamax fast 40960
+OMP_NUM_THREADS=1
+mpfr512,iRamax,inc1,40960,gpu,0.000238591999,0,3
+
+exit=0, process_elapsed=0.306134
+charged_point_wall=0.354987
+
+exit receipt: 0
+
+### mpfr512_iRamax_gpu_49152_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iRamax fast 49152
+OMP_NUM_THREADS=1
+mpfr512,iRamax,inc1,49152,gpu,0.000256000012,0,3
+
+exit=0, process_elapsed=0.309267
+charged_point_wall=0.356378
+
+exit receipt: 0
+
+### mpfr512_iRamax_gpu_57344_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iRamax fast 57344
+OMP_NUM_THREADS=1
+mpfr512,iRamax,inc1,57344,gpu,0.000281599998,0,3
+
+exit=0, process_elapsed=0.318801
+charged_point_wall=0.366173
+
+exit receipt: 0
+
+### mpfr512_iRamax_gpu_65536_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iRamax fast 65536
+OMP_NUM_THREADS=1
+mpfr512,iRamax,inc1,65536,gpu,0.000305151999,0,3
+
+exit=0, process_elapsed=0.326031
+charged_point_wall=0.373460
+
+exit receipt: 0
+
+### mpfr512_iRamax_gpu_81920_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iRamax fast 81920
+OMP_NUM_THREADS=1
+mpfr512,iRamax,inc1,81920,gpu,0.00036659199,0,3
+
+exit=0, process_elapsed=0.327646
+charged_point_wall=0.377263
+
+exit receipt: 0
+
+### mpfr512_iRamax_gpu_98304_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iRamax fast 98304
+OMP_NUM_THREADS=1
+mpfr512,iRamax,inc1,98304,gpu,0.000410623997,0,3
+
+exit=0, process_elapsed=0.341094
+charged_point_wall=0.389904
+
+exit receipt: 0
+
+### mpfr512_iRamax_gpu_114688_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iRamax fast 114688
+OMP_NUM_THREADS=1
+mpfr512,iRamax,inc1,114688,gpu,0.000472063988,0,3
+
+exit=0, process_elapsed=0.357961
+charged_point_wall=0.407320
+
+exit receipt: 0
+
+### mpfr512_iRamax_gpu_131072_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iRamax fast 131072
+OMP_NUM_THREADS=1
+mpfr512,iRamax,inc1,131072,gpu,0.000525312006,0,3
+
+exit=0, process_elapsed=0.380134
+charged_point_wall=0.426300
+
+exit receipt: 0
+
+### mpfr512_iRamax_gpu_163840_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iRamax fast 163840
+OMP_NUM_THREADS=1
+mpfr512,iRamax,inc1,163840,gpu,0.000634880006,0,3
+
+exit=0, process_elapsed=0.397141
+charged_point_wall=0.447272
+
+exit receipt: 0
+
+### mpfr512_iRamax_gpu_196608_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iRamax fast 196608
+OMP_NUM_THREADS=1
+mpfr512,iRamax,inc1,196608,gpu,0.000741375983,0,3
+
+exit=0, process_elapsed=0.419274
+charged_point_wall=0.467751
+
+exit receipt: 0
+
+### mpfr512_iRamax_gpu_229376_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iRamax fast 229376
+OMP_NUM_THREADS=1
+mpfr512,iRamax,inc1,229376,gpu,0.00084275198,0,3
+
+exit=0, process_elapsed=0.443192
+charged_point_wall=0.491239
+
+exit receipt: 0
+
+### mpfr512_iRamax_gpu_262144_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iRamax fast 262144
+OMP_NUM_THREADS=1
+mpfr512,iRamax,inc1,262144,gpu,0.000942080021,0,3
+
+exit=0, process_elapsed=0.464616
+charged_point_wall=0.511226
+
+exit receipt: 0
+
+### mpfr512_iRamax_gpu_327680_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iRamax fast 327680
+OMP_NUM_THREADS=1
+mpfr512,iRamax,inc1,327680,gpu,0.00115609598,0,3
+
+exit=0, process_elapsed=0.510568
+charged_point_wall=0.557692
+
+exit receipt: 0
+
+### mpfr512_iRamax_gpu_393216_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iRamax fast 393216
+OMP_NUM_THREADS=1
+mpfr512,iRamax,inc1,393216,gpu,0.00137932801,0,3
+
+exit=0, process_elapsed=0.564295
+charged_point_wall=0.612087
+
+exit receipt: 0
+
+### mpfr512_iRamax_gpu_458752_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iRamax fast 458752
+OMP_NUM_THREADS=1
+mpfr512,iRamax,inc1,458752,gpu,0.00159334397,0,3
+
+exit=0, process_elapsed=0.608987
+charged_point_wall=0.654971
+
+exit receipt: 0
+
+### mpfr512_iRamax_gpu_524288_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iRamax fast 524288
+OMP_NUM_THREADS=1
+mpfr512,iRamax,inc1,524288,gpu,0.00179507196,0,3
+
+exit=0, process_elapsed=0.645947
+charged_point_wall=0.697160
+
+exit receipt: 0
+
+### mpfr512_iRamax_gpu_655360_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iRamax fast 655360
+OMP_NUM_THREADS=1
+mpfr512,iRamax,inc1,655360,gpu,0.00222822404,0,3
+
+exit=0, process_elapsed=0.745630
+charged_point_wall=0.789647
+
+exit receipt: 0
+
+### mpfr512_iRamax_gpu_786432_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iRamax fast 786432
+OMP_NUM_THREADS=1
+mpfr512,iRamax,inc1,786432,gpu,0.00263987207,0,3
+
+exit=0, process_elapsed=0.840809
+charged_point_wall=0.886709
+
+exit receipt: 0
+
+### mpfr512_iRamax_gpu_917504_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iRamax fast 917504
+OMP_NUM_THREADS=1
+mpfr512,iRamax,inc1,917504,gpu,0.00307404804,0,3
+
+exit=0, process_elapsed=0.938752
+charged_point_wall=0.984195
+
+exit receipt: 0
+
+### mpfr512_iRamax_gpu_1048576_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iRamax fast 1048576
+OMP_NUM_THREADS=1
+mpfr512,iRamax,inc1,1048576,gpu,0.00350207996,0,3
+
+exit=0, process_elapsed=1.028742
+charged_point_wall=1.076822
+
+exit receipt: 0
+
+### mpfr512_iRamax_gpu_1310720_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iRamax fast 1310720
+OMP_NUM_THREADS=1
+mpfr512,iRamax,inc1,1310720,gpu,0.00434278393,0,3
+
+exit=0, process_elapsed=1.200980
+charged_point_wall=1.247218
+
+exit receipt: 0
+
+### mpfr512_iRamax_gpu_1572864_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iRamax fast 1572864
+OMP_NUM_THREADS=1
+mpfr512,iRamax,inc1,1572864,gpu,0.00520908785,0,3
+
+exit=0, process_elapsed=1.385218
+charged_point_wall=1.433630
+
+exit receipt: 0
+
+### mpfr512_iRamax_gpu_1835008_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iRamax fast 1835008
+OMP_NUM_THREADS=1
+mpfr512,iRamax,inc1,1835008,gpu,0.006042624,0,3
+
+exit=0, process_elapsed=1.601605
+charged_point_wall=1.650853
+
+exit receipt: 0
+
+### mpfr512_iRamax_gpu_2097152_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iRamax fast 2097152
+OMP_NUM_THREADS=1
+mpfr512,iRamax,inc1,2097152,gpu,0.00688435221,0,3
+
+exit=0, process_elapsed=1.788572
+charged_point_wall=1.838613
+
+exit receipt: 0
+
+### mpfr512_iRamax_gpu_2621440_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iRamax fast 2621440
+OMP_NUM_THREADS=1
+mpfr512,iRamax,inc1,2621440,gpu,0.00864665604,0,1
+
+exit=0, process_elapsed=2.162591
+charged_point_wall=2.213860
+
+exit receipt: 0
+
+### mpfr512_iRamax_gpu_3145728_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iRamax fast 3145728
+OMP_NUM_THREADS=1
+mpfr512,iRamax,inc1,3145728,gpu,0.0103413763,0,1
+
+exit=0, process_elapsed=2.511513
+charged_point_wall=2.558848
+
+exit receipt: 0
+
+### mpfr512_iRamax_gpu_3670016_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iRamax fast 3670016
+OMP_NUM_THREADS=1
+mpfr512,iRamax,inc1,3670016,gpu,0.0119818239,0,1
+
+exit=0, process_elapsed=2.926387
+charged_point_wall=2.975700
+
+exit receipt: 0
+
+### mpfr512_iRamax_gpu_4194304_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iRamax fast 4194304
+OMP_NUM_THREADS=1
+mpfr512,iRamax,inc1,4194304,gpu,0.0137144318,0,1
+
+exit=0, process_elapsed=3.312775
+charged_point_wall=3.361083
+
+exit receipt: 0
+
+### mpfr512_iRamax_gpu_5242880_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iRamax fast 5242880
+OMP_NUM_THREADS=1
+mpfr512,iRamax,inc1,5242880,gpu,0.0170608635,0,1
+
+exit=0, process_elapsed=4.065954
+charged_point_wall=4.112204
+
+exit receipt: 0
+
+### mpfr512_iRamax_gpu_6291456_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iRamax fast 6291456
+OMP_NUM_THREADS=1
+mpfr512,iRamax,inc1,6291456,gpu,0.0204697609,0,1
+
+exit=0, process_elapsed=4.803197
+charged_point_wall=4.850627
+
+exit receipt: 0
+
+### mpfr512_iRamax_gpu_7340032_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iRamax fast 7340032
+OMP_NUM_THREADS=1
+mpfr512,iRamax,inc1,7340032,gpu,0.0238694401,0,1
+
+exit=0, process_elapsed=5.546961
+charged_point_wall=5.597406
+
+exit receipt: 0
+
+### mpfr512_iRamax_gpu_8388608_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iRamax fast 8388608
+OMP_NUM_THREADS=1
+mpfr512,iRamax,inc1,8388608,gpu,0.0272332802,0,1
+
+exit=0, process_elapsed=6.326626
+charged_point_wall=6.375032
+
+exit receipt: 0
+
+### mpfr512_iRamax_gpu_10485760_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iRamax fast 10485760
+OMP_NUM_THREADS=1
+mpfr512,iRamax,inc1,10485760,gpu,0.0343070717,0,1
+
+exit=0, process_elapsed=7.783978
+charged_point_wall=7.830010
+
+exit receipt: 0
+
+### mpfr512_iRamax_gpu_12582912_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iRamax fast 12582912
+OMP_NUM_THREADS=1
+mpfr512,iRamax,inc1,12582912,gpu,0.0410388489,0,1
+
+exit=0, process_elapsed=9.226855
+charged_point_wall=9.277501
+
+exit receipt: 0
+
+### mpfr512_iRamax_gpu_14680064_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iRamax fast 14680064
+OMP_NUM_THREADS=1
+mpfr512,iRamax,inc1,14680064,gpu,0.0477091827,0,1
+
+exit=0, process_elapsed=10.684046
+charged_point_wall=10.735699
+
+exit receipt: 0
+
+### mpfr512_iRamax_gpu_16777216_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iRamax fast 16777216
+OMP_NUM_THREADS=1
+mpfr512,iRamax,inc1,16777216,gpu,0.0544921608,0,1
+
+exit=0, process_elapsed=12.294336
+charged_point_wall=12.342096
+
+exit receipt: 0

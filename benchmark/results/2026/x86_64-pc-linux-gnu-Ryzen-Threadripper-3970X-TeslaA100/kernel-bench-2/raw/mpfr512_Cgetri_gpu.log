@@ -1,0 +1,158 @@
+
+### mpfr512_Cgetri_gpu_64_pilot-pre-eager
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Cgetri fast 64 --reps 1 --warmup 1
+OMP_NUM_THREADS=1
+mpfr512,Cgetri,UN,64,gpu,1.7417616,0.000802693857,1
+
+exit=0, elapsed=3.774821
+
+exit receipt: 0
+
+### mpfr512_Cgetri_gpu_128_pilot-pre-eager
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Cgetri fast 128 --reps 1 --warmup 1
+OMP_NUM_THREADS=1
+mpfr512,Cgetri,UN,128,gpu,3.66341431,0.00305311104,1
+
+exit=0, elapsed=7.650233
+
+exit receipt: 0
+
+### mpfr512_Cgetri_gpu_64_pilot
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Cgetri fast 64 --reps 1 --warmup 1
+OMP_NUM_THREADS=1
+mpfr512,Cgetri,UN,64,gpu,1.75822949,0.000795175681,1
+
+exit=0, process_elapsed=3.800211
+charged_point_wall=3.850490
+
+exit receipt: 0
+
+### mpfr512_Cgetri_gpu_128_pilot
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Cgetri fast 128 --reps 1 --warmup 1
+OMP_NUM_THREADS=1
+mpfr512,Cgetri,UN,128,gpu,3.69377686,0.00302801471,1
+
+exit=0, process_elapsed=7.714408
+charged_point_wall=7.764457
+
+exit receipt: 0
+
+### mpfr512_Cgetri_gpu_7_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Cgetri fast 7
+OMP_NUM_THREADS=1
+mpfr512,Cgetri,UN,7,gpu,0.00359628797,0.000508672651,3
+
+exit=0, process_elapsed=0.296335
+charged_point_wall=0.348812
+
+exit receipt: 0
+
+### mpfr512_Cgetri_gpu_31_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Cgetri fast 31
+OMP_NUM_THREADS=1
+mpfr512,Cgetri,UN,31,gpu,0.211209213,0.000752265163,3
+
+exit=0, process_elapsed=1.129121
+charged_point_wall=1.178308
+
+exit receipt: 0
+
+### mpfr512_Cgetri_gpu_62_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Cgetri fast 62
+OMP_NUM_THREADS=1
+mpfr512,Cgetri,UN,62,gpu,1.60352466,0.000792680462,3
+
+exit=0, process_elapsed=6.703656
+charged_point_wall=6.750975
+
+exit receipt: 0
+
+### mpfr512_Cgetri_gpu_63_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Cgetri fast 63
+OMP_NUM_THREADS=1
+mpfr512,Cgetri,UN,63,gpu,1.67915002,0.000794201817,3
+
+exit=0, process_elapsed=7.005596
+charged_point_wall=7.057383
+
+exit receipt: 0
+
+### mpfr512_Cgetri_gpu_64_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Cgetri fast 64
+OMP_NUM_THREADS=1
+mpfr512,Cgetri,UN,64,gpu,1.75846814,0.000795067765,3
+
+exit=0, process_elapsed=7.319816
+charged_point_wall=7.372618
+
+exit receipt: 0
+
+### mpfr512_Cgetri_gpu_124_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Cgetri fast 124
+OMP_NUM_THREADS=1
+mpfr512,Cgetri,UN,124,gpu,3.37871655,0.00300962249,3
+
+exit=0, process_elapsed=13.838341
+charged_point_wall=13.886479
+
+exit receipt: 0
+
+### mpfr512_Cgetri_gpu_126_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Cgetri fast 126
+OMP_NUM_THREADS=1
+mpfr512,Cgetri,UN,126,gpu,3.5305625,0.00302180517,3
+
+exit=0, process_elapsed=14.436720
+charged_point_wall=14.486012
+
+exit receipt: 0
+
+### mpfr512_Cgetri_gpu_128_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Cgetri fast 128
+OMP_NUM_THREADS=1
+mpfr512,Cgetri,UN,128,gpu,3.69507324,0.00302695236,3
+
+exit=0, process_elapsed=15.098515
+charged_point_wall=15.148075
+
+exit receipt: 0
+
+### mpfr512_Cgetri_gpu_248_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Cgetri fast 248
+OMP_NUM_THREADS=1
+mpfr512,Cgetri,UN,248,gpu,8.14282568,0.00999030236,3
+
+exit=0, process_elapsed=33.011433
+charged_point_wall=33.063807
+
+exit receipt: 0
+
+### mpfr512_Cgetri_gpu_252_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Cgetri fast 252
+OMP_NUM_THREADS=1
+mpfr512,Cgetri,UN,252,gpu,8.41897363,0.0101377412,3
+
+exit=0, process_elapsed=34.095509
+charged_point_wall=34.140790
+
+exit receipt: 0
+
+### mpfr512_Cgetri_gpu_256_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Cgetri fast 256
+OMP_NUM_THREADS=1
+mpfr512,Cgetri,UN,256,gpu,8.75340918,0.0102221299,3
+
+exit=0, process_elapsed=35.469530
+charged_point_wall=35.517753
+
+exit receipt: 0
+
+### mpfr512_Cgetri_gpu_496_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Cgetri fast 496
+OMP_NUM_THREADS=1
+mpfr512,Cgetri,UN,496,gpu,28.0395156,0.023209899,1
+
+exit=0, process_elapsed=56.935035
+charged_point_wall=56.986085
+
+exit receipt: 0

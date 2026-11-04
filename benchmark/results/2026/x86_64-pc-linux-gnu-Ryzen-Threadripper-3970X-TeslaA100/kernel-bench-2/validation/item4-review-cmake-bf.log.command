@@ -1,0 +1,1 @@
+cmake --build /tmp/factor04-cmake -j8 --target bench_Rkernel_bench_dd_cuda_kernel bench_Rkernel_bench_td_cuda_kernel bench_Rkernel_bench_qd_cuda_kernel bench_Rkernel_bench_dd_opt bench_Rkernel_bench_td_opt bench_Rkernel_bench_qd_opt 

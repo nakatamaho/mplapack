@@ -1,0 +1,225 @@
+
+### qd_Rtpsv_cpu_64_pilot
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt Rtpsv fast 64 --reps 1 --warmup 1
+OMP_NUM_THREADS=32
+qd,Rtpsv,UNN_k64,64,cpu,0.000198889,0.0205944019,1
+
+exit=0, elapsed=0.004945
+
+exit receipt: 0
+
+### qd_Rtpsv_cpu_128_pilot
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt Rtpsv fast 128 --reps 1 --warmup 1
+OMP_NUM_THREADS=32
+qd,Rtpsv,UNN_k64,128,cpu,0.000392217,0.0417727941,1
+
+exit=0, elapsed=0.007932
+
+exit receipt: 0
+
+### qd_Rtpsv_cpu_7_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt Rtpsv fast 7
+OMP_NUM_THREADS=32
+qd,Rtpsv,UNN_k64,7,cpu,4.408e-06,0.0111161525,3
+
+exit=0, elapsed=0.003834
+
+exit receipt: 0
+
+### qd_Rtpsv_cpu_31_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt Rtpsv fast 31
+OMP_NUM_THREADS=32
+qd,Rtpsv,UNN_k64,31,cpu,4.9894e-05,0.019260833,3
+
+exit=0, elapsed=0.004370
+
+exit receipt: 0
+
+### qd_Rtpsv_cpu_62_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt Rtpsv fast 62
+OMP_NUM_THREADS=32
+qd,Rtpsv,UNN_k64,62,cpu,9.8316e-05,0.0390984173,3
+
+exit=0, elapsed=0.004102
+
+exit receipt: 0
+
+### qd_Rtpsv_cpu_63_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt Rtpsv fast 63
+OMP_NUM_THREADS=32
+qd,Rtpsv,UNN_k64,63,cpu,0.000101302,0.039179878,3
+
+exit=0, elapsed=0.004198
+
+exit receipt: 0
+
+### qd_Rtpsv_cpu_64_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt Rtpsv fast 64
+OMP_NUM_THREADS=32
+qd,Rtpsv,UNN_k64,64,cpu,0.000198737,0.0206101531,3
+
+exit=0, elapsed=0.006353
+
+exit receipt: 0
+
+### qd_Rtpsv_cpu_124_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt Rtpsv fast 124
+OMP_NUM_THREADS=32
+qd,Rtpsv,UNN_k64,124,cpu,0.000361395,0.0425462444,3
+
+exit=0, elapsed=0.006192
+
+exit receipt: 0
+
+### qd_Rtpsv_cpu_126_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt Rtpsv fast 126
+OMP_NUM_THREADS=32
+qd,Rtpsv,UNN_k64,126,cpu,0.000375572,0.0422715218,3
+
+exit=0, elapsed=0.008107
+
+exit receipt: 0
+
+### qd_Rtpsv_cpu_128_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt Rtpsv fast 128
+OMP_NUM_THREADS=32
+qd,Rtpsv,UNN_k64,128,cpu,0.000384349,0.0426279241,3
+
+exit=0, elapsed=0.006864
+
+exit receipt: 0
+
+### qd_Rtpsv_cpu_248_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt Rtpsv fast 248
+OMP_NUM_THREADS=32
+qd,Rtpsv,UNN_k64,248,cpu,0.001386468,0.0443602016,3
+
+exit=0, elapsed=0.020214
+
+exit receipt: 0
+
+### qd_Rtpsv_cpu_252_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt Rtpsv fast 252
+OMP_NUM_THREADS=32
+qd,Rtpsv,UNN_k64,252,cpu,0.001432165,0.0443412596,3
+
+exit=0, elapsed=0.020110
+
+exit receipt: 0
+
+### qd_Rtpsv_cpu_256_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt Rtpsv fast 256
+OMP_NUM_THREADS=32
+qd,Rtpsv,UNN_k64,256,cpu,0.000477405,0.137275479,3
+
+exit=0, elapsed=0.016937
+
+exit receipt: 0
+
+### qd_Rtpsv_cpu_496_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt Rtpsv fast 496
+OMP_NUM_THREADS=32
+qd,Rtpsv,UNN_k64,496,cpu,0.001670697,0.147253512,3
+
+exit=0, elapsed=0.051801
+
+exit receipt: 0
+
+### qd_Rtpsv_cpu_511_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt Rtpsv fast 511
+OMP_NUM_THREADS=32
+qd,Rtpsv,UNN_k64,511,cpu,0.001757952,0.148537048,3
+
+exit=0, elapsed=0.054952
+
+exit receipt: 0
+
+### qd_Rtpsv_cpu_512_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt Rtpsv fast 512
+OMP_NUM_THREADS=32
+qd,Rtpsv,UNN_k64,512,cpu,0.001763924,0.148614113,3
+
+exit=0, elapsed=0.054382
+
+exit receipt: 0
+
+### qd_Rtpsv_cpu_1022_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt Rtpsv fast 1022
+OMP_NUM_THREADS=32
+qd,Rtpsv,UNN_k64,1022,cpu,0.006817876,0.153197858,3
+
+exit=0, elapsed=0.204846
+
+exit receipt: 0
+
+### qd_Rtpsv_cpu_1023_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt Rtpsv fast 1023
+OMP_NUM_THREADS=32
+qd,Rtpsv,UNN_k64,1023,cpu,0.006850567,0.152765311,3
+
+exit=0, elapsed=0.205503
+
+exit receipt: 0
+
+### qd_Rtpsv_cpu_1024_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt Rtpsv fast 1024
+OMP_NUM_THREADS=32
+qd,Rtpsv,UNN_k64,1024,cpu,0.006870576,0.152618354,3
+
+exit=0, elapsed=0.205402
+
+exit receipt: 0
+
+### qd_Rtpsv_cpu_2044_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt Rtpsv fast 2044
+OMP_NUM_THREADS=32
+qd,Rtpsv,UNN_k64,2044,cpu,0.026828993,0.155724667,1
+
+exit=0, elapsed=0.727498
+
+exit receipt: 0
+
+### qd_Rtpsv_cpu_2046_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt Rtpsv fast 2046
+OMP_NUM_THREADS=32
+qd,Rtpsv,UNN_k64,2046,cpu,0.026910507,0.155556935,1
+
+exit=0, elapsed=0.729465
+
+exit receipt: 0
+
+### qd_Rtpsv_cpu_2048_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt Rtpsv fast 2048
+OMP_NUM_THREADS=32
+qd,Rtpsv,UNN_k64,2048,cpu,0.026915777,0.155830686,1
+
+exit=0, elapsed=0.730057
+
+exit receipt: 0
+
+### qd_Rtpsv_cpu_4092_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt Rtpsv fast 4092
+OMP_NUM_THREADS=32
+qd,Rtpsv,UNN_k64,4092,cpu,0.106500095,0.157224874,1
+
+exit=0, elapsed=2.910842
+
+exit receipt: 0
+
+### qd_Rtpsv_cpu_4095_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt Rtpsv fast 4095
+OMP_NUM_THREADS=32
+qd,Rtpsv,UNN_k64,4095,cpu,0.106089108,0.158065473,1
+
+exit=0, elapsed=2.890293
+
+exit receipt: 0
+
+### qd_Rtpsv_cpu_4096_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt Rtpsv fast 4096
+OMP_NUM_THREADS=32
+qd,Rtpsv,UNN_k64,4096,cpu,0.105933434,0.158375079,1
+
+exit=0, elapsed=2.892581
+
+exit receipt: 0

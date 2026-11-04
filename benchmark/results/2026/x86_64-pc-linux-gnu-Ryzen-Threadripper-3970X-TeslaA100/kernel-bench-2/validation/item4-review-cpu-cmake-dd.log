@@ -1,0 +1,51 @@
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Raxpy fast 7 --reps 1 --warmup 0 --dump /tmp/tmpqlf1v2t3/result exit= 0 dd,Raxpy,inc1,7,cpu,0.001420289,9.85714879e-06,1
+ 
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Rcopy fast 7 --reps 1 --warmup 0 --dump /tmp/tmpqlf1v2t3/result exit= 0 dd,Rcopy,inc1,7,cpu,0.001069389,0,1
+ 
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt iRamax fast 7 --reps 1 --warmup 0 --dump /tmp/tmpqlf1v2t3/result exit= 0 dd,iRamax,inc1,7,cpu,1.292e-06,0,1
+ 
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt iCamax fast 7 --reps 1 --warmup 0 --dump /tmp/tmpqlf1v2t3/result exit= 0 dd,iCamax,inc1,7,cpu,1.924e-06,0,1
+ 
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Rdot fast 7 --reps 1 --warmup 0 --dump /tmp/tmpqlf1v2t3/result exit= 0 dd,Rdot,inc1,7,cpu,1.6822e-05,0.000832243491,1
+ 
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Rdot default 7 --reps 1 --warmup 0 --dump /tmp/tmpqlf1v2t3/result exit= 0 dd,Rdot,inc1,7,cpu-default,1.824e-06,0.0076754386,1
+ 
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Cdotc fast 7 --reps 1 --warmup 0 --dump /tmp/tmpqlf1v2t3/result exit= 0 dd,Cdotc,inc1,7,cpu,1.6882e-05,0.00331714252,1
+ 
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Cdotc default 7 --reps 1 --warmup 0 --dump /tmp/tmpqlf1v2t3/result exit= 0 dd,Cdotc,inc1,7,cpu-default,1.0119e-05,0.00553414369,1
+ 
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Cdotu fast 7 --reps 1 --warmup 0 --dump /tmp/tmpqlf1v2t3/result exit= 0 dd,Cdotu,inc1,7,cpu,1.7323e-05,0.00323269642,1
+ 
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Cdotu default 7 --reps 1 --warmup 0 --dump /tmp/tmpqlf1v2t3/result exit= 0 dd,Cdotu,inc1,7,cpu-default,9.799e-06,0.00571486886,1
+ 
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Rasum fast 7 --reps 1 --warmup 0 --dump /tmp/tmpqlf1v2t3/result exit= 0 dd,Rasum,inc1,7,cpu,1.8335e-05,0.000381783474,1
+ 
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Rasum default 7 --reps 1 --warmup 0 --dump /tmp/tmpqlf1v2t3/result exit= 0 dd,Rasum,inc1,7,cpu-default,1.232e-06,0.00568181818,1
+ 
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt RCasum fast 7 --reps 1 --warmup 0 --dump /tmp/tmpqlf1v2t3/result exit= 0 dd,RCasum,inc1,7,cpu,1.3215e-05,0.00105940219,1
+ 
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt RCasum default 7 --reps 1 --warmup 0 --dump /tmp/tmpqlf1v2t3/result exit= 0 dd,RCasum,inc1,7,cpu-default,2.064e-06,0.00678294574,1
+ 
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Rnrm2 fast 7 --reps 1 --warmup 0 --dump /tmp/tmpqlf1v2t3/result exit= 0 dd,Rnrm2,inc1,7,cpu,2.2273e-05,0.000628563732,1
+ 
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Rnrm2 default 7 --reps 1 --warmup 0 --dump /tmp/tmpqlf1v2t3/result exit= 0 dd,Rnrm2,inc1,7,cpu-default,1.8595e-05,0.000752890562,1
+ 
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt RCnrm2 fast 7 --reps 1 --warmup 0 --dump /tmp/tmpqlf1v2t3/result exit= 0 dd,RCnrm2,inc1,7,cpu,2.1992e-05,0.00127319025,1
+ 
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt RCnrm2 default 7 --reps 1 --warmup 0 --dump /tmp/tmpqlf1v2t3/result exit= 0 dd,RCnrm2,inc1,7,cpu-default,1.2303e-05,0.00227586767,1
+ 
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Rtrsv fast 7 --reps 1 --warmup 0 --dump /tmp/tmpqlf1v2t3/result exit= 0 dd,Rtrsv,UNN_k64,7,cpu,3.076e-06,0.0159297789,1
+ 
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Rtbsv fast 7 --reps 1 --warmup 0 --dump /tmp/tmpqlf1v2t3/result exit= 0 dd,Rtbsv,UNN_k64,7,cpu,3.216e-06,0.0152363184,1
+ 
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Rtpsv fast 7 --reps 1 --warmup 0 --dump /tmp/tmpqlf1v2t3/result exit= 0 dd,Rtpsv,UNN_k64,7,cpu,2.796e-06,0.0175250358,1
+ 
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Ctrsv fast 7 --reps 1 --warmup 0 --dump /tmp/tmpqlf1v2t3/result exit= 0 dd,Ctrsv,UNN_k64,7,cpu,1.05e-05,0.0186666667,1
+ 
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Ctbsv fast 7 --reps 1 --warmup 0 --dump /tmp/tmpqlf1v2t3/result exit= 0 dd,Ctbsv,UNN_k64,7,cpu,2.515e-06,0.0779324056,1
+ 
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Ctpsv fast 7 --reps 1 --warmup 0 --dump /tmp/tmpqlf1v2t3/result exit= 0 dd,Ctpsv,UNN_k64,7,cpu,3.436e-06,0.0570430733,1
+ 
+reject ['Rdot', 'invalid', '7'] exit= 1
+reject ['Rdot', 'fast', '0'] exit= 1
+reject ['Rdot', 'fast', '1024', '--reps', '0'] exit= 1

@@ -1,0 +1,24 @@
+[100%] Built target mplapack_dd_opt
+[100%] Building CUDA object benchmark/CMakeFiles/bench_Rkernel_bench_dd_cuda_kernel.dir/Rkernel_bench_dd_cuda.cu.o
+[100%] Linking CXX executable Rkernel_bench.dd_cuda_kernel
+[100%] Built target bench_Rkernel_bench_dd_cuda_kernel
+[100%] Built target mplapack_td_opt
+[100%] Building CUDA object benchmark/CMakeFiles/bench_Rkernel_bench_td_cuda_kernel.dir/Rkernel_bench_td_cuda.cu.o
+[100%] Linking CXX executable Rkernel_bench.td_cuda_kernel
+[100%] Built target bench_Rkernel_bench_td_cuda_kernel
+[100%] Built target mplapack_qd_opt
+[100%] Building CUDA object benchmark/CMakeFiles/bench_Rkernel_bench_qd_cuda_kernel.dir/Rkernel_bench_qd_cuda.cu.o
+[100%] Linking CXX executable Rkernel_bench.qd_cuda_kernel
+[100%] Built target bench_Rkernel_bench_qd_cuda_kernel
+[100%] Built target mplapack_dd_opt
+[100%] Building CXX object benchmark/CMakeFiles/bench_Rkernel_bench_dd_opt.dir/Rkernel_bench.cpp.o
+[100%] Linking CXX executable Rkernel_bench.dd_opt
+[100%] Built target bench_Rkernel_bench_dd_opt
+[100%] Built target mplapack_td_opt
+[100%] Building CXX object benchmark/CMakeFiles/bench_Rkernel_bench_td_opt.dir/Rkernel_bench.cpp.o
+[100%] Linking CXX executable Rkernel_bench.td_opt
+[100%] Built target bench_Rkernel_bench_td_opt
+[100%] Built target mplapack_qd_opt
+[100%] Building CXX object benchmark/CMakeFiles/bench_Rkernel_bench_qd_opt.dir/Rkernel_bench.cpp.o
+[100%] Linking CXX executable Rkernel_bench.qd_opt
+[100%] Built target bench_Rkernel_bench_qd_opt

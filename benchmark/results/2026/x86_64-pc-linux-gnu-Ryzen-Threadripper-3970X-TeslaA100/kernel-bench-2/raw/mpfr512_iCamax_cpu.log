@@ -1,0 +1,531 @@
+
+### mpfr512_iCamax_cpu_1024_pilot
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt iCamax fast 1024 --reps 1 --warmup 1
+OMP_NUM_THREADS=32
+mpfr512,iCamax,inc1,1024,cpu,0.000707006,0,1
+
+exit=0, elapsed=0.008330
+
+exit receipt: 0
+
+### mpfr512_iCamax_cpu_32768_pilot
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt iCamax fast 32768 --reps 1 --warmup 1
+OMP_NUM_THREADS=32
+mpfr512,iCamax,inc1,32768,cpu,0.004882265,0,1
+
+exit=0, elapsed=0.091843
+
+exit receipt: 0
+
+### mpfr512_iCamax_cpu_1024_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt iCamax fast 1024
+OMP_NUM_THREADS=32
+mpfr512,iCamax,inc1,1024,cpu,0.000695319,0,3
+
+exit=0, elapsed=0.009962
+
+exit receipt: 0
+
+### mpfr512_iCamax_cpu_1280_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt iCamax fast 1280
+OMP_NUM_THREADS=32
+mpfr512,iCamax,inc1,1280,cpu,0.000856696,0,3
+
+exit=0, elapsed=0.011117
+
+exit receipt: 0
+
+### mpfr512_iCamax_cpu_1536_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt iCamax fast 1536
+OMP_NUM_THREADS=32
+mpfr512,iCamax,inc1,1536,cpu,0.001067055,0,3
+
+exit=0, elapsed=0.013515
+
+exit receipt: 0
+
+### mpfr512_iCamax_cpu_1792_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt iCamax fast 1792
+OMP_NUM_THREADS=32
+mpfr512,iCamax,inc1,1792,cpu,0.001244651,0,3
+
+exit=0, elapsed=0.013909
+
+exit receipt: 0
+
+### mpfr512_iCamax_cpu_2048_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt iCamax fast 2048
+OMP_NUM_THREADS=32
+mpfr512,iCamax,inc1,2048,cpu,0.001424042,0,3
+
+exit=0, elapsed=0.015688
+
+exit receipt: 0
+
+### mpfr512_iCamax_cpu_2560_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt iCamax fast 2560
+OMP_NUM_THREADS=32
+mpfr512,iCamax,inc1,2560,cpu,0.001780298,0,3
+
+exit=0, elapsed=0.017471
+
+exit receipt: 0
+
+### mpfr512_iCamax_cpu_3072_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt iCamax fast 3072
+OMP_NUM_THREADS=32
+mpfr512,iCamax,inc1,3072,cpu,0.002146352,0,3
+
+exit=0, elapsed=0.020527
+
+exit receipt: 0
+
+### mpfr512_iCamax_cpu_3584_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt iCamax fast 3584
+OMP_NUM_THREADS=32
+mpfr512,iCamax,inc1,3584,cpu,0.002543264,0,3
+
+exit=0, elapsed=0.022297
+
+exit receipt: 0
+
+### mpfr512_iCamax_cpu_4096_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt iCamax fast 4096
+OMP_NUM_THREADS=32
+mpfr512,iCamax,inc1,4096,cpu,0.002932163,0,3
+
+exit=0, elapsed=0.024464
+
+exit receipt: 0
+
+### mpfr512_iCamax_cpu_5120_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt iCamax fast 5120
+OMP_NUM_THREADS=32
+mpfr512,iCamax,inc1,5120,cpu,0.003701732,0,3
+
+exit=0, elapsed=0.030398
+
+exit receipt: 0
+
+### mpfr512_iCamax_cpu_6144_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt iCamax fast 6144
+OMP_NUM_THREADS=32
+mpfr512,iCamax,inc1,6144,cpu,0.004324744,0,3
+
+exit=0, elapsed=0.035299
+
+exit receipt: 0
+
+### mpfr512_iCamax_cpu_7168_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt iCamax fast 7168
+OMP_NUM_THREADS=32
+mpfr512,iCamax,inc1,7168,cpu,0.005090116,0,3
+
+exit=0, elapsed=0.041178
+
+exit receipt: 0
+
+### mpfr512_iCamax_cpu_8192_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt iCamax fast 8192
+OMP_NUM_THREADS=32
+mpfr512,iCamax,inc1,8192,cpu,0.00599374,0,3
+
+exit=0, elapsed=0.045151
+
+exit receipt: 0
+
+### mpfr512_iCamax_cpu_10240_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt iCamax fast 10240
+OMP_NUM_THREADS=32
+mpfr512,iCamax,inc1,10240,cpu,0.007510658,0,3
+
+exit=0, elapsed=0.055193
+
+exit receipt: 0
+
+### mpfr512_iCamax_cpu_12288_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt iCamax fast 12288
+OMP_NUM_THREADS=32
+mpfr512,iCamax,inc1,12288,cpu,0.008823188,0,3
+
+exit=0, elapsed=0.067023
+
+exit receipt: 0
+
+### mpfr512_iCamax_cpu_14336_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt iCamax fast 14336
+OMP_NUM_THREADS=32
+mpfr512,iCamax,inc1,14336,cpu,0.010441699,0,3
+
+exit=0, elapsed=0.078190
+
+exit receipt: 0
+
+### mpfr512_iCamax_cpu_16384_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt iCamax fast 16384
+OMP_NUM_THREADS=32
+mpfr512,iCamax,inc1,16384,cpu,0.002449637,0,3
+
+exit=0, elapsed=0.057694
+
+exit receipt: 0
+
+### mpfr512_iCamax_cpu_20480_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt iCamax fast 20480
+OMP_NUM_THREADS=32
+mpfr512,iCamax,inc1,20480,cpu,0.002815671,0,3
+
+exit=0, elapsed=0.065999
+
+exit receipt: 0
+
+### mpfr512_iCamax_cpu_24576_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt iCamax fast 24576
+OMP_NUM_THREADS=32
+mpfr512,iCamax,inc1,24576,cpu,0.003344715,0,3
+
+exit=0, elapsed=0.078924
+
+exit receipt: 0
+
+### mpfr512_iCamax_cpu_28672_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt iCamax fast 28672
+OMP_NUM_THREADS=32
+mpfr512,iCamax,inc1,28672,cpu,0.003801412,0,3
+
+exit=0, elapsed=0.091078
+
+exit receipt: 0
+
+### mpfr512_iCamax_cpu_32768_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt iCamax fast 32768
+OMP_NUM_THREADS=32
+mpfr512,iCamax,inc1,32768,cpu,0.004240885,0,3
+
+exit=0, elapsed=0.103019
+
+exit receipt: 0
+
+### mpfr512_iCamax_cpu_40960_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt iCamax fast 40960
+OMP_NUM_THREADS=32
+mpfr512,iCamax,inc1,40960,cpu,0.005205185,0,3
+
+exit=0, elapsed=0.125657
+
+exit receipt: 0
+
+### mpfr512_iCamax_cpu_49152_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt iCamax fast 49152
+OMP_NUM_THREADS=32
+mpfr512,iCamax,inc1,49152,cpu,0.006168061,0,3
+
+exit=0, elapsed=0.148884
+
+exit receipt: 0
+
+### mpfr512_iCamax_cpu_57344_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt iCamax fast 57344
+OMP_NUM_THREADS=32
+mpfr512,iCamax,inc1,57344,cpu,0.006953621,0,3
+
+exit=0, elapsed=0.171913
+
+exit receipt: 0
+
+### mpfr512_iCamax_cpu_65536_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt iCamax fast 65536
+OMP_NUM_THREADS=32
+mpfr512,iCamax,inc1,65536,cpu,0.007649442,0,3
+
+exit=0, elapsed=0.186633
+
+exit receipt: 0
+
+### mpfr512_iCamax_cpu_81920_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt iCamax fast 81920
+OMP_NUM_THREADS=32
+mpfr512,iCamax,inc1,81920,cpu,0.00984201,0,3
+
+exit=0, elapsed=0.242136
+
+exit receipt: 0
+
+### mpfr512_iCamax_cpu_98304_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt iCamax fast 98304
+OMP_NUM_THREADS=32
+mpfr512,iCamax,inc1,98304,cpu,0.009422105,0,3
+
+exit=0, elapsed=0.283054
+
+exit receipt: 0
+
+### mpfr512_iCamax_cpu_114688_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt iCamax fast 114688
+OMP_NUM_THREADS=32
+mpfr512,iCamax,inc1,114688,cpu,0.012581439,0,3
+
+exit=0, elapsed=0.329323
+
+exit receipt: 0
+
+### mpfr512_iCamax_cpu_131072_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt iCamax fast 131072
+OMP_NUM_THREADS=32
+mpfr512,iCamax,inc1,131072,cpu,0.013726641,0,3
+
+exit=0, elapsed=0.373997
+
+exit receipt: 0
+
+### mpfr512_iCamax_cpu_163840_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt iCamax fast 163840
+OMP_NUM_THREADS=32
+mpfr512,iCamax,inc1,163840,cpu,0.01665226,0,3
+
+exit=0, elapsed=0.466367
+
+exit receipt: 0
+
+### mpfr512_iCamax_cpu_196608_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt iCamax fast 196608
+OMP_NUM_THREADS=32
+mpfr512,iCamax,inc1,196608,cpu,0.01972498,0,3
+
+exit=0, elapsed=0.557348
+
+exit receipt: 0
+
+### mpfr512_iCamax_cpu_229376_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt iCamax fast 229376
+OMP_NUM_THREADS=32
+mpfr512,iCamax,inc1,229376,cpu,0.022226656,0,3
+
+exit=0, elapsed=0.639708
+
+exit receipt: 0
+
+### mpfr512_iCamax_cpu_262144_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt iCamax fast 262144
+OMP_NUM_THREADS=32
+mpfr512,iCamax,inc1,262144,cpu,0.026001798,0,3
+
+exit=0, elapsed=0.731176
+
+exit receipt: 0
+
+### mpfr512_iCamax_cpu_327680_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt iCamax fast 327680
+OMP_NUM_THREADS=32
+mpfr512,iCamax,inc1,327680,cpu,0.030762409,0,3
+
+exit=0, elapsed=0.902429
+
+exit receipt: 0
+
+### mpfr512_iCamax_cpu_393216_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt iCamax fast 393216
+OMP_NUM_THREADS=32
+mpfr512,iCamax,inc1,393216,cpu,0.036533878,0,3
+
+exit=0, elapsed=1.065463
+
+exit receipt: 0
+
+### mpfr512_iCamax_cpu_458752_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt iCamax fast 458752
+OMP_NUM_THREADS=32
+mpfr512,iCamax,inc1,458752,cpu,0.04492125,0,3
+
+exit=0, elapsed=1.250725
+
+exit receipt: 0
+
+### mpfr512_iCamax_cpu_524288_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt iCamax fast 524288
+OMP_NUM_THREADS=32
+mpfr512,iCamax,inc1,524288,cpu,0.047552472,0,3
+
+exit=0, elapsed=1.414296
+
+exit receipt: 0
+
+### mpfr512_iCamax_cpu_655360_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt iCamax fast 655360
+OMP_NUM_THREADS=32
+mpfr512,iCamax,inc1,655360,cpu,0.061602746,0,3
+
+exit=0, elapsed=1.775759
+
+exit receipt: 0
+
+### mpfr512_iCamax_cpu_786432_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt iCamax fast 786432
+OMP_NUM_THREADS=32
+mpfr512,iCamax,inc1,786432,cpu,0.07164614,0,3
+
+exit=0, elapsed=2.096247
+
+exit receipt: 0
+
+### mpfr512_iCamax_cpu_917504_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt iCamax fast 917504
+OMP_NUM_THREADS=32
+mpfr512,iCamax,inc1,917504,cpu,0.08385937,0,3
+
+exit=0, elapsed=2.426079
+
+exit receipt: 0
+
+### mpfr512_iCamax_cpu_1048576_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt iCamax fast 1048576
+OMP_NUM_THREADS=32
+mpfr512,iCamax,inc1,1048576,cpu,0.098285899,0,3
+
+exit=0, elapsed=2.784412
+
+exit receipt: 0
+
+### mpfr512_iCamax_cpu_1310720_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt iCamax fast 1310720
+OMP_NUM_THREADS=32
+mpfr512,iCamax,inc1,1310720,cpu,0.116066281,0,3
+
+exit=0, elapsed=3.432494
+
+exit receipt: 0
+
+### mpfr512_iCamax_cpu_1572864_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt iCamax fast 1572864
+OMP_NUM_THREADS=32
+mpfr512,iCamax,inc1,1572864,cpu,0.144432407,0,3
+
+exit=0, elapsed=4.163681
+
+exit receipt: 0
+
+### mpfr512_iCamax_cpu_1835008_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt iCamax fast 1835008
+OMP_NUM_THREADS=32
+mpfr512,iCamax,inc1,1835008,cpu,0.162103191,0,3
+
+exit=0, elapsed=4.777915
+
+exit receipt: 0
+
+### mpfr512_iCamax_cpu_2097152_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt iCamax fast 2097152
+OMP_NUM_THREADS=32
+mpfr512,iCamax,inc1,2097152,cpu,0.193173628,0,3
+
+exit=0, elapsed=5.532740
+
+exit receipt: 0
+
+### mpfr512_iCamax_cpu_2621440_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt iCamax fast 2621440
+OMP_NUM_THREADS=32
+mpfr512,iCamax,inc1,2621440,cpu,0.38611436,0,1
+
+exit=0, elapsed=6.177893
+
+exit receipt: 0
+
+### mpfr512_iCamax_cpu_3145728_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt iCamax fast 3145728
+OMP_NUM_THREADS=32
+mpfr512,iCamax,inc1,3145728,cpu,0.457866391,0,1
+
+exit=0, elapsed=7.406150
+
+exit receipt: 0
+
+### mpfr512_iCamax_cpu_3670016_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt iCamax fast 3670016
+OMP_NUM_THREADS=32
+mpfr512,iCamax,inc1,3670016,cpu,0.524946431,0,1
+
+exit=0, elapsed=8.494029
+
+exit receipt: 0
+
+### mpfr512_iCamax_cpu_4194304_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt iCamax fast 4194304
+OMP_NUM_THREADS=32
+mpfr512,iCamax,inc1,4194304,cpu,0.612360484,0,1
+
+exit=0, elapsed=9.907585
+
+exit receipt: 0
+
+### mpfr512_iCamax_cpu_5242880_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt iCamax fast 5242880
+OMP_NUM_THREADS=32
+mpfr512,iCamax,inc1,5242880,cpu,0.751699965,0,1
+
+exit=0, elapsed=12.120138
+
+exit receipt: 0
+
+### mpfr512_iCamax_cpu_6291456_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt iCamax fast 6291456
+OMP_NUM_THREADS=32
+mpfr512,iCamax,inc1,6291456,cpu,0.896813261,0,1
+
+exit=0, elapsed=14.628308
+
+exit receipt: 0
+
+### mpfr512_iCamax_cpu_7340032_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt iCamax fast 7340032
+OMP_NUM_THREADS=32
+mpfr512,iCamax,inc1,7340032,cpu,1.03732825,0,1
+
+exit=0, elapsed=16.908557
+
+exit receipt: 0
+
+### mpfr512_iCamax_cpu_8388608_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt iCamax fast 8388608
+OMP_NUM_THREADS=32
+mpfr512,iCamax,inc1,8388608,cpu,1.17879517,0,1
+
+exit=0, elapsed=19.398042
+
+exit receipt: 0
+
+### mpfr512_iCamax_cpu_10485760_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt iCamax fast 10485760
+OMP_NUM_THREADS=32
+mpfr512,iCamax,inc1,10485760,cpu,1.48833146,0,1
+
+exit=0, elapsed=24.152323
+
+exit receipt: 0
+
+### mpfr512_iCamax_cpu_12582912_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt iCamax fast 12582912
+OMP_NUM_THREADS=32
+mpfr512,iCamax,inc1,12582912,cpu,1.83078185,0,1
+
+exit=0, elapsed=28.966863
+
+exit receipt: 0
+
+### mpfr512_iCamax_cpu_14680064_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt iCamax fast 14680064
+OMP_NUM_THREADS=32
+mpfr512,iCamax,inc1,14680064,cpu,2.12007821,0,1
+
+exit=0, elapsed=33.463745
+
+exit receipt: 0
+
+### mpfr512_iCamax_cpu_16777216_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt iCamax fast 16777216
+OMP_NUM_THREADS=32
+mpfr512,iCamax,inc1,16777216,cpu,2.31663357,0,1
+
+exit=0, elapsed=38.569962
+
+exit receipt: 0

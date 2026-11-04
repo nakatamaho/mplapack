@@ -535,4 +535,9 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    if len(sys.argv) > 1 and sys.argv[1] == "new":
+        del sys.argv[1]
+        from kernel_new import main as new_main
+        new_main()
+    else:
+        main()

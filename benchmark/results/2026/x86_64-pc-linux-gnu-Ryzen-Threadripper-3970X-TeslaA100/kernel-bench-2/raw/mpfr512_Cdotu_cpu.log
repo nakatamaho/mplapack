@@ -1,0 +1,588 @@
+
+### mpfr512_Cdotu_cpu_1024_pilot
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Cdotu fast 1024 --reps 1 --warmup 1
+OMP_NUM_THREADS=32
+mpfr512,Cdotu,inc1,1024,cpu,0.000711554,0.0115128297,1
+
+exit=0, elapsed=0.011486
+
+exit receipt: 0
+
+### mpfr512_Cdotu_cpu_32768_pilot
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Cdotu fast 32768 --reps 1 --warmup 1
+OMP_NUM_THREADS=32
+mpfr512,Cdotu,inc1,32768,cpu,0.014483845,0.0180990614,1
+
+exit=0, elapsed=0.113403
+
+exit receipt: 0
+
+### mpfr512_Cdotu_cpu_1024_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Cdotu fast 1024
+OMP_NUM_THREADS=32
+mpfr512,Cdotu,inc1,1024,cpu,0.000518382,0.0158030179,3
+
+exit=0, process_elapsed=0.012030
+charged_point_wall=0.015996
+
+exit receipt: 0
+
+### mpfr512_Cdotu_cpu_1280_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Cdotu fast 1280
+OMP_NUM_THREADS=32
+mpfr512,Cdotu,inc1,1280,cpu,0.000591342,0.0173165444,3
+
+exit=0, process_elapsed=0.011703
+charged_point_wall=0.014648
+
+exit receipt: 0
+
+### mpfr512_Cdotu_cpu_1536_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Cdotu fast 1536
+OMP_NUM_THREADS=32
+mpfr512,Cdotu,inc1,1536,cpu,0.000679822,0.0180753197,3
+
+exit=0, process_elapsed=0.012341
+charged_point_wall=0.015952
+
+exit receipt: 0
+
+### mpfr512_Cdotu_cpu_1792_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Cdotu fast 1792
+OMP_NUM_THREADS=32
+mpfr512,Cdotu,inc1,1792,cpu,0.000799612,0.0179286954,3
+
+exit=0, process_elapsed=0.015138
+charged_point_wall=0.018854
+
+exit receipt: 0
+
+### mpfr512_Cdotu_cpu_2048_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Cdotu fast 2048
+OMP_NUM_THREADS=32
+mpfr512,Cdotu,inc1,2048,cpu,0.000860247,0.0190456927,3
+
+exit=0, process_elapsed=0.015017
+charged_point_wall=0.017795
+
+exit receipt: 0
+
+### mpfr512_Cdotu_cpu_2560_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Cdotu fast 2560
+OMP_NUM_THREADS=32
+mpfr512,Cdotu,inc1,2560,cpu,0.001042947,0.0196366642,3
+
+exit=0, process_elapsed=0.016071
+charged_point_wall=0.019030
+
+exit receipt: 0
+
+### mpfr512_Cdotu_cpu_3072_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Cdotu fast 3072
+OMP_NUM_THREADS=32
+mpfr512,Cdotu,inc1,3072,cpu,0.001537043,0.0159891428,3
+
+exit=0, process_elapsed=0.022020
+charged_point_wall=0.025456
+
+exit receipt: 0
+
+### mpfr512_Cdotu_cpu_3584_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Cdotu fast 3584
+OMP_NUM_THREADS=32
+mpfr512,Cdotu,inc1,3584,cpu,0.001376797,0.0208251471,3
+
+exit=0, process_elapsed=0.022663
+charged_point_wall=0.026531
+
+exit receipt: 0
+
+### mpfr512_Cdotu_cpu_4096_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Cdotu fast 4096
+OMP_NUM_THREADS=32
+mpfr512,Cdotu,inc1,4096,cpu,0.001871193,0.0175118227,3
+
+exit=0, process_elapsed=0.024653
+charged_point_wall=0.028215
+
+exit receipt: 0
+
+### mpfr512_Cdotu_cpu_5120_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Cdotu fast 5120
+OMP_NUM_THREADS=32
+mpfr512,Cdotu,inc1,5120,cpu,0.001787413,0.0229158007,3
+
+exit=0, process_elapsed=0.027831
+charged_point_wall=0.031461
+
+exit receipt: 0
+
+### mpfr512_Cdotu_cpu_6144_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Cdotu fast 6144
+OMP_NUM_THREADS=32
+mpfr512,Cdotu,inc1,6144,cpu,0.002646458,0.0185727489,3
+
+exit=0, process_elapsed=0.035420
+charged_point_wall=0.038968
+
+exit receipt: 0
+
+### mpfr512_Cdotu_cpu_7168_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Cdotu fast 7168
+OMP_NUM_THREADS=32
+mpfr512,Cdotu,inc1,7168,cpu,0.00212529,0.0269817296,3
+
+exit=0, process_elapsed=0.035293
+charged_point_wall=0.038084
+
+exit receipt: 0
+
+### mpfr512_Cdotu_cpu_8192_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Cdotu fast 8192
+OMP_NUM_THREADS=32
+mpfr512,Cdotu,inc1,8192,cpu,0.002606482,0.0251434692,3
+
+exit=0, process_elapsed=0.040058
+charged_point_wall=0.043425
+
+exit receipt: 0
+
+### mpfr512_Cdotu_cpu_10240_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Cdotu fast 10240
+OMP_NUM_THREADS=32
+mpfr512,Cdotu,inc1,10240,cpu,0.002900684,0.0282416147,3
+
+exit=0, process_elapsed=0.046785
+charged_point_wall=0.051191
+
+exit receipt: 0
+
+### mpfr512_Cdotu_cpu_12288_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Cdotu fast 12288
+OMP_NUM_THREADS=32
+mpfr512,Cdotu,inc1,12288,cpu,0.00491366,0.0200062682,3
+
+exit=0, process_elapsed=0.058976
+charged_point_wall=0.062741
+
+exit receipt: 0
+
+### mpfr512_Cdotu_cpu_14336_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Cdotu fast 14336
+OMP_NUM_THREADS=32
+mpfr512,Cdotu,inc1,14336,cpu,0.004171108,0.0274958117,3
+
+exit=0, process_elapsed=0.060966
+charged_point_wall=0.064566
+
+exit receipt: 0
+
+### mpfr512_Cdotu_cpu_16384_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Cdotu fast 16384
+OMP_NUM_THREADS=32
+mpfr512,Cdotu,inc1,16384,cpu,0.004892099,0.0267925894,3
+
+exit=0, process_elapsed=0.071022
+charged_point_wall=0.075125
+
+exit receipt: 0
+
+### mpfr512_Cdotu_cpu_20480_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Cdotu fast 20480
+OMP_NUM_THREADS=32
+mpfr512,Cdotu,inc1,20480,cpu,0.006507161,0.025178415,3
+
+exit=0, process_elapsed=0.085730
+charged_point_wall=0.089692
+
+exit receipt: 0
+
+### mpfr512_Cdotu_cpu_24576_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Cdotu fast 24576
+OMP_NUM_THREADS=32
+mpfr512,Cdotu,inc1,24576,cpu,0.008228769,0.0238927597,3
+
+exit=0, process_elapsed=0.102255
+charged_point_wall=0.106322
+
+exit receipt: 0
+
+### mpfr512_Cdotu_cpu_28672_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Cdotu fast 28672
+OMP_NUM_THREADS=32
+mpfr512,Cdotu,inc1,28672,cpu,0.010833346,0.0211731445,3
+
+exit=0, process_elapsed=0.122795
+charged_point_wall=0.126769
+
+exit receipt: 0
+
+### mpfr512_Cdotu_cpu_32768_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Cdotu fast 32768
+OMP_NUM_THREADS=32
+mpfr512,Cdotu,inc1,32768,cpu,0.011575057,0.0226473183,3
+
+exit=0, process_elapsed=0.136572
+charged_point_wall=0.139833
+
+exit receipt: 0
+
+### mpfr512_Cdotu_cpu_40960_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Cdotu fast 40960
+OMP_NUM_THREADS=32
+mpfr512,Cdotu,inc1,40960,cpu,0.014188813,0.0230942504,3
+
+exit=0, process_elapsed=0.169071
+charged_point_wall=0.174084
+
+exit receipt: 0
+
+### mpfr512_Cdotu_cpu_49152_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Cdotu fast 49152
+OMP_NUM_THREADS=32
+mpfr512,Cdotu,inc1,49152,cpu,0.018935914,0.0207656203,3
+
+exit=0, process_elapsed=0.211218
+charged_point_wall=0.221669
+
+exit receipt: 0
+
+### mpfr512_Cdotu_cpu_57344_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Cdotu fast 57344
+OMP_NUM_THREADS=32
+mpfr512,Cdotu,inc1,57344,cpu,0.021980805,0.0208705732,3
+
+exit=0, process_elapsed=0.240825
+charged_point_wall=0.245554
+
+exit receipt: 0
+
+### mpfr512_Cdotu_cpu_65536_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Cdotu fast 65536
+OMP_NUM_THREADS=32
+mpfr512,Cdotu,inc1,65536,cpu,0.026870178,0.0195118916,3
+
+exit=0, process_elapsed=0.282480
+charged_point_wall=0.287757
+
+exit receipt: 0
+
+### mpfr512_Cdotu_cpu_81920_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Cdotu fast 81920
+OMP_NUM_THREADS=32
+mpfr512,Cdotu,inc1,81920,cpu,0.031850917,0.0205758597,3
+
+exit=0, process_elapsed=0.344120
+charged_point_wall=0.349263
+
+exit receipt: 0
+
+### mpfr512_Cdotu_cpu_98304_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Cdotu fast 98304
+OMP_NUM_THREADS=32
+mpfr512,Cdotu,inc1,98304,cpu,0.039578173,0.0198703462,3
+
+exit=0, process_elapsed=0.419006
+charged_point_wall=0.424197
+
+exit receipt: 0
+
+### mpfr512_Cdotu_cpu_114688_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Cdotu fast 114688
+OMP_NUM_THREADS=32
+mpfr512,Cdotu,inc1,114688,cpu,0.044282562,0.0207193071,3
+
+exit=0, process_elapsed=0.470161
+charged_point_wall=0.475483
+
+exit receipt: 0
+
+### mpfr512_Cdotu_cpu_131072_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Cdotu fast 131072
+OMP_NUM_THREADS=32
+mpfr512,Cdotu,inc1,131072,cpu,0.053490574,0.0196030052,3
+
+exit=0, process_elapsed=0.556403
+charged_point_wall=0.561399
+
+exit receipt: 0
+
+### mpfr512_Cdotu_cpu_163840_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Cdotu fast 163840
+OMP_NUM_THREADS=32
+mpfr512,Cdotu,inc1,163840,cpu,0.064667087,0.0202687342,3
+
+exit=0, process_elapsed=0.672178
+charged_point_wall=0.677777
+
+exit receipt: 0
+
+### mpfr512_Cdotu_cpu_196608_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Cdotu fast 196608
+OMP_NUM_THREADS=32
+mpfr512,Cdotu,inc1,196608,cpu,0.077990358,0.0201674161,3
+
+exit=0, process_elapsed=0.804734
+charged_point_wall=0.809416
+
+exit receipt: 0
+
+### mpfr512_Cdotu_cpu_229376_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Cdotu fast 229376
+OMP_NUM_THREADS=32
+mpfr512,Cdotu,inc1,229376,cpu,0.093670302,0.0195900724,3
+
+exit=0, process_elapsed=0.953242
+charged_point_wall=0.958258
+
+exit receipt: 0
+
+### mpfr512_Cdotu_cpu_262144_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Cdotu fast 262144
+OMP_NUM_THREADS=32
+mpfr512,Cdotu,inc1,262144,cpu,0.105641161,0.0198516561,3
+
+exit=0, process_elapsed=1.072216
+charged_point_wall=1.076559
+
+exit receipt: 0
+
+### mpfr512_Cdotu_cpu_327680_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Cdotu fast 327680
+OMP_NUM_THREADS=32
+mpfr512,Cdotu,inc1,327680,cpu,0.14457484,0.0181320623,3
+
+exit=0, process_elapsed=1.322928
+charged_point_wall=1.328195
+
+exit receipt: 0
+
+### mpfr512_Cdotu_cpu_393216_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Cdotu fast 393216
+OMP_NUM_THREADS=32
+mpfr512,Cdotu,inc1,393216,cpu,0.17764193,0.0177082516,3
+
+exit=0, process_elapsed=1.625586
+charged_point_wall=1.630436
+
+exit receipt: 0
+
+### mpfr512_Cdotu_cpu_458752_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Cdotu fast 458752
+OMP_NUM_THREADS=32
+mpfr512,Cdotu,inc1,458752,cpu,0.204587798,0.0179385869,3
+
+exit=0, process_elapsed=1.900319
+charged_point_wall=1.905132
+
+exit receipt: 0
+
+### mpfr512_Cdotu_cpu_524288_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Cdotu fast 524288
+OMP_NUM_THREADS=32
+mpfr512,Cdotu,inc1,524288,cpu,0.213117045,0.0196807534,3
+
+exit=0, process_elapsed=2.064798
+charged_point_wall=2.069058
+
+exit receipt: 0
+
+### mpfr512_Cdotu_cpu_655360_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Cdotu fast 655360
+OMP_NUM_THREADS=32
+mpfr512,Cdotu,inc1,655360,cpu,0.261977173,0.020012736,3
+
+exit=0, process_elapsed=2.571878
+charged_point_wall=2.576223
+
+exit receipt: 0
+
+### mpfr512_Cdotu_cpu_786432_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Cdotu fast 786432
+OMP_NUM_THREADS=32
+mpfr512,Cdotu,inc1,786432,cpu,0.30871533,0.0203794739,3
+
+exit=0, process_elapsed=3.049578
+charged_point_wall=3.054444
+
+exit receipt: 0
+
+### mpfr512_Cdotu_cpu_917504_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Cdotu fast 917504
+OMP_NUM_THREADS=32
+mpfr512,Cdotu,inc1,917504,cpu,0.32675126,0.0224636685,3
+
+exit=0, process_elapsed=3.469740
+charged_point_wall=3.473795
+
+exit receipt: 0
+
+### mpfr512_Cdotu_cpu_1048576_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Cdotu fast 1048576
+OMP_NUM_THREADS=32
+mpfr512,Cdotu,inc1,1048576,cpu,0.404248289,0.020751128,3
+
+exit=0, process_elapsed=4.108416
+charged_point_wall=4.113004
+
+exit receipt: 0
+
+### mpfr512_Cdotu_cpu_1310720_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Cdotu fast 1310720
+OMP_NUM_THREADS=32
+mpfr512,Cdotu,inc1,1310720,cpu,0.473242611,0.0221572609,3
+
+exit=0, process_elapsed=4.946339
+charged_point_wall=4.951358
+
+exit receipt: 0
+
+### mpfr512_Cdotu_cpu_1572864_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Cdotu fast 1572864
+OMP_NUM_THREADS=32
+mpfr512,Cdotu,inc1,1572864,cpu,0.549204773,0.0229111483,3
+
+exit=0, process_elapsed=5.751886
+charged_point_wall=5.757164
+
+exit receipt: 0
+
+### mpfr512_Cdotu_cpu_1835008_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Cdotu fast 1835008
+OMP_NUM_THREADS=32
+mpfr512,Cdotu,inc1,1835008,cpu,0.635656451,0.0230943365,3
+
+exit=0, process_elapsed=6.787998
+charged_point_wall=6.793387
+
+exit receipt: 0
+
+### mpfr512_Cdotu_cpu_2097152_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Cdotu fast 2097152
+OMP_NUM_THREADS=32
+mpfr512,Cdotu,inc1,2097152,cpu,0.712205907,0.0235566931,3
+
+exit=0, process_elapsed=7.688140
+charged_point_wall=7.693519
+
+exit receipt: 0
+
+### mpfr512_Cdotu_cpu_2621440_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Cdotu fast 2621440
+OMP_NUM_THREADS=32
+mpfr512,Cdotu,inc1,2621440,cpu,1.16513576,0.0179992072,1
+
+exit=0, process_elapsed=6.926320
+charged_point_wall=6.931639
+
+exit receipt: 0
+
+### mpfr512_Cdotu_cpu_3145728_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Cdotu fast 3145728
+OMP_NUM_THREADS=32
+mpfr512,Cdotu,inc1,3145728,cpu,1.30456941,0.0192905212,1
+
+exit=0, process_elapsed=8.105045
+charged_point_wall=8.109927
+
+exit receipt: 0
+
+### mpfr512_Cdotu_cpu_3670016_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Cdotu fast 3670016
+OMP_NUM_THREADS=32
+mpfr512,Cdotu,inc1,3670016,cpu,1.51092652,0.0194318701,1
+
+exit=0, process_elapsed=9.453308
+charged_point_wall=9.458671
+
+exit receipt: 0
+
+### mpfr512_Cdotu_cpu_4194304_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Cdotu fast 4194304
+OMP_NUM_THREADS=32
+mpfr512,Cdotu,inc1,4194304,cpu,1.6646023,0.0201576268,1
+
+exit=0, process_elapsed=10.653781
+charged_point_wall=10.657899
+
+exit receipt: 0
+
+### mpfr512_Cdotu_cpu_5242880_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Cdotu fast 5242880
+OMP_NUM_THREADS=32
+mpfr512,Cdotu,inc1,5242880,cpu,2.04931632,0.0204668452,1
+
+exit=0, process_elapsed=13.166312
+charged_point_wall=13.171639
+
+exit receipt: 0
+
+### mpfr512_Cdotu_cpu_6291456_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Cdotu fast 6291456
+OMP_NUM_THREADS=32
+mpfr512,Cdotu,inc1,6291456,cpu,2.50624488,0.0200824941,1
+
+exit=0, process_elapsed=15.856554
+charged_point_wall=15.866979
+
+exit receipt: 0
+
+### mpfr512_Cdotu_cpu_7340032_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Cdotu fast 7340032
+OMP_NUM_THREADS=32
+mpfr512,Cdotu,inc1,7340032,cpu,2.92865895,0.0200502199,1
+
+exit=0, process_elapsed=18.699193
+charged_point_wall=18.704589
+
+exit receipt: 0
+
+### mpfr512_Cdotu_cpu_8388608_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Cdotu fast 8388608
+OMP_NUM_THREADS=32
+mpfr512,Cdotu,inc1,8388608,cpu,3.29696351,0.0203547488,1
+
+exit=0, process_elapsed=21.062186
+charged_point_wall=21.072481
+
+exit receipt: 0
+
+### mpfr512_Cdotu_cpu_10485760_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Cdotu fast 10485760
+OMP_NUM_THREADS=32
+mpfr512,Cdotu,inc1,10485760,cpu,3.93394864,0.0213236338,1
+
+exit=0, process_elapsed=25.782472
+charged_point_wall=25.787770
+
+exit receipt: 0
+
+### mpfr512_Cdotu_cpu_12582912_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Cdotu fast 12582912
+OMP_NUM_THREADS=32
+mpfr512,Cdotu,inc1,12582912,cpu,4.9864297,0.0201874491,1
+
+exit=0, process_elapsed=31.519955
+charged_point_wall=31.525205
+
+exit receipt: 0
+
+### mpfr512_Cdotu_cpu_14680064_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Cdotu fast 14680064
+OMP_NUM_THREADS=32
+mpfr512,Cdotu,inc1,14680064,cpu,5.64894096,0.0207898282,1
+
+exit=0, process_elapsed=36.295342
+charged_point_wall=36.300032
+
+exit receipt: 0
+
+### mpfr512_Cdotu_cpu_16777216_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Cdotu fast 16777216
+OMP_NUM_THREADS=32
+mpfr512,Cdotu,inc1,16777216,cpu,6.33382313,0.0211906341,1
+
+exit=0, process_elapsed=41.487454
+charged_point_wall=41.492029
+
+exit receipt: 0

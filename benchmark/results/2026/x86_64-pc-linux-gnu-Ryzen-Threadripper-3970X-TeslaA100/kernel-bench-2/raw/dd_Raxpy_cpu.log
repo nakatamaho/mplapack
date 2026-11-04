@@ -1,0 +1,531 @@
+
+### dd_Raxpy_cpu_1024_pilot
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Raxpy fast 1024 --reps 1 --warmup 1
+OMP_NUM_THREADS=32
+dd,Raxpy,inc1,1024,cpu,1.1542e-05,0.177438919,1
+
+exit=0, elapsed=0.005404
+
+exit receipt: 0
+
+### dd_Raxpy_cpu_32768_pilot
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Raxpy fast 32768 --reps 1 --warmup 1
+OMP_NUM_THREADS=32
+dd,Raxpy,inc1,32768,cpu,3.9114e-05,1.6755126,1
+
+exit=0, elapsed=0.006024
+
+exit receipt: 0
+
+### dd_Raxpy_cpu_1024_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Raxpy fast 1024
+OMP_NUM_THREADS=32
+dd,Raxpy,inc1,1024,cpu,8.116e-06,0.252341055,3
+
+exit=0, elapsed=0.005730
+
+exit receipt: 0
+
+### dd_Raxpy_cpu_1280_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Raxpy fast 1280
+OMP_NUM_THREADS=32
+dd,Raxpy,inc1,1280,cpu,9.017e-06,0.283908173,3
+
+exit=0, elapsed=0.005707
+
+exit receipt: 0
+
+### dd_Raxpy_cpu_1536_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Raxpy fast 1536
+OMP_NUM_THREADS=32
+dd,Raxpy,inc1,1536,cpu,8.667e-06,0.354447906,3
+
+exit=0, elapsed=0.003765
+
+exit receipt: 0
+
+### dd_Raxpy_cpu_1792_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Raxpy fast 1792
+OMP_NUM_THREADS=32
+dd,Raxpy,inc1,1792,cpu,8.747e-06,0.409740482,3
+
+exit=0, elapsed=0.005873
+
+exit receipt: 0
+
+### dd_Raxpy_cpu_2048_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Raxpy fast 2048
+OMP_NUM_THREADS=32
+dd,Raxpy,inc1,2048,cpu,1.041e-05,0.393467819,3
+
+exit=0, elapsed=0.006830
+
+exit receipt: 0
+
+### dd_Raxpy_cpu_2560_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Raxpy fast 2560
+OMP_NUM_THREADS=32
+dd,Raxpy,inc1,2560,cpu,9.398e-06,0.544796765,3
+
+exit=0, elapsed=0.004797
+
+exit receipt: 0
+
+### dd_Raxpy_cpu_3072_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Raxpy fast 3072
+OMP_NUM_THREADS=32
+dd,Raxpy,inc1,3072,cpu,9.529e-06,0.644768601,3
+
+exit=0, elapsed=0.004979
+
+exit receipt: 0
+
+### dd_Raxpy_cpu_3584_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Raxpy fast 3584
+OMP_NUM_THREADS=32
+dd,Raxpy,inc1,3584,cpu,1.0029e-05,0.714727291,3
+
+exit=0, elapsed=0.005060
+
+exit receipt: 0
+
+### dd_Raxpy_cpu_4096_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Raxpy fast 4096
+OMP_NUM_THREADS=32
+dd,Raxpy,inc1,4096,cpu,1.059e-05,0.773559962,3
+
+exit=0, elapsed=0.005589
+
+exit receipt: 0
+
+### dd_Raxpy_cpu_5120_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Raxpy fast 5120
+OMP_NUM_THREADS=32
+dd,Raxpy,inc1,5120,cpu,9.688e-06,1.0569777,3
+
+exit=0, elapsed=0.005147
+
+exit receipt: 0
+
+### dd_Raxpy_cpu_6144_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Raxpy fast 6144
+OMP_NUM_THREADS=32
+dd,Raxpy,inc1,6144,cpu,1.3626e-05,0.901805372,3
+
+exit=0, elapsed=0.005782
+
+exit receipt: 0
+
+### dd_Raxpy_cpu_7168_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Raxpy fast 7168
+OMP_NUM_THREADS=32
+dd,Raxpy,inc1,7168,cpu,1.2213e-05,1.17383116,3
+
+exit=0, elapsed=0.006099
+
+exit receipt: 0
+
+### dd_Raxpy_cpu_8192_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Raxpy fast 8192
+OMP_NUM_THREADS=32
+dd,Raxpy,inc1,8192,cpu,1.2654e-05,1.29476845,3
+
+exit=0, elapsed=0.006475
+
+exit receipt: 0
+
+### dd_Raxpy_cpu_10240_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Raxpy fast 10240
+OMP_NUM_THREADS=32
+dd,Raxpy,inc1,10240,cpu,1.58e-05,1.29620253,3
+
+exit=0, elapsed=0.005654
+
+exit receipt: 0
+
+### dd_Raxpy_cpu_12288_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Raxpy fast 12288
+OMP_NUM_THREADS=32
+dd,Raxpy,inc1,12288,cpu,1.5921e-05,1.54362163,3
+
+exit=0, elapsed=0.005931
+
+exit receipt: 0
+
+### dd_Raxpy_cpu_14336_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Raxpy fast 14336
+OMP_NUM_THREADS=32
+dd,Raxpy,inc1,14336,cpu,1.6762e-05,1.71053574,3
+
+exit=0, elapsed=0.005495
+
+exit receipt: 0
+
+### dd_Raxpy_cpu_16384_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Raxpy fast 16384
+OMP_NUM_THREADS=32
+dd,Raxpy,inc1,16384,cpu,1.8866e-05,1.73688116,3
+
+exit=0, elapsed=0.006508
+
+exit receipt: 0
+
+### dd_Raxpy_cpu_20480_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Raxpy fast 20480
+OMP_NUM_THREADS=32
+dd,Raxpy,inc1,20480,cpu,2.0799e-05,1.96932545,3
+
+exit=0, elapsed=0.005115
+
+exit receipt: 0
+
+### dd_Raxpy_cpu_24576_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Raxpy fast 24576
+OMP_NUM_THREADS=32
+dd,Raxpy,inc1,24576,cpu,2.5568e-05,1.922403,3
+
+exit=0, elapsed=0.006963
+
+exit receipt: 0
+
+### dd_Raxpy_cpu_28672_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Raxpy fast 28672
+OMP_NUM_THREADS=32
+dd,Raxpy,inc1,28672,cpu,2.8855e-05,1.98731589,3
+
+exit=0, elapsed=0.007083
+
+exit receipt: 0
+
+### dd_Raxpy_cpu_32768_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Raxpy fast 32768
+OMP_NUM_THREADS=32
+dd,Raxpy,inc1,32768,cpu,3.1039e-05,2.11140823,3
+
+exit=0, elapsed=0.007170
+
+exit receipt: 0
+
+### dd_Raxpy_cpu_40960_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Raxpy fast 40960
+OMP_NUM_THREADS=32
+dd,Raxpy,inc1,40960,cpu,3.7451e-05,2.18739152,3
+
+exit=0, elapsed=0.006700
+
+exit receipt: 0
+
+### dd_Raxpy_cpu_49152_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Raxpy fast 49152
+OMP_NUM_THREADS=32
+dd,Raxpy,inc1,49152,cpu,3.8583e-05,2.54785786,3
+
+exit=0, elapsed=0.007598
+
+exit receipt: 0
+
+### dd_Raxpy_cpu_57344_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Raxpy fast 57344
+OMP_NUM_THREADS=32
+dd,Raxpy,inc1,57344,cpu,5.5124e-05,2.08054568,3
+
+exit=0, elapsed=0.007886
+
+exit receipt: 0
+
+### dd_Raxpy_cpu_65536_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Raxpy fast 65536
+OMP_NUM_THREADS=32
+dd,Raxpy,inc1,65536,cpu,5.5155e-05,2.37643006,3
+
+exit=0, elapsed=0.008719
+
+exit receipt: 0
+
+### dd_Raxpy_cpu_81920_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Raxpy fast 81920
+OMP_NUM_THREADS=32
+dd,Raxpy,inc1,81920,cpu,6.5654e-05,2.49550675,3
+
+exit=0, elapsed=0.011139
+
+exit receipt: 0
+
+### dd_Raxpy_cpu_98304_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Raxpy fast 98304
+OMP_NUM_THREADS=32
+dd,Raxpy,inc1,98304,cpu,8.8889e-05,2.21183724,3
+
+exit=0, elapsed=0.013373
+
+exit receipt: 0
+
+### dd_Raxpy_cpu_114688_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Raxpy fast 114688
+OMP_NUM_THREADS=32
+dd,Raxpy,inc1,114688,cpu,8.437e-05,2.71869148,3
+
+exit=0, elapsed=0.012881
+
+exit receipt: 0
+
+### dd_Raxpy_cpu_131072_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Raxpy fast 131072
+OMP_NUM_THREADS=32
+dd,Raxpy,inc1,131072,cpu,0.000101573,2.58084333,3
+
+exit=0, elapsed=0.013785
+
+exit receipt: 0
+
+### dd_Raxpy_cpu_163840_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Raxpy fast 163840
+OMP_NUM_THREADS=32
+dd,Raxpy,inc1,163840,cpu,0.000141299,2.31905392,3
+
+exit=0, elapsed=0.015673
+
+exit receipt: 0
+
+### dd_Raxpy_cpu_196608_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Raxpy fast 196608
+OMP_NUM_THREADS=32
+dd,Raxpy,inc1,196608,cpu,0.000138112,2.84708063,3
+
+exit=0, elapsed=0.019369
+
+exit receipt: 0
+
+### dd_Raxpy_cpu_229376_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Raxpy fast 229376
+OMP_NUM_THREADS=32
+dd,Raxpy,inc1,229376,cpu,0.000172148,2.66486976,3
+
+exit=0, elapsed=0.020250
+
+exit receipt: 0
+
+### dd_Raxpy_cpu_262144_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Raxpy fast 262144
+OMP_NUM_THREADS=32
+dd,Raxpy,inc1,262144,cpu,0.000186905,2.8051042,3
+
+exit=0, elapsed=0.021987
+
+exit receipt: 0
+
+### dd_Raxpy_cpu_327680_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Raxpy fast 327680
+OMP_NUM_THREADS=32
+dd,Raxpy,inc1,327680,cpu,0.000217975,3.00658332,3
+
+exit=0, elapsed=0.026495
+
+exit receipt: 0
+
+### dd_Raxpy_cpu_393216_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Raxpy fast 393216
+OMP_NUM_THREADS=32
+dd,Raxpy,inc1,393216,cpu,0.000284421,2.7650279,3
+
+exit=0, elapsed=0.030599
+
+exit receipt: 0
+
+### dd_Raxpy_cpu_458752_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Raxpy fast 458752
+OMP_NUM_THREADS=32
+dd,Raxpy,inc1,458752,cpu,0.000374111,2.45249137,3
+
+exit=0, elapsed=0.033999
+
+exit receipt: 0
+
+### dd_Raxpy_cpu_524288_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Raxpy fast 524288
+OMP_NUM_THREADS=32
+dd,Raxpy,inc1,524288,cpu,0.000370425,2.83073767,3
+
+exit=0, elapsed=0.038117
+
+exit receipt: 0
+
+### dd_Raxpy_cpu_655360_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Raxpy fast 655360
+OMP_NUM_THREADS=32
+dd,Raxpy,inc1,655360,cpu,0.000459173,2.85452324,3
+
+exit=0, elapsed=0.048451
+
+exit receipt: 0
+
+### dd_Raxpy_cpu_786432_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Raxpy fast 786432
+OMP_NUM_THREADS=32
+dd,Raxpy,inc1,786432,cpu,0.000489831,3.21103401,3
+
+exit=0, elapsed=0.057421
+
+exit receipt: 0
+
+### dd_Raxpy_cpu_917504_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Raxpy fast 917504
+OMP_NUM_THREADS=32
+dd,Raxpy,inc1,917504,cpu,0.000547911,3.34909867,3
+
+exit=0, elapsed=0.064624
+
+exit receipt: 0
+
+### dd_Raxpy_cpu_1048576_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Raxpy fast 1048576
+OMP_NUM_THREADS=32
+dd,Raxpy,inc1,1048576,cpu,0.000495572,4.23178065,3
+
+exit=0, elapsed=0.071885
+
+exit receipt: 0
+
+### dd_Raxpy_cpu_1310720_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Raxpy fast 1310720
+OMP_NUM_THREADS=32
+dd,Raxpy,inc1,1310720,cpu,0.000543654,4.82189039,3
+
+exit=0, elapsed=0.089262
+
+exit receipt: 0
+
+### dd_Raxpy_cpu_1572864_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Raxpy fast 1572864
+OMP_NUM_THREADS=32
+dd,Raxpy,inc1,1572864,cpu,0.000561858,5.59879543,3
+
+exit=0, elapsed=0.104131
+
+exit receipt: 0
+
+### dd_Raxpy_cpu_1835008_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Raxpy fast 1835008
+OMP_NUM_THREADS=32
+dd,Raxpy,inc1,1835008,cpu,0.000664423,5.52361372,3
+
+exit=0, elapsed=0.120781
+
+exit receipt: 0
+
+### dd_Raxpy_cpu_2097152_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Raxpy fast 2097152
+OMP_NUM_THREADS=32
+dd,Raxpy,inc1,2097152,cpu,0.000779743,5.37908516,3
+
+exit=0, elapsed=0.137263
+
+exit receipt: 0
+
+### dd_Raxpy_cpu_2621440_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Raxpy fast 2621440
+OMP_NUM_THREADS=32
+dd,Raxpy,inc1,2621440,cpu,0.003127508,1.67637621,1
+
+exit=0, elapsed=0.158741
+
+exit receipt: 0
+
+### dd_Raxpy_cpu_3145728_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Raxpy fast 3145728
+OMP_NUM_THREADS=32
+dd,Raxpy,inc1,3145728,cpu,0.003352806,1.87647481,1
+
+exit=0, elapsed=0.187051
+
+exit receipt: 0
+
+### dd_Raxpy_cpu_3670016_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Raxpy fast 3670016
+OMP_NUM_THREADS=32
+dd,Raxpy,inc1,3670016,cpu,0.003803653,1.92973229,1
+
+exit=0, elapsed=0.233652
+
+exit receipt: 0
+
+### dd_Raxpy_cpu_4194304_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Raxpy fast 4194304
+OMP_NUM_THREADS=32
+dd,Raxpy,inc1,4194304,cpu,0.004154881,2.01897672,1
+
+exit=0, elapsed=0.258663
+
+exit receipt: 0
+
+### dd_Raxpy_cpu_5242880_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Raxpy fast 5242880
+OMP_NUM_THREADS=32
+dd,Raxpy,inc1,5242880,cpu,0.005017451,2.08985798,1
+
+exit=0, elapsed=0.326009
+
+exit receipt: 0
+
+### dd_Raxpy_cpu_6291456_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Raxpy fast 6291456
+OMP_NUM_THREADS=32
+dd,Raxpy,inc1,6291456,cpu,0.00579525,2.17124576,1
+
+exit=0, elapsed=0.384172
+
+exit receipt: 0
+
+### dd_Raxpy_cpu_7340032_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Raxpy fast 7340032
+OMP_NUM_THREADS=32
+dd,Raxpy,inc1,7340032,cpu,0.006513526,2.25378144,1
+
+exit=0, elapsed=0.446240
+
+exit receipt: 0
+
+### dd_Raxpy_cpu_8388608_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Raxpy fast 8388608
+OMP_NUM_THREADS=32
+dd,Raxpy,inc1,8388608,cpu,0.006644325,2.52504446,1
+
+exit=0, elapsed=0.505380
+
+exit receipt: 0
+
+### dd_Raxpy_cpu_10485760_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Raxpy fast 10485760
+OMP_NUM_THREADS=32
+dd,Raxpy,inc1,10485760,cpu,0.008435692,2.4860462,1
+
+exit=0, elapsed=0.645251
+
+exit receipt: 0
+
+### dd_Raxpy_cpu_12582912_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Raxpy fast 12582912
+OMP_NUM_THREADS=32
+dd,Raxpy,inc1,12582912,cpu,0.009762304,2.57785703,1
+
+exit=0, elapsed=0.767684
+
+exit receipt: 0
+
+### dd_Raxpy_cpu_14680064_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Raxpy fast 14680064
+OMP_NUM_THREADS=32
+dd,Raxpy,inc1,14680064,cpu,0.010774569,2.72494686,1
+
+exit=0, elapsed=0.886380
+
+exit receipt: 0
+
+### dd_Raxpy_cpu_16777216_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Raxpy fast 16777216
+OMP_NUM_THREADS=32
+dd,Raxpy,inc1,16777216,cpu,0.012445987,2.6960041,1
+
+exit=0, elapsed=1.043872
+
+exit receipt: 0

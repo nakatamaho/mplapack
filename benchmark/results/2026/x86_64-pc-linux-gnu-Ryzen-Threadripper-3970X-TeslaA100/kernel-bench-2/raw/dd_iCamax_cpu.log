@@ -1,0 +1,531 @@
+
+### dd_iCamax_cpu_1024_pilot
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt iCamax fast 1024 --reps 1 --warmup 1
+OMP_NUM_THREADS=32
+dd,iCamax,inc1,1024,cpu,1.3906e-05,0,1
+
+exit=0, elapsed=0.002355
+
+exit receipt: 0
+
+### dd_iCamax_cpu_32768_pilot
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt iCamax fast 32768 --reps 1 --warmup 1
+OMP_NUM_THREADS=32
+dd,iCamax,inc1,32768,cpu,0.000480394,0,1
+
+exit=0, elapsed=0.011432
+
+exit receipt: 0
+
+### dd_iCamax_cpu_1024_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt iCamax fast 1024
+OMP_NUM_THREADS=32
+dd,iCamax,inc1,1024,cpu,1.6802e-05,0,3
+
+exit=0, elapsed=0.003268
+
+exit receipt: 0
+
+### dd_iCamax_cpu_1280_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt iCamax fast 1280
+OMP_NUM_THREADS=32
+dd,iCamax,inc1,1280,cpu,2.9356e-05,0,3
+
+exit=0, elapsed=0.004346
+
+exit receipt: 0
+
+### dd_iCamax_cpu_1536_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt iCamax fast 1536
+OMP_NUM_THREADS=32
+dd,iCamax,inc1,1536,cpu,3.681e-05,0,3
+
+exit=0, elapsed=0.005509
+
+exit receipt: 0
+
+### dd_iCamax_cpu_1792_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt iCamax fast 1792
+OMP_NUM_THREADS=32
+dd,iCamax,inc1,1792,cpu,4.182e-05,0,3
+
+exit=0, elapsed=0.004420
+
+exit receipt: 0
+
+### dd_iCamax_cpu_2048_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt iCamax fast 2048
+OMP_NUM_THREADS=32
+dd,iCamax,inc1,2048,cpu,5.0135e-05,0,3
+
+exit=0, elapsed=0.004027
+
+exit receipt: 0
+
+### dd_iCamax_cpu_2560_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt iCamax fast 2560
+OMP_NUM_THREADS=32
+dd,iCamax,inc1,2560,cpu,6.6766e-05,0,3
+
+exit=0, elapsed=0.004816
+
+exit receipt: 0
+
+### dd_iCamax_cpu_3072_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt iCamax fast 3072
+OMP_NUM_THREADS=32
+dd,iCamax,inc1,3072,cpu,4.4645e-05,0,3
+
+exit=0, elapsed=0.003548
+
+exit receipt: 0
+
+### dd_iCamax_cpu_3584_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt iCamax fast 3584
+OMP_NUM_THREADS=32
+dd,iCamax,inc1,3584,cpu,0.000100962,0,3
+
+exit=0, elapsed=0.004880
+
+exit receipt: 0
+
+### dd_iCamax_cpu_4096_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt iCamax fast 4096
+OMP_NUM_THREADS=32
+dd,iCamax,inc1,4096,cpu,0.000122603,0,3
+
+exit=0, elapsed=0.006089
+
+exit receipt: 0
+
+### dd_iCamax_cpu_5120_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt iCamax fast 5120
+OMP_NUM_THREADS=32
+dd,iCamax,inc1,5120,cpu,0.000124497,0,3
+
+exit=0, elapsed=0.005047
+
+exit receipt: 0
+
+### dd_iCamax_cpu_6144_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt iCamax fast 6144
+OMP_NUM_THREADS=32
+dd,iCamax,inc1,6144,cpu,0.000193468,0,3
+
+exit=0, elapsed=0.006742
+
+exit receipt: 0
+
+### dd_iCamax_cpu_7168_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt iCamax fast 7168
+OMP_NUM_THREADS=32
+dd,iCamax,inc1,7168,cpu,0.000122062,0,3
+
+exit=0, elapsed=0.005883
+
+exit receipt: 0
+
+### dd_iCamax_cpu_8192_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt iCamax fast 8192
+OMP_NUM_THREADS=32
+dd,iCamax,inc1,8192,cpu,0.000154103,0,3
+
+exit=0, elapsed=0.006145
+
+exit receipt: 0
+
+### dd_iCamax_cpu_10240_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt iCamax fast 10240
+OMP_NUM_THREADS=32
+dd,iCamax,inc1,10240,cpu,0.00017862,0,3
+
+exit=0, elapsed=0.006530
+
+exit receipt: 0
+
+### dd_iCamax_cpu_12288_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt iCamax fast 12288
+OMP_NUM_THREADS=32
+dd,iCamax,inc1,12288,cpu,0.000219778,0,3
+
+exit=0, elapsed=0.006665
+
+exit receipt: 0
+
+### dd_iCamax_cpu_14336_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt iCamax fast 14336
+OMP_NUM_THREADS=32
+dd,iCamax,inc1,14336,cpu,0.000254174,0,3
+
+exit=0, elapsed=0.006635
+
+exit receipt: 0
+
+### dd_iCamax_cpu_16384_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt iCamax fast 16384
+OMP_NUM_THREADS=32
+dd,iCamax,inc1,16384,cpu,0.000172738,0,3
+
+exit=0, elapsed=0.008858
+
+exit receipt: 0
+
+### dd_iCamax_cpu_20480_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt iCamax fast 20480
+OMP_NUM_THREADS=32
+dd,iCamax,inc1,20480,cpu,0.000283439,0,3
+
+exit=0, elapsed=0.008656
+
+exit receipt: 0
+
+### dd_iCamax_cpu_24576_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt iCamax fast 24576
+OMP_NUM_THREADS=32
+dd,iCamax,inc1,24576,cpu,0.000256498,0,3
+
+exit=0, elapsed=0.010097
+
+exit receipt: 0
+
+### dd_iCamax_cpu_28672_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt iCamax fast 28672
+OMP_NUM_THREADS=32
+dd,iCamax,inc1,28672,cpu,0.000280764,0,3
+
+exit=0, elapsed=0.009908
+
+exit receipt: 0
+
+### dd_iCamax_cpu_32768_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt iCamax fast 32768
+OMP_NUM_THREADS=32
+dd,iCamax,inc1,32768,cpu,0.000302265,0,3
+
+exit=0, elapsed=0.011196
+
+exit receipt: 0
+
+### dd_iCamax_cpu_40960_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt iCamax fast 40960
+OMP_NUM_THREADS=32
+dd,iCamax,inc1,40960,cpu,0.000370013,0,3
+
+exit=0, elapsed=0.012162
+
+exit receipt: 0
+
+### dd_iCamax_cpu_49152_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt iCamax fast 49152
+OMP_NUM_THREADS=32
+dd,iCamax,inc1,49152,cpu,0.000423425,0,3
+
+exit=0, elapsed=0.015944
+
+exit receipt: 0
+
+### dd_iCamax_cpu_57344_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt iCamax fast 57344
+OMP_NUM_THREADS=32
+dd,iCamax,inc1,57344,cpu,0.000501894,0,3
+
+exit=0, elapsed=0.016720
+
+exit receipt: 0
+
+### dd_iCamax_cpu_65536_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt iCamax fast 65536
+OMP_NUM_THREADS=32
+dd,iCamax,inc1,65536,cpu,0.000537872,0,3
+
+exit=0, elapsed=0.015908
+
+exit receipt: 0
+
+### dd_iCamax_cpu_81920_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt iCamax fast 81920
+OMP_NUM_THREADS=32
+dd,iCamax,inc1,81920,cpu,0.000683269,0,3
+
+exit=0, elapsed=0.018211
+
+exit receipt: 0
+
+### dd_iCamax_cpu_98304_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt iCamax fast 98304
+OMP_NUM_THREADS=32
+dd,iCamax,inc1,98304,cpu,0.000777779,0,3
+
+exit=0, elapsed=0.020327
+
+exit receipt: 0
+
+### dd_iCamax_cpu_114688_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt iCamax fast 114688
+OMP_NUM_THREADS=32
+dd,iCamax,inc1,114688,cpu,0.000898799,0,3
+
+exit=0, elapsed=0.024607
+
+exit receipt: 0
+
+### dd_iCamax_cpu_131072_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt iCamax fast 131072
+OMP_NUM_THREADS=32
+dd,iCamax,inc1,131072,cpu,0.001026802,0,3
+
+exit=0, elapsed=0.026394
+
+exit receipt: 0
+
+### dd_iCamax_cpu_163840_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt iCamax fast 163840
+OMP_NUM_THREADS=32
+dd,iCamax,inc1,163840,cpu,0.001242674,0,3
+
+exit=0, elapsed=0.031418
+
+exit receipt: 0
+
+### dd_iCamax_cpu_196608_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt iCamax fast 196608
+OMP_NUM_THREADS=32
+dd,iCamax,inc1,196608,cpu,0.001455457,0,3
+
+exit=0, elapsed=0.038824
+
+exit receipt: 0
+
+### dd_iCamax_cpu_229376_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt iCamax fast 229376
+OMP_NUM_THREADS=32
+dd,iCamax,inc1,229376,cpu,0.001691377,0,3
+
+exit=0, elapsed=0.041388
+
+exit receipt: 0
+
+### dd_iCamax_cpu_262144_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt iCamax fast 262144
+OMP_NUM_THREADS=32
+dd,iCamax,inc1,262144,cpu,0.001933747,0,3
+
+exit=0, elapsed=0.046407
+
+exit receipt: 0
+
+### dd_iCamax_cpu_327680_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt iCamax fast 327680
+OMP_NUM_THREADS=32
+dd,iCamax,inc1,327680,cpu,0.002337625,0,3
+
+exit=0, elapsed=0.062080
+
+exit receipt: 0
+
+### dd_iCamax_cpu_393216_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt iCamax fast 393216
+OMP_NUM_THREADS=32
+dd,iCamax,inc1,393216,cpu,0.002793812,0,3
+
+exit=0, elapsed=0.074557
+
+exit receipt: 0
+
+### dd_iCamax_cpu_458752_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt iCamax fast 458752
+OMP_NUM_THREADS=32
+dd,iCamax,inc1,458752,cpu,0.002401887,0,3
+
+exit=0, elapsed=0.083392
+
+exit receipt: 0
+
+### dd_iCamax_cpu_524288_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt iCamax fast 524288
+OMP_NUM_THREADS=32
+dd,iCamax,inc1,524288,cpu,0.003751344,0,3
+
+exit=0, elapsed=0.094998
+
+exit receipt: 0
+
+### dd_iCamax_cpu_655360_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt iCamax fast 655360
+OMP_NUM_THREADS=32
+dd,iCamax,inc1,655360,cpu,0.004599606,0,3
+
+exit=0, elapsed=0.113749
+
+exit receipt: 0
+
+### dd_iCamax_cpu_786432_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt iCamax fast 786432
+OMP_NUM_THREADS=32
+dd,iCamax,inc1,786432,cpu,0.005838162,0,3
+
+exit=0, elapsed=0.131393
+
+exit receipt: 0
+
+### dd_iCamax_cpu_917504_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt iCamax fast 917504
+OMP_NUM_THREADS=32
+dd,iCamax,inc1,917504,cpu,0.006622634,0,3
+
+exit=0, elapsed=0.149847
+
+exit receipt: 0
+
+### dd_iCamax_cpu_1048576_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt iCamax fast 1048576
+OMP_NUM_THREADS=32
+dd,iCamax,inc1,1048576,cpu,0.00766782,0,3
+
+exit=0, elapsed=0.174414
+
+exit receipt: 0
+
+### dd_iCamax_cpu_1310720_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt iCamax fast 1310720
+OMP_NUM_THREADS=32
+dd,iCamax,inc1,1310720,cpu,0.009687782,0,3
+
+exit=0, elapsed=0.221054
+
+exit receipt: 0
+
+### dd_iCamax_cpu_1572864_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt iCamax fast 1572864
+OMP_NUM_THREADS=32
+dd,iCamax,inc1,1572864,cpu,0.011113082,0,3
+
+exit=0, elapsed=0.255626
+
+exit receipt: 0
+
+### dd_iCamax_cpu_1835008_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt iCamax fast 1835008
+OMP_NUM_THREADS=32
+dd,iCamax,inc1,1835008,cpu,0.012566146,0,3
+
+exit=0, elapsed=0.296303
+
+exit receipt: 0
+
+### dd_iCamax_cpu_2097152_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt iCamax fast 2097152
+OMP_NUM_THREADS=32
+dd,iCamax,inc1,2097152,cpu,0.028865288,0,3
+
+exit=0, elapsed=0.368179
+
+exit receipt: 0
+
+### dd_iCamax_cpu_2621440_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt iCamax fast 2621440
+OMP_NUM_THREADS=32
+dd,iCamax,inc1,2621440,cpu,0.03990475,0,1
+
+exit=0, elapsed=0.354693
+
+exit receipt: 0
+
+### dd_iCamax_cpu_3145728_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt iCamax fast 3145728
+OMP_NUM_THREADS=32
+dd,iCamax,inc1,3145728,cpu,0.051319326,0,1
+
+exit=0, elapsed=0.432439
+
+exit receipt: 0
+
+### dd_iCamax_cpu_3670016_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt iCamax fast 3670016
+OMP_NUM_THREADS=32
+dd,iCamax,inc1,3670016,cpu,0.055246994,0,1
+
+exit=0, elapsed=0.505515
+
+exit receipt: 0
+
+### dd_iCamax_cpu_4194304_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt iCamax fast 4194304
+OMP_NUM_THREADS=32
+dd,iCamax,inc1,4194304,cpu,0.07040601,0,1
+
+exit=0, elapsed=0.571470
+
+exit receipt: 0
+
+### dd_iCamax_cpu_5242880_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt iCamax fast 5242880
+OMP_NUM_THREADS=32
+dd,iCamax,inc1,5242880,cpu,0.083015978,0,1
+
+exit=0, elapsed=0.732997
+
+exit receipt: 0
+
+### dd_iCamax_cpu_6291456_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt iCamax fast 6291456
+OMP_NUM_THREADS=32
+dd,iCamax,inc1,6291456,cpu,0.089647257,0,1
+
+exit=0, elapsed=0.832427
+
+exit receipt: 0
+
+### dd_iCamax_cpu_7340032_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt iCamax fast 7340032
+OMP_NUM_THREADS=32
+dd,iCamax,inc1,7340032,cpu,0.104056967,0,1
+
+exit=0, elapsed=0.976080
+
+exit receipt: 0
+
+### dd_iCamax_cpu_8388608_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt iCamax fast 8388608
+OMP_NUM_THREADS=32
+dd,iCamax,inc1,8388608,cpu,0.120623269,0,1
+
+exit=0, elapsed=1.122716
+
+exit receipt: 0
+
+### dd_iCamax_cpu_10485760_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt iCamax fast 10485760
+OMP_NUM_THREADS=32
+dd,iCamax,inc1,10485760,cpu,0.145744856,0,1
+
+exit=0, elapsed=1.423645
+
+exit receipt: 0
+
+### dd_iCamax_cpu_12582912_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt iCamax fast 12582912
+OMP_NUM_THREADS=32
+dd,iCamax,inc1,12582912,cpu,0.173473693,0,1
+
+exit=0, elapsed=1.652814
+
+exit receipt: 0
+
+### dd_iCamax_cpu_14680064_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt iCamax fast 14680064
+OMP_NUM_THREADS=32
+dd,iCamax,inc1,14680064,cpu,0.202568957,0,1
+
+exit=0, elapsed=1.936367
+
+exit receipt: 0
+
+### dd_iCamax_cpu_16777216_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt iCamax fast 16777216
+OMP_NUM_THREADS=32
+dd,iCamax,inc1,16777216,cpu,0.23908448,0,1
+
+exit=0, elapsed=2.254653
+
+exit receipt: 0

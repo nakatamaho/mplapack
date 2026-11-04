@@ -1,0 +1,92 @@
+[  0%] Built target mpc_cuda_bundled
+[100%] Built target mplapack_mpfr_opt
+[100%] Building CUDA object benchmark/CMakeFiles/bench_Rkernel_bench_mpfr_cuda_resident.dir/Rkernel_bench_mpfr_resident.cu.o
+/tmp/factor01-cmake/external/i/MPC_CUDA/include/mpc_cuda/cu_mpc.h(325): warning #20040-D: a __host__ function("sqrt_int64") redeclared with __host__ __device__, hence treated as a __host__ __device__ function
+                                       int64_t sqrt_int64 (int64_t n);
+                                               ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+/tmp/factor01-cmake/external/i/MPC_CUDA/include/mpc_cuda/cu_freal.cuh(134): warning #63-D: shift count is too large
+          r.m[i]=(a<<SB)|(b>>(64-SB)); }
+                             ^
+          detected during:
+            instantiation of "cu_fp::cu_freal<PB> cu_fp::cu_freal<PB>::finalize(const cu_fp::cu_limb *, int, int, long, cu_fp::cu_limb, cu_fp::cu_limb, int) [with PB=512]" at line 148
+            instantiation of "cu_fp::cu_freal<PB> cu_fp::cu_freal<PB>::from_double(double) [with PB=512]" at line 21 of /home/docker/mplapack-acceralation/benchmark/../mpblas/optimized/mpfr/cuda/Cfactor_fixed_types.h
+            instantiation of "mplapack_blas_dev::factor_real<PB>::factor_real(double) [with PB=512]" at line 57 of /home/docker/mplapack-acceralation/benchmark/../mpblas/optimized/mpfr/cuda/Rinverse_types.h
+            instantiation of "void mplapack_mpfr_inverse::number(mplapack_blas_dev::factor_real<PB> &, double) [with PB=512]" at line 74 of /home/docker/mplapack-acceralation/benchmark/../mpblas/optimized/mpfr/cuda/Rinverse_types.h
+            instantiation of "mplapack_mpfr_inverse::value<Tag, Complex>::value(double) [with Tag=kernel_new::Tag, Complex=true]" at line 25 of /home/docker/mplapack-acceralation/benchmark/../mpblas/optimized/mpfr/cuda/../../common/Rtrisolve_jobs.h
+            [ 3 instantiation contexts not shown ]
+            instantiation of "void mplapack_mpfr_cuda::<unnamed>::factor_context<E>::execute(Job, long) [with E=mplapack_mpfr_inverse::<unnamed>::inverse_engine, Job=mplapack_mpfr_inverse::<unnamed>::checked_job<mplapack_trisolve::pivot_job<kernel_new::C, mplapack_trisolve::Carithmetic<kernel_new::C>>>]" at line 29 of /home/docker/mplapack-acceralation/benchmark/../mpblas/optimized/mpfr/cuda/Rinverse_device_body.cuh
+            instantiation of "void mplapack_mpfr_inverse::<unnamed>::launcher::launch(J, long) [with J=mplapack_trisolve::pivot_job<kernel_new::C, mplapack_trisolve::Carithmetic<kernel_new::C>>]" at line 54 of /home/docker/mplapack-acceralation/benchmark/../mpblas/optimized/mpfr/cuda/../../common/Rtrisolve_jobs.h
+            instantiation of "void mplapack_trisolve::schedule<V,A,L>(L &, const mplapack_trisolve::shape &, const V *, V *, V *) [with V=kernel_new::C, A=mplapack_trisolve::Carithmetic<kernel_new::C>, L=kernel_new::Launcher]" at line 165 of /home/docker/mplapack-acceralation/benchmark/Rkernel_new.h
+            instantiation of "double kernel_new::gpu<H>::run() [with H=COMPLEX]" at line 276 of /home/docker/mplapack-acceralation/benchmark/Rkernel_new.h
+            instantiation of "void kernel_new::point<H>(kernel_new::shape, const std::string &, int, int, const std::string &) [with H=COMPLEX]" at line 336 of /home/docker/mplapack-acceralation/benchmark/Rkernel_new.h
+
+/tmp/factor01-cmake/external/i/MPC_CUDA/include/mpc_cuda/cu_freal.cuh(134): warning #63-D: shift count is too large
+          r.m[i]=(a<<SB)|(b>>(64-SB)); }
+                             ^
+          detected during:
+            instantiation of "cu_fp::cu_freal<PB> cu_fp::cu_freal<PB>::finalize(const cu_fp::cu_limb *, int, int, long, cu_fp::cu_limb, cu_fp::cu_limb, int) [with PB=576]" at line 321
+            instantiation of "cu_fp::cu_freal<TO> cu_fp::cu_convert<TO,FROM>(const cu_fp::cu_freal<FROM> &) [with TO=576, FROM=512]" at line 104 of /tmp/factor01-cmake/external/i/MPC_CUDA/include/mpc_cuda/cu_fround.cuh
+            instantiation of "int cu_fp::fround_detail::div(cu_fp::cu_freal<PB> &, const cu_fp::cu_freal<PB> &, const cu_fp::cu_freal<PB> &, __nv_bool &) [with PB=512]" at line 140 of /tmp/factor01-cmake/external/i/MPC_CUDA/include/mpc_cuda/cu_fround.cuh
+            instantiation of "int cu_fp::cu_fdiv_rn(cu_fp::cu_freal<PB> &, const cu_fp::cu_freal<PB> &, const cu_fp::cu_freal<PB> &) [with PB=512]" at line 109 of /home/docker/mplapack-acceralation/benchmark/../mpblas/optimized/mpfr/cuda/blas3_kernel_cuda.h
+            instantiation of "void mplapack_mpfr_cuda::l3_fixed_engine<PB, TRSM>::div(mplapack_mpfr_cuda::l3_fixed_engine<PB, TRSM>::V &, const mplapack_mpfr_cuda::l3_fixed_engine<PB, TRSM>::V &, const mplapack_mpfr_cuda::l3_fixed_engine<PB, TRSM>::V &) const [with PB=512, TRSM=true]" at line 44 of /home/docker/mplapack-acceralation/benchmark/../mpblas/optimized/mpfr/cuda/Rinverse_types.h
+            [ 7 instantiation contexts not shown ]
+            instantiation of "void mplapack_mpfr_cuda::<unnamed>::factor_context<E>::execute(Job, long) [with E=mplapack_mpfr_inverse::<unnamed>::inverse_engine, Job=mplapack_mpfr_inverse::<unnamed>::checked_job<mplapack_blas1::leaves<kernel_new::R, kernel_new::C, true>>]" at line 29 of /home/docker/mplapack-acceralation/benchmark/../mpblas/optimized/mpfr/cuda/Rinverse_device_body.cuh
+            instantiation of "void mplapack_mpfr_inverse::<unnamed>::launcher::launch(J, long) [with J=mplapack_blas1::leaves<kernel_new::R, kernel_new::C, true>]" at line 33 of /home/docker/mplapack-acceralation/benchmark/../mpblas/optimized/mpfr/cuda/../../common/Rblas1_jobs_common.h
+            instantiation of "void mplapack_blas1::schedule<R,X,Complex,Root,Launcher>(Launcher &, mplapack_blas1::operation, long, const X *, const X *, mplapack_blas1::state<R> *) [with R=kernel_new::R, X=kernel_new::C, Complex=true, Root=kernel_new::Root, Launcher=kernel_new::Launcher]" at line 166 of /home/docker/mplapack-acceralation/benchmark/Rkernel_new.h
+            instantiation of "double kernel_new::gpu<H>::run() [with H=COMPLEX]" at line 276 of /home/docker/mplapack-acceralation/benchmark/Rkernel_new.h
+            instantiation of "void kernel_new::point<H>(kernel_new::shape, const std::string &, int, int, const std::string &) [with H=COMPLEX]" at line 336 of /home/docker/mplapack-acceralation/benchmark/Rkernel_new.h
+
+/tmp/factor01-cmake/external/i/MPC_CUDA/include/mpc_cuda/cu_mpc.h(325): warning #20040-D: a __host__ function("sqrt_int64") redeclared with __host__ __device__, hence treated as a __host__ __device__ function
+                                       int64_t sqrt_int64 (int64_t n);
+                                               ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+/tmp/factor01-cmake/external/i/MPC_CUDA/include/mpc_cuda/cu_freal.cuh(134): warning #63-D: shift count is too large
+          r.m[i]=(a<<SB)|(b>>(64-SB)); }
+                             ^
+          detected during:
+            instantiation of "cu_fp::cu_freal<PB> cu_fp::cu_freal<PB>::finalize(const cu_fp::cu_limb *, int, int, long, cu_fp::cu_limb, cu_fp::cu_limb, int) [with PB=512]" at line 148
+            instantiation of "cu_fp::cu_freal<PB> cu_fp::cu_freal<PB>::from_double(double) [with PB=512]" at line 21 of /home/docker/mplapack-acceralation/benchmark/../mpblas/optimized/mpfr/cuda/Cfactor_fixed_types.h
+            instantiation of "mplapack_blas_dev::factor_real<PB>::factor_real(double) [with PB=512]" at line 57 of /home/docker/mplapack-acceralation/benchmark/../mpblas/optimized/mpfr/cuda/Rinverse_types.h
+            instantiation of "void mplapack_mpfr_inverse::number(mplapack_blas_dev::factor_real<PB> &, double) [with PB=512]" at line 74 of /home/docker/mplapack-acceralation/benchmark/../mpblas/optimized/mpfr/cuda/Rinverse_types.h
+            instantiation of "mplapack_mpfr_inverse::value<Tag, Complex>::value(double) [with Tag=kernel_new::Tag, Complex=true]" at line 25 of /home/docker/mplapack-acceralation/benchmark/../mpblas/optimized/mpfr/cuda/../../common/Rtrisolve_jobs.h
+            [ 3 instantiation contexts not shown ]
+            instantiation of "void mplapack_mpfr_cuda::<unnamed>::factor_context<E>::execute(Job, long) [with E=mplapack_mpfr_inverse::<unnamed>::inverse_engine, Job=mplapack_mpfr_inverse::<unnamed>::checked_job<mplapack_trisolve::pivot_job<kernel_new::C, mplapack_trisolve::Carithmetic<kernel_new::C>>>]" at line 29 of /home/docker/mplapack-acceralation/benchmark/../mpblas/optimized/mpfr/cuda/Rinverse_device_body.cuh
+            instantiation of "void mplapack_mpfr_inverse::<unnamed>::launcher::launch(J, long) [with J=mplapack_trisolve::pivot_job<kernel_new::C, mplapack_trisolve::Carithmetic<kernel_new::C>>]" at line 54 of /home/docker/mplapack-acceralation/benchmark/../mpblas/optimized/mpfr/cuda/../../common/Rtrisolve_jobs.h
+            instantiation of "void mplapack_trisolve::schedule<V,A,L>(L &, const mplapack_trisolve::shape &, const V *, V *, V *) [with V=kernel_new::C, A=mplapack_trisolve::Carithmetic<kernel_new::C>, L=kernel_new::Launcher]" at line 165 of /home/docker/mplapack-acceralation/benchmark/Rkernel_new.h
+            instantiation of "double kernel_new::gpu<H>::run() [with H=COMPLEX]" at line 276 of /home/docker/mplapack-acceralation/benchmark/Rkernel_new.h
+            instantiation of "void kernel_new::point<H>(kernel_new::shape, const std::string &, int, int, const std::string &) [with H=COMPLEX]" at line 336 of /home/docker/mplapack-acceralation/benchmark/Rkernel_new.h
+
+/tmp/factor01-cmake/external/i/MPC_CUDA/include/mpc_cuda/cu_freal.cuh(134): warning #63-D: shift count is too large
+          r.m[i]=(a<<SB)|(b>>(64-SB)); }
+                             ^
+          detected during:
+            instantiation of "cu_fp::cu_freal<PB> cu_fp::cu_freal<PB>::finalize(const cu_fp::cu_limb *, int, int, long, cu_fp::cu_limb, cu_fp::cu_limb, int) [with PB=576]" at line 321
+            instantiation of "cu_fp::cu_freal<TO> cu_fp::cu_convert<TO,FROM>(const cu_fp::cu_freal<FROM> &) [with TO=576, FROM=512]" at line 104 of /tmp/factor01-cmake/external/i/MPC_CUDA/include/mpc_cuda/cu_fround.cuh
+            instantiation of "int cu_fp::fround_detail::div(cu_fp::cu_freal<PB> &, const cu_fp::cu_freal<PB> &, const cu_fp::cu_freal<PB> &, __nv_bool &) [with PB=512]" at line 140 of /tmp/factor01-cmake/external/i/MPC_CUDA/include/mpc_cuda/cu_fround.cuh
+            instantiation of "int cu_fp::cu_fdiv_rn(cu_fp::cu_freal<PB> &, const cu_fp::cu_freal<PB> &, const cu_fp::cu_freal<PB> &) [with PB=512]" at line 109 of /home/docker/mplapack-acceralation/benchmark/../mpblas/optimized/mpfr/cuda/blas3_kernel_cuda.h
+            instantiation of "void mplapack_mpfr_cuda::l3_fixed_engine<PB, TRSM>::div(mplapack_mpfr_cuda::l3_fixed_engine<PB, TRSM>::V &, const mplapack_mpfr_cuda::l3_fixed_engine<PB, TRSM>::V &, const mplapack_mpfr_cuda::l3_fixed_engine<PB, TRSM>::V &) const [with PB=512, TRSM=true]" at line 44 of /home/docker/mplapack-acceralation/benchmark/../mpblas/optimized/mpfr/cuda/Rinverse_types.h
+            [ 7 instantiation contexts not shown ]
+            instantiation of "void mplapack_mpfr_cuda::<unnamed>::factor_context<E>::execute(Job, long) [with E=mplapack_mpfr_inverse::<unnamed>::inverse_engine, Job=mplapack_mpfr_inverse::<unnamed>::checked_job<mplapack_blas1::leaves<kernel_new::R, kernel_new::C, true>>]" at line 29 of /home/docker/mplapack-acceralation/benchmark/../mpblas/optimized/mpfr/cuda/Rinverse_device_body.cuh
+            instantiation of "void mplapack_mpfr_inverse::<unnamed>::launcher::launch(J, long) [with J=mplapack_blas1::leaves<kernel_new::R, kernel_new::C, true>]" at line 33 of /home/docker/mplapack-acceralation/benchmark/../mpblas/optimized/mpfr/cuda/../../common/Rblas1_jobs_common.h
+            instantiation of "void mplapack_blas1::schedule<R,X,Complex,Root,Launcher>(Launcher &, mplapack_blas1::operation, long, const X *, const X *, mplapack_blas1::state<R> *) [with R=kernel_new::R, X=kernel_new::C, Complex=true, Root=kernel_new::Root, Launcher=kernel_new::Launcher]" at line 166 of /home/docker/mplapack-acceralation/benchmark/Rkernel_new.h
+            instantiation of "double kernel_new::gpu<H>::run() [with H=COMPLEX]" at line 276 of /home/docker/mplapack-acceralation/benchmark/Rkernel_new.h
+            instantiation of "void kernel_new::point<H>(kernel_new::shape, const std::string &, int, int, const std::string &) [with H=COMPLEX]" at line 336 of /home/docker/mplapack-acceralation/benchmark/Rkernel_new.h
+
+[100%] Linking CUDA device code CMakeFiles/bench_Rkernel_bench_mpfr_cuda_resident.dir/cmake_device_link.o
+nvlink warning : Stack size for entry function '__nv_static_60__dc2b9e22_30_Rkernel_bench_mpfr_resident_cu_16cd6638_2016341__ZN18mplapack_mpfr_cuda71_GLOBAL__N__dc2b9e22_30_Rkernel_bench_mpfr_resident_cu_16cd6638_201634113factor_kernelIN21mplapack_mpfr_inverse71_GLOBAL__N__dc2b9e22_30_Rkernel_bench_mpfr_resident_cu_16cd6638_201634111checked_jobIN20mplapack_inverse_gpu11inverse_jobINS5_18inverse_arithmeticINS2_5valueIN17mplapack_blas_dev16factor_fixed_tagILi512EEELb0EEENS8_ISB_Lb1EEELb1EEEEEEEEEvT_lPil' cannot be statically determined (target: sm_80)
+nvlink warning : Stack size for entry function '__nv_static_60__dc2b9e22_30_Rkernel_bench_mpfr_resident_cu_16cd6638_2016341__ZN18mplapack_mpfr_cuda71_GLOBAL__N__dc2b9e22_30_Rkernel_bench_mpfr_resident_cu_16cd6638_201634113factor_kernelIN21mplapack_mpfr_inverse71_GLOBAL__N__dc2b9e22_30_Rkernel_bench_mpfr_resident_cu_16cd6638_201634111checked_jobINS2_17blas1_element_jobINS2_5valueIN17mplapack_blas_dev16factor_fixed_tagILi512EEELb1EEENS6_IS9_Lb0EEEEEEEEEvT_lPil' cannot be statically determined (target: sm_80)
+nvlink warning : Stack size for entry function '__nv_static_60__dc2b9e22_30_Rkernel_bench_mpfr_resident_cu_16cd6638_2016341__ZN18mplapack_mpfr_cuda71_GLOBAL__N__dc2b9e22_30_Rkernel_bench_mpfr_resident_cu_16cd6638_201634113factor_kernelIN21mplapack_mpfr_inverse71_GLOBAL__N__dc2b9e22_30_Rkernel_bench_mpfr_resident_cu_16cd6638_201634111checked_jobIN14mplapack_blas16leavesINS2_5valueIN17mplapack_blas_dev16factor_fixed_tagILi512EEELb0EEENS7_ISA_Lb1EEELb1EEEEEEEvT_lPil' cannot be statically determined (target: sm_80)
+nvlink warning : Stack size for entry function '__nv_static_60__dc2b9e22_30_Rkernel_bench_mpfr_resident_cu_16cd6638_2016341__ZN18mplapack_mpfr_cuda71_GLOBAL__N__dc2b9e22_30_Rkernel_bench_mpfr_resident_cu_16cd6638_201634113factor_kernelIN21mplapack_mpfr_inverse71_GLOBAL__N__dc2b9e22_30_Rkernel_bench_mpfr_resident_cu_16cd6638_201634111checked_jobIN17mplapack_trisolve10column_jobINS2_5valueIN17mplapack_blas_dev16factor_fixed_tagILi512EEELb1EEENS5_11CarithmeticISB_EEEEEEEEvT_lPil' cannot be statically determined (target: sm_80)
+nvlink warning : Stack size for entry function '__nv_static_60__dc2b9e22_30_Rkernel_bench_mpfr_resident_cu_16cd6638_2016341__ZN18mplapack_mpfr_cuda71_GLOBAL__N__dc2b9e22_30_Rkernel_bench_mpfr_resident_cu_16cd6638_201634113factor_kernelIN21mplapack_mpfr_inverse71_GLOBAL__N__dc2b9e22_30_Rkernel_bench_mpfr_resident_cu_16cd6638_201634111checked_jobIN17mplapack_trisolve9pivot_jobINS2_5valueIN17mplapack_blas_dev16factor_fixed_tagILi512EEELb1EEENS5_11CarithmeticISB_EEEEEEEEvT_lPil' cannot be statically determined (target: sm_80)
+nvlink warning : Stack size for entry function '__nv_static_60__dc2b9e22_30_Rkernel_bench_mpfr_resident_cu_16cd6638_2016341__ZN18mplapack_mpfr_cuda71_GLOBAL__N__dc2b9e22_30_Rkernel_bench_mpfr_resident_cu_16cd6638_201634113factor_kernelIN21mplapack_mpfr_inverse71_GLOBAL__N__dc2b9e22_30_Rkernel_bench_mpfr_resident_cu_16cd6638_201634111checked_jobIN20mplapack_inverse_gpu11inverse_jobINS5_18inverse_arithmeticINS2_5valueIN17mplapack_blas_dev16factor_fixed_tagILi512EEELb0EEENS8_ISB_Lb1EEELb1EEEEEEEEEvT_lPil' cannot be statically determined (target: sm_90)
+nvlink warning : Stack size for entry function '__nv_static_60__dc2b9e22_30_Rkernel_bench_mpfr_resident_cu_16cd6638_2016341__ZN18mplapack_mpfr_cuda71_GLOBAL__N__dc2b9e22_30_Rkernel_bench_mpfr_resident_cu_16cd6638_201634113factor_kernelIN21mplapack_mpfr_inverse71_GLOBAL__N__dc2b9e22_30_Rkernel_bench_mpfr_resident_cu_16cd6638_201634111checked_jobINS2_17blas1_element_jobINS2_5valueIN17mplapack_blas_dev16factor_fixed_tagILi512EEELb1EEENS6_IS9_Lb0EEEEEEEEEvT_lPil' cannot be statically determined (target: sm_90)
+nvlink warning : Stack size for entry function '__nv_static_60__dc2b9e22_30_Rkernel_bench_mpfr_resident_cu_16cd6638_2016341__ZN18mplapack_mpfr_cuda71_GLOBAL__N__dc2b9e22_30_Rkernel_bench_mpfr_resident_cu_16cd6638_201634113factor_kernelIN21mplapack_mpfr_inverse71_GLOBAL__N__dc2b9e22_30_Rkernel_bench_mpfr_resident_cu_16cd6638_201634111checked_jobIN14mplapack_blas16leavesINS2_5valueIN17mplapack_blas_dev16factor_fixed_tagILi512EEELb0EEENS7_ISA_Lb1EEELb1EEEEEEEvT_lPil' cannot be statically determined (target: sm_90)
+nvlink warning : Stack size for entry function '__nv_static_60__dc2b9e22_30_Rkernel_bench_mpfr_resident_cu_16cd6638_2016341__ZN18mplapack_mpfr_cuda71_GLOBAL__N__dc2b9e22_30_Rkernel_bench_mpfr_resident_cu_16cd6638_201634113factor_kernelIN21mplapack_mpfr_inverse71_GLOBAL__N__dc2b9e22_30_Rkernel_bench_mpfr_resident_cu_16cd6638_201634111checked_jobIN17mplapack_trisolve10column_jobINS2_5valueIN17mplapack_blas_dev16factor_fixed_tagILi512EEELb1EEENS5_11CarithmeticISB_EEEEEEEEvT_lPil' cannot be statically determined (target: sm_90)
+nvlink warning : Stack size for entry function '__nv_static_60__dc2b9e22_30_Rkernel_bench_mpfr_resident_cu_16cd6638_2016341__ZN18mplapack_mpfr_cuda71_GLOBAL__N__dc2b9e22_30_Rkernel_bench_mpfr_resident_cu_16cd6638_201634113factor_kernelIN21mplapack_mpfr_inverse71_GLOBAL__N__dc2b9e22_30_Rkernel_bench_mpfr_resident_cu_16cd6638_201634111checked_jobIN17mplapack_trisolve9pivot_jobINS2_5valueIN17mplapack_blas_dev16factor_fixed_tagILi512EEELb1EEENS5_11CarithmeticISB_EEEEEEEEvT_lPil' cannot be statically determined (target: sm_90)
+[100%] Linking CXX executable Rkernel_bench.mpfr_cuda_resident
+[100%] Built target bench_Rkernel_bench_mpfr_cuda_resident

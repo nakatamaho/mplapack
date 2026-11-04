@@ -1,0 +1,608 @@
+
+### mpfr512_iCamax_gpu_1024_pilot-pre-eager
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iCamax fast 1024 --reps 1 --warmup 1
+OMP_NUM_THREADS=1
+mpfr512,iCamax,inc1,1024,gpu,8.8064e-05,0,1
+
+exit=0, elapsed=0.301170
+
+exit receipt: 0
+
+### mpfr512_iCamax_gpu_32768_pilot-pre-eager
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iCamax fast 32768 --reps 1 --warmup 1
+OMP_NUM_THREADS=1
+mpfr512,iCamax,inc1,32768,gpu,0.000223232001,0,1
+
+exit=0, elapsed=0.339023
+
+exit receipt: 0
+
+### mpfr512_iCamax_gpu_1024_pilot
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iCamax fast 1024 --reps 1 --warmup 1
+OMP_NUM_THREADS=1
+mpfr512,iCamax,inc1,1024,gpu,8.8064e-05,0,1
+
+exit=0, process_elapsed=0.274194
+charged_point_wall=0.322416
+
+exit receipt: 0
+
+### mpfr512_iCamax_gpu_32768_pilot
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iCamax fast 32768 --reps 1 --warmup 1
+OMP_NUM_THREADS=1
+mpfr512,iCamax,inc1,32768,gpu,0.000218112007,0,1
+
+exit=0, process_elapsed=0.335349
+charged_point_wall=0.382486
+
+exit receipt: 0
+
+### mpfr512_iCamax_gpu_1024_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iCamax fast 1024
+OMP_NUM_THREADS=1
+mpfr512,iCamax,inc1,1024,gpu,8.4991999e-05,0,3
+
+exit=0, process_elapsed=0.269705
+charged_point_wall=0.319662
+
+exit receipt: 0
+
+### mpfr512_iCamax_gpu_1280_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iCamax fast 1280
+OMP_NUM_THREADS=1
+mpfr512,iCamax,inc1,1280,gpu,9.01120007e-05,0,3
+
+exit=0, process_elapsed=0.271319
+charged_point_wall=0.321114
+
+exit receipt: 0
+
+### mpfr512_iCamax_gpu_1536_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iCamax fast 1536
+OMP_NUM_THREADS=1
+mpfr512,iCamax,inc1,1536,gpu,9.21600014e-05,0,3
+
+exit=0, process_elapsed=0.274025
+charged_point_wall=0.323081
+
+exit receipt: 0
+
+### mpfr512_iCamax_gpu_1792_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iCamax fast 1792
+OMP_NUM_THREADS=1
+mpfr512,iCamax,inc1,1792,gpu,9.21600014e-05,0,3
+
+exit=0, process_elapsed=0.273843
+charged_point_wall=0.320220
+
+exit receipt: 0
+
+### mpfr512_iCamax_gpu_2048_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iCamax fast 2048
+OMP_NUM_THREADS=1
+mpfr512,iCamax,inc1,2048,gpu,9.62560028e-05,0,3
+
+exit=0, process_elapsed=0.269751
+charged_point_wall=0.320833
+
+exit receipt: 0
+
+### mpfr512_iCamax_gpu_2560_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iCamax fast 2560
+OMP_NUM_THREADS=1
+mpfr512,iCamax,inc1,2560,gpu,0.000101375997,0,3
+
+exit=0, process_elapsed=0.271332
+charged_point_wall=0.318878
+
+exit receipt: 0
+
+### mpfr512_iCamax_gpu_3072_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iCamax fast 3072
+OMP_NUM_THREADS=1
+mpfr512,iCamax,inc1,3072,gpu,0.000101375997,0,3
+
+exit=0, process_elapsed=0.282688
+charged_point_wall=0.331398
+
+exit receipt: 0
+
+### mpfr512_iCamax_gpu_3584_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iCamax fast 3584
+OMP_NUM_THREADS=1
+mpfr512,iCamax,inc1,3584,gpu,0.000106495999,0,3
+
+exit=0, process_elapsed=0.277308
+charged_point_wall=0.324798
+
+exit receipt: 0
+
+### mpfr512_iCamax_gpu_4096_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iCamax fast 4096
+OMP_NUM_THREADS=1
+mpfr512,iCamax,inc1,4096,gpu,0.000108543999,0,3
+
+exit=0, process_elapsed=0.270258
+charged_point_wall=0.316429
+
+exit receipt: 0
+
+### mpfr512_iCamax_gpu_5120_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iCamax fast 5120
+OMP_NUM_THREADS=1
+mpfr512,iCamax,inc1,5120,gpu,0.000115712002,0,3
+
+exit=0, process_elapsed=0.270807
+charged_point_wall=0.319054
+
+exit receipt: 0
+
+### mpfr512_iCamax_gpu_6144_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iCamax fast 6144
+OMP_NUM_THREADS=1
+mpfr512,iCamax,inc1,6144,gpu,0.000118784003,0,3
+
+exit=0, process_elapsed=0.291403
+charged_point_wall=0.340220
+
+exit receipt: 0
+
+### mpfr512_iCamax_gpu_7168_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iCamax fast 7168
+OMP_NUM_THREADS=1
+mpfr512,iCamax,inc1,7168,gpu,0.000122879997,0,3
+
+exit=0, process_elapsed=0.281565
+charged_point_wall=0.329784
+
+exit receipt: 0
+
+### mpfr512_iCamax_gpu_8192_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iCamax fast 8192
+OMP_NUM_THREADS=1
+mpfr512,iCamax,inc1,8192,gpu,0.000125952005,0,3
+
+exit=0, process_elapsed=0.280548
+charged_point_wall=0.329563
+
+exit receipt: 0
+
+### mpfr512_iCamax_gpu_10240_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iCamax fast 10240
+OMP_NUM_THREADS=1
+mpfr512,iCamax,inc1,10240,gpu,0.000141312003,0,3
+
+exit=0, process_elapsed=0.297067
+charged_point_wall=0.346248
+
+exit receipt: 0
+
+### mpfr512_iCamax_gpu_12288_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iCamax fast 12288
+OMP_NUM_THREADS=1
+mpfr512,iCamax,inc1,12288,gpu,0.000144383997,0,3
+
+exit=0, process_elapsed=0.295111
+charged_point_wall=0.343532
+
+exit receipt: 0
+
+### mpfr512_iCamax_gpu_14336_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iCamax fast 14336
+OMP_NUM_THREADS=1
+mpfr512,iCamax,inc1,14336,gpu,0.000151552007,0,3
+
+exit=0, process_elapsed=0.302729
+charged_point_wall=0.348051
+
+exit receipt: 0
+
+### mpfr512_iCamax_gpu_16384_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iCamax fast 16384
+OMP_NUM_THREADS=1
+mpfr512,iCamax,inc1,16384,gpu,0.000157695994,0,3
+
+exit=0, process_elapsed=0.303320
+charged_point_wall=0.351848
+
+exit receipt: 0
+
+### mpfr512_iCamax_gpu_20480_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iCamax fast 20480
+OMP_NUM_THREADS=1
+mpfr512,iCamax,inc1,20480,gpu,0.000177151993,0,3
+
+exit=0, process_elapsed=0.311823
+charged_point_wall=0.363665
+
+exit receipt: 0
+
+### mpfr512_iCamax_gpu_24576_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iCamax fast 24576
+OMP_NUM_THREADS=1
+mpfr512,iCamax,inc1,24576,gpu,0.000186368003,0,3
+
+exit=0, process_elapsed=0.325784
+charged_point_wall=0.372945
+
+exit receipt: 0
+
+### mpfr512_iCamax_gpu_28672_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iCamax fast 28672
+OMP_NUM_THREADS=1
+mpfr512,iCamax,inc1,28672,gpu,0.000200703993,0,3
+
+exit=0, process_elapsed=0.326412
+charged_point_wall=0.374990
+
+exit receipt: 0
+
+### mpfr512_iCamax_gpu_32768_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iCamax fast 32768
+OMP_NUM_THREADS=1
+mpfr512,iCamax,inc1,32768,gpu,0.000214016005,0,3
+
+exit=0, process_elapsed=0.338594
+charged_point_wall=0.385898
+
+exit receipt: 0
+
+### mpfr512_iCamax_gpu_40960_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iCamax fast 40960
+OMP_NUM_THREADS=1
+mpfr512,iCamax,inc1,40960,gpu,0.000248832002,0,3
+
+exit=0, process_elapsed=0.356186
+charged_point_wall=0.403866
+
+exit receipt: 0
+
+### mpfr512_iCamax_gpu_49152_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iCamax fast 49152
+OMP_NUM_THREADS=1
+mpfr512,iCamax,inc1,49152,gpu,0.000273407996,0,3
+
+exit=0, process_elapsed=0.377820
+charged_point_wall=0.424930
+
+exit receipt: 0
+
+### mpfr512_iCamax_gpu_57344_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iCamax fast 57344
+OMP_NUM_THREADS=1
+mpfr512,iCamax,inc1,57344,gpu,0.000302080005,0,3
+
+exit=0, process_elapsed=0.381899
+charged_point_wall=0.428290
+
+exit receipt: 0
+
+### mpfr512_iCamax_gpu_65536_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iCamax fast 65536
+OMP_NUM_THREADS=1
+mpfr512,iCamax,inc1,65536,gpu,0.000334847987,0,3
+
+exit=0, process_elapsed=0.403192
+charged_point_wall=0.457321
+
+exit receipt: 0
+
+### mpfr512_iCamax_gpu_81920_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iCamax fast 81920
+OMP_NUM_THREADS=1
+mpfr512,iCamax,inc1,81920,gpu,0.000396288007,0,3
+
+exit=0, process_elapsed=0.432479
+charged_point_wall=0.481181
+
+exit receipt: 0
+
+### mpfr512_iCamax_gpu_98304_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iCamax fast 98304
+OMP_NUM_THREADS=1
+mpfr512,iCamax,inc1,98304,gpu,0.00044748801,0,3
+
+exit=0, process_elapsed=0.467427
+charged_point_wall=0.514837
+
+exit receipt: 0
+
+### mpfr512_iCamax_gpu_114688_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iCamax fast 114688
+OMP_NUM_THREADS=1
+mpfr512,iCamax,inc1,114688,gpu,0.000506879985,0,3
+
+exit=0, process_elapsed=0.491309
+charged_point_wall=0.541447
+
+exit receipt: 0
+
+### mpfr512_iCamax_gpu_131072_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iCamax fast 131072
+OMP_NUM_THREADS=1
+mpfr512,iCamax,inc1,131072,gpu,0.000562175989,0,3
+
+exit=0, process_elapsed=0.527067
+charged_point_wall=0.574313
+
+exit receipt: 0
+
+### mpfr512_iCamax_gpu_163840_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iCamax fast 163840
+OMP_NUM_THREADS=1
+mpfr512,iCamax,inc1,163840,gpu,0.000681984007,0,3
+
+exit=0, process_elapsed=0.594173
+charged_point_wall=0.642332
+
+exit receipt: 0
+
+### mpfr512_iCamax_gpu_196608_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iCamax fast 196608
+OMP_NUM_THREADS=1
+mpfr512,iCamax,inc1,196608,gpu,0.000787455976,0,3
+
+exit=0, process_elapsed=0.659768
+charged_point_wall=0.711781
+
+exit receipt: 0
+
+### mpfr512_iCamax_gpu_229376_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iCamax fast 229376
+OMP_NUM_THREADS=1
+mpfr512,iCamax,inc1,229376,gpu,0.000903168023,0,3
+
+exit=0, process_elapsed=0.778445
+charged_point_wall=0.825982
+
+exit receipt: 0
+
+### mpfr512_iCamax_gpu_262144_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iCamax fast 262144
+OMP_NUM_THREADS=1
+mpfr512,iCamax,inc1,262144,gpu,0.00101990402,0,3
+
+exit=0, process_elapsed=0.770975
+charged_point_wall=0.815865
+
+exit receipt: 0
+
+### mpfr512_iCamax_gpu_327680_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iCamax fast 327680
+OMP_NUM_THREADS=1
+mpfr512,iCamax,inc1,327680,gpu,0.00124927998,0,3
+
+exit=0, process_elapsed=0.913495
+charged_point_wall=0.959736
+
+exit receipt: 0
+
+### mpfr512_iCamax_gpu_393216_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iCamax fast 393216
+OMP_NUM_THREADS=1
+mpfr512,iCamax,inc1,393216,gpu,0.001471488,0,3
+
+exit=0, process_elapsed=1.040126
+charged_point_wall=1.087412
+
+exit receipt: 0
+
+### mpfr512_iCamax_gpu_458752_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iCamax fast 458752
+OMP_NUM_THREADS=1
+mpfr512,iCamax,inc1,458752,gpu,0.00168755198,0,3
+
+exit=0, process_elapsed=1.148944
+charged_point_wall=1.195448
+
+exit receipt: 0
+
+### mpfr512_iCamax_gpu_524288_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iCamax fast 524288
+OMP_NUM_THREADS=1
+mpfr512,iCamax,inc1,524288,gpu,0.00192204797,0,3
+
+exit=0, process_elapsed=1.292864
+charged_point_wall=1.342042
+
+exit receipt: 0
+
+### mpfr512_iCamax_gpu_655360_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iCamax fast 655360
+OMP_NUM_THREADS=1
+mpfr512,iCamax,inc1,655360,gpu,0.00237260795,0,3
+
+exit=0, process_elapsed=1.542338
+charged_point_wall=1.590719
+
+exit receipt: 0
+
+### mpfr512_iCamax_gpu_786432_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iCamax fast 786432
+OMP_NUM_THREADS=1
+mpfr512,iCamax,inc1,786432,gpu,0.00281190395,0,3
+
+exit=0, process_elapsed=1.789649
+charged_point_wall=1.837125
+
+exit receipt: 0
+
+### mpfr512_iCamax_gpu_917504_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iCamax fast 917504
+OMP_NUM_THREADS=1
+mpfr512,iCamax,inc1,917504,gpu,0.00327270389,0,3
+
+exit=0, process_elapsed=2.048715
+charged_point_wall=2.104290
+
+exit receipt: 0
+
+### mpfr512_iCamax_gpu_1048576_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iCamax fast 1048576
+OMP_NUM_THREADS=1
+mpfr512,iCamax,inc1,1048576,gpu,0.00373145604,0,3
+
+exit=0, process_elapsed=2.299038
+charged_point_wall=2.344953
+
+exit receipt: 0
+
+### mpfr512_iCamax_gpu_1310720_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iCamax fast 1310720
+OMP_NUM_THREADS=1
+mpfr512,iCamax,inc1,1310720,gpu,0.00464896011,0,3
+
+exit=0, process_elapsed=2.771204
+charged_point_wall=2.819556
+
+exit receipt: 0
+
+### mpfr512_iCamax_gpu_1572864_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iCamax fast 1572864
+OMP_NUM_THREADS=1
+mpfr512,iCamax,inc1,1572864,gpu,0.00553471994,0,3
+
+exit=0, process_elapsed=3.313745
+charged_point_wall=3.366897
+
+exit receipt: 0
+
+### mpfr512_iCamax_gpu_1835008_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iCamax fast 1835008
+OMP_NUM_THREADS=1
+mpfr512,iCamax,inc1,1835008,gpu,0.00642355204,0,3
+
+exit=0, process_elapsed=3.810150
+charged_point_wall=3.859653
+
+exit receipt: 0
+
+### mpfr512_iCamax_gpu_2097152_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iCamax fast 2097152
+OMP_NUM_THREADS=1
+mpfr512,iCamax,inc1,2097152,gpu,0.00733286381,0,3
+
+exit=0, process_elapsed=4.354645
+charged_point_wall=4.405062
+
+exit receipt: 0
+
+### mpfr512_iCamax_gpu_2621440_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iCamax fast 2621440
+OMP_NUM_THREADS=1
+mpfr512,iCamax,inc1,2621440,gpu,0.00914431953,0,1
+
+exit=0, process_elapsed=5.292362
+charged_point_wall=5.341682
+
+exit receipt: 0
+
+### mpfr512_iCamax_gpu_3145728_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iCamax fast 3145728
+OMP_NUM_THREADS=1
+mpfr512,iCamax,inc1,3145728,gpu,0.0109772797,0,1
+
+exit=0, process_elapsed=6.261527
+charged_point_wall=6.311000
+
+exit receipt: 0
+
+### mpfr512_iCamax_gpu_3670016_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iCamax fast 3670016
+OMP_NUM_THREADS=1
+mpfr512,iCamax,inc1,3670016,gpu,0.0128010244,0,1
+
+exit=0, process_elapsed=7.291576
+charged_point_wall=7.338026
+
+exit receipt: 0
+
+### mpfr512_iCamax_gpu_4194304_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iCamax fast 4194304
+OMP_NUM_THREADS=1
+mpfr512,iCamax,inc1,4194304,gpu,0.0145397758,0,1
+
+exit=0, process_elapsed=8.297420
+charged_point_wall=8.345901
+
+exit receipt: 0
+
+### mpfr512_iCamax_gpu_5242880_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iCamax fast 5242880
+OMP_NUM_THREADS=1
+mpfr512,iCamax,inc1,5242880,gpu,0.0180910072,0,1
+
+exit=0, process_elapsed=10.321779
+charged_point_wall=10.368556
+
+exit receipt: 0
+
+### mpfr512_iCamax_gpu_6291456_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iCamax fast 6291456
+OMP_NUM_THREADS=1
+mpfr512,iCamax,inc1,6291456,gpu,0.0218480644,0,1
+
+exit=0, process_elapsed=12.056555
+charged_point_wall=12.102077
+
+exit receipt: 0
+
+### mpfr512_iCamax_gpu_7340032_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iCamax fast 7340032
+OMP_NUM_THREADS=1
+mpfr512,iCamax,inc1,7340032,gpu,0.0253829117,0,1
+
+exit=0, process_elapsed=14.179092
+charged_point_wall=14.226552
+
+exit receipt: 0
+
+### mpfr512_iCamax_gpu_8388608_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iCamax fast 8388608
+OMP_NUM_THREADS=1
+mpfr512,iCamax,inc1,8388608,gpu,0.028930048,0,1
+
+exit=0, process_elapsed=16.132535
+charged_point_wall=16.182057
+
+exit receipt: 0
+
+### mpfr512_iCamax_gpu_10485760_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iCamax fast 10485760
+OMP_NUM_THREADS=1
+mpfr512,iCamax,inc1,10485760,gpu,0.0362700806,0,1
+
+exit=0, process_elapsed=19.960120
+charged_point_wall=20.005056
+
+exit receipt: 0
+
+### mpfr512_iCamax_gpu_12582912_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iCamax fast 12582912
+OMP_NUM_THREADS=1
+mpfr512,iCamax,inc1,12582912,gpu,0.0436070404,0,1
+
+exit=0, process_elapsed=23.916065
+charged_point_wall=23.962028
+
+exit receipt: 0
+
+### mpfr512_iCamax_gpu_14680064_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iCamax fast 14680064
+OMP_NUM_THREADS=1
+mpfr512,iCamax,inc1,14680064,gpu,0.050847744,0,1
+
+exit=0, process_elapsed=28.080582
+charged_point_wall=28.127122
+
+exit receipt: 0
+
+### mpfr512_iCamax_gpu_16777216_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iCamax fast 16777216
+OMP_NUM_THREADS=1
+mpfr512,iCamax,inc1,16777216,gpu,0.0580259857,0,1
+
+exit=0, process_elapsed=31.785967
+charged_point_wall=31.834354
+
+exit receipt: 0

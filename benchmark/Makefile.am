@@ -22,7 +22,7 @@ dist_bench_DATA = \
 # Source templates for go.*.sh (included in "make dist").
 # -----------------------------------------------------------------------------
 EXTRA_DIST = run_solver_bench.py run_factor_dispatch_bench.py test_factor_dispatch_bench.py test_factor_gate_smoke.py Rsolver_legacy_bench.h \
-    kernel_bench.py kernel_bench_compare.py plot_kernel_bench.py plot_sweep.py README.kernel_bench.md \
+    kernel_bench.py kernel_bench_compare.py plot_kernel_bench.py plot_sweep.py README.kernel_bench.md Rkernel_new.h kernel_new.py test_kernel_new.py \
     results/2026/x86_64-pc-linux-gnu-Ryzen-Threadripper-3970X-TeslaA100/factorization-goal08/solvers.csv \
     results/2026/x86_64-pc-linux-gnu-Ryzen-Threadripper-3970X-TeslaA100/factorization-goal08/mpfr-factor-regression.csv \
     results/2026/x86_64-pc-linux-gnu-Ryzen-Threadripper-3970X-TeslaA100/factorization-goal08b/README.md \
@@ -98,10 +98,18 @@ go.%.sh: $(srcdir)/go.%.sh.in
 # the flags of the dd/td/qd CUDA libraries (no contraction, sm_80 and sm_90).
 # -----------------------------------------------------------------------------
 SUFFIXES = .cu
+KERNEL_BENCH_CUDA_ARCH_FLAGS = -gencode arch=compute_80,code=sm_80 -gencode arch=compute_90,code=sm_90
 KERNEL_BENCH_NVCC_FLAGS = -U_GNU_SOURCE -D_XOPEN_SOURCE=700 -std=c++17 -fmad=false -Xcompiler=-ffp-contract=off -O3 -m64 \
-    -gencode arch=compute_80,code=sm_80 -gencode arch=compute_90,code=sm_90 \
+    $(KERNEL_BENCH_CUDA_ARCH_FLAGS) -MMD -MP -MF $(DEPDIR)/$(@F).Po -MT $@ \
     -I$(top_builddir)/include -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) $(CUDA_CFLAGS)
+# Track the shared production schedules and arithmetic headers too; otherwise
+# an updated library could silently be compared with an old benchmark kernel.
+KERNEL_BENCH_CUDA_DEPS = $(addprefix $(DEPDIR)/,Rkernel_bench_dd_cuda.o.Po Rkernel_bench_td_cuda.o.Po Rkernel_bench_qd_cuda.o.Po Rkernel_bench_mpfr_resident.o.Po)
+-include $(KERNEL_BENCH_CUDA_DEPS)
+CLEANFILES += $(KERNEL_BENCH_CUDA_DEPS)
+Rkernel_bench_dd_cuda.o Rkernel_bench_td_cuda.o Rkernel_bench_qd_cuda.o: Makefile $(srcdir)/Rkernel_bench.cpp $(srcdir)/Rkernel_new.h
 .cu.o:
+	$(MKDIR_P) $(DEPDIR)
 	$(NVCC) $(KERNEL_BENCH_NVCC_FLAGS) -o $@ -c $<
 
 # -----------------------------------------------------------------------------

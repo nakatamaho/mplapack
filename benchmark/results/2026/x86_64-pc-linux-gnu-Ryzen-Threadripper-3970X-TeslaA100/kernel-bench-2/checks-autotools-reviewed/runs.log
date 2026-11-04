@@ -1,0 +1,2432 @@
+
+### dd_Cdotc_200_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_opt Cdotc fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+dd,Cdotc,inc1,200,cpu,1.6482e-05,0.0970755976,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_Cdotc_200_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_cuda_kernel Cdotc fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+dd,Cdotc,inc1,200,gpu,3.27679999e-05,0.0488281251,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_Cdotc_64_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_opt Cdotc fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+dd,Cdotc,inc1,64,cpu,8.476e-06,0.0604058518,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_Cdotc_64_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_cuda_kernel Cdotc fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+dd,Cdotc,inc1,64,gpu,2.45760009e-05,0.0208333326,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_Cdotu_200_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_opt Cdotu fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+dd,Cdotu,inc1,200,cpu,1.064e-05,0.15037594,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_Cdotu_200_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_cuda_kernel Cdotu fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+dd,Cdotu,inc1,200,gpu,3.27679999e-05,0.0488281251,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_Cdotu_64_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_opt Cdotu fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+dd,Cdotu,inc1,64,cpu,1.067e-05,0.0479850047,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_Cdotu_64_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_cuda_kernel Cdotu fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+dd,Cdotu,inc1,64,gpu,2.45760009e-05,0.0208333326,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_Ctbsv_200_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_opt Ctbsv fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+dd,Ctbsv,UNN_k64,200,cpu,0.000293539,0.294884155,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_Ctbsv_200_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_cuda_kernel Ctbsv fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+dd,Ctbsv,UNN_k64,200,gpu,0.00165375996,0.0523413327,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_Ctbsv_64_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_opt Ctbsv fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+dd,Ctbsv,UNN_k64,64,cpu,5.8681e-05,0.279204513,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_Ctbsv_64_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_cuda_kernel Ctbsv fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+dd,Ctbsv,UNN_k64,64,gpu,0.000525312006,0.0311890834,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_Ctpsv_200_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_opt Ctpsv fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+dd,Ctpsv,UNN_k64,200,cpu,0.000526823,0.303707317,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_Ctpsv_200_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_cuda_kernel Ctpsv fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+dd,Ctpsv,UNN_k64,200,gpu,0.00167936003,0.0952743884,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_Ctpsv_64_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_opt Ctpsv fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+dd,Ctpsv,UNN_k64,64,cpu,5.8301e-05,0.281024339,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_Ctpsv_64_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_cuda_kernel Ctpsv fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+dd,Ctpsv,UNN_k64,64,gpu,0.000515071988,0.0318091459,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_Ctrsv_200_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_opt Ctrsv fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+dd,Ctrsv,UNN_k64,200,cpu,0.00018387,0.870180018,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_Ctrsv_200_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_cuda_kernel Ctrsv fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+dd,Ctrsv,UNN_k64,200,gpu,0.00166502404,0.0960947085,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_Ctrsv_64_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_opt Ctrsv fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+dd,Ctrsv,UNN_k64,64,cpu,0.000102596,0.159694335,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_Ctrsv_64_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_cuda_kernel Ctrsv fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+dd,Ctrsv,UNN_k64,64,gpu,0.000520192027,0.0314960614,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_RCasum_200_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_opt RCasum fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+dd,RCasum,inc1,200,cpu,1.1943e-05,0.0334924223,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_RCasum_200_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_cuda_kernel RCasum fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+dd,RCasum,inc1,200,gpu,3.27679999e-05,0.0122070313,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_RCasum_64_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_opt RCasum fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+dd,RCasum,inc1,64,cpu,9.047e-06,0.0141483365,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_RCasum_64_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_cuda_kernel RCasum fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+dd,RCasum,inc1,64,gpu,2.45760009e-05,0.00520833315,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_RCnrm2_200_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_opt RCnrm2 fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+dd,RCnrm2,inc1,200,cpu,6.0004e-05,0.0133324445,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_RCnrm2_200_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_cuda_kernel RCnrm2 fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+dd,RCnrm2,inc1,200,gpu,5.63200004e-05,0.0142045453,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_RCnrm2_64_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_opt RCnrm2 fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+dd,RCnrm2,inc1,64,cpu,2.8524e-05,0.00897489833,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_RCnrm2_64_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_cuda_kernel RCnrm2 fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+dd,RCnrm2,inc1,64,gpu,4.30079997e-05,0.005952381,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_Rasum_200_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_opt Rasum fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+dd,Rasum,inc1,200,cpu,1.1051e-05,0.0180979097,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_Rasum_200_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_cuda_kernel Rasum fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+dd,Rasum,inc1,200,gpu,3.27679999e-05,0.00610351564,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_Rasum_64_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_opt Rasum fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+dd,Rasum,inc1,64,cpu,8.636e-06,0.00741083835,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_Rasum_64_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_cuda_kernel Rasum fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+dd,Rasum,inc1,64,gpu,2.45760009e-05,0.00260416657,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_Raxpy_200_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_opt Raxpy fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+dd,Raxpy,inc1,200,cpu,6.723e-06,0.0594972483,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_Raxpy_200_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_cuda_kernel Raxpy fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+dd,Raxpy,inc1,200,gpu,6.14400022e-06,0.0651041644,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_Raxpy_64_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_opt Raxpy fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+dd,Raxpy,inc1,64,cpu,6.422e-06,0.0199314855,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_Raxpy_64_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_cuda_kernel Raxpy fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+dd,Raxpy,inc1,64,gpu,5.11999987e-06,0.0250000006,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_Rcopy_200_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_opt Rcopy fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+dd,Rcopy,inc1,200,cpu,7.083e-06,0,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_Rcopy_200_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_cuda_kernel Rcopy fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+dd,Rcopy,inc1,200,gpu,5.11999987e-06,0,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_Rcopy_64_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_opt Rcopy fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+dd,Rcopy,inc1,64,cpu,6.663e-06,0,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_Rcopy_64_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_cuda_kernel Rcopy fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+dd,Rcopy,inc1,64,gpu,6.14400022e-06,0,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_Rdot_200_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_opt Rdot fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+dd,Rdot,inc1,200,cpu,8.807e-06,0.0454184172,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_Rdot_200_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_cuda_kernel Rdot fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+dd,Rdot,inc1,200,gpu,3.37920003e-05,0.0118371211,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_Rdot_64_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_opt Rdot fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+dd,Rdot,inc1,64,cpu,4.979e-06,0.0257079735,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_Rdot_64_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_cuda_kernel Rdot fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+dd,Rdot,inc1,64,gpu,2.45760009e-05,0.00520833315,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_Rnrm2_200_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_opt Rnrm2 fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+dd,Rnrm2,inc1,200,cpu,4.0888e-05,0.00978282137,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_Rnrm2_200_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_cuda_kernel Rnrm2 fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+dd,Rnrm2,inc1,200,gpu,5.01759984e-05,0.00797193904,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_Rnrm2_64_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_opt Rnrm2 fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+dd,Rnrm2,inc1,64,cpu,1.7233e-05,0.00742760982,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_Rnrm2_64_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_cuda_kernel Rnrm2 fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+dd,Rnrm2,inc1,64,gpu,3.68640013e-05,0.0034722221,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_Rtbsv_200_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_opt Rtbsv fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+dd,Rtbsv,UNN_k64,200,cpu,6.833e-05,0.316698376,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_Rtbsv_200_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_cuda_kernel Rtbsv fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+dd,Rtbsv,UNN_k64,200,gpu,0.00133632004,0.0161937255,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_Rtbsv_64_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_opt Rtbsv fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+dd,Rtbsv,UNN_k64,64,cpu,2.1672e-05,0.188999631,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_Rtbsv_64_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_cuda_kernel Rtbsv fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+dd,Rtbsv,UNN_k64,64,gpu,0.000419840008,0.00975609737,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_Rtpsv_200_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_opt Rtpsv fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+dd,Rtpsv,UNN_k64,200,cpu,0.000119127,0.335776104,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_Rtpsv_200_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_cuda_kernel Rtpsv fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+dd,Rtpsv,UNN_k64,200,gpu,0.00134860802,0.0296602122,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_Rtpsv_64_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_opt Rtpsv fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+dd,Rtpsv,UNN_k64,64,cpu,2.1852e-05,0.187442797,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_Rtpsv_64_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_cuda_kernel Rtpsv fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+dd,Rtpsv,UNN_k64,64,gpu,0.000418816,0.0097799511,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_Rtrsv_200_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_opt Rtrsv fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+dd,Rtrsv,UNN_k64,200,cpu,5.2009e-05,0.769097656,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_Rtrsv_200_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_cuda_kernel Rtrsv fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+dd,Rtrsv,UNN_k64,200,gpu,0.00131993604,0.0303044988,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_Rtrsv_64_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_opt Rtrsv fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+dd,Rtrsv,UNN_k64,64,cpu,2.9586e-05,0.138443859,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_Rtrsv_64_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_cuda_kernel Rtrsv fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+dd,Rtrsv,UNN_k64,64,gpu,0.000418816,0.0097799511,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_iCamax_200_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_opt iCamax fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+dd,iCamax,inc1,200,cpu,3.326e-06,0,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_iCamax_200_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_cuda_kernel iCamax fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+dd,iCamax,inc1,200,gpu,3.48160006e-05,0,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_iCamax_64_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_opt iCamax fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+dd,iCamax,inc1,64,cpu,1.222e-06,0,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_iCamax_64_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_cuda_kernel iCamax fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+dd,iCamax,inc1,64,gpu,2.55999994e-05,0,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_iRamax_200_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_opt iRamax fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+dd,iRamax,inc1,200,cpu,2.164e-06,0,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_iRamax_200_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_cuda_kernel iRamax fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+dd,iRamax,inc1,200,gpu,3.48160006e-05,0,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_iRamax_64_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_opt iRamax fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+dd,iRamax,inc1,64,cpu,7.31e-07,0,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_iRamax_64_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_cuda_kernel iRamax fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+dd,iRamax,inc1,64,gpu,2.55999994e-05,0,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Cdotc_200_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt Cdotc fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+mpfr512,Cdotc,inc1,200,cpu,0.000402547,0.00397469115,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Cdotc_200_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_cuda_resident Cdotc fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+mpfr512,Cdotc,inc1,200,gpu,0.000194560006,0.00822368395,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Cdotc_64_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt Cdotc fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+mpfr512,Cdotc,inc1,64,cpu,0.000254194,0.00201420962,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Cdotc_64_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_cuda_resident Cdotc fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+mpfr512,Cdotc,inc1,64,gpu,0.000146431997,0.00349650356,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Cdotu_200_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt Cdotu fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+mpfr512,Cdotu,inc1,200,cpu,0.000286815,0.00557850879,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Cdotu_200_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_cuda_resident Cdotu fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+mpfr512,Cdotu,inc1,200,gpu,0.000185343996,0.00863259689,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Cdotu_64_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt Cdotu fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+mpfr512,Cdotu,inc1,64,cpu,0.000182938,0.00279876242,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Cdotu_64_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_cuda_resident Cdotu fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+mpfr512,Cdotu,inc1,64,gpu,0.000149504006,0.0034246574,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Cgetri_200_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt Cgetri fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+mpfr512,Cgetri,UN,200,cpu,0.238700575,0.178745555,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Cgetri_200_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_cuda_resident Cgetri fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+mpfr512,Cgetri,UN,200,gpu,6.83396631,0.00624332412,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Cgetri_64_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt Cgetri fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+mpfr512,Cgetri,UN,64,cpu,0.102774198,0.0136036219,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Cgetri_64_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_cuda_resident Cgetri fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+mpfr512,Cgetri,UN,64,gpu,1.75865247,0.000794984433,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Clauum_200_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt Clauum fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+mpfr512,Clauum,UN,200,cpu,0.142580328,0.0753736518,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Clauum_200_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_cuda_resident Clauum fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+mpfr512,Clauum,UN,200,gpu,6.02240088,0.00178447105,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Clauum_64_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt Clauum fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+mpfr512,Clauum,UN,64,cpu,0.029188935,0.0122566993,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Clauum_64_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_cuda_resident Clauum fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+mpfr512,Clauum,UN,64,gpu,1.70598303,0.000209709003,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Cpotri_200_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt Cpotri fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+mpfr512,Cpotri,UN,200,cpu,0.268951926,0.0793202475,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Cpotri_200_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_cuda_resident Cpotri fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+mpfr512,Cpotri,UN,200,gpu,12.5095088,0.00170536939,1
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Cpotri_64_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt Cpotri fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+mpfr512,Cpotri,UN,64,cpu,0.056162751,0.0124468737,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Cpotri_64_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_cuda_resident Cpotri fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+mpfr512,Cpotri,UN,64,gpu,3.34485913,0.000208992558,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Ctbsv_200_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt Ctbsv fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+mpfr512,Ctbsv,UNN_k64,200,cpu,0.00666721,0.0129829419,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Ctbsv_200_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_cuda_resident Ctbsv fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+mpfr512,Ctbsv,UNN_k64,200,gpu,0.0299489288,0.00289025362,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Ctbsv_64_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt Ctbsv fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+mpfr512,Ctbsv,UNN_k64,64,cpu,0.001207449,0.0135691031,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Ctbsv_64_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_cuda_resident Ctbsv fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+mpfr512,Ctbsv,UNN_k64,64,gpu,0.00949145603,0.00172618405,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Ctpsv_200_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt Ctpsv fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+mpfr512,Ctpsv,UNN_k64,200,cpu,0.01226278,0.0130476124,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Ctpsv_200_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_cuda_resident Ctpsv fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+mpfr512,Ctpsv,UNN_k64,200,gpu,0.0300584965,0.0053229542,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Ctpsv_64_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt Ctpsv fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+mpfr512,Ctpsv,UNN_k64,64,cpu,0.001208661,0.0135554965,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Ctpsv_64_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_cuda_resident Ctpsv fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+mpfr512,Ctpsv,UNN_k64,64,gpu,0.00949043179,0.00172637035,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Ctrsv_200_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt Ctrsv fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+mpfr512,Ctrsv,UNN_k64,200,cpu,0.012165385,0.0131520704,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Ctrsv_200_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_cuda_resident Ctrsv fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+mpfr512,Ctrsv,UNN_k64,200,gpu,0.03006464,0.00532186648,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Ctrsv_64_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt Ctrsv fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+mpfr512,Ctrsv,UNN_k64,64,cpu,0.00122463,0.0133787348,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Ctrsv_64_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_cuda_resident Ctrsv fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+mpfr512,Ctrsv,UNN_k64,64,gpu,0.00949657631,0.00172525334,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Ctrtri_200_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt Ctrtri fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+mpfr512,Ctrtri,UN,200,cpu,0.12424915,0.0858533036,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Ctrtri_200_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_cuda_resident Ctrtri fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+mpfr512,Ctrtri,UN,200,gpu,6.48593408,0.00164466673,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Ctrtri_64_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt Ctrtri fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+mpfr512,Ctrtri,UN,64,cpu,0.025898293,0.013502666,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Ctrtri_64_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_cuda_resident Ctrtri fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+mpfr512,Ctrtri,UN,64,gpu,1.63904614,0.000213353359,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_RCasum_200_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt RCasum fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+mpfr512,RCasum,inc1,200,cpu,0.000243052,0.00164573836,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_RCasum_200_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_cuda_resident RCasum fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+mpfr512,RCasum,inc1,200,gpu,9.72800031e-05,0.00411184197,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_RCasum_64_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt RCasum fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+mpfr512,RCasum,inc1,64,cpu,0.000164844,0.000776491713,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_RCasum_64_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_cuda_resident RCasum fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+mpfr512,RCasum,inc1,64,gpu,7.16800019e-05,0.00178571424,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_RCnrm2_200_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt RCnrm2 fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+mpfr512,RCnrm2,inc1,200,cpu,0.000482298,0.00165872552,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_RCnrm2_200_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_cuda_resident RCnrm2 fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+mpfr512,RCnrm2,inc1,200,gpu,0.00148992002,0.000536941574,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_RCnrm2_64_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt RCnrm2 fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+mpfr512,RCnrm2,inc1,64,cpu,0.000185873,0.00137728449,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_RCnrm2_64_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_cuda_resident RCnrm2 fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+mpfr512,RCnrm2,inc1,64,gpu,0.00116121602,0.00022045855,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Rasum_200_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt Rasum fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+mpfr512,Rasum,inc1,200,cpu,0.000141018,0.00141825866,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Rasum_200_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_cuda_resident Rasum fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+mpfr512,Rasum,inc1,200,gpu,9.42080021e-05,0.00212296191,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Rasum_64_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt Rasum fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+mpfr512,Rasum,inc1,64,cpu,4.8021e-05,0.00133275026,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Rasum_64_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_cuda_resident Rasum fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+mpfr512,Rasum,inc1,64,gpu,6.96320012e-05,0.000919117631,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Raxpy_200_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt Raxpy fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+mpfr512,Raxpy,inc1,200,cpu,8.847e-06,0.0452130666,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Raxpy_200_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_cuda_resident Raxpy fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+mpfr512,Raxpy,inc1,200,gpu,2.04799995e-05,0.0195312505,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Raxpy_64_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt Raxpy fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+mpfr512,Raxpy,inc1,64,cpu,8.345e-06,0.0153385261,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Raxpy_64_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_cuda_resident Raxpy fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+mpfr512,Raxpy,inc1,64,gpu,2.04799995e-05,0.00625000016,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Rcopy_200_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt Rcopy fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+mpfr512,Rcopy,inc1,200,cpu,6.994e-06,0,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Rcopy_200_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_cuda_resident Rcopy fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+mpfr512,Rcopy,inc1,200,gpu,7.1680001e-06,0,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Rcopy_64_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt Rcopy fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+mpfr512,Rcopy,inc1,64,cpu,6.652e-06,0,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Rcopy_64_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_cuda_resident Rcopy fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+mpfr512,Rcopy,inc1,64,gpu,7.1680001e-06,0,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Rdot_200_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt Rdot fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+mpfr512,Rdot,inc1,200,cpu,0.000145006,0.00275850654,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Rdot_200_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_cuda_resident Rdot fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+mpfr512,Rdot,inc1,200,gpu,0.000120832004,0.00331038126,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Rdot_64_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt Rdot fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+mpfr512,Rdot,inc1,64,cpu,4.8161e-05,0.00265775212,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Rdot_64_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_cuda_resident Rdot fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+mpfr512,Rdot,inc1,64,gpu,8.8064e-05,0.00145348837,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Rgetri_200_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt Rgetri fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+mpfr512,Rgetri,UN,200,cpu,0.060951761,0.17500178,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Rgetri_200_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_cuda_resident Rgetri fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+mpfr512,Rgetri,UN,200,gpu,1.47464197,0.00723339421,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Rgetri_64_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt Rgetri fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+mpfr512,Rgetri,UN,64,cpu,0.024088901,0.0145098082,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Rgetri_64_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_cuda_resident Rgetri fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+mpfr512,Rgetri,UN,64,gpu,0.381750275,0.000915586331,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Rlauum_200_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt Rlauum fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+mpfr512,Rlauum,UN,200,cpu,0.035551051,0.0755730119,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Rlauum_200_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_cuda_resident Rlauum fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+mpfr512,Rlauum,UN,200,gpu,1.26639929,0.00212152677,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Rlauum_64_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt Rlauum fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+mpfr512,Rlauum,UN,64,cpu,0.006411563,0.0139497966,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Rlauum_64_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_cuda_resident Rlauum fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+mpfr512,Rlauum,UN,64,gpu,0.350677002,0.000255049517,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Rnrm2_200_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt Rnrm2 fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+mpfr512,Rnrm2,inc1,200,cpu,0.000274532,0.00145702505,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Rnrm2_200_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_cuda_resident Rnrm2 fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+mpfr512,Rnrm2,inc1,200,gpu,0.00124723196,0.000320710191,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Rnrm2_64_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt Rnrm2 fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+mpfr512,Rnrm2,inc1,64,cpu,0.000185153,0.000691320151,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Rnrm2_64_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_cuda_resident Rnrm2 fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+mpfr512,Rnrm2,inc1,64,gpu,0.000994304001,0.000128733265,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Rpotri_200_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt Rpotri fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+mpfr512,Rpotri,UN,200,cpu,0.071462512,0.0746312043,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Rpotri_200_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_cuda_resident Rpotri fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+mpfr512,Rpotri,UN,200,gpu,2.66406616,0.00200195228,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Rpotri_64_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt Rpotri fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+mpfr512,Rpotri,UN,64,cpu,0.012267617,0.0142458529,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Rpotri_64_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_cuda_resident Rpotri fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+mpfr512,Rpotri,UN,64,gpu,0.702390259,0.000248811347,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Rtbsv_200_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt Rtbsv fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+mpfr512,Rtbsv,UNN_k64,200,cpu,0.001474246,0.01467869,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Rtbsv_200_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_cuda_resident Rtbsv fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+mpfr512,Rtbsv,UNN_k64,200,gpu,0.0169943047,0.00127336778,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Rtbsv_64_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt Rtbsv fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+mpfr512,Rtbsv,UNN_k64,64,cpu,0.000277688,0.0147503673,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Rtbsv_64_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_cuda_resident Rtbsv fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+mpfr512,Rtbsv,UNN_k64,64,gpu,0.00540672016,0.000757575735,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Rtpsv_200_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt Rtpsv fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+mpfr512,Rtpsv,UNN_k64,200,cpu,0.002780401,0.014386414,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Rtpsv_200_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_cuda_resident Rtpsv fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+mpfr512,Rtpsv,UNN_k64,200,gpu,0.0169707527,0.00235699622,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Rtpsv_64_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt Rtpsv fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+mpfr512,Rtpsv,UNN_k64,64,cpu,0.000283489,0.0144485324,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Rtpsv_64_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_cuda_resident Rtpsv fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+mpfr512,Rtpsv,UNN_k64,64,gpu,0.00541081619,0.000757002244,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Rtrsv_200_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt Rtrsv fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+mpfr512,Rtrsv,UNN_k64,200,cpu,0.002696703,0.0148329275,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Rtrsv_200_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_cuda_resident Rtrsv fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+mpfr512,Rtrsv,UNN_k64,200,gpu,0.0169615364,0.00235827693,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Rtrsv_64_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt Rtrsv fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+mpfr512,Rtrsv,UNN_k64,64,cpu,0.000282167,0.0145162262,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Rtrsv_64_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_cuda_resident Rtrsv fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+mpfr512,Rtrsv,UNN_k64,64,gpu,0.00540672016,0.000757575735,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Rtrtri_200_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt Rtrtri fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+mpfr512,Rtrtri,UN,200,cpu,0.031883714,0.0836414478,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Rtrtri_200_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_cuda_resident Rtrtri fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+mpfr512,Rtrtri,UN,200,gpu,1.39484265,0.00191190024,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Rtrtri_64_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt Rtrtri fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+mpfr512,Rtrtri,UN,64,cpu,0.00609449,0.0143447606,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Rtrtri_64_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_cuda_resident Rtrtri fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+mpfr512,Rtrtri,UN,64,gpu,0.349233154,0.00025033133,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_iCamax_200_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt iCamax fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+mpfr512,iCamax,inc1,200,cpu,0.000152511,0,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_iCamax_200_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_cuda_resident iCamax fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+mpfr512,iCamax,inc1,200,gpu,6.24639988e-05,0,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_iCamax_64_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt iCamax fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+mpfr512,iCamax,inc1,64,cpu,5.0607e-05,0,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_iCamax_64_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_cuda_resident iCamax fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+mpfr512,iCamax,inc1,64,gpu,4.60800007e-05,0,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_iRamax_200_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt iRamax fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+mpfr512,iRamax,inc1,200,cpu,3.692e-05,0,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_iRamax_200_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_cuda_resident iRamax fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+mpfr512,iRamax,inc1,200,gpu,5.73440008e-05,0,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_iRamax_64_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt iRamax fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+mpfr512,iRamax,inc1,64,cpu,1.7945e-05,0,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_iRamax_64_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_cuda_resident iRamax fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+mpfr512,iRamax,inc1,64,gpu,4.30079997e-05,0,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_Cdotc_200_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.qd_opt Cdotc fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+qd,Cdotc,inc1,200,cpu,6.5204e-05,0.0245383719,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_Cdotc_200_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.qd_cuda_kernel Cdotc fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+qd,Cdotc,inc1,200,gpu,4.30079997e-05,0.0372023812,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_Cdotc_64_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.qd_opt Cdotc fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+qd,Cdotc,inc1,64,cpu,1.6141e-05,0.0317204634,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_Cdotc_64_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.qd_cuda_kernel Cdotc fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+qd,Cdotc,inc1,64,gpu,3.07199992e-05,0.0166666671,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_Cdotu_200_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.qd_opt Cdotu fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+qd,Cdotu,inc1,200,cpu,8.2507e-05,0.019392294,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_Cdotu_200_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.qd_cuda_kernel Cdotu fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+qd,Cdotu,inc1,200,gpu,4.30079997e-05,0.0372023812,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_Cdotu_64_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.qd_opt Cdotu fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+qd,Cdotu,inc1,64,cpu,2.7783e-05,0.0184285354,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_Cdotu_64_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.qd_cuda_kernel Cdotu fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+qd,Cdotu,inc1,64,gpu,3.07199992e-05,0.0166666671,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_Ctbsv_200_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.qd_opt Ctbsv fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+qd,Ctbsv,UNN_k64,200,cpu,0.00211157,0.0409931946,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_Ctbsv_200_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.qd_cuda_kernel Ctbsv fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+qd,Ctbsv,UNN_k64,200,gpu,0.00370688009,0.0233511734,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_Ctbsv_64_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.qd_opt Ctbsv fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+qd,Ctbsv,UNN_k64,64,cpu,0.000410291,0.0399326332,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_Ctbsv_64_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.qd_cuda_kernel Ctbsv fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+qd,Ctbsv,UNN_k64,64,gpu,0.00116531205,0.0140597533,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_Ctpsv_200_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.qd_opt Ctpsv fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+qd,Ctpsv,UNN_k64,200,cpu,0.003793772,0.0421743848,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_Ctpsv_200_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.qd_cuda_kernel Ctpsv fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+qd,Ctpsv,UNN_k64,200,gpu,0.00380518389,0.0420479022,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_Ctpsv_64_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.qd_opt Ctpsv fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+qd,Ctpsv,UNN_k64,64,cpu,0.000407747,0.0401817794,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_Ctpsv_64_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.qd_cuda_kernel Ctpsv fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+qd,Ctpsv,UNN_k64,64,gpu,0.00116531205,0.0140597533,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_Ctrsv_200_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.qd_opt Ctrsv fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+qd,Ctrsv,UNN_k64,200,cpu,0.001100394,0.145402465,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_Ctrsv_200_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.qd_cuda_kernel Ctrsv fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+qd,Ctrsv,UNN_k64,200,gpu,0.00379801607,0.0421272572,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_Ctrsv_64_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.qd_opt Ctrsv fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+qd,Ctrsv,UNN_k64,64,cpu,0.000407666,0.0401897632,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_Ctrsv_64_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.qd_cuda_kernel Ctrsv fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+qd,Ctrsv,UNN_k64,64,gpu,0.00116326404,0.0140845066,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_RCasum_200_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.qd_opt RCasum fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+qd,RCasum,inc1,200,cpu,2.5929e-05,0.0154267423,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_RCasum_200_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.qd_cuda_kernel RCasum fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+qd,RCasum,inc1,200,gpu,4.19839993e-05,0.00952743918,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_RCasum_64_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.qd_opt RCasum fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+qd,RCasum,inc1,64,cpu,7.434e-06,0.0172181867,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_RCasum_64_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.qd_cuda_kernel RCasum fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+qd,RCasum,inc1,64,gpu,2.96960007e-05,0.00431034472,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_RCnrm2_200_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.qd_opt RCnrm2 fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+qd,RCnrm2,inc1,200,cpu,0.000198898,0.00402216211,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_RCnrm2_200_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.qd_cuda_kernel RCnrm2 fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+qd,RCnrm2,inc1,200,gpu,0.000137216002,0.00583022381,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_RCnrm2_64_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.qd_opt RCnrm2 fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+qd,RCnrm2,inc1,64,cpu,5.7881e-05,0.00442286761,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_RCnrm2_64_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.qd_cuda_kernel RCnrm2 fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+qd,RCnrm2,inc1,64,gpu,9.93279964e-05,0.00257731968,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_Rasum_200_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.qd_opt Rasum fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+qd,Rasum,inc1,200,cpu,2.7833e-05,0.0071857148,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_Rasum_200_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.qd_cuda_kernel Rasum fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+qd,Rasum,inc1,200,gpu,4.0959999e-05,0.00488281262,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_Rasum_64_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.qd_opt Rasum fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+qd,Rasum,inc1,64,cpu,1.2153e-05,0.00526618942,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_Rasum_64_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.qd_cuda_kernel Rasum fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+qd,Rasum,inc1,64,gpu,2.86720004e-05,0.00223214283,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_Raxpy_200_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.qd_opt Raxpy fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+qd,Raxpy,inc1,200,cpu,7.364e-06,0.0543183053,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_Raxpy_200_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.qd_cuda_kernel Raxpy fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+qd,Raxpy,inc1,200,gpu,6.14400022e-06,0.0651041644,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_Raxpy_64_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.qd_opt Raxpy fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+qd,Raxpy,inc1,64,cpu,6.703e-06,0.0190959272,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_Raxpy_64_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.qd_cuda_kernel Raxpy fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+qd,Raxpy,inc1,64,gpu,6.14400022e-06,0.0208333326,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_Rcopy_200_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.qd_opt Rcopy fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+qd,Rcopy,inc1,200,cpu,6.373e-06,0,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_Rcopy_200_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.qd_cuda_kernel Rcopy fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+qd,Rcopy,inc1,200,gpu,6.14400022e-06,0,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_Rcopy_64_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.qd_opt Rcopy fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+qd,Rcopy,inc1,64,cpu,6.161e-06,0,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_Rcopy_64_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.qd_cuda_kernel Rcopy fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+qd,Rcopy,inc1,64,gpu,6.14400022e-06,0,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_Rdot_200_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.qd_opt Rdot fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+qd,Rdot,inc1,200,cpu,4.1259e-05,0.00969485446,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_Rdot_200_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.qd_cuda_kernel Rdot fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+qd,Rdot,inc1,200,gpu,4.0959999e-05,0.00976562525,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_Rdot_64_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.qd_opt Rdot fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+qd,Rdot,inc1,64,cpu,1.3516e-05,0.00947025747,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_Rdot_64_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.qd_cuda_kernel Rdot fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+qd,Rdot,inc1,64,gpu,2.96960007e-05,0.00431034472,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_Rnrm2_200_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.qd_opt Rnrm2 fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+qd,Rnrm2,inc1,200,cpu,0.000133815,0.00298920151,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_Rnrm2_200_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.qd_cuda_kernel Rnrm2 fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+qd,Rnrm2,inc1,200,gpu,0.000117760003,0.00339673906,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_Rnrm2_64_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.qd_opt Rnrm2 fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+qd,Rnrm2,inc1,64,cpu,3.0047e-05,0.00425999268,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_Rnrm2_64_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.qd_cuda_kernel Rnrm2 fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+qd,Rnrm2,inc1,64,gpu,8.90880004e-05,0.0014367816,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_Rtbsv_200_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.qd_opt Rtbsv fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+qd,Rtbsv,UNN_k64,200,cpu,0.000551811,0.0392163259,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_Rtbsv_200_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.qd_cuda_kernel Rtbsv fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+qd,Rtbsv,UNN_k64,200,gpu,0.00201113605,0.0107600875,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_Rtbsv_64_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.qd_opt Rtbsv fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+qd,Rtbsv,UNN_k64,64,cpu,0.000110129,0.0371927467,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_Rtbsv_64_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.qd_cuda_kernel Rtbsv fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+qd,Rtbsv,UNN_k64,64,gpu,0.000644096017,0.00635930031,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_Rtpsv_200_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.qd_opt Rtpsv fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+qd,Rtpsv,UNN_k64,200,cpu,0.000994112,0.040236915,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_Rtpsv_200_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.qd_cuda_kernel Rtpsv fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+qd,Rtpsv,UNN_k64,200,gpu,0.00206745601,0.0193474492,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_Rtpsv_64_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.qd_opt Rtpsv fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+qd,Rtpsv,UNN_k64,64,cpu,0.000109509,0.0374033184,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_Rtpsv_64_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.qd_cuda_kernel Rtpsv fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+qd,Rtpsv,UNN_k64,64,gpu,0.000632831991,0.006472492,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_Rtrsv_200_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.qd_opt Rtrsv fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+qd,Rtrsv,UNN_k64,200,cpu,0.000300883,0.132942041,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_Rtrsv_200_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.qd_cuda_kernel Rtrsv fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+qd,Rtrsv,UNN_k64,200,gpu,0.0020480001,0.0195312491,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_Rtrsv_64_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.qd_opt Rtrsv fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+qd,Rtrsv,UNN_k64,64,cpu,0.00011049,0.0370712282,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_Rtrsv_64_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.qd_cuda_kernel Rtrsv fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+qd,Rtrsv,UNN_k64,64,gpu,0.000641023993,0.00638977642,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_iCamax_200_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.qd_opt iCamax fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+qd,iCamax,inc1,200,cpu,2.1942e-05,0,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_iCamax_200_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.qd_cuda_kernel iCamax fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+qd,iCamax,inc1,200,gpu,4.19839993e-05,0,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_iCamax_64_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.qd_opt iCamax fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+qd,iCamax,inc1,64,cpu,3.557e-06,0,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_iCamax_64_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.qd_cuda_kernel iCamax fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+qd,iCamax,inc1,64,gpu,3.07199992e-05,0,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_iRamax_200_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.qd_opt iRamax fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+qd,iRamax,inc1,200,cpu,1.4017e-05,0,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_iRamax_200_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.qd_cuda_kernel iRamax fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+qd,iRamax,inc1,200,gpu,4.19839993e-05,0,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_iRamax_64_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.qd_opt iRamax fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+qd,iRamax,inc1,64,cpu,2.044e-06,0,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_iRamax_64_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.qd_cuda_kernel iRamax fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+qd,iRamax,inc1,64,gpu,2.96960007e-05,0,3
+
+exit=0
+
+exit receipt: 0
+
+### td_Cdotc_200_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.td_opt Cdotc fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+td,Cdotc,inc1,200,cpu,4.231e-05,0.0378161191,3
+
+exit=0
+
+exit receipt: 0
+
+### td_Cdotc_200_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.td_cuda_kernel Cdotc fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+td,Cdotc,inc1,200,gpu,3.78880017e-05,0.0422297279,3
+
+exit=0
+
+exit receipt: 0
+
+### td_Cdotc_64_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.td_opt Cdotc fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+td,Cdotc,inc1,64,cpu,2.1982e-05,0.0232917842,3
+
+exit=0
+
+exit receipt: 0
+
+### td_Cdotc_64_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.td_cuda_kernel Cdotc fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+td,Cdotc,inc1,64,gpu,2.7648e-05,0.0185185185,3
+
+exit=0
+
+exit receipt: 0
+
+### td_Cdotu_200_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.td_opt Cdotu fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+td,Cdotu,inc1,200,cpu,5.3282e-05,0.0300289028,3
+
+exit=0
+
+exit receipt: 0
+
+### td_Cdotu_200_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.td_cuda_kernel Cdotu fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+td,Cdotu,inc1,200,gpu,3.78880017e-05,0.0422297279,3
+
+exit=0
+
+exit receipt: 0
+
+### td_Cdotu_64_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.td_opt Cdotu fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+td,Cdotu,inc1,64,cpu,1.6101e-05,0.0317992671,3
+
+exit=0
+
+exit receipt: 0
+
+### td_Cdotu_64_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.td_cuda_kernel Cdotu fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+td,Cdotu,inc1,64,gpu,2.86720004e-05,0.0178571426,3
+
+exit=0
+
+exit receipt: 0
+
+### td_Ctbsv_200_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.td_opt Ctbsv fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+td,Ctbsv,UNN_k64,200,cpu,0.001207298,0.0716972943,3
+
+exit=0
+
+exit receipt: 0
+
+### td_Ctbsv_200_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.td_cuda_kernel Ctbsv fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+td,Ctbsv,UNN_k64,200,gpu,0.00241561604,0.0358335094,3
+
+exit=0
+
+exit receipt: 0
+
+### td_Ctbsv_64_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.td_opt Ctbsv fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+td,Ctbsv,UNN_k64,64,cpu,0.000358602,0.0456885349,3
+
+exit=0
+
+exit receipt: 0
+
+### td_Ctbsv_64_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.td_cuda_kernel Ctbsv fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+td,Ctbsv,UNN_k64,64,gpu,0.000779263973,0.0210249679,3
+
+exit=0
+
+exit receipt: 0
+
+### td_Ctpsv_200_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.td_opt Ctpsv fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+td,Ctpsv,UNN_k64,200,cpu,0.00220135,0.072682672,3
+
+exit=0
+
+exit receipt: 0
+
+### td_Ctpsv_200_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.td_cuda_kernel Ctpsv fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+td,Ctpsv,UNN_k64,200,gpu,0.00252620792,0.0633360376,3
+
+exit=0
+
+exit receipt: 0
+
+### td_Ctpsv_64_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.td_opt Ctpsv fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+td,Ctpsv,UNN_k64,64,cpu,0.000242291,0.0676211663,3
+
+exit=0
+
+exit receipt: 0
+
+### td_Ctpsv_64_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.td_cuda_kernel Ctpsv fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+td,Ctpsv,UNN_k64,64,gpu,0.000763903975,0.0214477219,3
+
+exit=0
+
+exit receipt: 0
+
+### td_Ctrsv_200_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.td_opt Ctrsv fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+td,Ctrsv,UNN_k64,200,cpu,0.00080938,0.197682176,3
+
+exit=0
+
+exit receipt: 0
+
+### td_Ctrsv_200_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.td_cuda_kernel Ctrsv fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+td,Ctrsv,UNN_k64,200,gpu,0.00252211189,0.0634388984,3
+
+exit=0
+
+exit receipt: 0
+
+### td_Ctrsv_64_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.td_opt Ctrsv fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+td,Ctrsv,UNN_k64,64,cpu,0.000234125,0.0699797117,3
+
+exit=0
+
+exit receipt: 0
+
+### td_Ctrsv_64_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.td_cuda_kernel Ctrsv fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+td,Ctrsv,UNN_k64,64,gpu,0.000779263973,0.0210249679,3
+
+exit=0
+
+exit receipt: 0
+
+### td_RCasum_200_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.td_opt RCasum fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+td,RCasum,inc1,200,cpu,2.4266e-05,0.0164839693,3
+
+exit=0
+
+exit receipt: 0
+
+### td_RCasum_200_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.td_cuda_kernel RCasum fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+td,RCasum,inc1,200,gpu,3.68640013e-05,0.0108506941,3
+
+exit=0
+
+exit receipt: 0
+
+### td_RCasum_64_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.td_opt RCasum fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+td,RCasum,inc1,64,cpu,1.3326e-05,0.00960528291,3
+
+exit=0
+
+exit receipt: 0
+
+### td_RCasum_64_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.td_cuda_kernel RCasum fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+td,RCasum,inc1,64,gpu,2.7648e-05,0.00462962962,3
+
+exit=0
+
+exit receipt: 0
+
+### td_RCnrm2_200_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.td_opt RCnrm2 fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+td,RCnrm2,inc1,200,cpu,0.000103237,0.0077491597,3
+
+exit=0
+
+exit receipt: 0
+
+### td_RCnrm2_200_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.td_cuda_kernel RCnrm2 fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+td,RCnrm2,inc1,200,gpu,9.01120007e-05,0.00887784084,3
+
+exit=0
+
+exit receipt: 0
+
+### td_RCnrm2_64_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.td_opt RCnrm2 fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+td,RCnrm2,inc1,64,cpu,3.1891e-05,0.00802734314,3
+
+exit=0
+
+exit receipt: 0
+
+### td_RCnrm2_64_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.td_cuda_kernel RCnrm2 fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+td,RCnrm2,inc1,64,gpu,6.96320012e-05,0.00367647052,3
+
+exit=0
+
+exit receipt: 0
+
+### td_Rasum_200_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.td_opt Rasum fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+td,Rasum,inc1,200,cpu,9.899e-06,0.020204061,3
+
+exit=0
+
+exit receipt: 0
+
+### td_Rasum_200_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.td_cuda_kernel Rasum fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+td,Rasum,inc1,200,gpu,3.78880017e-05,0.00527871599,3
+
+exit=0
+
+exit receipt: 0
+
+### td_Rasum_64_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.td_opt Rasum fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+td,Rasum,inc1,64,cpu,1.0099e-05,0.00633726111,3
+
+exit=0
+
+exit receipt: 0
+
+### td_Rasum_64_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.td_cuda_kernel Rasum fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+td,Rasum,inc1,64,gpu,2.66239997e-05,0.00240384618,3
+
+exit=0
+
+exit receipt: 0
+
+### td_Raxpy_200_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.td_opt Raxpy fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+td,Raxpy,inc1,200,cpu,6.633e-06,0.0603045379,3
+
+exit=0
+
+exit receipt: 0
+
+### td_Raxpy_200_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.td_cuda_kernel Raxpy fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+td,Raxpy,inc1,200,gpu,6.14400022e-06,0.0651041644,3
+
+exit=0
+
+exit receipt: 0
+
+### td_Raxpy_64_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.td_opt Raxpy fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+td,Raxpy,inc1,64,cpu,8.917e-06,0.0143546036,3
+
+exit=0
+
+exit receipt: 0
+
+### td_Raxpy_64_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.td_cuda_kernel Raxpy fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+td,Raxpy,inc1,64,gpu,6.14400022e-06,0.0208333326,3
+
+exit=0
+
+exit receipt: 0
+
+### td_Rcopy_200_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.td_opt Rcopy fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+td,Rcopy,inc1,200,cpu,6.553e-06,0,3
+
+exit=0
+
+exit receipt: 0
+
+### td_Rcopy_200_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.td_cuda_kernel Rcopy fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+td,Rcopy,inc1,200,gpu,6.14400022e-06,0,3
+
+exit=0
+
+exit receipt: 0
+
+### td_Rcopy_64_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.td_opt Rcopy fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+td,Rcopy,inc1,64,cpu,6.281e-06,0,3
+
+exit=0
+
+exit receipt: 0
+
+### td_Rcopy_64_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.td_cuda_kernel Rcopy fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+td,Rcopy,inc1,64,gpu,5.11999987e-06,0,3
+
+exit=0
+
+exit receipt: 0
+
+### td_Rdot_200_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.td_opt Rdot fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+td,Rdot,inc1,200,cpu,2.6801e-05,0.0149248162,3
+
+exit=0
+
+exit receipt: 0
+
+### td_Rdot_200_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.td_cuda_kernel Rdot fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+td,Rdot,inc1,200,gpu,3.78880017e-05,0.010557432,3
+
+exit=0
+
+exit receipt: 0
+
+### td_Rdot_64_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.td_opt Rdot fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+td,Rdot,inc1,64,cpu,1.0209e-05,0.0125379567,3
+
+exit=0
+
+exit receipt: 0
+
+### td_Rdot_64_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.td_cuda_kernel Rdot fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+td,Rdot,inc1,64,gpu,2.7648e-05,0.00462962962,3
+
+exit=0
+
+exit receipt: 0
+
+### td_Rnrm2_200_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.td_opt Rnrm2 fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+td,Rnrm2,inc1,200,cpu,4.719e-05,0.00847637211,3
+
+exit=0
+
+exit receipt: 0
+
+### td_Rnrm2_200_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.td_cuda_kernel Rnrm2 fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+td,Rnrm2,inc1,200,gpu,7.88479969e-05,0.00507305215,3
+
+exit=0
+
+exit receipt: 0
+
+### td_Rnrm2_64_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.td_opt Rnrm2 fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+td,Rnrm2,inc1,64,cpu,1.7262e-05,0.0074151315,3
+
+exit=0
+
+exit receipt: 0
+
+### td_Rnrm2_64_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.td_cuda_kernel Rnrm2 fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+td,Rnrm2,inc1,64,gpu,5.83680011e-05,0.00219298241,3
+
+exit=0
+
+exit receipt: 0
+
+### td_Rtbsv_200_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.td_opt Rtbsv fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+td,Rtbsv,UNN_k64,200,cpu,0.000259524,0.083383425,3
+
+exit=0
+
+exit receipt: 0
+
+### td_Rtbsv_200_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.td_cuda_kernel Rtbsv fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+td,Rtbsv,UNN_k64,200,gpu,0.00162816,0.013291077,3
+
+exit=0
+
+exit receipt: 0
+
+### td_Rtbsv_64_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.td_opt Rtbsv fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+td,Rtbsv,UNN_k64,64,cpu,5.246e-05,0.078078536,3
+
+exit=0
+
+exit receipt: 0
+
+### td_Rtbsv_64_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.td_cuda_kernel Rtbsv fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+td,Rtbsv,UNN_k64,64,gpu,0.000513023973,0.00798403236,3
+
+exit=0
+
+exit receipt: 0
+
+### td_Rtpsv_200_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.td_opt Rtpsv fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+td,Rtpsv,UNN_k64,200,cpu,0.000462801,0.0864302368,3
+
+exit=0
+
+exit receipt: 0
+
+### td_Rtpsv_200_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.td_cuda_kernel Rtpsv fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+td,Rtpsv,UNN_k64,200,gpu,0.00163737595,0.0244293316,3
+
+exit=0
+
+exit receipt: 0
+
+### td_Rtpsv_64_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.td_opt Rtpsv fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+td,Rtpsv,UNN_k64,64,cpu,5.253e-05,0.0779744908,3
+
+exit=0
+
+exit receipt: 0
+
+### td_Rtpsv_64_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.td_cuda_kernel Rtpsv fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+td,Rtpsv,UNN_k64,64,gpu,0.000509952009,0.00803212838,3
+
+exit=0
+
+exit receipt: 0
+
+### td_Rtrsv_200_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.td_opt Rtrsv fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+td,Rtrsv,UNN_k64,200,cpu,0.000181746,0.220087375,3
+
+exit=0
+
+exit receipt: 0
+
+### td_Rtrsv_200_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.td_cuda_kernel Rtrsv fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+td,Rtrsv,UNN_k64,200,gpu,0.00163328004,0.024490595,3
+
+exit=0
+
+exit receipt: 0
+
+### td_Rtrsv_64_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.td_opt Rtrsv fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+td,Rtrsv,UNN_k64,64,cpu,5.252e-05,0.0779893374,3
+
+exit=0
+
+exit receipt: 0
+
+### td_Rtrsv_64_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.td_cuda_kernel Rtrsv fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+td,Rtrsv,UNN_k64,64,gpu,0.000509952009,0.00803212838,3
+
+exit=0
+
+exit receipt: 0
+
+### td_iCamax_200_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.td_opt iCamax fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+td,iCamax,inc1,200,cpu,8.075e-06,0,3
+
+exit=0
+
+exit receipt: 0
+
+### td_iCamax_200_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.td_cuda_kernel iCamax fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+td,iCamax,inc1,200,gpu,3.89119983e-05,0,3
+
+exit=0
+
+exit receipt: 0
+
+### td_iCamax_64_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.td_opt iCamax fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+td,iCamax,inc1,64,cpu,3.507e-06,0,3
+
+exit=0
+
+exit receipt: 0
+
+### td_iCamax_64_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.td_cuda_kernel iCamax fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+td,iCamax,inc1,64,gpu,2.86720004e-05,0,3
+
+exit=0
+
+exit receipt: 0
+
+### td_iRamax_200_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.td_opt iRamax fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+td,iRamax,inc1,200,cpu,3.626e-06,0,3
+
+exit=0
+
+exit receipt: 0
+
+### td_iRamax_200_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.td_cuda_kernel iRamax fast 200 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+td,iRamax,inc1,200,gpu,3.89119983e-05,0,3
+
+exit=0
+
+exit receipt: 0
+
+### td_iRamax_64_cpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.td_opt iRamax fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/cpu
+td,iRamax,inc1,64,cpu,1.042e-06,0,3
+
+exit=0
+
+exit receipt: 0
+
+### td_iRamax_64_gpu.log
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.td_cuda_kernel iRamax fast 64 --reps 3 --warmup 1 --dump /tmp/tmp46t134e9/gpu
+td,iRamax,inc1,64,gpu,2.86720004e-05,0,3
+
+exit=0
+
+exit receipt: 0

@@ -1,0 +1,66 @@
+{
+  "records": 8534,
+  "phases": {
+    "pilot": 360,
+    "pilot-invalid-fast": 16,
+    "sweep": 7941,
+    "pilot-pre-eager": 152,
+    "sweep-invalid-cold-launch": 65
+  },
+  "accepted_sweep_points": 7941,
+  "series": 180,
+  "graphs": 76,
+  "failed_records": 0,
+  "recorded_wall_seconds": 14071.291045434773,
+  "extra_charged_seconds": 4172.708954565227,
+  "charged_measurement_seconds": 18244.0,
+  "accepted_load_min": 0.97900390625,
+  "accepted_load_max": 14.90771484375,
+  "accepted_loaded_points": 0,
+  "accepted_other_gpu_points": 0,
+  "accepted_gpu_points": 3163,
+  "checks": {
+    "checks-autotools": {
+      "count": 152,
+      "statuses": {
+        "identical": 152
+      },
+      "max_absolute_error": 0.0
+    },
+    "checks-autotools-primed": {
+      "count": 152,
+      "statuses": {
+        "identical": 152
+      },
+      "max_absolute_error": 0.0
+    },
+    "checks-autotools-reviewed": {
+      "count": 152,
+      "statuses": {
+        "identical": 152
+      },
+      "max_absolute_error": 0.0
+    },
+    "checks-cmake": {
+      "count": 152,
+      "statuses": {
+        "identical": 152
+      },
+      "max_absolute_error": 0.0
+    },
+    "checks-cmake-primed": {
+      "count": 152,
+      "statuses": {
+        "identical": 152
+      },
+      "max_absolute_error": 0.0
+    },
+    "checks-cmake-reviewed": {
+      "count": 152,
+      "statuses": {
+        "identical": 152
+      },
+      "max_absolute_error": 0.0
+    }
+  }
+}

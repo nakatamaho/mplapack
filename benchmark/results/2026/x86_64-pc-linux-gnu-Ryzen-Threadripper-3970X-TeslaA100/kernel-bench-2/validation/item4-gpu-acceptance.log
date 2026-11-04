@@ -1,0 +1,8 @@
+item4-gpu-before exit=0
+item4-gpu-inverse exit=0
+item4-gpu-bf-blas1 exit=0
+item4-gpu-mpfr-blas1 exit=0
+item4-gpu-bf-trisolve exit=0
+item4-gpu-mpfr-trisolve exit=0
+item4-gpu-inverse-memcheck exit=0
+item4-gpu-after exit=0

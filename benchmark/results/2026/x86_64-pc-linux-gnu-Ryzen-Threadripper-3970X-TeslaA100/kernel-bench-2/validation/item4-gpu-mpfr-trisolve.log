@@ -1,0 +1,9 @@
+Test project /tmp/factor01-cmake
+    Start 75: mpfr_cuda_Rtrisolve_device_512
+1/2 Test #75: mpfr_cuda_Rtrisolve_device_512 ...   Passed  224.82 sec
+    Start 76: mpfr_cuda_Rtrisolve_device_200
+2/2 Test #76: mpfr_cuda_Rtrisolve_device_200 ...   Passed  233.75 sec
+
+100% tests passed, 0 tests failed out of 2
+
+Total Test time (real) = 458.58 sec

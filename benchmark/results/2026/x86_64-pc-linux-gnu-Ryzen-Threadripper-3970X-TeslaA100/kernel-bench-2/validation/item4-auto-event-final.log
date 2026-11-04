@@ -1,0 +1,147 @@
+make: Entering directory '/home/docker/mplapack-acceralation/benchmark'
+/usr/local/cuda/bin/nvcc -U_GNU_SOURCE -D_XOPEN_SOURCE=700 -std=c++17 -fmad=false -Xcompiler=-ffp-contract=off -O3 -m64 -gencode arch=compute_80,code=sm_80 -gencode arch=compute_90,code=sm_90 -I../include -I../include -I/home/docker/mplapack-acceralation/external/i/QD/include/ -I/usr/local/cuda/include -o Rkernel_bench_dd_cuda.o -c Rkernel_bench_dd_cuda.cu
+/usr/local/cuda/bin/nvcc -U_GNU_SOURCE -D_XOPEN_SOURCE=700 -std=c++17 -fmad=false -Xcompiler=-ffp-contract=off -O3 -m64 -gencode arch=compute_80,code=sm_80 -gencode arch=compute_90,code=sm_90 -I../include -I../include -I/home/docker/mplapack-acceralation/external/i/QD/include/ -I/usr/local/cuda/include -o Rkernel_bench_td_cuda.o -c Rkernel_bench_td_cuda.cu
+/usr/local/cuda/bin/nvcc -U_GNU_SOURCE -D_XOPEN_SOURCE=700 -std=c++17 -fmad=false -Xcompiler=-ffp-contract=off -O3 -m64 -gencode arch=compute_80,code=sm_80 -gencode arch=compute_90,code=sm_90 -I../include -I../include -I/home/docker/mplapack-acceralation/external/i/QD/include/ -I/usr/local/cuda/include -o Rkernel_bench_qd_cuda.o -c Rkernel_bench_qd_cuda.cu
+/usr/local/cuda/bin/nvcc -U_GNU_SOURCE -D_XOPEN_SOURCE=700 -std=c++17 -fmad=false -Xcompiler=-ffp-contract=off -O3 -m64 -gencode arch=compute_80,code=sm_80 -gencode arch=compute_90,code=sm_90 -I../include -I../include -I/home/docker/mplapack-acceralation/external/i/QD/include/ -I/usr/local/cuda/include  -rdc=true -I/home/docker/mplapack-acceralation/external/i/MPC_CUDA/include \
+    -I/home/docker/mplapack-acceralation/external/i/GMPFRXX_MKII/include -I/home/docker/mplapack-acceralation/external/i/GMP/include/ -I/home/docker/mplapack-acceralation/external/i/MPFR/include/ -I/home/docker/mplapack-acceralation/external/i/MPC/include/ -Xcompiler=-fopenmp -c ./Rkernel_bench_mpfr_resident.cu -o Rkernel_bench_mpfr_resident.o
+../mplapack/optimized/common/../../../mpblas/optimized/common/Rgemm_cuda_common.cuh(263): warning #20050-D: inline qualifier ignored for "__global__" function
+  __attribute__((global)) inline void k_i32_to_double(const int32_t *src, double *dst, size_t count) {
+                 ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+../mplapack/optimized/common/../../../mpblas/optimized/common/Rgemm_cuda_common.cuh(263): warning #20050-D: inline qualifier ignored for "__global__" function
+  __attribute__((global)) inline void k_i32_to_double(const int32_t *src, double *dst, size_t count) {
+                 ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+../mplapack/optimized/common/../../../mpblas/optimized/common/Rgemm_cuda_common.cuh(263): warning #20050-D: inline qualifier ignored for "__global__" function
+  __attribute__((global)) inline void k_i32_to_double(const int32_t *src, double *dst, size_t count) {
+                 ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+../mplapack/optimized/common/../../../mpblas/optimized/common/Rgemm_cuda_common.cuh(263): warning #20050-D: inline qualifier ignored for "__global__" function
+  __attribute__((global)) inline void k_i32_to_double(const int32_t *src, double *dst, size_t count) {
+                 ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+/home/docker/mplapack-acceralation/external/i/MPC_CUDA/include/mpc_cuda/cu_mpc.h(325): warning #20040-D: a __host__ function("sqrt_int64") redeclared with __host__ __device__, hence treated as a __host__ __device__ function
+  __attribute__((host)) __attribute__((device)) int64_t sqrt_int64 (int64_t n);
+                                                        ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+../mplapack/optimized/common/../../../mpblas/optimized/common/Rgemm_cuda_common.cuh(263): warning #20050-D: inline qualifier ignored for "__global__" function
+  __attribute__((global)) inline void k_i32_to_double(const int32_t *src, double *dst, size_t count) {
+                 ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+/home/docker/mplapack-acceralation/external/i/MPC_CUDA/include/mpc_cuda/cu_freal.cuh(134): warning #63-D: shift count is too large
+          r.m[i]=(a<<SB)|(b>>(64-SB)); }
+                             ^
+          detected during:
+            instantiation of "cu_fp::cu_freal<PB> cu_fp::cu_freal<PB>::finalize(const cu_fp::cu_limb *, int, int, long, cu_fp::cu_limb, cu_fp::cu_limb, int) [with PB=512]" at line 148
+            instantiation of "cu_fp::cu_freal<PB> cu_fp::cu_freal<PB>::from_double(double) [with PB=512]" at line 21 of ./../mpblas/optimized/mpfr/cuda/Cfactor_fixed_types.h
+            instantiation of "mplapack_blas_dev::factor_real<PB>::factor_real(double) [with PB=512]" at line 57 of ./../mpblas/optimized/mpfr/cuda/Rinverse_types.h
+            instantiation of "void mplapack_mpfr_inverse::number(mplapack_blas_dev::factor_real<PB> &, double) [with PB=512]" at line 74 of ./../mpblas/optimized/mpfr/cuda/Rinverse_types.h
+            instantiation of "mplapack_mpfr_inverse::value<Tag, Complex>::value(double) [with Tag=kernel_new::Tag, Complex=true]" at line 25 of ./../mpblas/optimized/mpfr/cuda/../../common/Rtrisolve_jobs.h
+            [ 3 instantiation contexts not shown ]
+            instantiation of "void mplapack_mpfr_cuda::<unnamed>::factor_context<E>::execute(Job, long) [with E=mplapack_mpfr_inverse::<unnamed>::inverse_engine, Job=mplapack_mpfr_inverse::<unnamed>::checked_job<mplapack_trisolve::pivot_job<kernel_new::C, mplapack_trisolve::Carithmetic<kernel_new::C>>>]" at line 29 of ./../mpblas/optimized/mpfr/cuda/Rinverse_device_body.cuh
+            instantiation of "void mplapack_mpfr_inverse::<unnamed>::launcher::launch(J, long) [with J=mplapack_trisolve::pivot_job<kernel_new::C, mplapack_trisolve::Carithmetic<kernel_new::C>>]" at line 54 of ./../mpblas/optimized/mpfr/cuda/../../common/Rtrisolve_jobs.h
+            instantiation of "void mplapack_trisolve::schedule<V,A,L>(L &, const mplapack_trisolve::shape &, const V *, V *, V *) [with V=kernel_new::C, A=mplapack_trisolve::Carithmetic<kernel_new::C>, L=kernel_new::Launcher]" at line 165 of ./Rkernel_new.h
+            instantiation of "double kernel_new::gpu<H>::run() [with H=COMPLEX]" at line 276 of ./Rkernel_new.h
+            instantiation of "void kernel_new::point<H>(kernel_new::shape, const std::string &, int, int, const std::string &) [with H=COMPLEX]" at line 336 of ./Rkernel_new.h
+
+/home/docker/mplapack-acceralation/external/i/MPC_CUDA/include/mpc_cuda/cu_freal.cuh(134): warning #63-D: shift count is too large
+          r.m[i]=(a<<SB)|(b>>(64-SB)); }
+                             ^
+          detected during:
+            instantiation of "cu_fp::cu_freal<PB> cu_fp::cu_freal<PB>::finalize(const cu_fp::cu_limb *, int, int, long, cu_fp::cu_limb, cu_fp::cu_limb, int) [with PB=576]" at line 321
+            instantiation of "cu_fp::cu_freal<TO> cu_fp::cu_convert<TO,FROM>(const cu_fp::cu_freal<FROM> &) [with TO=576, FROM=512]" at line 104 of /home/docker/mplapack-acceralation/external/i/MPC_CUDA/include/mpc_cuda/cu_fround.cuh
+            instantiation of "int cu_fp::fround_detail::div(cu_fp::cu_freal<PB> &, const cu_fp::cu_freal<PB> &, const cu_fp::cu_freal<PB> &, __nv_bool &) [with PB=512]" at line 140 of /home/docker/mplapack-acceralation/external/i/MPC_CUDA/include/mpc_cuda/cu_fround.cuh
+            instantiation of "int cu_fp::cu_fdiv_rn(cu_fp::cu_freal<PB> &, const cu_fp::cu_freal<PB> &, const cu_fp::cu_freal<PB> &) [with PB=512]" at line 109 of ./../mpblas/optimized/mpfr/cuda/blas3_kernel_cuda.h
+            instantiation of "void mplapack_mpfr_cuda::l3_fixed_engine<PB, TRSM>::div(mplapack_mpfr_cuda::l3_fixed_engine<PB, TRSM>::V &, const mplapack_mpfr_cuda::l3_fixed_engine<PB, TRSM>::V &, const mplapack_mpfr_cuda::l3_fixed_engine<PB, TRSM>::V &) const [with PB=512, TRSM=true]" at line 44 of ./../mpblas/optimized/mpfr/cuda/Rinverse_types.h
+            [ 7 instantiation contexts not shown ]
+            instantiation of "void mplapack_mpfr_cuda::<unnamed>::factor_context<E>::execute(Job, long) [with E=mplapack_mpfr_inverse::<unnamed>::inverse_engine, Job=mplapack_mpfr_inverse::<unnamed>::checked_job<mplapack_blas1::leaves<kernel_new::R, kernel_new::C, true>>]" at line 29 of ./../mpblas/optimized/mpfr/cuda/Rinverse_device_body.cuh
+            instantiation of "void mplapack_mpfr_inverse::<unnamed>::launcher::launch(J, long) [with J=mplapack_blas1::leaves<kernel_new::R, kernel_new::C, true>]" at line 33 of ./../mpblas/optimized/mpfr/cuda/../../common/Rblas1_jobs_common.h
+            instantiation of "void mplapack_blas1::schedule<R,X,Complex,Root,Launcher>(Launcher &, mplapack_blas1::operation, long, const X *, const X *, mplapack_blas1::state<R> *) [with R=kernel_new::R, X=kernel_new::C, Complex=true, Root=kernel_new::Root, Launcher=kernel_new::Launcher]" at line 166 of ./Rkernel_new.h
+            instantiation of "double kernel_new::gpu<H>::run() [with H=COMPLEX]" at line 276 of ./Rkernel_new.h
+            instantiation of "void kernel_new::point<H>(kernel_new::shape, const std::string &, int, int, const std::string &) [with H=COMPLEX]" at line 336 of ./Rkernel_new.h
+
+../mplapack/optimized/common/../../../mpblas/optimized/common/Rgemm_cuda_common.cuh(263): warning #20050-D: inline qualifier ignored for "__global__" function
+  __attribute__((global)) inline void k_i32_to_double(const int32_t *src, double *dst, size_t count) {
+                 ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+../mplapack/optimized/common/../../../mpblas/optimized/common/Rgemm_cuda_common.cuh(263): warning #20050-D: inline qualifier ignored for "__global__" function
+  __attribute__((global)) inline void k_i32_to_double(const int32_t *src, double *dst, size_t count) {
+                 ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+../mplapack/optimized/common/../../../mpblas/optimized/common/Rgemm_cuda_common.cuh(263): warning #20050-D: inline qualifier ignored for "__global__" function
+  __attribute__((global)) inline void k_i32_to_double(const int32_t *src, double *dst, size_t count) {
+                 ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+/bin/bash ../libtool --mode=link ccache g++ -std=gnu++17 -o Rkernel_bench.dd_cuda_kernel Rkernel_bench_dd_cuda.o -L../mpblas/optimized/dd -lmplapack_dd_opt -L/usr/local/cuda/lib64 -lcublas -lcudart -L/home/docker/mplapack-acceralation/external/i/QD/lib/ -lqd -ldl -fopenmp 
+libtool: link: ccache g++ -std=gnu++17 -o .libs/Rkernel_bench.dd_cuda_kernel Rkernel_bench_dd_cuda.o -fopenmp  -L../mpblas/optimized/dd /home/docker/mplapack-acceralation/mpblas/optimized/dd/.libs/libmplapack_dd_opt.so -L/usr/local/cuda/lib64 -lcublas -lcudart -L/home/docker/mplapack-acceralation/external/i/QD/lib/ -lqd -ldl -fopenmp -Wl,-rpath -Wl,/home/docker/mplapack-acceralation/install/lib
+/home/docker/mplapack-acceralation/external/i/MPC_CUDA/include/mpc_cuda/cu_mpc.h(325): warning #20040-D: a __host__ function("sqrt_int64") redeclared with __host__ __device__, hence treated as a __host__ __device__ function
+  __attribute__((host)) __attribute__((device)) int64_t sqrt_int64 (int64_t n);
+                                                        ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+/home/docker/mplapack-acceralation/external/i/MPC_CUDA/include/mpc_cuda/cu_freal.cuh(134): warning #63-D: shift count is too large
+          r.m[i]=(a<<SB)|(b>>(64-SB)); }
+                             ^
+          detected during:
+            instantiation of "cu_fp::cu_freal<PB> cu_fp::cu_freal<PB>::finalize(const cu_fp::cu_limb *, int, int, long, cu_fp::cu_limb, cu_fp::cu_limb, int) [with PB=512]" at line 148
+            instantiation of "cu_fp::cu_freal<PB> cu_fp::cu_freal<PB>::from_double(double) [with PB=512]" at line 21 of ./../mpblas/optimized/mpfr/cuda/Cfactor_fixed_types.h
+            instantiation of "mplapack_blas_dev::factor_real<PB>::factor_real(double) [with PB=512]" at line 57 of ./../mpblas/optimized/mpfr/cuda/Rinverse_types.h
+            instantiation of "void mplapack_mpfr_inverse::number(mplapack_blas_dev::factor_real<PB> &, double) [with PB=512]" at line 74 of ./../mpblas/optimized/mpfr/cuda/Rinverse_types.h
+            instantiation of "mplapack_mpfr_inverse::value<Tag, Complex>::value(double) [with Tag=kernel_new::Tag, Complex=true]" at line 25 of ./../mpblas/optimized/mpfr/cuda/../../common/Rtrisolve_jobs.h
+            [ 3 instantiation contexts not shown ]
+            instantiation of "void mplapack_mpfr_cuda::<unnamed>::factor_context<E>::execute(Job, long) [with E=mplapack_mpfr_inverse::<unnamed>::inverse_engine, Job=mplapack_mpfr_inverse::<unnamed>::checked_job<mplapack_trisolve::pivot_job<kernel_new::C, mplapack_trisolve::Carithmetic<kernel_new::C>>>]" at line 29 of ./../mpblas/optimized/mpfr/cuda/Rinverse_device_body.cuh
+            instantiation of "void mplapack_mpfr_inverse::<unnamed>::launcher::launch(J, long) [with J=mplapack_trisolve::pivot_job<kernel_new::C, mplapack_trisolve::Carithmetic<kernel_new::C>>]" at line 54 of ./../mpblas/optimized/mpfr/cuda/../../common/Rtrisolve_jobs.h
+            instantiation of "void mplapack_trisolve::schedule<V,A,L>(L &, const mplapack_trisolve::shape &, const V *, V *, V *) [with V=kernel_new::C, A=mplapack_trisolve::Carithmetic<kernel_new::C>, L=kernel_new::Launcher]" at line 165 of ./Rkernel_new.h
+            instantiation of "double kernel_new::gpu<H>::run() [with H=COMPLEX]" at line 276 of ./Rkernel_new.h
+            instantiation of "void kernel_new::point<H>(kernel_new::shape, const std::string &, int, int, const std::string &) [with H=COMPLEX]" at line 336 of ./Rkernel_new.h
+
+/home/docker/mplapack-acceralation/external/i/MPC_CUDA/include/mpc_cuda/cu_freal.cuh(134): warning #63-D: shift count is too large
+          r.m[i]=(a<<SB)|(b>>(64-SB)); }
+                             ^
+          detected during:
+            instantiation of "cu_fp::cu_freal<PB> cu_fp::cu_freal<PB>::finalize(const cu_fp::cu_limb *, int, int, long, cu_fp::cu_limb, cu_fp::cu_limb, int) [with PB=576]" at line 321
+            instantiation of "cu_fp::cu_freal<TO> cu_fp::cu_convert<TO,FROM>(const cu_fp::cu_freal<FROM> &) [with TO=576, FROM=512]" at line 104 of /home/docker/mplapack-acceralation/external/i/MPC_CUDA/include/mpc_cuda/cu_fround.cuh
+            instantiation of "int cu_fp::fround_detail::div(cu_fp::cu_freal<PB> &, const cu_fp::cu_freal<PB> &, const cu_fp::cu_freal<PB> &, __nv_bool &) [with PB=512]" at line 140 of /home/docker/mplapack-acceralation/external/i/MPC_CUDA/include/mpc_cuda/cu_fround.cuh
+            instantiation of "int cu_fp::cu_fdiv_rn(cu_fp::cu_freal<PB> &, const cu_fp::cu_freal<PB> &, const cu_fp::cu_freal<PB> &) [with PB=512]" at line 109 of ./../mpblas/optimized/mpfr/cuda/blas3_kernel_cuda.h
+            instantiation of "void mplapack_mpfr_cuda::l3_fixed_engine<PB, TRSM>::div(mplapack_mpfr_cuda::l3_fixed_engine<PB, TRSM>::V &, const mplapack_mpfr_cuda::l3_fixed_engine<PB, TRSM>::V &, const mplapack_mpfr_cuda::l3_fixed_engine<PB, TRSM>::V &) const [with PB=512, TRSM=true]" at line 44 of ./../mpblas/optimized/mpfr/cuda/Rinverse_types.h
+            [ 7 instantiation contexts not shown ]
+            instantiation of "void mplapack_mpfr_cuda::<unnamed>::factor_context<E>::execute(Job, long) [with E=mplapack_mpfr_inverse::<unnamed>::inverse_engine, Job=mplapack_mpfr_inverse::<unnamed>::checked_job<mplapack_blas1::leaves<kernel_new::R, kernel_new::C, true>>]" at line 29 of ./../mpblas/optimized/mpfr/cuda/Rinverse_device_body.cuh
+            instantiation of "void mplapack_mpfr_inverse::<unnamed>::launcher::launch(J, long) [with J=mplapack_blas1::leaves<kernel_new::R, kernel_new::C, true>]" at line 33 of ./../mpblas/optimized/mpfr/cuda/../../common/Rblas1_jobs_common.h
+            instantiation of "void mplapack_blas1::schedule<R,X,Complex,Root,Launcher>(Launcher &, mplapack_blas1::operation, long, const X *, const X *, mplapack_blas1::state<R> *) [with R=kernel_new::R, X=kernel_new::C, Complex=true, Root=kernel_new::Root, Launcher=kernel_new::Launcher]" at line 166 of ./Rkernel_new.h
+            instantiation of "double kernel_new::gpu<H>::run() [with H=COMPLEX]" at line 276 of ./Rkernel_new.h
+            instantiation of "void kernel_new::point<H>(kernel_new::shape, const std::string &, int, int, const std::string &) [with H=COMPLEX]" at line 336 of ./Rkernel_new.h
+
+../mplapack/optimized/common/../../../mpblas/optimized/common/Rgemm_cuda_common.cuh(263): warning #20050-D: inline qualifier ignored for "__global__" function
+  __attribute__((global)) inline void k_i32_to_double(const int32_t *src, double *dst, size_t count) {
+                 ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+/bin/bash ../libtool --mode=link ccache g++ -std=gnu++17 -o Rkernel_bench.td_cuda_kernel Rkernel_bench_td_cuda.o -L../mpblas/optimized/td -lmplapack_td_opt -L/usr/local/cuda/lib64 -lcublas -lcudart -L/home/docker/mplapack-acceralation/external/i/QD/lib/ -lqd -ldl -fopenmp 
+libtool: link: ccache g++ -std=gnu++17 -o .libs/Rkernel_bench.td_cuda_kernel Rkernel_bench_td_cuda.o -fopenmp  -L../mpblas/optimized/td /home/docker/mplapack-acceralation/mpblas/optimized/td/.libs/libmplapack_td_opt.so -L/usr/local/cuda/lib64 -lcublas -lcudart -L/home/docker/mplapack-acceralation/external/i/QD/lib/ -lqd -ldl -fopenmp -Wl,-rpath -Wl,/home/docker/mplapack-acceralation/install/lib
+/usr/local/cuda/bin/nvcc  -dlink Rkernel_bench_mpfr_resident.o /home/docker/mplapack-acceralation/external/i/MPC_CUDA/lib/libmpc_cuda.a -o kernel_new_mpfr_dlink.o
+nvlink warning : SM Arch ('sm_75') not found in 'Rkernel_bench_mpfr_resident.o'
+/bin/bash ../libtool --mode=link ccache g++ -std=gnu++17 -o Rkernel_bench.mpfr_cuda_resident Rkernel_bench_mpfr_resident.o kernel_new_mpfr_dlink.o /home/docker/mplapack-acceralation/external/i/MPC_CUDA/lib/libmpc_cuda.a -L../mpblas/optimized/mpfr -lmplapack_mpfr_opt -L/usr/local/cuda/lib64 -lcudart -L/home/docker/mplapack-acceralation/external/i/MPC/lib/ -L/home/docker/mplapack-acceralation/external/i/MPFR/lib/ -L/home/docker/mplapack-acceralation/external/i/GMP/lib/ -lmpfr -lmpc -lgmp -fopenmp -ldl 
+libtool: link: ccache g++ -std=gnu++17 -o .libs/Rkernel_bench.mpfr_cuda_resident Rkernel_bench_mpfr_resident.o kernel_new_mpfr_dlink.o -fopenmp  /home/docker/mplapack-acceralation/external/i/MPC_CUDA/lib/libmpc_cuda.a -L../mpblas/optimized/mpfr /home/docker/mplapack-acceralation/mpblas/optimized/mpfr/.libs/libmplapack_mpfr_opt.so -L/usr/local/cuda/lib64 -lcudart -L/home/docker/mplapack-acceralation/external/i/MPC/lib/ -L/home/docker/mplapack-acceralation/external/i/MPFR/lib/ -L/home/docker/mplapack-acceralation/external/i/GMP/lib/ /home/docker/mplapack-acceralation/external/mpfr/../i/MPFR/lib/libmpfr.so /home/docker/mplapack-acceralation/external/mpc/../i/MPC/lib/libmpc.so /home/docker/mplapack-acceralation/external/gmp/../i/GMP/lib/libgmp.so -ldl -fopenmp -Wl,-rpath -Wl,/home/docker/mplapack-acceralation/install/lib -Wl,-rpath -Wl,/home/docker/mplapack-acceralation/external/mpfr/../i/MPFR/lib -Wl,-rpath -Wl,/home/docker/mplapack-acceralation/external/mpc/../i/MPC/lib -Wl,-rpath -Wl,/home/docker/mplapack-acceralation/external/gmp/../i/GMP/lib
+/bin/bash ../libtool --mode=link ccache g++ -std=gnu++17 -o Rkernel_bench.qd_cuda_kernel Rkernel_bench_qd_cuda.o -L../mpblas/optimized/qd -lmplapack_qd_opt -L/usr/local/cuda/lib64 -lcublas -lcudart -L/home/docker/mplapack-acceralation/external/i/QD/lib/ -lqd -ldl -fopenmp 
+libtool: link: ccache g++ -std=gnu++17 -o .libs/Rkernel_bench.qd_cuda_kernel Rkernel_bench_qd_cuda.o -fopenmp  -L../mpblas/optimized/qd /home/docker/mplapack-acceralation/mpblas/optimized/qd/.libs/libmplapack_qd_opt.so -L/usr/local/cuda/lib64 -lcublas -lcudart -L/home/docker/mplapack-acceralation/external/i/QD/lib/ -lqd -ldl -fopenmp -Wl,-rpath -Wl,/home/docker/mplapack-acceralation/install/lib
+make: Leaving directory '/home/docker/mplapack-acceralation/benchmark'

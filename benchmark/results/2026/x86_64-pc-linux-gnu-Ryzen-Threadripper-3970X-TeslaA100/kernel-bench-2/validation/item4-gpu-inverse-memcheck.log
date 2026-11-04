@@ -1,0 +1,3 @@
+========= COMPUTE-SANITIZER
+MPFR inverse p=512: 132 direct calls, 790 checks, 66264 component comparisons, 0 failures
+========= ERROR SUMMARY: 0 errors

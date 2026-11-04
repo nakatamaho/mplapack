@@ -1,0 +1,732 @@
+automake: thread 0: running WARNINGS=none autoconf --trace=AC_CANONICAL_BUILD:\$f:\$l::\$d::\$n::\${::}% --trace=AC_CANONICAL_HOST:\$f:\$l::\$d::\$n::\${::}% --trace=AC_CANONICAL_TARGET:\$f:\$l::\$d::\$n::\${::}% --trace=AC_CONFIG_AUX_DIR:\$f:\$l::\$d::\$n::\${::}% --trace=AC_CONFIG_FILES:\$f:\$l::\$d::\$n::\${::}% --trace=AC_CONFIG_HEADERS:\$f:\$l::\$d::\$n::\${::}% --trace=AC_CONFIG_LIBOBJ_DIR:\$f:\$l::\$d::\$n::\${::}% --trace=AC_CONFIG_LINKS:\$f:\$l::\$d::\$n::\${::}% --trace=AC_FC_SRCEXT:\$f:\$l::\$d::\$n::\${::}% --trace=AC_INIT:\$f:\$l::\$d::\$n::\${::}% --trace=AC_LIBSOURCE:\$f:\$l::\$d::\$n::\${::}% --trace=AC_REQUIRE_AUX_FILE:\$f:\$l::\$d::\$n::\${::}% --trace=AC_SUBST_TRACE:\$f:\$l::\$d::\$n::\${::}% --trace=AM_AUTOMAKE_VERSION:\$f:\$l::\$d::\$n::\${::}% --trace=AM_CONDITIONAL:\$f:\$l::\$d::\$n::\${::}% --trace=AM_EXTRA_RECURSIVE_TARGETS:\$f:\$l::\$d::\$n::\${::}% --trace=AM_GNU_GETTEXT:\$f:\$l::\$d::\$n::\${::}% --trace=AM_GNU_GETTEXT_INTL_SUBDIR:\$f:\$l::\$d::\$n::\${::}% --trace=AM_INIT_AUTOMAKE:\$f:\$l::\$d::\$n::\${::}% --trace=AM_MAINTAINER_MODE:\$f:\$l::\$d::\$n::\${::}% --trace=AM_PROG_AR:\$f:\$l::\$d::\$n::\${::}% --trace=AM_PROG_MKDIR_P:\$f:\$l::\$d::\$n::\${::}% --trace=LT_SUPPORTED_TAG:\$f:\$l::\$d::\$n::\${::}% --trace=_AM_COND_ELSE:\$f:\$l::\$d::\$n::\${::}% --trace=_AM_COND_ENDIF:\$f:\$l::\$d::\$n::\${::}% --trace=_AM_COND_IF:\$f:\$l::\$d::\$n::\${::}% --trace=_AM_SUBST_NOTMAKE:\$f:\$l::\$d::\$n::\${::}% --trace=_LT_AC_TAGCONFIG:\$f:\$l::\$d::\$n::\${::}% --trace=m4_include:\$f:\$l::\$d::\$n::\${::}% --trace=m4_sinclude:\$f:\$l::\$d::\$n::\${::}% --trace=sinclude:\$f:\$l::\$d::\$n::\${::}%
+automake: thread 0: reading /usr/share/automake-1.18/am/header-vars.am
+automake: thread 0: reading Makefile.am
+automake: thread 0: reading /usr/share/automake-1.18/am/configure.am
+automake: thread 0: reading /usr/share/automake-1.18/am/remake-hdr.am
+automake: thread 0: reading /usr/share/automake-1.18/am/clean-hdr.am
+automake: thread 0: reading /usr/share/automake-1.18/am/scripts.am
+automake: thread 0: reading /usr/share/automake-1.18/am/inst-vars.am
+automake: thread 0: reading /usr/share/automake-1.18/am/libtool.am
+automake: thread 0: reading /usr/share/automake-1.18/am/texinfos.am
+automake: thread 0: reading /usr/share/automake-1.18/am/data.am
+automake: thread 0: reading /usr/share/automake-1.18/am/header.am
+automake: thread 0: reading /usr/share/automake-1.18/am/subdirs.am
+automake: thread 0: reading /usr/share/automake-1.18/am/tags.am
+automake: thread 0: reading /usr/share/automake-1.18/am/distdir.am
+automake: thread 0: reading /usr/share/automake-1.18/am/footer.am
+automake: thread 0: reading /usr/share/automake-1.18/am/install.am
+automake: thread 0: reading /usr/share/automake-1.18/am/clean.am
+automake: thread 0: creating Makefile.in
+automake: thread 0: reading benchmark/Makefile.am
+automake: thread 0: Sources ending in .cu become .o
+automake: thread 0: reading benchmark/Makefile.mpfr.am
+automake: thread 0: reading benchmark/Makefile.gmp.am
+automake: thread 0: reading benchmark/Makefile.qd.am
+automake: thread 0: reading benchmark/Makefile.dd.am
+automake: thread 0: reading benchmark/Makefile.td.am
+automake: thread 0: reading benchmark/Makefile.dd_cuda.am
+automake: thread 0: reading benchmark/Makefile.qd_cuda.am
+automake: thread 0: reading benchmark/Makefile.td_cuda.am
+automake: thread 0: reading benchmark/Makefile.mpfr_cuda.am
+automake: thread 0: reading benchmark/Makefile.double.am
+automake: thread 0: reading benchmark/Makefile.binary128.am
+automake: thread 0: reading benchmark/Makefile.binary128_opencl.am
+automake: thread 0: reading benchmark/Makefile.binary80.am
+automake: thread 0: reading benchmark/Makefile.blas.am
+automake: thread 0: reading /usr/share/automake-1.18/am/progs.am
+automake: thread 0: reading /usr/share/automake-1.18/am/program.am
+automake: thread 0: reading /usr/share/automake-1.18/am/compile.am
+automake: thread 0: reading /usr/share/automake-1.18/am/depend.am
+automake: thread 0: reading /usr/share/automake-1.18/am/depend2.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: reading /usr/share/automake-1.18/am/lang-compile.am
+automake: thread 0: creating benchmark/Makefile.in
+automake: thread 0: reading examples/Makefile.am
+automake: thread 0: creating examples/Makefile.in
+automake: thread 0: reading examples/mpblas/Makefile.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: creating examples/mpblas/Makefile.in
+automake: thread 0: reading examples/mplapack/00_GeneralLinearEquations/Makefile.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: creating examples/mplapack/00_GeneralLinearEquations/Makefile.in
+automake: thread 0: reading examples/mplapack/01_PositiveDefiniteLinearEquations/Makefile.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: creating examples/mplapack/01_PositiveDefiniteLinearEquations/Makefile.in
+automake: thread 0: reading examples/mplapack/02_LeastSquares/Makefile.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: creating examples/mplapack/02_LeastSquares/Makefile.in
+automake: thread 0: reading examples/mplapack/03_SymmetricEigenproblems/Makefile.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: creating examples/mplapack/03_SymmetricEigenproblems/Makefile.in
+automake: thread 0: reading examples/mplapack/04_NonsymmetricEigenproblems/Makefile.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: creating examples/mplapack/04_NonsymmetricEigenproblems/Makefile.in
+automake: thread 0: reading examples/mplapack/05_SingularValueDecomposition/Makefile.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: creating examples/mplapack/05_SingularValueDecomposition/Makefile.in
+automake: thread 0: reading examples/mplapack/06_SymmetricIndefiniteLinearEquations/Makefile.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: creating examples/mplapack/06_SymmetricIndefiniteLinearEquations/Makefile.in
+automake: thread 0: reading examples/mplapack/07_GeneralizedSymmetricDefiniteEigenproblems/Makefile.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: creating examples/mplapack/07_GeneralizedSymmetricDefiniteEigenproblems/Makefile.in
+automake: thread 0: reading examples/mplapack/08_GeneralizedNonsymmetricEigenproblems/Makefile.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: creating examples/mplapack/08_GeneralizedNonsymmetricEigenproblems/Makefile.in
+automake: thread 0: reading examples/mplapack/09_GeneralizedSingularValueDecomposition/Makefile.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: creating examples/mplapack/09_GeneralizedSingularValueDecomposition/Makefile.in
+automake: thread 0: reading examples/mplapack/90_PrecisionComparison/Makefile.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: creating examples/mplapack/90_PrecisionComparison/Makefile.in
+automake: thread 0: reading examples/mplapack/Makefile.am
+automake: thread 0: creating examples/mplapack/Makefile.in
+automake: thread 0: reading external/Makefile.am
+automake: thread 0: creating external/Makefile.in
+automake: thread 0: reading external/dlfcn-win32/Makefile.am
+automake: thread 0: creating external/dlfcn-win32/Makefile.in
+automake: thread 0: reading external/gmp/Makefile.am
+automake: thread 0: creating external/gmp/Makefile.in
+automake: thread 0: reading external/gmpfrxx_mkII/Makefile.am
+automake: thread 0: creating external/gmpfrxx_mkII/Makefile.in
+automake: thread 0: reading external/lapack/Makefile.am
+automake: thread 0: creating external/lapack/Makefile.in
+automake: thread 0: reading external/mpc/Makefile.am
+automake: thread 0: creating external/mpc/Makefile.in
+automake: thread 0: reading external/mpc_cuda/Makefile.am
+automake: thread 0: creating external/mpc_cuda/Makefile.in
+automake: thread 0: reading external/mpfr/Makefile.am
+automake: thread 0: creating external/mpfr/Makefile.in
+automake: thread 0: reading external/openblas/Makefile.am
+automake: thread 0: creating external/openblas/Makefile.in
+automake: thread 0: reading external/qd/Makefile.am
+automake: thread 0: creating external/qd/Makefile.in
+automake: thread 0: reading mpblas/Makefile.am
+automake: thread 0: creating mpblas/Makefile.in
+automake: thread 0: reading mpblas/optimized/Makefile.am
+automake: thread 0: creating mpblas/optimized/Makefile.in
+automake: thread 0: reading mpblas/optimized/binary128/Makefile.am
+automake: thread 0: reading mplapack/reference/sources.am
+automake: thread 0: reading /usr/share/automake-1.18/am/ltlib.am
+automake: thread 0: reading /usr/share/automake-1.18/am/ltlibrary.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: reading /usr/share/automake-1.18/am/check.am
+automake: thread 0: Sources ending in .log become .trs
+automake: thread 0: reading /usr/share/automake-1.18/am/check2.am
+automake: thread 0: Sources ending in .test become .log
+automake: thread 0: Sources ending in .test$(EXEEXT) become .log
+automake: thread 0: creating mpblas/optimized/binary128/Makefile.in
+automake: thread 0: reading mpblas/optimized/binary128/opencl/Makefile.am
+automake: thread 0: reading mplapack/reference/accelerator-sources.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: creating mpblas/optimized/binary128/opencl/Makefile.in
+automake: thread 0: reading mpblas/optimized/binary80/Makefile.am
+automake: thread 0: reading mplapack/reference/sources.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: Sources ending in .log become .trs
+automake: thread 0: Sources ending in .test become .log
+automake: thread 0: Sources ending in .test$(EXEEXT) become .log
+automake: thread 0: creating mpblas/optimized/binary80/Makefile.in
+automake: thread 0: reading mpblas/optimized/dd/Makefile.am
+automake: thread 0: reading mplapack/reference/sources.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: Sources ending in .log become .trs
+automake: thread 0: Sources ending in .test become .log
+automake: thread 0: Sources ending in .test$(EXEEXT) become .log
+automake: thread 0: creating mpblas/optimized/dd/Makefile.in
+automake: thread 0: reading mpblas/optimized/dd/cuda/Makefile.am
+automake: thread 0: reading mplapack/reference/accelerator-sources.am
+automake: thread 0: Sources ending in .cu become .o
+automake: thread 0: Sources ending in .cu become .lo
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: Sources ending in .log become .trs
+automake: thread 0: Sources ending in .test become .log
+automake: thread 0: Sources ending in .test$(EXEEXT) become .log
+automake: thread 0: creating mpblas/optimized/dd/cuda/Makefile.in
+automake: thread 0: reading mpblas/optimized/double/Makefile.am
+automake: thread 0: reading mplapack/reference/sources.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: Sources ending in .log become .trs
+automake: thread 0: Sources ending in .test become .log
+automake: thread 0: Sources ending in .test$(EXEEXT) become .log
+automake: thread 0: creating mpblas/optimized/double/Makefile.in
+automake: thread 0: reading mpblas/optimized/gmp/Makefile.am
+automake: thread 0: reading mplapack/reference/sources.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: Sources ending in .log become .trs
+automake: thread 0: Sources ending in .test become .log
+automake: thread 0: Sources ending in .test$(EXEEXT) become .log
+automake: thread 0: creating mpblas/optimized/gmp/Makefile.in
+automake: thread 0: reading mpblas/optimized/mpfr/Makefile.am
+automake: thread 0: reading mplapack/reference/sources.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: Sources ending in .log become .trs
+automake: thread 0: Sources ending in .test become .log
+automake: thread 0: Sources ending in .test$(EXEEXT) become .log
+automake: thread 0: creating mpblas/optimized/mpfr/Makefile.in
+automake: thread 0: reading mpblas/optimized/mpfr/cuda/Makefile.am
+automake: thread 0: reading mplapack/reference/accelerator-sources.am
+automake: thread 0: Sources ending in .cu become .o
+automake: thread 0: Sources ending in .cu become .lo
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: Sources ending in .log become .trs
+automake: thread 0: Sources ending in .test become .log
+automake: thread 0: Sources ending in .test$(EXEEXT) become .log
+automake: thread 0: creating mpblas/optimized/mpfr/cuda/Makefile.in
+automake: thread 0: reading mpblas/optimized/qd/Makefile.am
+automake: thread 0: reading mplapack/reference/sources.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: Sources ending in .log become .trs
+automake: thread 0: Sources ending in .test become .log
+automake: thread 0: Sources ending in .test$(EXEEXT) become .log
+automake: thread 0: creating mpblas/optimized/qd/Makefile.in
+automake: thread 0: reading mpblas/optimized/qd/cuda/Makefile.am
+automake: thread 0: reading mplapack/reference/accelerator-sources.am
+automake: thread 0: Sources ending in .cu become .o
+automake: thread 0: Sources ending in .cu become .lo
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: Sources ending in .log become .trs
+automake: thread 0: Sources ending in .test become .log
+automake: thread 0: Sources ending in .test$(EXEEXT) become .log
+automake: thread 0: creating mpblas/optimized/qd/cuda/Makefile.in
+automake: thread 0: reading mpblas/optimized/td/Makefile.am
+automake: thread 0: reading mplapack/reference/sources.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: Sources ending in .log become .trs
+automake: thread 0: Sources ending in .test become .log
+automake: thread 0: Sources ending in .test$(EXEEXT) become .log
+automake: thread 0: creating mpblas/optimized/td/Makefile.in
+automake: thread 0: reading mpblas/optimized/td/cuda/Makefile.am
+automake: thread 0: reading mplapack/reference/accelerator-sources.am
+automake: thread 0: Sources ending in .cu become .o
+automake: thread 0: Sources ending in .cu become .lo
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: Sources ending in .log become .trs
+automake: thread 0: Sources ending in .test become .log
+automake: thread 0: Sources ending in .test$(EXEEXT) become .log
+automake: thread 0: creating mpblas/optimized/td/cuda/Makefile.in
+automake: thread 0: reading mpblas/reference/Makefile.am
+automake: thread 0: creating mpblas/reference/Makefile.in
+automake: thread 0: reading mpblas/test/Makefile.am
+automake: thread 0: creating mpblas/test/Makefile.in
+automake: thread 0: reading mpblas/test/binary128/Makefile.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: Sources ending in .log become .trs
+automake: thread 0: Sources ending in .sh become .log
+automake: thread 0: Sources ending in .sh$(EXEEXT) become .log
+automake: thread 0: creating mpblas/test/binary128/Makefile.in
+automake: thread 0: reading mpblas/test/binary80/Makefile.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: Sources ending in .log become .trs
+automake: thread 0: Sources ending in .sh become .log
+automake: thread 0: Sources ending in .sh$(EXEEXT) become .log
+automake: thread 0: creating mpblas/test/binary80/Makefile.in
+automake: thread 0: reading mpblas/test/dd/Makefile.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: Sources ending in .log become .trs
+automake: thread 0: Sources ending in .sh become .log
+automake: thread 0: Sources ending in .sh$(EXEEXT) become .log
+automake: thread 0: creating mpblas/test/dd/Makefile.in
+automake: thread 0: reading mpblas/test/double/Makefile.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: Sources ending in .log become .trs
+automake: thread 0: Sources ending in .sh become .log
+automake: thread 0: Sources ending in .sh$(EXEEXT) become .log
+automake: thread 0: creating mpblas/test/double/Makefile.in
+automake: thread 0: reading mpblas/test/gmp/Makefile.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: Sources ending in .log become .trs
+automake: thread 0: Sources ending in .sh become .log
+automake: thread 0: Sources ending in .sh$(EXEEXT) become .log
+automake: thread 0: creating mpblas/test/gmp/Makefile.in
+automake: thread 0: reading mpblas/test/mpfr/Makefile.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: Sources ending in .log become .trs
+automake: thread 0: Sources ending in .sh become .log
+automake: thread 0: Sources ending in .sh$(EXEEXT) become .log
+automake: thread 0: creating mpblas/test/mpfr/Makefile.in
+automake: thread 0: reading mpblas/test/qd/Makefile.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: Sources ending in .log become .trs
+automake: thread 0: Sources ending in .sh become .log
+automake: thread 0: Sources ending in .sh$(EXEEXT) become .log
+automake: thread 0: creating mpblas/test/qd/Makefile.in
+automake: thread 0: reading mpblas/test/td/Makefile.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: Sources ending in .log become .trs
+automake: thread 0: Sources ending in .sh become .log
+automake: thread 0: Sources ending in .sh$(EXEEXT) become .log
+automake: thread 0: creating mpblas/test/td/Makefile.in
+automake: thread 0: reading mplapack/Makefile.am
+automake: thread 0: creating mplapack/Makefile.in
+automake: thread 0: reading mplapack/optimized/Makefile.am
+automake: thread 0: creating mplapack/optimized/Makefile.in
+automake: thread 0: reading mplapack/optimized/binary128/Makefile.am
+automake: thread 0: creating mplapack/optimized/binary128/Makefile.in
+automake: thread 0: reading mplapack/optimized/binary80/Makefile.am
+automake: thread 0: creating mplapack/optimized/binary80/Makefile.in
+automake: thread 0: reading mplapack/optimized/dd/Makefile.am
+automake: thread 0: creating mplapack/optimized/dd/Makefile.in
+automake: thread 0: reading mplapack/optimized/double/Makefile.am
+automake: thread 0: creating mplapack/optimized/double/Makefile.in
+automake: thread 0: reading mplapack/optimized/gmp/Makefile.am
+automake: thread 0: creating mplapack/optimized/gmp/Makefile.in
+automake: thread 0: reading mplapack/optimized/mpfr/Makefile.am
+automake: thread 0: creating mplapack/optimized/mpfr/Makefile.in
+automake: thread 0: reading mplapack/optimized/qd/Makefile.am
+automake: thread 0: creating mplapack/optimized/qd/Makefile.in
+automake: thread 0: reading mplapack/optimized/td/Makefile.am
+automake: thread 0: creating mplapack/optimized/td/Makefile.in
+automake: thread 0: reading mplapack/reference/Makefile.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: creating mplapack/reference/Makefile.in
+automake: thread 0: reading mplapack/test/Makefile.am
+automake: thread 0: creating mplapack/test/Makefile.in
+automake: thread 0: reading mplapack/test/compare/Makefile.am
+automake: thread 0: creating mplapack/test/compare/Makefile.in
+automake: thread 0: reading mplapack/test/compare/binary128/Makefile.am
+automake: thread 0: reading mplapack/test/compare/Makefile.backend.am
+automake: thread 0: reading mplapack/test/compare/Makefile.tests.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: Sources ending in .log become .trs
+automake: thread 0: Sources ending in .sh become .log
+automake: thread 0: Sources ending in .sh$(EXEEXT) become .log
+automake: thread 0: creating mplapack/test/compare/binary128/Makefile.in
+automake: thread 0: reading mplapack/test/compare/binary80/Makefile.am
+automake: thread 0: reading mplapack/test/compare/Makefile.backend.am
+automake: thread 0: reading mplapack/test/compare/Makefile.tests.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: Sources ending in .log become .trs
+automake: thread 0: Sources ending in .sh become .log
+automake: thread 0: Sources ending in .sh$(EXEEXT) become .log
+automake: thread 0: creating mplapack/test/compare/binary80/Makefile.in
+automake: thread 0: reading mplapack/test/compare/dd/Makefile.am
+automake: thread 0: reading mplapack/test/compare/Makefile.backend.am
+automake: thread 0: reading mplapack/test/compare/Makefile.tests.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: Sources ending in .log become .trs
+automake: thread 0: Sources ending in .sh become .log
+automake: thread 0: Sources ending in .sh$(EXEEXT) become .log
+automake: thread 0: creating mplapack/test/compare/dd/Makefile.in
+automake: thread 0: reading mplapack/test/compare/double/Makefile.am
+automake: thread 0: reading mplapack/test/compare/Makefile.backend.am
+automake: thread 0: reading mplapack/test/compare/Makefile.tests.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: Sources ending in .log become .trs
+automake: thread 0: Sources ending in .sh become .log
+automake: thread 0: Sources ending in .sh$(EXEEXT) become .log
+automake: thread 0: creating mplapack/test/compare/double/Makefile.in
+automake: thread 0: reading mplapack/test/compare/gmp/Makefile.am
+automake: thread 0: reading mplapack/test/compare/Makefile.backend.am
+automake: thread 0: reading mplapack/test/compare/Makefile.tests.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: Sources ending in .log become .trs
+automake: thread 0: Sources ending in .sh become .log
+automake: thread 0: Sources ending in .sh$(EXEEXT) become .log
+automake: thread 0: creating mplapack/test/compare/gmp/Makefile.in
+automake: thread 0: reading mplapack/test/compare/mpfr/Makefile.am
+automake: thread 0: reading mplapack/test/compare/Makefile.backend.am
+automake: thread 0: reading mplapack/test/compare/Makefile.tests.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: Sources ending in .log become .trs
+automake: thread 0: Sources ending in .sh become .log
+automake: thread 0: Sources ending in .sh$(EXEEXT) become .log
+automake: thread 0: creating mplapack/test/compare/mpfr/Makefile.in
+automake: thread 0: reading mplapack/test/compare/qd/Makefile.am
+automake: thread 0: reading mplapack/test/compare/Makefile.backend.am
+automake: thread 0: reading mplapack/test/compare/Makefile.tests.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: Sources ending in .log become .trs
+automake: thread 0: Sources ending in .sh become .log
+automake: thread 0: Sources ending in .sh$(EXEEXT) become .log
+automake: thread 0: creating mplapack/test/compare/qd/Makefile.in
+automake: thread 0: reading mplapack/test/compare/td/Makefile.am
+automake: thread 0: reading mplapack/test/compare/Makefile.backend.am
+automake: thread 0: reading mplapack/test/compare/Makefile.tests.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: Sources ending in .log become .trs
+automake: thread 0: Sources ending in .sh become .log
+automake: thread 0: Sources ending in .sh$(EXEEXT) become .log
+automake: thread 0: creating mplapack/test/compare/td/Makefile.in
+automake: thread 0: reading mplapack/test/eig/Makefile.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: creating mplapack/test/eig/Makefile.in
+automake: thread 0: reading mplapack/test/eig/binary128/Makefile.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: creating mplapack/test/eig/binary128/Makefile.in
+automake: thread 0: reading mplapack/test/eig/binary80/Makefile.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: creating mplapack/test/eig/binary80/Makefile.in
+automake: thread 0: reading mplapack/test/eig/dd/Makefile.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: creating mplapack/test/eig/dd/Makefile.in
+automake: thread 0: reading mplapack/test/eig/double/Makefile.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: creating mplapack/test/eig/double/Makefile.in
+automake: thread 0: reading mplapack/test/eig/gmp/Makefile.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: creating mplapack/test/eig/gmp/Makefile.in
+automake: thread 0: reading mplapack/test/eig/mpfr/Makefile.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: creating mplapack/test/eig/mpfr/Makefile.in
+automake: thread 0: reading mplapack/test/eig/qd/Makefile.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: creating mplapack/test/eig/qd/Makefile.in
+automake: thread 0: reading mplapack/test/eig/td/Makefile.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: creating mplapack/test/eig/td/Makefile.in
+automake: thread 0: reading mplapack/test/lin/Makefile.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: creating mplapack/test/lin/Makefile.in
+automake: thread 0: reading mplapack/test/lin/binary128/Makefile.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: creating mplapack/test/lin/binary128/Makefile.in
+automake: thread 0: reading mplapack/test/lin/binary80/Makefile.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: creating mplapack/test/lin/binary80/Makefile.in
+automake: thread 0: reading mplapack/test/lin/dd/Makefile.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: creating mplapack/test/lin/dd/Makefile.in
+automake: thread 0: reading mplapack/test/lin/double/Makefile.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: creating mplapack/test/lin/double/Makefile.in
+automake: thread 0: reading mplapack/test/lin/gmp/Makefile.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: creating mplapack/test/lin/gmp/Makefile.in
+automake: thread 0: reading mplapack/test/lin/mpfr/Makefile.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: creating mplapack/test/lin/mpfr/Makefile.in
+automake: thread 0: reading mplapack/test/lin/qd/Makefile.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: creating mplapack/test/lin/qd/Makefile.in
+automake: thread 0: reading mplapack/test/lin/td/Makefile.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: creating mplapack/test/lin/td/Makefile.in
+automake: thread 0: reading mplapack/test/matgen/Makefile.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: creating mplapack/test/matgen/Makefile.in
+config.status: creating mplapack/reference/iMlaver.cpp
+config.status: creating Makefile
+config.status: creating packaging/PKGBUILD
+config.status: creating packaging/mplapack.spec
+config.status: creating mpblas/optimized/Makefile
+config.status: creating mpblas/optimized/gmp/Makefile
+config.status: creating mpblas/optimized/mpfr/Makefile
+config.status: creating mpblas/optimized/qd/Makefile
+config.status: creating mpblas/optimized/dd/Makefile
+config.status: creating mpblas/optimized/dd/cuda/Makefile
+config.status: creating mpblas/optimized/qd/cuda/Makefile
+config.status: creating mpblas/optimized/td/cuda/Makefile
+config.status: creating mpblas/optimized/mpfr/cuda/Makefile
+config.status: creating external/mpc_cuda/Makefile
+config.status: creating mpblas/optimized/td/Makefile
+config.status: creating mpblas/optimized/double/Makefile
+config.status: creating mpblas/optimized/binary80/Makefile
+config.status: creating mpblas/optimized/binary128/Makefile
+config.status: creating mpblas/optimized/binary128/opencl/Makefile
+config.status: creating mplapack/optimized/Makefile
+config.status: creating mplapack/optimized/gmp/Makefile
+config.status: creating mplapack/optimized/mpfr/Makefile
+config.status: creating mplapack/optimized/qd/Makefile
+config.status: creating mplapack/optimized/dd/Makefile
+config.status: creating mplapack/optimized/td/Makefile
+config.status: creating mplapack/optimized/double/Makefile
+config.status: creating mplapack/optimized/binary80/Makefile
+config.status: creating mplapack/optimized/binary128/Makefile
+config.status: creating mpblas/test/Makefile
+config.status: creating mpblas/test/gmp/Makefile
+config.status: creating mpblas/test/mpfr/Makefile
+config.status: creating mpblas/test/qd/Makefile
+config.status: creating mpblas/test/dd/Makefile
+config.status: creating mpblas/test/td/Makefile
+config.status: creating mpblas/test/double/Makefile
+config.status: creating mpblas/test/binary80/Makefile
+config.status: creating mpblas/test/binary128/Makefile
+config.status: creating mpblas/Makefile
+config.status: creating mplapack/test/Makefile
+config.status: creating mplapack/test/compare/Makefile
+config.status: creating mplapack/test/compare/gmp/Makefile
+config.status: creating mplapack/test/compare/mpfr/Makefile
+config.status: creating mplapack/test/compare/qd/Makefile
+config.status: creating mplapack/test/compare/dd/Makefile
+config.status: creating mplapack/test/compare/td/Makefile
+config.status: creating mplapack/test/compare/double/Makefile
+config.status: creating mplapack/test/compare/binary80/Makefile
+config.status: creating mplapack/test/compare/binary128/Makefile
+config.status: creating mplapack/test/matgen/Makefile
+config.status: creating mplapack/test/lin/Makefile
+config.status: creating mplapack/test/lin/mpfr/Makefile
+config.status: creating mplapack/test/lin/gmp/Makefile
+config.status: creating mplapack/test/lin/qd/Makefile
+config.status: creating mplapack/test/lin/dd/Makefile
+config.status: creating mplapack/test/lin/td/Makefile
+config.status: creating mplapack/test/lin/double/Makefile
+config.status: creating mplapack/test/lin/binary80/Makefile
+config.status: creating mplapack/test/lin/binary128/Makefile
+config.status: creating mplapack/test/eig/Makefile
+config.status: creating mplapack/test/eig/mpfr/Makefile
+config.status: creating mplapack/test/eig/gmp/Makefile
+config.status: creating mplapack/test/eig/qd/Makefile
+config.status: creating mplapack/test/eig/dd/Makefile
+config.status: creating mplapack/test/eig/td/Makefile
+config.status: creating mplapack/test/eig/double/Makefile
+config.status: creating mplapack/test/eig/binary80/Makefile
+config.status: creating mplapack/test/eig/binary128/Makefile
+config.status: creating mplapack/Makefile
+config.status: creating external/Makefile
+config.status: creating external/gmp/Makefile
+config.status: creating external/mpfr/Makefile
+config.status: creating external/mpc/Makefile
+config.status: creating external/gmpfrxx_mkII/Makefile
+config.status: creating external/qd/Makefile
+config.status: creating external/lapack/Makefile
+config.status: creating external/dlfcn-win32/Makefile
+config.status: creating external/openblas/Makefile
+config.status: creating benchmark/Makefile
+config.status: creating examples/Makefile
+config.status: creating examples/mpblas/Makefile
+config.status: creating examples/mplapack/Makefile
+config.status: creating examples/mplapack/00_GeneralLinearEquations/Makefile
+config.status: creating examples/mplapack/01_PositiveDefiniteLinearEquations/Makefile
+config.status: creating examples/mplapack/02_LeastSquares/Makefile
+config.status: creating examples/mplapack/03_SymmetricEigenproblems/Makefile
+config.status: creating examples/mplapack/04_NonsymmetricEigenproblems/Makefile
+config.status: creating examples/mplapack/05_SingularValueDecomposition/Makefile
+config.status: creating examples/mplapack/06_SymmetricIndefiniteLinearEquations/Makefile
+config.status: creating examples/mplapack/07_GeneralizedSymmetricDefiniteEigenproblems/Makefile
+config.status: creating examples/mplapack/08_GeneralizedNonsymmetricEigenproblems/Makefile
+config.status: creating examples/mplapack/09_GeneralizedSingularValueDecomposition/Makefile
+config.status: creating examples/mplapack/90_PrecisionComparison/Makefile
+config.status: creating mpblas/reference/Makefile
+config.status: creating mplapack/reference/Makefile
+config.status: creating include/mplapack_config.h
+config.status: include/mplapack_config.h is unchanged
+config.status: executing libtool commands
+config.status: executing depfiles commands
+make: Entering directory '/home/docker/mplapack-acceralation/benchmark'
+ccache g++ -std=gnu++17 -DHAVE_CONFIG_H -I. -I../include    -fopenmp -I../include -I/home/docker/mplapack-acceralation/external/i/QD/include/ -DMPLAPACK_BUILD_WITH_DD -ffp-contract=off -O2 -MT Rkernel_bench_dd_opt-Rkernel_bench.o -MD -MP -MF .deps/Rkernel_bench_dd_opt-Rkernel_bench.Tpo -c -o Rkernel_bench_dd_opt-Rkernel_bench.o `test -f 'Rkernel_bench.cpp' || echo './'`Rkernel_bench.cpp
+ccache g++ -std=gnu++17 -DHAVE_CONFIG_H -I. -I../include    -fopenmp -I../include -I/home/docker/mplapack-acceralation/external/i/QD/include/ -DMPLAPACK_BUILD_WITH_TD -ffp-contract=off -O2 -MT Rkernel_bench_td_opt-Rkernel_bench.o -MD -MP -MF .deps/Rkernel_bench_td_opt-Rkernel_bench.Tpo -c -o Rkernel_bench_td_opt-Rkernel_bench.o `test -f 'Rkernel_bench.cpp' || echo './'`Rkernel_bench.cpp
+ccache g++ -std=gnu++17 -DHAVE_CONFIG_H -I. -I../include    -fopenmp -I../include -I/home/docker/mplapack-acceralation/external/i/QD/include/ -DMPLAPACK_BUILD_WITH_QD -ffp-contract=off -O2 -MT Rkernel_bench_qd_opt-Rkernel_bench.o -MD -MP -MF .deps/Rkernel_bench_qd_opt-Rkernel_bench.Tpo -c -o Rkernel_bench_qd_opt-Rkernel_bench.o `test -f 'Rkernel_bench.cpp' || echo './'`Rkernel_bench.cpp
+ccache g++ -std=gnu++17 -DHAVE_CONFIG_H -I. -I../include    -I/home/docker/mplapack-acceralation/external/i/GMPFRXX_MKII/include -fopenmp -I../include -I/home/docker/mplapack-acceralation/external/i/GMP/include/ -I/home/docker/mplapack-acceralation/external/i/MPFR/include/ -I/home/docker/mplapack-acceralation/external/i/MPC/include/ -DMPLAPACK_BUILD_WITH_MPFR -O2 -MT Rkernel_bench_mpfr_opt-Rkernel_bench.o -MD -MP -MF .deps/Rkernel_bench_mpfr_opt-Rkernel_bench.Tpo -c -o Rkernel_bench_mpfr_opt-Rkernel_bench.o `test -f 'Rkernel_bench.cpp' || echo './'`Rkernel_bench.cpp
+make: 'Rkernel_bench.dd_cuda_kernel' is up to date.
+make: 'Rkernel_bench.td_cuda_kernel' is up to date.
+make: 'Rkernel_bench.qd_cuda_kernel' is up to date.
+/usr/local/cuda/bin/nvcc -U_GNU_SOURCE -D_XOPEN_SOURCE=700 -std=c++17 -fmad=false -Xcompiler=-ffp-contract=off -O3 -m64 -gencode arch=compute_80,code=sm_80 -gencode arch=compute_90,code=sm_90 -I../include -I../include -I/home/docker/mplapack-acceralation/external/i/QD/include/ -I/usr/local/cuda/include  -rdc=true -I/home/docker/mplapack-acceralation/external/i/MPC_CUDA/include \
+    -I/home/docker/mplapack-acceralation/external/i/GMPFRXX_MKII/include -I/home/docker/mplapack-acceralation/external/i/GMP/include/ -I/home/docker/mplapack-acceralation/external/i/MPFR/include/ -I/home/docker/mplapack-acceralation/external/i/MPC/include/ -Xcompiler=-fopenmp -c ./Rkernel_bench_mpfr_resident.cu -o Rkernel_bench_mpfr_resident.o
+mv -f .deps/Rkernel_bench_dd_opt-Rkernel_bench.Tpo .deps/Rkernel_bench_dd_opt-Rkernel_bench.Po
+/bin/bash ../libtool  --tag=CXX   --mode=link ccache g++ -std=gnu++17 -fopenmp -I../include -I/home/docker/mplapack-acceralation/external/i/QD/include/ -DMPLAPACK_BUILD_WITH_DD -ffp-contract=off -O2 -L../mpblas/optimized/dd -lmplapack_dd_opt -L/home/docker/mplapack-acceralation/external/i/QD/lib/ -lqd -ldl  -o Rkernel_bench.dd_opt Rkernel_bench_dd_opt-Rkernel_bench.o  
+mv -f .deps/Rkernel_bench_qd_opt-Rkernel_bench.Tpo .deps/Rkernel_bench_qd_opt-Rkernel_bench.Po
+/bin/bash ../libtool  --tag=CXX   --mode=link ccache g++ -std=gnu++17 -fopenmp -I../include -I/home/docker/mplapack-acceralation/external/i/QD/include/ -DMPLAPACK_BUILD_WITH_QD -ffp-contract=off -O2 -L../mpblas/optimized/qd -lmplapack_qd_opt -L/home/docker/mplapack-acceralation/external/i/QD/lib/ -lqd -ldl  -o Rkernel_bench.qd_opt Rkernel_bench_qd_opt-Rkernel_bench.o  
+/home/docker/mplapack-acceralation/external/i/MPC_CUDA/include/mpc_cuda/cu_mpc.h(325): warning #20040-D: a __host__ function("sqrt_int64") redeclared with __host__ __device__, hence treated as a __host__ __device__ function
+  __attribute__((host)) __attribute__((device)) int64_t sqrt_int64 (int64_t n);
+                                                        ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+libtool: link: ccache g++ -std=gnu++17 -fopenmp -I../include -I/home/docker/mplapack-acceralation/external/i/QD/include/ -DMPLAPACK_BUILD_WITH_DD -ffp-contract=off -O2 -o .libs/Rkernel_bench.dd_opt Rkernel_bench_dd_opt-Rkernel_bench.o  -L../mpblas/optimized/dd /home/docker/mplapack-acceralation/mpblas/optimized/dd/.libs/libmplapack_dd_opt.so -L/home/docker/mplapack-acceralation/external/i/QD/lib/ -lqd -ldl -fopenmp -Wl,-rpath -Wl,/home/docker/mplapack-acceralation/install/lib
+libtool: link: ccache g++ -std=gnu++17 -fopenmp -I../include -I/home/docker/mplapack-acceralation/external/i/QD/include/ -DMPLAPACK_BUILD_WITH_QD -ffp-contract=off -O2 -o .libs/Rkernel_bench.qd_opt Rkernel_bench_qd_opt-Rkernel_bench.o  -L../mpblas/optimized/qd /home/docker/mplapack-acceralation/mpblas/optimized/qd/.libs/libmplapack_qd_opt.so -L/home/docker/mplapack-acceralation/external/i/QD/lib/ -lqd -ldl -fopenmp -Wl,-rpath -Wl,/home/docker/mplapack-acceralation/install/lib
+mv -f .deps/Rkernel_bench_td_opt-Rkernel_bench.Tpo .deps/Rkernel_bench_td_opt-Rkernel_bench.Po
+/bin/bash ../libtool  --tag=CXX   --mode=link ccache g++ -std=gnu++17 -fopenmp -I../include -I/home/docker/mplapack-acceralation/external/i/QD/include/ -DMPLAPACK_BUILD_WITH_TD -ffp-contract=off -O2 -L../mpblas/optimized/td -lmplapack_td_opt -L/home/docker/mplapack-acceralation/external/i/QD/lib/ -lqd -ldl  -o Rkernel_bench.td_opt Rkernel_bench_td_opt-Rkernel_bench.o  
+/home/docker/mplapack-acceralation/external/i/MPC_CUDA/include/mpc_cuda/cu_freal.cuh(134): warning #63-D: shift count is too large
+          r.m[i]=(a<<SB)|(b>>(64-SB)); }
+                             ^
+          detected during:
+            instantiation of "cu_fp::cu_freal<PB> cu_fp::cu_freal<PB>::finalize(const cu_fp::cu_limb *, int, int, long, cu_fp::cu_limb, cu_fp::cu_limb, int) [with PB=512]" at line 148
+            instantiation of "cu_fp::cu_freal<PB> cu_fp::cu_freal<PB>::from_double(double) [with PB=512]" at line 21 of ./../mpblas/optimized/mpfr/cuda/Cfactor_fixed_types.h
+            instantiation of "mplapack_blas_dev::factor_real<PB>::factor_real(double) [with PB=512]" at line 57 of ./../mpblas/optimized/mpfr/cuda/Rinverse_types.h
+            instantiation of "void mplapack_mpfr_inverse::number(mplapack_blas_dev::factor_real<PB> &, double) [with PB=512]" at line 74 of ./../mpblas/optimized/mpfr/cuda/Rinverse_types.h
+            instantiation of "mplapack_mpfr_inverse::value<Tag, Complex>::value(double) [with Tag=kernel_new::Tag, Complex=true]" at line 25 of ./../mpblas/optimized/mpfr/cuda/../../common/Rtrisolve_jobs.h
+            [ 3 instantiation contexts not shown ]
+            instantiation of "void mplapack_mpfr_cuda::<unnamed>::factor_context<E>::execute(Job, long) [with E=mplapack_mpfr_inverse::<unnamed>::inverse_engine, Job=mplapack_mpfr_inverse::<unnamed>::checked_job<mplapack_trisolve::pivot_job<kernel_new::C, mplapack_trisolve::Carithmetic<kernel_new::C>>>]" at line 29 of ./../mpblas/optimized/mpfr/cuda/Rinverse_device_body.cuh
+            instantiation of "void mplapack_mpfr_inverse::<unnamed>::launcher::launch(J, long) [with J=mplapack_trisolve::pivot_job<kernel_new::C, mplapack_trisolve::Carithmetic<kernel_new::C>>]" at line 54 of ./../mpblas/optimized/mpfr/cuda/../../common/Rtrisolve_jobs.h
+            instantiation of "void mplapack_trisolve::schedule<V,A,L>(L &, const mplapack_trisolve::shape &, const V *, V *, V *) [with V=kernel_new::C, A=mplapack_trisolve::Carithmetic<kernel_new::C>, L=kernel_new::Launcher]" at line 154 of ./Rkernel_new.h
+            instantiation of "double kernel_new::gpu<H>::run() [with H=COMPLEX]" at line 262 of ./Rkernel_new.h
+            instantiation of "void kernel_new::point<H>(kernel_new::shape, const std::string &, int, int, const std::string &) [with H=COMPLEX]" at line 314 of ./Rkernel_new.h
+
+/home/docker/mplapack-acceralation/external/i/MPC_CUDA/include/mpc_cuda/cu_freal.cuh(134): warning #63-D: shift count is too large
+          r.m[i]=(a<<SB)|(b>>(64-SB)); }
+                             ^
+          detected during:
+            instantiation of "cu_fp::cu_freal<PB> cu_fp::cu_freal<PB>::finalize(const cu_fp::cu_limb *, int, int, long, cu_fp::cu_limb, cu_fp::cu_limb, int) [with PB=576]" at line 321
+            instantiation of "cu_fp::cu_freal<TO> cu_fp::cu_convert<TO,FROM>(const cu_fp::cu_freal<FROM> &) [with TO=576, FROM=512]" at line 104 of /home/docker/mplapack-acceralation/external/i/MPC_CUDA/include/mpc_cuda/cu_fround.cuh
+            instantiation of "int cu_fp::fround_detail::div(cu_fp::cu_freal<PB> &, const cu_fp::cu_freal<PB> &, const cu_fp::cu_freal<PB> &, __nv_bool &) [with PB=512]" at line 140 of /home/docker/mplapack-acceralation/external/i/MPC_CUDA/include/mpc_cuda/cu_fround.cuh
+            instantiation of "int cu_fp::cu_fdiv_rn(cu_fp::cu_freal<PB> &, const cu_fp::cu_freal<PB> &, const cu_fp::cu_freal<PB> &) [with PB=512]" at line 109 of ./../mpblas/optimized/mpfr/cuda/blas3_kernel_cuda.h
+            instantiation of "void mplapack_mpfr_cuda::l3_fixed_engine<PB, TRSM>::div(mplapack_mpfr_cuda::l3_fixed_engine<PB, TRSM>::V &, const mplapack_mpfr_cuda::l3_fixed_engine<PB, TRSM>::V &, const mplapack_mpfr_cuda::l3_fixed_engine<PB, TRSM>::V &) const [with PB=512, TRSM=true]" at line 44 of ./../mpblas/optimized/mpfr/cuda/Rinverse_types.h
+            [ 7 instantiation contexts not shown ]
+            instantiation of "void mplapack_mpfr_cuda::<unnamed>::factor_context<E>::execute(Job, long) [with E=mplapack_mpfr_inverse::<unnamed>::inverse_engine, Job=mplapack_mpfr_inverse::<unnamed>::checked_job<mplapack_blas1::leaves<kernel_new::R, kernel_new::C, true>>]" at line 29 of ./../mpblas/optimized/mpfr/cuda/Rinverse_device_body.cuh
+            instantiation of "void mplapack_mpfr_inverse::<unnamed>::launcher::launch(J, long) [with J=mplapack_blas1::leaves<kernel_new::R, kernel_new::C, true>]" at line 33 of ./../mpblas/optimized/mpfr/cuda/../../common/Rblas1_jobs_common.h
+            instantiation of "void mplapack_blas1::schedule<R,X,Complex,Root,Launcher>(Launcher &, mplapack_blas1::operation, long, const X *, const X *, mplapack_blas1::state<R> *) [with R=kernel_new::R, X=kernel_new::C, Complex=true, Root=kernel_new::Root, Launcher=kernel_new::Launcher]" at line 155 of ./Rkernel_new.h
+            instantiation of "double kernel_new::gpu<H>::run() [with H=COMPLEX]" at line 262 of ./Rkernel_new.h
+            instantiation of "void kernel_new::point<H>(kernel_new::shape, const std::string &, int, int, const std::string &) [with H=COMPLEX]" at line 314 of ./Rkernel_new.h
+
+libtool: link: ccache g++ -std=gnu++17 -fopenmp -I../include -I/home/docker/mplapack-acceralation/external/i/QD/include/ -DMPLAPACK_BUILD_WITH_TD -ffp-contract=off -O2 -o .libs/Rkernel_bench.td_opt Rkernel_bench_td_opt-Rkernel_bench.o  -L../mpblas/optimized/td /home/docker/mplapack-acceralation/mpblas/optimized/td/.libs/libmplapack_td_opt.so -L/home/docker/mplapack-acceralation/external/i/QD/lib/ -lqd -ldl -fopenmp -Wl,-rpath -Wl,/home/docker/mplapack-acceralation/install/lib
+mv -f .deps/Rkernel_bench_mpfr_opt-Rkernel_bench.Tpo .deps/Rkernel_bench_mpfr_opt-Rkernel_bench.Po
+/bin/bash ../libtool  --tag=CXX   --mode=link ccache g++ -std=gnu++17 -I/home/docker/mplapack-acceralation/external/i/GMPFRXX_MKII/include -fopenmp -I../include -I/home/docker/mplapack-acceralation/external/i/GMP/include/ -I/home/docker/mplapack-acceralation/external/i/MPFR/include/ -I/home/docker/mplapack-acceralation/external/i/MPC/include/ -DMPLAPACK_BUILD_WITH_MPFR -O2 -L../mpblas/optimized/mpfr -lmplapack_mpfr_opt -L/home/docker/mplapack-acceralation/external/i/MPC/lib/ -L/home/docker/mplapack-acceralation/external/i/MPFR/lib/ -L/home/docker/mplapack-acceralation/external/i/GMP/lib/ -lmpfr -lmpc -lgmp -ldl  -o Rkernel_bench.mpfr_opt Rkernel_bench_mpfr_opt-Rkernel_bench.o  
+libtool: link: ccache g++ -std=gnu++17 -I/home/docker/mplapack-acceralation/external/i/GMPFRXX_MKII/include -fopenmp -I../include -I/home/docker/mplapack-acceralation/external/i/GMP/include/ -I/home/docker/mplapack-acceralation/external/i/MPFR/include/ -I/home/docker/mplapack-acceralation/external/i/MPC/include/ -DMPLAPACK_BUILD_WITH_MPFR -O2 -o .libs/Rkernel_bench.mpfr_opt Rkernel_bench_mpfr_opt-Rkernel_bench.o  -L../mpblas/optimized/mpfr /home/docker/mplapack-acceralation/mpblas/optimized/mpfr/.libs/libmplapack_mpfr_opt.so -L/home/docker/mplapack-acceralation/external/i/MPC/lib/ -L/home/docker/mplapack-acceralation/external/i/MPFR/lib/ -L/home/docker/mplapack-acceralation/external/i/GMP/lib/ /home/docker/mplapack-acceralation/external/mpfr/../i/MPFR/lib/libmpfr.so /home/docker/mplapack-acceralation/external/mpc/../i/MPC/lib/libmpc.so /home/docker/mplapack-acceralation/external/gmp/../i/GMP/lib/libgmp.so -ldl -fopenmp -Wl,-rpath -Wl,/home/docker/mplapack-acceralation/install/lib -Wl,-rpath -Wl,/home/docker/mplapack-acceralation/external/mpfr/../i/MPFR/lib -Wl,-rpath -Wl,/home/docker/mplapack-acceralation/external/mpc/../i/MPC/lib -Wl,-rpath -Wl,/home/docker/mplapack-acceralation/external/gmp/../i/GMP/lib
+/home/docker/mplapack-acceralation/external/i/MPC_CUDA/include/mpc_cuda/cu_mpc.h(325): warning #20040-D: a __host__ function("sqrt_int64") redeclared with __host__ __device__, hence treated as a __host__ __device__ function
+  __attribute__((host)) __attribute__((device)) int64_t sqrt_int64 (int64_t n);
+                                                        ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+/home/docker/mplapack-acceralation/external/i/MPC_CUDA/include/mpc_cuda/cu_freal.cuh(134): warning #63-D: shift count is too large
+          r.m[i]=(a<<SB)|(b>>(64-SB)); }
+                             ^
+          detected during:
+            instantiation of "cu_fp::cu_freal<PB> cu_fp::cu_freal<PB>::finalize(const cu_fp::cu_limb *, int, int, long, cu_fp::cu_limb, cu_fp::cu_limb, int) [with PB=512]" at line 148
+            instantiation of "cu_fp::cu_freal<PB> cu_fp::cu_freal<PB>::from_double(double) [with PB=512]" at line 21 of ./../mpblas/optimized/mpfr/cuda/Cfactor_fixed_types.h
+            instantiation of "mplapack_blas_dev::factor_real<PB>::factor_real(double) [with PB=512]" at line 57 of ./../mpblas/optimized/mpfr/cuda/Rinverse_types.h
+            instantiation of "void mplapack_mpfr_inverse::number(mplapack_blas_dev::factor_real<PB> &, double) [with PB=512]" at line 74 of ./../mpblas/optimized/mpfr/cuda/Rinverse_types.h
+            instantiation of "mplapack_mpfr_inverse::value<Tag, Complex>::value(double) [with Tag=kernel_new::Tag, Complex=true]" at line 25 of ./../mpblas/optimized/mpfr/cuda/../../common/Rtrisolve_jobs.h
+            [ 3 instantiation contexts not shown ]
+            instantiation of "void mplapack_mpfr_cuda::<unnamed>::factor_context<E>::execute(Job, long) [with E=mplapack_mpfr_inverse::<unnamed>::inverse_engine, Job=mplapack_mpfr_inverse::<unnamed>::checked_job<mplapack_trisolve::pivot_job<kernel_new::C, mplapack_trisolve::Carithmetic<kernel_new::C>>>]" at line 29 of ./../mpblas/optimized/mpfr/cuda/Rinverse_device_body.cuh
+            instantiation of "void mplapack_mpfr_inverse::<unnamed>::launcher::launch(J, long) [with J=mplapack_trisolve::pivot_job<kernel_new::C, mplapack_trisolve::Carithmetic<kernel_new::C>>]" at line 54 of ./../mpblas/optimized/mpfr/cuda/../../common/Rtrisolve_jobs.h
+            instantiation of "void mplapack_trisolve::schedule<V,A,L>(L &, const mplapack_trisolve::shape &, const V *, V *, V *) [with V=kernel_new::C, A=mplapack_trisolve::Carithmetic<kernel_new::C>, L=kernel_new::Launcher]" at line 154 of ./Rkernel_new.h
+            instantiation of "double kernel_new::gpu<H>::run() [with H=COMPLEX]" at line 262 of ./Rkernel_new.h
+            instantiation of "void kernel_new::point<H>(kernel_new::shape, const std::string &, int, int, const std::string &) [with H=COMPLEX]" at line 314 of ./Rkernel_new.h
+
+/home/docker/mplapack-acceralation/external/i/MPC_CUDA/include/mpc_cuda/cu_freal.cuh(134): warning #63-D: shift count is too large
+          r.m[i]=(a<<SB)|(b>>(64-SB)); }
+                             ^
+          detected during:
+            instantiation of "cu_fp::cu_freal<PB> cu_fp::cu_freal<PB>::finalize(const cu_fp::cu_limb *, int, int, long, cu_fp::cu_limb, cu_fp::cu_limb, int) [with PB=576]" at line 321
+            instantiation of "cu_fp::cu_freal<TO> cu_fp::cu_convert<TO,FROM>(const cu_fp::cu_freal<FROM> &) [with TO=576, FROM=512]" at line 104 of /home/docker/mplapack-acceralation/external/i/MPC_CUDA/include/mpc_cuda/cu_fround.cuh
+            instantiation of "int cu_fp::fround_detail::div(cu_fp::cu_freal<PB> &, const cu_fp::cu_freal<PB> &, const cu_fp::cu_freal<PB> &, __nv_bool &) [with PB=512]" at line 140 of /home/docker/mplapack-acceralation/external/i/MPC_CUDA/include/mpc_cuda/cu_fround.cuh
+            instantiation of "int cu_fp::cu_fdiv_rn(cu_fp::cu_freal<PB> &, const cu_fp::cu_freal<PB> &, const cu_fp::cu_freal<PB> &) [with PB=512]" at line 109 of ./../mpblas/optimized/mpfr/cuda/blas3_kernel_cuda.h
+            instantiation of "void mplapack_mpfr_cuda::l3_fixed_engine<PB, TRSM>::div(mplapack_mpfr_cuda::l3_fixed_engine<PB, TRSM>::V &, const mplapack_mpfr_cuda::l3_fixed_engine<PB, TRSM>::V &, const mplapack_mpfr_cuda::l3_fixed_engine<PB, TRSM>::V &) const [with PB=512, TRSM=true]" at line 44 of ./../mpblas/optimized/mpfr/cuda/Rinverse_types.h
+            [ 7 instantiation contexts not shown ]
+            instantiation of "void mplapack_mpfr_cuda::<unnamed>::factor_context<E>::execute(Job, long) [with E=mplapack_mpfr_inverse::<unnamed>::inverse_engine, Job=mplapack_mpfr_inverse::<unnamed>::checked_job<mplapack_blas1::leaves<kernel_new::R, kernel_new::C, true>>]" at line 29 of ./../mpblas/optimized/mpfr/cuda/Rinverse_device_body.cuh
+            instantiation of "void mplapack_mpfr_inverse::<unnamed>::launcher::launch(J, long) [with J=mplapack_blas1::leaves<kernel_new::R, kernel_new::C, true>]" at line 33 of ./../mpblas/optimized/mpfr/cuda/../../common/Rblas1_jobs_common.h
+            instantiation of "void mplapack_blas1::schedule<R,X,Complex,Root,Launcher>(Launcher &, mplapack_blas1::operation, long, const X *, const X *, mplapack_blas1::state<R> *) [with R=kernel_new::R, X=kernel_new::C, Complex=true, Root=kernel_new::Root, Launcher=kernel_new::Launcher]" at line 155 of ./Rkernel_new.h
+            instantiation of "double kernel_new::gpu<H>::run() [with H=COMPLEX]" at line 262 of ./Rkernel_new.h
+            instantiation of "void kernel_new::point<H>(kernel_new::shape, const std::string &, int, int, const std::string &) [with H=COMPLEX]" at line 314 of ./Rkernel_new.h
+
+/usr/local/cuda/bin/nvcc  -dlink Rkernel_bench_mpfr_resident.o /home/docker/mplapack-acceralation/external/i/MPC_CUDA/lib/libmpc_cuda.a -o kernel_new_mpfr_dlink.o
+nvlink warning : SM Arch ('sm_75') not found in 'Rkernel_bench_mpfr_resident.o'
+/bin/bash ../libtool --mode=link ccache g++ -std=gnu++17 -o Rkernel_bench.mpfr_cuda_resident Rkernel_bench_mpfr_resident.o kernel_new_mpfr_dlink.o /home/docker/mplapack-acceralation/external/i/MPC_CUDA/lib/libmpc_cuda.a -L../mpblas/optimized/mpfr -lmplapack_mpfr_opt -L/usr/local/cuda/lib64 -lcudart -L/home/docker/mplapack-acceralation/external/i/MPC/lib/ -L/home/docker/mplapack-acceralation/external/i/MPFR/lib/ -L/home/docker/mplapack-acceralation/external/i/GMP/lib/ -lmpfr -lmpc -lgmp -fopenmp -ldl 
+libtool: link: ccache g++ -std=gnu++17 -o .libs/Rkernel_bench.mpfr_cuda_resident Rkernel_bench_mpfr_resident.o kernel_new_mpfr_dlink.o -fopenmp  /home/docker/mplapack-acceralation/external/i/MPC_CUDA/lib/libmpc_cuda.a -L../mpblas/optimized/mpfr /home/docker/mplapack-acceralation/mpblas/optimized/mpfr/.libs/libmplapack_mpfr_opt.so -L/usr/local/cuda/lib64 -lcudart -L/home/docker/mplapack-acceralation/external/i/MPC/lib/ -L/home/docker/mplapack-acceralation/external/i/MPFR/lib/ -L/home/docker/mplapack-acceralation/external/i/GMP/lib/ /home/docker/mplapack-acceralation/external/mpfr/../i/MPFR/lib/libmpfr.so /home/docker/mplapack-acceralation/external/mpc/../i/MPC/lib/libmpc.so /home/docker/mplapack-acceralation/external/gmp/../i/GMP/lib/libgmp.so -ldl -fopenmp -Wl,-rpath -Wl,/home/docker/mplapack-acceralation/install/lib -Wl,-rpath -Wl,/home/docker/mplapack-acceralation/external/mpfr/../i/MPFR/lib -Wl,-rpath -Wl,/home/docker/mplapack-acceralation/external/mpc/../i/MPC/lib -Wl,-rpath -Wl,/home/docker/mplapack-acceralation/external/gmp/../i/GMP/lib
+make: Leaving directory '/home/docker/mplapack-acceralation/benchmark'

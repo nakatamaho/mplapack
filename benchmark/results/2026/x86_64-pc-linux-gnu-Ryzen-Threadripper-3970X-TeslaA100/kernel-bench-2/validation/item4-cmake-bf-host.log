@@ -1,0 +1,23 @@
+Test project /tmp/factor04-cmake
+    Start  43: qd_opt_Rblas1_fast
+1/9 Test  #43: qd_opt_Rblas1_fast ...............   Passed    0.03 sec
+    Start  48: dd_opt_Rblas1_fast
+2/9 Test  #48: dd_opt_Rblas1_fast ...............   Passed    0.01 sec
+    Start  53: td_opt_Rblas1_fast
+3/9 Test  #53: td_opt_Rblas1_fast ...............   Passed    0.02 sec
+    Start  78: dd_cuda_Rtrisolve_host
+4/9 Test  #78: dd_cuda_Rtrisolve_host ...........   Passed    1.06 sec
+    Start  79: dd_cuda_Rblas1_host
+5/9 Test  #79: dd_cuda_Rblas1_host ..............   Passed    0.02 sec
+    Start  94: td_cuda_Rtrisolve_host
+6/9 Test  #94: td_cuda_Rtrisolve_host ...........   Passed    2.49 sec
+    Start  95: td_cuda_Rblas1_host
+7/9 Test  #95: td_cuda_Rblas1_host ..............   Passed    0.03 sec
+    Start 110: qd_cuda_Rtrisolve_host
+8/9 Test #110: qd_cuda_Rtrisolve_host ...........   Passed    4.72 sec
+    Start 111: qd_cuda_Rblas1_host
+9/9 Test #111: qd_cuda_Rblas1_host ..............   Passed    0.06 sec
+
+100% tests passed, 0 tests failed out of 9
+
+Total Test time (real) =   8.45 sec

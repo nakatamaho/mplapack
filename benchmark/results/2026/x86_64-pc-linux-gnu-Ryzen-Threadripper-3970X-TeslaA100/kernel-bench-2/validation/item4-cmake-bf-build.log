@@ -1,0 +1,30 @@
+-- Reference LAPACK: bundled 3.12.1 with patch-print|patch-iseed|patch-xLAQP2RK.f|patch-xxxGVD.f|patch-stebz-error-propagation|patch-redundant-dble-real|patch-trsyl3-ldswork-overwrite|patch-xpgvx-info-to-iinfo|patch-zunbdb3-conjugate-x21|patch-fix-testparameters|patch-xERRTSQR.f|patch-tsqr01-cq-residual|patch-cabs1_unification|patch-cabsmax|patch-claghe-zero-leading|patch-zlaghe-zero-leading
+-- mpblas/test: skipped (needs the MPFR backend for its test support)
+-- mplapack/test/compare: skipped (needs the MPFR backend)
+-- Configuring done (0.5s)
+-- Generating done (2.0s)
+-- Build files have been written to: /tmp/factor04-cmake
+[100%] Built target mplapack_dd_opt
+[100%] Building CUDA object benchmark/CMakeFiles/bench_Rkernel_bench_dd_cuda_kernel.dir/Rkernel_bench_dd_cuda.cu.o
+[100%] Linking CXX executable Rkernel_bench.dd_cuda_kernel
+[100%] Built target bench_Rkernel_bench_dd_cuda_kernel
+[100%] Built target mplapack_td_opt
+[100%] Building CUDA object benchmark/CMakeFiles/bench_Rkernel_bench_td_cuda_kernel.dir/Rkernel_bench_td_cuda.cu.o
+[100%] Linking CXX executable Rkernel_bench.td_cuda_kernel
+[100%] Built target bench_Rkernel_bench_td_cuda_kernel
+[100%] Built target mplapack_qd_opt
+[100%] Building CUDA object benchmark/CMakeFiles/bench_Rkernel_bench_qd_cuda_kernel.dir/Rkernel_bench_qd_cuda.cu.o
+[100%] Linking CXX executable Rkernel_bench.qd_cuda_kernel
+[100%] Built target bench_Rkernel_bench_qd_cuda_kernel
+[100%] Built target mplapack_dd_opt
+[100%] Building CXX object benchmark/CMakeFiles/bench_Rkernel_bench_dd_opt.dir/Rkernel_bench.cpp.o
+[100%] Linking CXX executable Rkernel_bench.dd_opt
+[100%] Built target bench_Rkernel_bench_dd_opt
+[100%] Built target mplapack_td_opt
+[100%] Building CXX object benchmark/CMakeFiles/bench_Rkernel_bench_td_opt.dir/Rkernel_bench.cpp.o
+[100%] Linking CXX executable Rkernel_bench.td_opt
+[100%] Built target bench_Rkernel_bench_td_opt
+[100%] Built target mplapack_qd_opt
+[100%] Building CXX object benchmark/CMakeFiles/bench_Rkernel_bench_qd_opt.dir/Rkernel_bench.cpp.o
+[100%] Linking CXX executable Rkernel_bench.qd_opt
+[100%] Built target bench_Rkernel_bench_qd_opt

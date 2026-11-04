@@ -22,7 +22,8 @@ import matplotlib.pyplot as plt  # noqa: E402
 
 DEFAULTS = dict(title="MPFR 512ビット Rgemm、GPU 固定精度 (cu_freal) の速度とサイズ (NVIDIA A100)", subtitle="",
                 xlabel="n (m = n = k)", ylabel="GFLOPS (2n³ / 時間)", series="GPU", cpu="", cpu_label="CPU 32コア",
-                min_n=1, dark=False, annotate_min=1024, ymax=None, subtitle_lines=1)
+                min_n=1, dark=False, annotate_min=1024, ymax=None, subtitle_lines=1,
+                extra_cpu=(), contaminated=(), logx=False, compact_annotations=False)
 
 
 def draw(rows, png, **options):
@@ -52,12 +53,22 @@ def draw(rows, png, **options):
             label="%s (%d点)" % (a.series, len(rows)))
     ax.scatter([r[0] for r in pow2], [r[1] for r in pow2], color=s2, s=60, zorder=3,
                label="n = 2 の冪 (%d点)" % len(pow2))
-    for n, g in pow2:
+    visible_max = a.ymax or max([q[1] for q in rows] + [q[1] for _, pp in a.extra_cpu for q in pp], default=1)
+    for i, (n, g) in enumerate(pow2):
         if n >= a.annotate_min:
-            ax.annotate("%d: %.2f" % (n, g), (n, g), xytext=(8, -16), textcoords="offset points", fontsize=11)
+            if a.compact_annotations:
+                dy = (10 + 12*(i % 3)) if g < 0.6*visible_max else (-12 - 12*(i % 3))
+                last = n == rows[-1][0]
+                ax.annotate("2^%d: %.3g" % (n.bit_length()-1, g), (n, g), xytext=(-4 if last else 4, dy),
+                            textcoords="offset points", fontsize=8, ha='right' if last else 'left')
+            else:
+                ax.annotate("%d: %.2f" % (n, g), (n, g), xytext=(8, -16), textcoords="offset points", fontsize=11)
     if rows and not (rows[-1] in pow2 and rows[-1][0] >= a.annotate_min):  # the last point, unless annotated above
         n, g = rows[-1]
-        ax.annotate("%d: %.2f" % (n, g), (n, g), xytext=(-60, 12), textcoords="offset points", fontsize=11)
+        if a.compact_annotations:
+            ax.annotate("%d: %.3g" % (n, g), (n, g), xytext=(-4, 12), textcoords="offset points", fontsize=8, ha='right')
+        else:
+            ax.annotate("%d: %.2f" % (n, g), (n, g), xytext=(-60, 12), textcoords="offset points", fontsize=11)
 
     ax.set_xlim(0, rows[-1][0] * 1.03 if rows else 1)
     if a.cpu:
@@ -68,6 +79,23 @@ def draw(rows, png, **options):
             ax.axhline(float(a.cpu), linestyle="--", color=sub, linewidth=1.4)
             ax.annotate("%s %.3g GFLOPS" % (a.cpu_label, float(a.cpu)), (ax.get_xlim()[1], float(a.cpu)),
                         xytext=(-4, 4), textcoords="offset points", ha="right", fontsize=11, color=sub)
+
+    # Optional goal11 overlays; defaults preserve the legacy figure exactly.
+    for i, (label, pts) in enumerate(a.extra_cpu):
+        ax.plot([q[0] for q in pts], [q[1] for q in pts], '--', linewidth=1.4,
+                color=sub if i == 0 else '#9764ad', label=label)
+    if a.contaminated:
+        ax.scatter([q[0] for q in a.contaminated], [q[1] for q in a.contaminated],
+                   marker='x', color='#b32323', s=45, zorder=5, label='load >=16 / other GPU app')
+    if a.logx:
+        pts = rows + [q for _, pp in a.extra_cpu for q in pp]
+        if pts:
+            ax.set_xscale('log', base=2)
+            ax.set_xlim(min(q[0] for q in pts) / 1.1, max(q[0] for q in pts) * 1.1)
+    elif a.extra_cpu:
+        pts = rows + [q for _, pp in a.extra_cpu for q in pp]
+        if pts:
+            ax.set_xlim(0, max(q[0] for q in pts) * 1.03)
 
     ax.set_xlabel(a.xlabel)
     ax.set_ylabel(a.ylabel)

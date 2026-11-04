@@ -1,0 +1,1 @@
+python3 benchmark/kernel_bench.py new --methods gpu,cpu --bindir /tmp/factor04-cmake/benchmark --mpfr-bindir /tmp/factor01-cmake/benchmark --out benchmark/results/2026/x86_64-pc-linux-gnu-Ryzen-Threadripper-3970X-TeslaA100/kernel-bench-2 --hours 5.8

@@ -952,6 +952,8 @@ template <class T> int bench(const spec &s, const std::vector<long> &sizes, int 
 
 } // namespace
 
+#include "Rkernel_new.h"
+
 int main(int argc, char **argv) {
     if (argc < 4) {
         std::fprintf(stderr, "usage: %s KERNEL FORM SIZES [--label L] [--reps R] [--long S] [--warmup W] [--dump DIR] [--dump-sizes N,N]\n", argv[0]);
@@ -966,6 +968,11 @@ int main(int argc, char **argv) {
             if ((long)mpfr_get_default_prec() != std::atol(std::getenv("MPFRXX_DEFAULT_PRECISION_BITS")))
                 throw std::runtime_error("the MPFR default precision is not MPFRXX_DEFAULT_PRECISION_BITS");
         }
+#endif
+        if (kernel_new::accepts(argv[1]))
+            return kernel_new::main(argc, argv);
+#if defined(KERNEL_BENCH_MPFR_RESIDENT)
+        throw std::runtime_error("resident MPFR program accepts only new goal11 routine names");
 #endif
 #if defined(KERNEL_BENCH_MPFR_CUDA)
         // Small sizes too: the thresholds of the entry points do not apply.
