@@ -3,7 +3,11 @@
 Resident R/C TRTRI/LAUUM/POTRI/GETRI (goal 09):
 [API and CPU-library-speed fallback](../../../../mplapack/optimized/common/Rinverse_cuda.md).
 Default is opt-in; `MPLAPACK_DD_LAPACK_INVERSE_CUDA_MIN=0` forces eligible
-small calls. The factor/solver gates below are unchanged.
+small calls. Incomplete inverse timings do not justify enabling them.
+The [warm CPU-library gate retune](../../../../benchmark/results/2026/x86_64-pc-linux-gnu-Ryzen-Threadripper-3970X-TeslaA100/gate-retune/README.md)
+keeps Rpotrf=4096 and LU=2048; Cpotrf is now opt-in because Upper loses
+through 4096. Its shared U/L constant also conservatively disables Lower.
+Residual small-n CPU-fallback overhead is documented there, not fixed.
 
 Resident getrs/potrs/gesv/posv (real and complex):
 [API, controls, verification and timings](../../../../mplapack/optimized/common/Rsolver_cuda.md).
@@ -15,7 +19,7 @@ The public Rpotrf/Cpotrf dispatchers then run the existing CPU path.
 
 Environment (read on every call):
 - `MPLAPACK_DD_LAPACK_CUDA=0`: disable these entry points.
-- `MPLAPACK_DD_LAPACK_CUDA_MIN=N`: minimum n (default 4096).
+- `MPLAPACK_DD_LAPACK_CUDA_MIN=N`: minimum n (Rpotrf default 4096, Cpotrf opt-in).
 - `MPLAPACK_DD_LAPACK_FAST=1`: currently uses the same reference-order path;
   no alternate rounding or sloppy arithmetic is selected implicitly.
 - `MPLAPACK_DD_CUDA_VERBOSE=1`: upload/factor/download seconds on stderr;
@@ -38,7 +42,7 @@ quick returns, disabled/below-threshold calls, or runtime errors. The CUDA
 Rgetrf/Cgetrf dispatchers then use the goal-03 CPU LU path.
 
 The environment variables above also control LU; the threshold applies to
-min(m,n), with a LU-specific default of 2048 (Cholesky remains 4096).
+min(m,n), with a LU-specific default of 2048 (real Cholesky remains 4096; complex is opt-in).
 Interleaved three-round real/complex measurements at 2048 and 4096 found
 resident LU faster than per-call transfers at both sizes. These are
 conservative measured eligibility defaults, not an extrapolated crossover.

@@ -2,8 +2,18 @@
 
 Resident dd/td/qd TRTRI/LAUUM/POTRI/GETRI (real/complex), added by goal 09,
 are documented in [Rinverse_cuda.md](Rinverse_cuda.md). Their separate
-inverse minimum is opt-in pending measurements; the solver/factor gates
-below are unchanged.
+inverse minimum remains opt-in: the follow-up measurements were cut short.
+Current gates use the [CPU-library warm-call retune](../../../benchmark/results/2026/x86_64-pc-linux-gnu-Ryzen-Threadripper-3970X-TeslaA100/gate-retune/README.md),
+not the historical timings later in this document. Only existing constants
+changed; arithmetic and overrides are unchanged.
+
+Current factor minima (real / complex): dd LU 2048/2048, Cholesky
+4096/opt-in; td LU 1024/1024, Cholesky 512/opt-in; qd LU 512/512,
+Cholesky 512/opt-in; MPFR LU 1024/1024, Cholesky 2048/4096.
+BF complex Cholesky's shared U/L constant remains conservative: Upper loses
+through 4096 despite Lower wins. Separate UPLO policy is future work.
+The td small-n LU load anomaly is excluded; residual CPU-fallback slowdown
+(dd Rpotrf and MPFR Lower Rpotrf) is documented, not fixed by this retune.
 
 The dd, td, qd and MPFR CUDA flavors provide the real and complex
 `getrs`, `potrs`, `gesv` and `posv` entry points. For example:
@@ -91,7 +101,7 @@ Negative/invalid minimum overrides retain the applicable default. Defaults:
 | dd | opt-in / opt-in | opt-in / opt-in | opt-in / 0 |
 | td | opt-in / opt-in | opt-in / opt-in | opt-in / 0 |
 | qd | opt-in / opt-in | opt-in / opt-in | opt-in / 0 |
-| mpfr | 512 / 1024 | opt-in / opt-in | 2048 / 2048 |
+| mpfr | 1024 / opt-in | opt-in / opt-in | 2048 / 2048 |
 
 BF standalone solves showed no profitable measured CPU/old-GPU crossover;
 there is no invented default crossover beyond the measurements. They require
@@ -106,8 +116,9 @@ minimum. The old defaults lose to the CPU library for narrow RHS; marginal
 lower-triangle wins do not establish a safe crossover for every supported
 orientation/RHS. Do not invent a larger unmeasured crossover. This does **not**
 disable GPU factorization in ordinary gesv/posv: on rejection they call the
-public resident-factor dispatcher, followed by the CPU solve. MPFR gesv keeps
-its measured real/complex CPU-library crossovers. Standalone solve controls
+public resident-factor dispatcher, followed by the CPU solve. The warm-call
+retune raises MPFR Rgesv from 512 to 1024 (512: CPU 0.415 s vs GPU 1.437 s)
+and makes Cgesv opt-in (2048: CPU 134.737 s vs GPU 161.626 s). Standalone solve controls
 are unchanged. Other MPFR precisions share these conservative policies; their
 performance crossover is unmeasured. See the
 [goal-08b CPU comparisons and verification](../../../benchmark/results/factorization-goal08b/README.md).

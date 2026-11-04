@@ -1,0 +1,51 @@
+Start testing: Nov 04 09:22 JST
+----------------------------------------------------------
+1/303 Testing: dd_cuda_solver_fallback
+1/303 Test: dd_cuda_solver_fallback
+Command: "/tmp/factor04-cmake/dd_cuda_solver_fallback_test"
+Directory: /tmp/factor04-cmake
+"dd_cuda_solver_fallback" start time: Nov 04 09:22 JST
+Output:
+----------------------------------------------------------
+fallback p=0 cases=352 elements=14149260 errors=0 zero-sign-errors=0
+<end of output>
+Test time =   3.29 sec
+----------------------------------------------------------
+Test Passed.
+"dd_cuda_solver_fallback" end time: Nov 04 09:22 JST
+"dd_cuda_solver_fallback" time elapsed: 00:00:03
+----------------------------------------------------------
+
+4/303 Testing: td_cuda_solver_fallback
+4/303 Test: td_cuda_solver_fallback
+Command: "/tmp/factor04-cmake/td_cuda_solver_fallback_test"
+Directory: /tmp/factor04-cmake
+"td_cuda_solver_fallback" start time: Nov 04 09:22 JST
+Output:
+----------------------------------------------------------
+fallback p=0 cases=352 elements=14149260 errors=0 zero-sign-errors=0
+<end of output>
+Test time =   6.80 sec
+----------------------------------------------------------
+Test Passed.
+"td_cuda_solver_fallback" end time: Nov 04 09:22 JST
+"td_cuda_solver_fallback" time elapsed: 00:00:06
+----------------------------------------------------------
+
+7/303 Testing: qd_cuda_solver_fallback
+7/303 Test: qd_cuda_solver_fallback
+Command: "/tmp/factor04-cmake/qd_cuda_solver_fallback_test"
+Directory: /tmp/factor04-cmake
+"qd_cuda_solver_fallback" start time: Nov 04 09:22 JST
+Output:
+----------------------------------------------------------
+fallback p=0 cases=352 elements=14149260 errors=0 zero-sign-errors=0
+<end of output>
+Test time =  11.36 sec
+----------------------------------------------------------
+Test Passed.
+"qd_cuda_solver_fallback" end time: Nov 04 09:23 JST
+"qd_cuda_solver_fallback" time elapsed: 00:00:11
+----------------------------------------------------------
+
+End testing: Nov 04 09:23 JST

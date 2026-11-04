@@ -1,5 +1,18 @@
 # Maintainer-requested pause, 2026-11-02
 
+**Follow-up closed 2026-11-04:** resumed measurements were subsequently stopped
+at the maintainer's request; [completed data and final gate decisions](../2026/x86_64-pc-linux-gnu-Ryzen-Threadripper-3970X-TeslaA100/gate-retune/README.md)
+are archived. The statements below about unstarted benchmarks/unchanged gates
+are historical, not the final status.
+
+**Ended by explicit instruction on 2026-11-03.** HEAD is now `93d1a70fb`,
+which reverts the small-n team cap. All benchmark executables were rebuilt
+in both CMake trees and autotools before new GPU measurements. The CPU
+comparison is not repeated; its timing concern is historical and was
+superseded by the revert. Current work uses `/tmp/batch0910-retune-93d1/`,
+not the old `phase3.py`. The remainder of this file is the preserved pause
+record, not a current instruction to remain idle.
+
 GPU benchmarks have **not started**. No CUDA LAPACK gate has been changed.
 The retuning commit requested for stage 3 has not been made.
 

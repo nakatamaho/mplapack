@@ -1,6 +1,49 @@
 # Batch 09/10 — implementation receipts and QA follow-up
 
-## Follow-up status: GPU hold requested 2026-11-02
+## Closed: measurements cut short (2026-11-04)
+
+The maintainer requested no further performance sweep. The measurement tree
+was stopped; completed JSONL and cold/warm summaries are preserved in the
+[final gate-retune report](../2026/x86_64-pc-linux-gnu-Ryzen-Threadripper-3970X-TeslaA100/gate-retune/README.md).
+234 factor/driver points and 114 inverse points (one incomplete) remain.
+BF inverses stay opt-in; MPFR inverse timing was not reached. Gate constants
+were retuned against CPU-library warm medians; quick dispatch/fallback
+checks only were rerun, not full QA. The following resume notes are historical.
+
+## Resumed on 93d1a70fb (2026-11-03)
+
+The maintainer resumed GPU work and reverted the small-n LU team cap in
+`93d1a70fb`: it slowed qd/gmp/mpfr by 1.4–5.4x on a quiet host. The earlier
+CPU comparison CSVs and timing concern below describe the **pre-revert**
+implementation only; they are historical, not the CPU baseline for gate tuning.
+Per instruction, the CPU old/new comparison is not repeated.
+
+Both complete CMake trees (`/tmp/factor04-cmake`, `/tmp/factor01-cmake`) and
+the full autotools build were rebuilt at `93d1a70fb`, retaining the benchmark
+sample/inverse extensions. Rebuilt archives, shared imports and both build
+systems' benchmark CLIs passed premeasurement checks. GPU CPU/default/forced
+cold/warm comparisons have started on these newly linked executables; no
+old CPU-timing results are substituted. Final tables and gate decisions are
+now linked above. Local measurement state: `/tmp/batch0910-retune-93d1/`.
+
+The factor/driver matrix has completed 234 points. Inverse calls at 4096 take
+minutes each (e.g. dd GETRI warm CPU/GPU 13.2/77.8 s real, 68.1/169.2 s
+complex), so remaining inverses use three alternating rounds through 1024
+and two at 2048/4096, each a fresh process with cold/warm calls. Previously
+completed three-round extras are preserved. This was the plan before the
+final cut-short instruction; unfinished sizes are explicitly listed above.
+The required inverse table uses Lower (GETRI has no UPLO); optional Upper
+inverse timing is not collected and is UNVERIFIED. Unmeasured Upper/UNIT
+inverse variants cannot be enabled by a Lower/nonunit timing result.
+The intentional scheduling change and terminated next attempt are retained
+in the local `inverse-replan.json` receipt, not classified as a numerical
+failure. Gates are decided from warm medians as requested; cold setup is
+reported separately, not used to force warm crossovers upward.
+
+The OCR hold below has ended by explicit instruction. Its process records
+remain expected maintainer usage, not anomalies.
+
+## Earlier follow-up status: GPU hold requested 2026-11-02
 
 Numerical QA and archive/shared-library audits are complete: [QA table](qa.csv),
 [raw execution receipts](qa-receipts/), and the

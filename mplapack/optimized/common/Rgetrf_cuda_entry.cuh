@@ -36,7 +36,7 @@ static constexpr long lu_min=1024; // Measured for both Rgetrf and Cgetrf.
 using LuOps=mplapack_gemm::qd_ops;
 #define LU_ENTRY(R) R##_qd_cuda
 static constexpr const char *lu_prefix="MPLAPACK_QD";
-static constexpr long lu_min=1024; // Measured for both Rgetrf and Cgetrf.
+static constexpr long lu_min=512; // Warm CPU-library speedups >=1.47x for both R/C.
 #endif
 using LuReal=mplapack_blas_dev::dreal<LuOps>;
 using LuComplex=mplapack_blas_dev::dcomplex<LuReal>;

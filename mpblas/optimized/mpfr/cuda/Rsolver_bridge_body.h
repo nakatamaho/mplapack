@@ -31,11 +31,11 @@ __attribute__((flatten)) static bool solver_call(const char *name,bool factorize
     char f=flag?*flag:0; if(f>='a' && f<='z') f-=32;
     if(n<=0 || rhs<=0 || lda<n || ldb<n || !a || !b || (!chol && !ipiv) ||
        (chol?(f!='U' && f!='L'):(f!='N' && f!='T' && f!='C'))) return false;
-    // LU drivers have measured CPU-library crossovers. Cholesky drivers
-    // lose for narrow RHS at their old factor-derived gates: opt in rather
+    // Real LU drivers win from 1024 in warm CPU-library comparisons.
+    // Complex LU and Cholesky drivers lose for narrow RHS: opt in rather
     // than invent an unmeasured crossover. Rejection still uses the public
     // factor followed by the CPU solve. Standalone controls are unchanged.
-    const long default_minimum=factorize?(chol?std::numeric_limits<long>::max():(name[0]=='C'?1024:512)):2048;
+    const long default_minimum=factorize?(chol?std::numeric_limits<long>::max():(name[0]=='C'?std::numeric_limits<long>::max():1024)):2048;
     long minimum=env_long("MPLAPACK_MPFR_LAPACK_CUDA_MIN",default_minimum);
     if(minimum<0) minimum=default_minimum;
     long specific=env_long(factorize?"MPLAPACK_MPFR_LAPACK_DRIVER_CUDA_MIN":"MPLAPACK_MPFR_LAPACK_SOLVE_CUDA_MIN",minimum);

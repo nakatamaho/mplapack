@@ -58,9 +58,9 @@ static bool factor_call(bool chol,const char *uplo,long m,long n,mpfr_class *a,l
     if(m<=0 || n<=0 || lda<m || !a || (!chol && !ipiv)) return false;
     bool upper=chol && uplo && (*uplo=='U' || *uplo=='u');
     if(chol && !upper && (!uplo || (*uplo!='L' && *uplo!='l'))) return false;
-    // Three interleaved rounds, 512-bit A100 measurements: resident LU wins
-    // at 512; Cholesky loses at 512/1024 and wins at 2048/4096.
-    const long default_minimum=chol?2048:512;
+    // Retuned warm CPU-library comparisons: LU is parity at 512, wins at
+    // 1024; Cholesky's clear both-triangle win starts at 2048.
+    const long default_minimum=chol?2048:1024;
     long minimum=env_long("MPLAPACK_MPFR_LAPACK_CUDA_MIN",default_minimum);
     if(minimum<0) minimum=default_minimum;
     if(!env_long("MPLAPACK_MPFR_CUDA",1) || !env_long("MPLAPACK_MPFR_LAPACK_CUDA",1) ||

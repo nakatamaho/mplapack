@@ -1,0 +1,19 @@
+Start testing: Nov 04 09:17 JST
+----------------------------------------------------------
+2/500 Testing: mpfr_cuda_solver_fallback_512
+2/500 Test: mpfr_cuda_solver_fallback_512
+Command: "/tmp/factor01-cmake/mpfr_cuda_solver_fallback_test" "512"
+Directory: /tmp/factor01-cmake
+"mpfr_cuda_solver_fallback_512" start time: Nov 04 09:17 JST
+Output:
+----------------------------------------------------------
+fallback p=512 cases=352 elements=14149260 errors=0 zero-sign-errors=0
+<end of output>
+Test time =  82.08 sec
+----------------------------------------------------------
+Test Passed.
+"mpfr_cuda_solver_fallback_512" end time: Nov 04 09:18 JST
+"mpfr_cuda_solver_fallback_512" time elapsed: 00:01:22
+----------------------------------------------------------
+
+End testing: Nov 04 09:18 JST

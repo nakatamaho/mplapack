@@ -21,7 +21,7 @@ dist_bench_DATA = \
 # -----------------------------------------------------------------------------
 # Source templates for go.*.sh (included in "make dist").
 # -----------------------------------------------------------------------------
-EXTRA_DIST = run_solver_bench.py run_factor_dispatch_bench.py Rsolver_legacy_bench.h \
+EXTRA_DIST = run_solver_bench.py run_factor_dispatch_bench.py test_factor_dispatch_bench.py test_factor_gate_smoke.py Rsolver_legacy_bench.h \
     results/factorization-goal08/solvers.csv \
     results/factorization-goal08/mpfr-factor-regression.csv \
     results/factorization-goal08b/README.md \

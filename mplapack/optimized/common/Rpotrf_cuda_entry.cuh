@@ -28,19 +28,19 @@ using PotrfOps=mplapack_gemm::dd_ops;
 #define POTRF_ENTRY(R) R##_dd_cuda
 static constexpr const char *potrf_prefix="MPLAPACK_DD";
 static constexpr long potrf_min=4096;
-static constexpr long potrf_complex_min=potrf_min;
+static constexpr long potrf_complex_min=std::numeric_limits<long>::max(); // Upper loses through 4096; shared U/L gate stays opt-in.
 #elif defined(MPLAPACK_BUILD_WITH_TD)
 using PotrfOps=mplapack_gemm::td_ops;
 #define POTRF_ENTRY(R) R##_td_cuda
 static constexpr const char *potrf_prefix="MPLAPACK_TD";
-static constexpr long potrf_min=2048; // Measured real/complex, both UPLOs.
-static constexpr long potrf_complex_min=potrf_min;
+static constexpr long potrf_min=512; // Warm CPU-library comparison, both UPLOs.
+static constexpr long potrf_complex_min=std::numeric_limits<long>::max(); // Upper loses through 4096.
 #elif defined(MPLAPACK_BUILD_WITH_QD)
 using PotrfOps=mplapack_gemm::qd_ops;
 #define POTRF_ENTRY(R) R##_qd_cuda
 static constexpr const char *potrf_prefix="MPLAPACK_QD";
-static constexpr long potrf_min=2048; // Measured crossover after device residency.
-static constexpr long potrf_complex_min=4096; // Upper loses at 2048; both UPLOs win at 4096.
+static constexpr long potrf_min=512; // Both UPLOs win; lower is only parity at 256.
+static constexpr long potrf_complex_min=std::numeric_limits<long>::max(); // Upper loses through 4096.
 #else
 #error dd/td/qd only
 #endif

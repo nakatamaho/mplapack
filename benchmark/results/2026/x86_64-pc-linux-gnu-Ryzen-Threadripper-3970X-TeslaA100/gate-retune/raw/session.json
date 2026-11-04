@@ -1,0 +1,10 @@
+{
+  "source_head": "93d1a70fb50d36227a08c19eeb894caa52badf14",
+  "phase": "before gate retuning",
+  "threads": 32,
+  "rounds": 3,
+  "calls_per_process": 2,
+  "cpu_lu_recomparison": "not repeated per maintainer; scheduling cap reverted by 93d1a70fb",
+  "inverse_rounds": "3 through 1024; 2 at 2048/4096; completed 3-round extras retained",
+  "started_unix": 1793734469.7488463
+}

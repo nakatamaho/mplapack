@@ -390,7 +390,7 @@ workers; the runner does this and clears inherited LAPACK/MPFR tuning.
 |200|Rgetrf|512|1.910529|12.610459|1.720275|0.013817|1.141940|0.006778|7.330|
 |200|Rpotrf L|512|0.457441|6.889667|1.677536|0.014755|1.064007|0.004351|4.107|
 
-Use routine-specific defaults: **Rgetrf 512**, **Rpotrf 2048**. LU wins at
+Historical goal-07 defaults were **Rgetrf 512**, **Rpotrf 2048**. LU won at
 every measured size from 512; Cholesky loses at 512/1024 but wins at both
 2048 and 4096. The losing points are retained above. These are measured
 eligibility points, not an extrapolated exact crossover. One explicit MIN
@@ -630,12 +630,20 @@ The 4096-point upper-triangle crossover was checked separately. See the
 
 Rejected public factors now use optimized CPU BLAS throughout their panels,
 not GPU BLAS per call. Driver rejection uses public factor + CPU solve;
-fused posv is opt-in, while gesv retains its real/complex 512/1024 defaults.
+fused posv is opt-in. The subsequent warm CPU-library retune makes Rgesv
+1024 and Cgesv opt-in (formerly 512/1024): at 512 Rgesv costs 1.437 s
+on GPU versus 0.415 s CPU; Cgesv at 2048 loses 161.626 vs 134.737 s.
+See the [cut-short retune](../../../../benchmark/results/2026/x86_64-pc-linux-gnu-Ryzen-Threadripper-3970X-TeslaA100/gate-retune/README.md)
+for raw cold/warm data, host-load caveats and limited verification.
 See [solver controls](../../../../mplapack/optimized/common/Rsolver_cuda.md).
 These are measured eligibility points, not extrapolated exact crossovers;
 other precisions retain the conservative shared policy. One explicit
 `MPLAPACK_MPFR_LAPACK_CUDA_MIN` overrides all four factors. Real defaults
-remain Rgetrf 512 / Rpotrf 2048.
+are now Rgetrf 1024 / Rpotrf 2048: LU at 512 is only warm CPU/GPU
+parity (0.302/0.303 s). Cgetrf stays 1024, Cpotrf stays 4096. MPFR
+Lower Rpotrf 1024 has residual CPU-fallback overhead; its root cause is
+not established or fixed by changing these constants. Inverse timing was
+not reached; there are no resident MPFR inverse entry points.
 
 Panel comparison: `mpfr_cuda_Cfactor_panel_bench`, 512 bits, five interleaved
 rounds reversing fixed/runtime/hybrid order, **45 successful calls**.
