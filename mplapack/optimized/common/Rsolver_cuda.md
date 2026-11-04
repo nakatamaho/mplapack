@@ -121,7 +121,7 @@ retune raises MPFR Rgesv from 512 to 1024 (512: CPU 0.415 s vs GPU 1.437 s)
 and makes Cgesv opt-in (2048: CPU 134.737 s vs GPU 161.626 s). Standalone solve controls
 are unchanged. Other MPFR precisions share these conservative policies; their
 performance crossover is unmeasured. See the
-[goal-08b CPU comparisons and verification](../../../benchmark/results/factorization-goal08b/README.md).
+[goal-08b CPU comparisons and verification](../../../benchmark/results/2026/x86_64-pc-linux-gnu-Ryzen-Threadripper-3970X-TeslaA100/factorization-goal08b/README.md).
 
 To force all eligible small cases in numerical tests, set all three n
 minimums **and** `<P>_LAPACK_SOLVE_CUDA_MIN_RHS=0`. The benchmark runner does
@@ -181,7 +181,7 @@ resident entry, reversing the order on alternate rounds. No correctness
 GPU jobs ran during these measurements.
 
 All **180 solver medians** (1620 retained samples), including narrow nrhs=1/32,
-are in [solvers.csv](../../../benchmark/results/factorization-goal08/solvers.csv).
+are in [solvers.csv](../../../benchmark/results/2026/x86_64-pc-linux-gnu-Ryzen-Threadripper-3970X-TeslaA100/factorization-goal08/solvers.csv).
 Drivers cover real/complex gesv/posv, all four backends, n=512/1024/2048,
 nrhs=1/n; dd also covers 4096. Standalone solves cover 512 with nrhs=1/32/n,
 2048 with nrhs=n, and BF 2048 with nrhs=1.
@@ -236,7 +236,7 @@ are synthetic nonsingular triangular factors, not preceded by a factorization.
 
 The unchanged MPFR factor path was separately compared with the goal-07b
 shared library, full-precision random inputs, three interleaved rounds:
-[12 factor medians / 72 samples](../../../benchmark/results/factorization-goal08/mpfr-factor-regression.csv).
+[12 factor medians / 72 samples](../../../benchmark/results/2026/x86_64-pc-linux-gnu-Ryzen-Threadripper-3970X-TeslaA100/factorization-goal08/mpfr-factor-regression.csv).
 New/baseline total ratios are 0.9968–1.0577; factor-interval ratios differ by
 at most 1.83%. No factor arithmetic or signed-zero policy changed.
 

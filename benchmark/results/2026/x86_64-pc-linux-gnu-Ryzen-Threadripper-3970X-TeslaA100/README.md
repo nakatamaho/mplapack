@@ -8,3 +8,7 @@ Same machine as ../../2022/x86_64-pc-linux-gnu-Ryzen-Threadripper-3970X-TeslaA10
 | Directory | Contents |
 |---|---|
 | `rgemm/` | October 2026: Rgemm/Cgemm GPU against CPU (dd/td/qd/mpfr) and the MPFR 512-bit size sweep up to n = 9997, through the public Rgemm (transfers included) |
+| `factorization-goal08/` | October 2026: GPU solvers (getrs/potrs/gesv/posv), CPU / per-call GPU BLAS / resident entry |
+| `factorization-goal08b/` | October-November 2026: below-gate CPU-library speed; factor table before and after the gate changes |
+| `factorization-batch-09-10/` | November 2026: CPU LU small-n follow-up, CPU/GPU inverses, Cholesky profile, batch QA receipts |
+| `gate-retune/` | November 2026: factor/solver gates retuned against the CPU library (measurements cut short; inverses not finished) |

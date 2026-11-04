@@ -626,7 +626,7 @@ historical goal-07b measurements. **Current complex defaults: Cgetrf 1024,
 Cpotrf 4096** (goal 08b). Direct CPU-library comparisons now give Cpotrf L
 2048: CPU 69.698 s / entry 76.852 s; 4096: CPU 490.306 s / entry 315.620 s.
 The 4096-point upper-triangle crossover was checked separately. See the
-[complete goal-08b measurements](../../../../benchmark/results/factorization-goal08b/README.md).
+[complete goal-08b measurements](../../../../benchmark/results/2026/x86_64-pc-linux-gnu-Ryzen-Threadripper-3970X-TeslaA100/factorization-goal08b/README.md).
 
 Rejected public factors now use optimized CPU BLAS throughout their panels,
 not GPU BLAS per call. Driver rejection uses public factor + CPU solve;

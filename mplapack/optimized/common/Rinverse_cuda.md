@@ -89,7 +89,7 @@ CMake registers full, quick, and fast-quick tests with SKIP_RETURN_CODE 77.
 Autotools `make check` includes the host variant. Full numerical sweeps,
 lin inverse/driver suites, sanitizer checks and crossover benchmarks are
 **deferred**, not claimed from quick tests. Implementation-stage receipts:
-[batch results](../../../benchmark/results/factorization-batch-09-10/README.md).
+[batch results](../../../benchmark/results/2026/x86_64-pc-linux-gnu-Ryzen-Threadripper-3970X-TeslaA100/factorization-batch-09-10/README.md).
 
 MPFR GPU inverses are outside this item. A future implementation should
 reuse MPFR's fixed/runtime factor context, precision/arena mutex and full

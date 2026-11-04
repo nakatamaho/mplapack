@@ -87,7 +87,7 @@ n = 1024, nrhs = 1:
    with the entry disabled, as the CPU path then called the GPU BLAS per
    call). Goal 08b binds these paths to optimized CPU BLAS, restores CPU
    scheduling, and retunes factor/fused-driver gates against the CPU library.
-   See the [goal-08b results](../../../../benchmark/results/factorization-goal08b/README.md)
+   See the [goal-08b results](../../../../benchmark/results/2026/x86_64-pc-linux-gnu-Ryzen-Threadripper-3970X-TeslaA100/factorization-goal08b/README.md)
    for all 64 factor points, driver comparisons, verification and limitations.
 
 ## Routine table (what to implement)

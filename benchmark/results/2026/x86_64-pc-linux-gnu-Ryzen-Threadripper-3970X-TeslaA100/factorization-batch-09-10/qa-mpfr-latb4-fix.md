@@ -47,7 +47,7 @@ Reproduce the minimal profile (both before and after the fix):
 ```sh
 OMP_NUM_THREADS=4 MPFRXX_DEFAULT_PRECISION_BITS=512 \
   mplapack/test/lin/mpfr/xlintstR_mpfr < \
-  benchmark/results/factorization-batch-09-10/mpfr-tr-type6.in
+  benchmark/results/2026/x86_64-pc-linux-gnu-Ryzen-Threadripper-3970X-TeslaA100/factorization-batch-09-10/mpfr-tr-type6.in
 ```
 
 Full input is the standard Rtest/Ctest parameter header with just GE 11,

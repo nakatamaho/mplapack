@@ -22,17 +22,17 @@ dist_bench_DATA = \
 # Source templates for go.*.sh (included in "make dist").
 # -----------------------------------------------------------------------------
 EXTRA_DIST = run_solver_bench.py run_factor_dispatch_bench.py test_factor_dispatch_bench.py test_factor_gate_smoke.py Rsolver_legacy_bench.h \
-    results/factorization-goal08/solvers.csv \
-    results/factorization-goal08/mpfr-factor-regression.csv \
-    results/factorization-goal08b/README.md \
-    results/factorization-goal08b/factors.csv results/factorization-goal08b/factors-samples.csv \
-    results/factorization-goal08b/factors-before-gates.csv results/factorization-goal08b/factors-before-gates-samples.csv \
-    results/factorization-goal08b/drivers.csv results/factorization-goal08b/drivers-samples.csv \
-    results/factorization-goal08b/cpu-fallback-stability.csv results/factorization-goal08b/cpu-fallback-stability-samples.csv \
-    results/factorization-goal08b/upper-crossover.csv results/factorization-goal08b/upper-crossover-samples.csv \
-    results/factorization-goal08b/retuned-factors.csv results/factorization-goal08b/retuned-factors-samples.csv \
-    results/factorization-goal08b/driver-gates.csv results/factorization-goal08b/driver-gates-samples.csv \
-    results/factorization-goal08b/gpu-phase-samples.csv \
+    results/2026/x86_64-pc-linux-gnu-Ryzen-Threadripper-3970X-TeslaA100/factorization-goal08/solvers.csv \
+    results/2026/x86_64-pc-linux-gnu-Ryzen-Threadripper-3970X-TeslaA100/factorization-goal08/mpfr-factor-regression.csv \
+    results/2026/x86_64-pc-linux-gnu-Ryzen-Threadripper-3970X-TeslaA100/factorization-goal08b/README.md \
+    results/2026/x86_64-pc-linux-gnu-Ryzen-Threadripper-3970X-TeslaA100/factorization-goal08b/factors.csv results/2026/x86_64-pc-linux-gnu-Ryzen-Threadripper-3970X-TeslaA100/factorization-goal08b/factors-samples.csv \
+    results/2026/x86_64-pc-linux-gnu-Ryzen-Threadripper-3970X-TeslaA100/factorization-goal08b/factors-before-gates.csv results/2026/x86_64-pc-linux-gnu-Ryzen-Threadripper-3970X-TeslaA100/factorization-goal08b/factors-before-gates-samples.csv \
+    results/2026/x86_64-pc-linux-gnu-Ryzen-Threadripper-3970X-TeslaA100/factorization-goal08b/drivers.csv results/2026/x86_64-pc-linux-gnu-Ryzen-Threadripper-3970X-TeslaA100/factorization-goal08b/drivers-samples.csv \
+    results/2026/x86_64-pc-linux-gnu-Ryzen-Threadripper-3970X-TeslaA100/factorization-goal08b/cpu-fallback-stability.csv results/2026/x86_64-pc-linux-gnu-Ryzen-Threadripper-3970X-TeslaA100/factorization-goal08b/cpu-fallback-stability-samples.csv \
+    results/2026/x86_64-pc-linux-gnu-Ryzen-Threadripper-3970X-TeslaA100/factorization-goal08b/upper-crossover.csv results/2026/x86_64-pc-linux-gnu-Ryzen-Threadripper-3970X-TeslaA100/factorization-goal08b/upper-crossover-samples.csv \
+    results/2026/x86_64-pc-linux-gnu-Ryzen-Threadripper-3970X-TeslaA100/factorization-goal08b/retuned-factors.csv results/2026/x86_64-pc-linux-gnu-Ryzen-Threadripper-3970X-TeslaA100/factorization-goal08b/retuned-factors-samples.csv \
+    results/2026/x86_64-pc-linux-gnu-Ryzen-Threadripper-3970X-TeslaA100/factorization-goal08b/driver-gates.csv results/2026/x86_64-pc-linux-gnu-Ryzen-Threadripper-3970X-TeslaA100/factorization-goal08b/driver-gates-samples.csv \
+    results/2026/x86_64-pc-linux-gnu-Ryzen-Threadripper-3970X-TeslaA100/factorization-goal08b/gpu-phase-samples.csv \
     go.Raxpy.sh.in       \
     go.Rcopy.sh.in       \
     go.Rdot.sh.in        \
