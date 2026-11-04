@@ -6,7 +6,8 @@
 PEAKS.csv     output of benchmark/peak_bench.cu (type,op,ops_per_second,note):
               arithmetic throughput of madd (c += a*b), add, mul, div per type,
               and the device-memory bandwidth.
-KERNELS.csv   benchmark/results/.../kernel-bench/kernels.csv (GPU kernel-only times).
+KERNELS.csv   benchmark/results/.../kernel-bench/kernels.csv (GPU kernel-only times); several
+              files separated by commas (kernel-bench-2/kernels.csv: only phase = sweep).
 GEMM_SWEEP    benchmark/results/.../gemm-sweep/ (<type>_<FORM>.csv).
 
 For every GPU point, the lower bound of the time is
@@ -37,7 +38,8 @@ from collections import defaultdict
 
 NB = 64
 TYPES = ["dd", "td", "qd", "mpfr256", "mpfr512", "mpfr1024", "mpfr200rt"]
-SIZE = {"dd": 16, "td": 24, "qd": 32}  # bytes of one real element on the device
+SIZE = {"dd": 16, "td": 24, "qd": 32}
+VECTOR = {"Raxpy", "Rcopy", "iRamax", "iCamax", "Rdot", "Cdotc", "Cdotu", "Rasum", "RCasum", "Rnrm2", "RCnrm2"}  # bytes of one real element on the device
 
 
 def elem_bytes(t):
@@ -81,6 +83,47 @@ def counts(kernel, form, n):
     return None
 
 
+# ---- kernel-bench-2 names (goal 11): BLAS1, BLAS2 solves, inverses ----
+def counts2(kernel, form, n):
+    x = float(n)
+    k = kernel.lower()
+    band = NB
+    if k in ("raxpy",):
+        c = (x, x, 0, 2 * x, x)
+    elif k in ("rcopy",):
+        c = (0, 0, 0, x, x)
+    elif k == "iramax":
+        c = (0, 0, 0, x, 0)
+    elif k == "icamax":
+        return 0, x, 0, 2 * x, 0  # |re| + |im|
+    elif k in ("rdot", "cdotc", "cdotu"):
+        c = (x, x, 0, 2 * x, 0)
+    elif k == "rasum":
+        c = (0, x, 0, x, 0)
+    elif k == "rcasum":
+        return 0, 2 * x, 0, 2 * x, 0
+    elif k == "rnrm2":
+        c = (2 * x, x, 0, x, 0)  # scaled square and sum
+    elif k == "rcnrm2":
+        return 4 * x, 2 * x, 0, 2 * x, 0
+    elif k in ("rtrsv", "ctrsv", "rtpsv", "ctpsv"):
+        c = (x * (x - 1) / 2, x * (x - 1) / 2, x, x * (x + 1) / 2 + x, x)
+    elif k in ("rtbsv", "ctbsv"):
+        c = (x * band, x * band, x, x * (band + 1) + x, x)
+    elif k in ("rtrtri", "ctrtri"):
+        c = counts("trtri", "", n)
+    elif k in ("rlauum", "clauum"):
+        c = counts("lauum", "", n)
+    elif k in ("rpotri", "cpotri"):
+        a, b = counts("trtri", "", n), counts("lauum", "", n)
+        c = (a[0] + b[0], a[1] + b[1], a[2], a[3], a[4])
+    elif k in ("rgetri", "cgetri"):  # LAWN 41 GETRI
+        c = (2 * x ** 3 / 3 + x * x / 2 + 5 * x / 6, 2 * x ** 3 / 3 - 3 * x * x / 2 + 5 * x / 6, x, x * x, x * x)
+    else:
+        return None
+    return complexify(c) if kernel[0] == "C" else c
+
+
 def complexify(c):
     muls, adds, divs, rd, wr = c
     # complex mul = 4 mul + 2 add; complex add = 2 add; complex division ~ 6 mul + 3 add + 2 div
@@ -108,15 +151,19 @@ def main():
     peaks = load_peaks(peaks_csv)
     bw = peaks["memory"]["copy_bytes"]
     rows = []
-    for r in csv.DictReader(open(kernels_csv)):
-        if r["method"] != "gpu" or r["type"] not in TYPES:
+    for path in kernels_csv.split(","):
+      for r in csv.DictReader(open(path)):
+        if r["method"] != "gpu" or r["type"] not in TYPES or r.get("phase", "sweep") != "sweep":
             continue
         t, kern, form, n, sec = r["type"], r["kernel"], r["form"], int(r["n"]), float(r["seconds"])
-        c = counts(kern, form, n)
+        if kern[0].isupper() or kern.startswith("i"):
+            c = counts2(kern, form, n)
+        else:
+            c = counts(kern, form, n)
+            if c is not None and kern[0] == "c":
+                c = complexify(c)
         if c is None or sec <= 0:
             continue
-        if kern[0] == "c":
-            c = complexify(c)
         muls, adds, divs, rd, wr = c
         cplx = 2 if kern[0] == "c" else 1
         t_mem = (rd + wr) * elem_bytes(t) / bw
@@ -156,6 +203,8 @@ def main():
     best = {}
     for r in rows:
         lim = 1024 if r["type"] in ("mpfr1024", "mpfr200rt") else 2048
+        if r["kernel"] in VECTOR:
+            lim = 1 << 21  # vectors: n = 2^21
         if r["n"] > lim:
             continue
         key = (r["type"], r["kernel"], r["form"])
