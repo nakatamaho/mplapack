@@ -8,6 +8,9 @@
 #elif defined(MPLAPACK_BUILD_WITH_TD)
 #include <mpblas_td_cuda.h>
 #define INVERSE_PUBLIC_ENTRY_IMPL(R) R##_td_cuda
+#elif defined(MPLAPACK_BUILD_WITH_MPFR)
+#include <mpblas_mpfr_cuda.h>
+#define INVERSE_PUBLIC_ENTRY_IMPL(R) R##_mpfr_cuda
 #else
 #include <mpblas_qd_cuda.h>
 #define INVERSE_PUBLIC_ENTRY_IMPL(R) R##_qd_cuda

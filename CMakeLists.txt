@@ -502,7 +502,11 @@ if(MPLAPACK_ENABLE_MPFR_CUDA)
   set(_mplapack_mpfr_cuda_cblas ${_mplapack_blas_cuda_sources})
   list(FILTER _mplapack_mpfr_cuda_cblas INCLUDE REGEX "/(C[A-Za-z0-9]+|Rgemmtr|Rsbmv|Rspmv|Rgbmv|Rtbmv|Rtpmv|Rspr|Rspr2)\\.cpp$")
   list(FILTER _mplapack_mpfr_cuda_cblas EXCLUDE REGEX "/Cblas_bridge_cuda\\.cpp$")
-  mplapack_add_accelerator_backend(mpfr cuda ${_solver_mpfr_sources}
+  set(_inverse_mpfr_sources "")
+  foreach(_routine Rtrtri Ctrtri Rlauum Clauum Rpotri Cpotri Rgetri Cgetri)
+    list(APPEND _inverse_mpfr_sources "${_mplapack_mpfr_cuda_dir}/${_routine}.cpp")
+  endforeach()
+  mplapack_add_accelerator_backend(mpfr cuda ${_solver_mpfr_sources} ${_inverse_mpfr_sources}
     "${_mplapack_mpfr_cuda_dir}/Rgetrf.cpp"
     "${_mplapack_mpfr_cuda_dir}/Cgetrf.cpp"
     "${_mplapack_mpfr_cuda_dir}/Rpotrf.cpp"
@@ -510,6 +514,10 @@ if(MPLAPACK_ENABLE_MPFR_CUDA)
     "${_mplapack_mpfr_cuda_dir}/Cfactor_bridge_cuda.cpp"
     "${_mplapack_mpfr_cuda_dir}/Cfactor_device_cuda.cu"
     "${_mplapack_mpfr_cuda_dir}/Cfactor_rt_cuda.cu"
+    "${_mplapack_mpfr_cuda_dir}/Rinverse_bridge_cuda.cpp"
+    "${_mplapack_mpfr_cuda_dir}/Rinverse_device_cuda.cu"
+    "${_mplapack_mpfr_cuda_dir}/Rinverse_rt_cuda.cu"
+    "${_mplapack_mpfr_cuda_dir}/Rinverse_dynamic_cuda.cu"
     "${_mplapack_mpfr_cuda_dir}/Rfactor_bridge_cuda.cpp"
     "${_mplapack_mpfr_cuda_dir}/Rfactor_device_cuda.cu"
     "${_mplapack_mpfr_cuda_dir}/Rfactor_rt_cuda.cu"
@@ -939,6 +947,50 @@ if(MPLAPACK_BUILD_TESTS)
       set_tests_properties(mpfr_cuda_Cfactor_${_variant} PROPERTIES SKIP_RETURN_CODE 77 ENVIRONMENT "OMP_NUM_THREADS=1")
       set_tests_properties(mpfr_cuda_Cfactor_${_variant}_runtime PROPERTIES SKIP_RETURN_CODE 77
         ENVIRONMENT "OMP_NUM_THREADS=1;MPLAPACK_MPFR_CUDA_FORCE_RUNTIME=1")
+      set(_invexe mpfr_cuda_inverse_${_variant}_test)
+      if(_variant STREQUAL "host")
+        set(_inverse_sources "${_mplapack_mpfr_cuda_dir}/test/Rinverse_fixed_host.cpp"
+          "${_mplapack_mpfr_cuda_dir}/test/Rinverse_runtime_host.cpp"
+          "${_mplapack_mpfr_cuda_dir}/test/Rinverse_dynamic_host.cpp")
+      else()
+        set(_inverse_sources "${_mplapack_mpfr_cuda_dir}/Rinverse_device_cuda.cu"
+          "${_mplapack_mpfr_cuda_dir}/Rinverse_rt_cuda.cu"
+          "${_mplapack_mpfr_cuda_dir}/Rinverse_dynamic_cuda.cu"
+          "${_mplapack_mpfr_cuda_dir}/test/Cfactor_device_globals.cu")
+      endif()
+      add_executable(${_invexe} "${_mplapack_mpfr_cuda_dir}/test/Rinverse_cuda_test.cpp"
+        "${_mplapack_mpfr_cuda_dir}/Rinverse_bridge_cuda.cpp" ${_inverse_sources})
+      target_include_directories(${_invexe} PRIVATE "${MPLAPACK_MPC_CUDA_INCLUDE_DIR}")
+      target_link_libraries(${_invexe} PRIVATE mplapack_mpfr_opt CUDA::cudart)
+      if(UNIX AND NOT APPLE)
+        target_link_options(${_invexe} PRIVATE "-Wl,--disable-new-dtags")
+      endif()
+      if(_variant STREQUAL "host")
+        target_compile_definitions(${_invexe} PRIVATE MPLAPACK_MPFR_CUDA_HOST_EMULATION)
+      else()
+        target_link_libraries(${_invexe} PRIVATE "${MPLAPACK_MPC_CUDA_LIBRARY}")
+        target_compile_options(${_invexe} PRIVATE "$<$<COMPILE_LANGUAGE:CUDA>:-fmad=false>")
+        set_target_properties(${_invexe} PROPERTIES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED ON
+          CUDA_SEPARABLE_COMPILATION ON CUDA_RESOLVE_DEVICE_SYMBOLS ON
+          CUDA_ARCHITECTURES "${MPLAPACK_CUDA_ARCHITECTURES}")
+      endif()
+      if(_mplapack_mpc_cuda_bundled)
+        add_dependencies(${_invexe} mpc_cuda_bundled)
+      endif()
+      foreach(_prec 512 200)
+        add_test(NAME mpfr_cuda_inverse_${_variant}_${_prec} COMMAND ${_invexe})
+        set_tests_properties(mpfr_cuda_inverse_${_variant}_${_prec} PROPERTIES SKIP_RETURN_CODE 77
+          ENVIRONMENT "OMP_NUM_THREADS=1;MPFRXX_DEFAULT_PRECISION_BITS=${_prec};MPLAPACK_MPFR_CUDA_FORCE_RUNTIME=0")
+      endforeach()
+      add_test(NAME mpfr_cuda_inverse_${_variant}_large_real COMMAND ${_invexe} --real-blocked)
+      set_tests_properties(mpfr_cuda_inverse_${_variant}_large_real PROPERTIES SKIP_RETURN_CODE 77
+        ENVIRONMENT "OMP_NUM_THREADS=1;MPFRXX_DEFAULT_PRECISION_BITS=8192")
+      add_test(NAME mpfr_cuda_inverse_${_variant}_larger_real COMMAND ${_invexe} --real-small)
+      set_tests_properties(mpfr_cuda_inverse_${_variant}_larger_real PROPERTIES SKIP_RETURN_CODE 77
+        ENVIRONMENT "OMP_NUM_THREADS=1;MPFRXX_DEFAULT_PRECISION_BITS=16384")
+      add_test(NAME mpfr_cuda_inverse_${_variant}_forced COMMAND ${_invexe})
+      set_tests_properties(mpfr_cuda_inverse_${_variant}_forced PROPERTIES SKIP_RETURN_CODE 77
+        ENVIRONMENT "OMP_NUM_THREADS=1;MPFRXX_DEFAULT_PRECISION_BITS=512;MPLAPACK_MPFR_CUDA_FORCE_RUNTIME=1")
       set(_roundexe mpfr_cuda_cu_fround_${_variant}_test)
       if(_variant STREQUAL "host")
         add_executable(${_roundexe} "${_mplapack_mpfr_cuda_dir}/test/cu_fround_test.cpp")

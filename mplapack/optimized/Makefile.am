@@ -2,7 +2,7 @@ SUBDIRS = gmp mpfr qd dd td double binary80 binary128
 
 EXTRA_DIST = README.md common/README.md common/Rlookahead_common.h common/Rpotrf_common.h common/Rgetrf_common.h \
 common/Rinverse_cpu_common.h common/Rinverse_cpu_blas.h common/test/Rinverse_test.h \
-common/Rinverse_gpu_common.cuh common/Rinverse_cuda_entry.cuh common/Rinverse_dispatch.h common/Rinverse_cuda.md \
+common/Rinverse_gpu_common.cuh common/Rinverse_schedule.h common/Rinverse_cuda_entry.cuh common/Rinverse_dispatch.h common/Rinverse_cuda.md \
 common/test/Rinverse_gpu_test.cpp common/test/Rinverse_gpu_device_test.cu \
 common/inverse_dev/inverse_dev.h common/inverse_dev/Rdot_dev.h common/inverse_dev/Cdotc_dev.h \
 common/inverse_dev/Rscal_dev.h common/inverse_dev/Rtrmv_dev.h common/inverse_dev/Ctrmv_dev.h \

@@ -13,7 +13,9 @@ band/packed/Hermitian/triangular Level 2 routines (`Chemv`, `Chbmv`, `Chpmv`,
 `Rgetrf`, `Rpotrf`, `Cgetrf` and `Cpotrf` also have device-resident factorization
 entries (described below). Real/complex getrs/potrs/gesv/posv now have
 [resident solver entries](../../../../mplapack/optimized/common/Rsolver_cuda.md),
-reusing these factors without a device round trip before solving.
+reusing these factors without a device round trip before solving. Opt-in
+real/complex `trtri`, `lauum`, `potri`, and `getri` entries are described in
+[Device-resident inverses](#device-resident-inverses-goal-11) below.
 Every other routine, and every call that is not eligible, uses the same code as
 `libmplapack_mpfr_opt`.
 
@@ -643,7 +645,8 @@ are now Rgetrf 1024 / Rpotrf 2048: LU at 512 is only warm CPU/GPU
 parity (0.302/0.303 s). Cgetrf stays 1024, Cpotrf stays 4096. MPFR
 Lower Rpotrf 1024 has residual CPU-fallback overhead; its root cause is
 not established or fixed by changing these constants. Inverse timing was
-not reached; there are no resident MPFR inverse entry points.
+not reached in that retune; goal 11 now adds opt-in resident inverse entries
+without changing any measured factor/solver gate.
 
 Panel comparison: `mpfr_cuda_Cfactor_panel_bench`, 512 bits, five interleaved
 rounds reversing fixed/runtime/hybrid order, **45 successful calls**.
@@ -685,12 +688,83 @@ UNVERIFIED: optional >2048-bit runtime validation, sm_90 hardware execution
 kernel fault injection, and performance beyond the measured sizes/triangles.
 The device-precision restoration failure was injected and tested explicitly.
 
+## Device-resident inverses (goal 11)
+
+Real and complex `trtri`, `lauum`, `potri`, and `getri` now expose the eight
+`<Routine>_mpfr_cuda` bool entries in `mpblas_mpfr_cuda.h`. They share the
+[reference-order inverse schedule](../../../../mplapack/optimized/common/Rinverse_cuda.md)
+with dd/td/qd and reuse its generated `inverse_dev` leaves. No reference
+body or pre-existing arithmetic is changed. Fixed precisions
+256/512/768/1024/2048 use the signed factor cu_freal values and correctly
+rounded `cu_fdiv_rn`; complex division reuses the factor MPC adapter.
+Other/forced precisions use cu_mpfr/MPC. Through 4096 bits they reuse the
+existing owned-limb value tiers. Complex eligibility retains the factor API's
+4096-bit limit; real inverses have the same precision range as real factors
+(subject to memory preflight), using dynamically sized matrix views and
+per-thread scalar limb slots above the compiled tiers. These slots are
+separate from MPC scratch, so reclaiming scratch cannot invalidate live
+reference-template temporaries. No device heap or CPU inverse is used.
+
+All eight entries are **opt-in**. Settings are read on every call:
+`MPLAPACK_MPFR_LAPACK_INVERSE_CUDA_MIN=N` overrides
+`MPLAPACK_MPFR_LAPACK_CUDA_MIN=N`; absent both, the minimum is LONG_MAX.
+`MPLAPACK_MPFR_CUDA=0` or `MPLAPACK_MPFR_LAPACK_CUDA=0` disables them.
+`MPLAPACK_MPFR_CUDA_FORCE_RUNTIME=1`, `MPLAPACK_MPFR_CUDA_RUNTIME=0`, and
+`MPLAPACK_MPFR_CUDA_VERBOSE=1` have their usual meanings. LAPACK_FAST retains
+reference arithmetic. No new performance crossover or dispatcher default
+is inferred. Rejection uses the same optimized CPU inverse and CPU BLAS
+implementation as the CPU library, not a private serial reference substitute.
+
+Eligibility requires uniform default precision, nearest rounding, finite
+referenced inputs, and the default exponent range. The opposite triangle,
+padding, and unit diagonal are neither packed nor published. In addition,
+operands of each arithmetic operation must have exponents within
++/-floor((2^30-1-4*p-128)/4), with p the precision: this conservative guard
+reserves cancellation/rounding headroom and avoids device MPC's shared exception
+state and guarantees that a primitive operation cannot underflow or overflow.
+It is deliberately stricter than the factor input gate near exponent limits.
+Every operation records a sticky thread failure, even if the generated
+reference subsequently overwrites that value. Zero signs are strict, with
+no legacy-BLAS allowance.
+
+The common GPU mutex protects the whole residency. A and GETRI scratch stay
+on-device; only singular-status feedback crosses between blocks. Memory
+preflight accounts for the actual value-tier sizes, matrix, O(n*nb) scratch,
+pivots, bounded thread arenas, dynamic scalar slots/view descriptors when
+needed, and **all potentially resident threads' stack**,
+including a larger inherited limit. The inverse stack reserve is twice the
+complex factor policy to allow the generated inverse/BLAS caller frames:
+fixed <=1024 bits 16 KiB, fixed 2048 bits 32 KiB; runtime <=1024 bits
+16 KiB, <=2048 bits 32 KiB, above that 128 KiB. This is a conservative
+reserve, not a measured minimum. Arena/precision and scoped stack state
+are restored before publication. Any rejection, allocation/launch/transfer
+or arithmetic failure leaves A, work, pivots and info untouched. Pivots are
+input-only. GETRI queries and n=0 return false; reduced lwork, singular info,
+work[0] and precisely the reference-written scratch slots are preserved.
+Scratch values are never read from the caller; written destinations must
+have the default precision, including work[0].
+
+Focused tests: CMake `mpfr_cuda_inverse_{host,device}_{512,200,forced}`;
+autotools `make -C mpblas/optimized/mpfr/cuda inverse_gpu_host_test_mpfr`
+and `cd mpblas/optimized/mpfr/cuda && test/inverse_host_sweep.sh`.
+They compare unchanged CPU reference oracles, all matrix/work storage and
+zero signs, both triangles, unit/nonunit, singular and pivoted cases,
+reduced/optimal workspace, padding, n=1/2/3/63/64/65/131, and rejection
+atomicity (n=0/query, invalid arguments/pivots, precision, NaN, exponent,
+rounding, disabled and default opt-in gates). `--small` selects n=1/3.
+`--real-small` and `--real-blocked` exercise the dynamic real engine at
+16384 and 8192 bits (the latter includes n=65 and reduced/blocked GETRI);
+CMake registers them as `_larger_real` and `_large_real`, respectively.
+Device tests skip with 77 without a GPU. Full LAPACK QA, performance gates,
+and untested hardware remain outside this focused check.
+
 ## Limitations
 
 - Accelerated: `Rgemm`, `Rsyrk`, `Rsyr2k`, `Rsymm`, `Rtrmm`, `Rtrsm`, the
   complex Level 3 routines and `Rgemmtr` (Level 1 and 2 on request), and
   resident `Rgetrf` / `Cgetrf` / `Rpotrf` / `Cpotrf`, and real/complex
-  `getrs` / `potrs` / `gesv` / `posv`.
+  `getrs` / `potrs` / `gesv` / `posv`, plus opt-in real/complex
+  `trtri` / `lauum` / `potri` / `getri`.
 - One thread per element of `C`, no shared-memory tiling yet.
 - The Winograd variant exists for the fixed precisions only (not for the
   `cu_mpfr` kernels) and allocates its temporaries with `cudaMalloc` at every level.

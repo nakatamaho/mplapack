@@ -8,7 +8,7 @@ Prerequisites: goals 02, 03 (CPU part), 05-06 (GPU part). Read
 CPU: dedicated {R,C}trtri and {R,C}lauum in mplapack/optimized/common
 (recursive, parallel; default bit-identical, fast mode opt-in), potri /
 getri keep the reference code on top of them. GPU: Rtrtri, Rlauum, Rpotri,
-Rgetri `_<b>_cuda` for dd, td, qd.
+Rgetri `_<b>_cuda` for dd, td, qd. MPFR real/complex GPU inverses are added by goal 11.
 
 ## Acceptance criteria
 
