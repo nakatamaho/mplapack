@@ -1,7 +1,7 @@
 ---
 name: factorization-goal
 description: >
-  Execute ONE numbered goal (01-09, 07a, 11) of the MPLAPACK dedicated LU /
+  Execute ONE numbered goal (01-11, 07a) of the MPLAPACK dedicated LU /
   Cholesky work: CPU and GPU implementations of Rgetrf/Cgetrf, Rpotrf/Cpotrf and the
   routines around them (panels, laswp, solvers, inverses, and the GPU/CPU BLAS
   kernels they rest on). Use ONLY when the
@@ -12,7 +12,7 @@ description: >
 
 # factorization-goal — run one goal of the LU / Cholesky series
 
-The user's message specifies the goal number NN (01-09, 07a or 11). If no number is
+The user's message specifies the goal number NN (01-11 or 07a). If no number is
 given, ask for it and stop.
 
 Specification files live next to this skill:
@@ -26,7 +26,7 @@ Procedure — follow strictly, in order:
    point naming rule, the build quickstarts).
 2. Read references/00-overview.md in full: routine table, result modes,
    naming, GPU design, verification gates, environment notes.
-3. Read references/NN-*.md in full (07a: references/07a-*.md, 11: references/11-*.md). Its
+3. Read references/NN-*.md in full (07a: references/07a-*.md). Its
    "Scope", "Tasks" and "Acceptance criteria" define the session's work.
    Change nothing outside that scope, except link lines you broke.
 4. Check the goal's "Prerequisites" (earlier goals' commits, files they
