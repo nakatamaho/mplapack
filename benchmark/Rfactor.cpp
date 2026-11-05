@@ -44,10 +44,28 @@ template<> COMPLEX scalar<COMPLEX>(std::mt19937 &rng) {
 }
 REAL adjoint(REAL x) { return x; }
 COMPLEX adjoint(COMPLEX x) { return conj(x); }
-void factor(bool pot, bool upper, INTEGER n, REAL *a, INTEGER *p, INTEGER &info) {
+void factor(bool pot, bool upper, INTEGER n, REAL *a, INTEGER *p, INTEGER &info, bool entry) {
+    if (entry) {
+#ifdef MPLAPACK_FACTOR_CUDA
+        if (!(pot ? ENTRY(Rpotrf)(upper?"U":"L",n,a,n,info) : ENTRY(Rgetrf)(n,n,a,n,p,info)))
+            throw std::runtime_error("factor entry rejected");
+        return;
+#else
+        throw std::runtime_error("--entry requires CUDA benchmark");
+#endif
+    }
     if (pot) Rpotrf(upper?"U":"L",n,a,n,info); else Rgetrf(n,n,a,n,p,info);
 }
-void factor(bool pot, bool upper, INTEGER n, COMPLEX *a, INTEGER *p, INTEGER &info) {
+void factor(bool pot, bool upper, INTEGER n, COMPLEX *a, INTEGER *p, INTEGER &info, bool entry) {
+    if (entry) {
+#ifdef MPLAPACK_FACTOR_CUDA
+        if (!(pot ? ENTRY(Cpotrf)(upper?"U":"L",n,a,n,info) : ENTRY(Cgetrf)(n,n,a,n,p,info)))
+            throw std::runtime_error("factor entry rejected");
+        return;
+#else
+        throw std::runtime_error("--entry requires CUDA benchmark");
+#endif
+    }
     if (pot) Cpotrf(upper?"U":"L",n,a,n,info); else Cgetrf(n,n,a,n,p,info);
 }
 #define SOLVE(H,K) \
@@ -91,7 +109,7 @@ INVERSE(REAL,R)
 INVERSE(COMPLEX,C)
 #undef INVERSE
 #undef INVERSE_ENTRY
-template<class T> void run(INTEGER n, bool pot, bool complex, bool upper,INTEGER requested_rhs,bool entry,bool driver,int requested_repeats,int inverse_op,bool samples) {
+template<class T> void run(INTEGER n, bool pot, bool complex, bool upper,INTEGER requested_rhs,bool entry,bool driver,int requested_repeats,int inverse_op,bool samples,int warmups) {
     std::mt19937 rng(20261101);
     std::vector<T> a(size_t(n)*n), g(a.size());
     for (INTEGER j=0;j<n;++j) for (INTEGER i=0;i<=j;++i) {
@@ -115,28 +133,29 @@ template<class T> void run(INTEGER n, bool pot, bool complex, bool upper,INTEGER
     std::vector<T> work(lw);
     double best=1e100;
     int repeats=requested_repeats>0?requested_repeats:(n<=2000?3:1);
-    for (int r=0;r<repeats;++r) {
+    for (int r=-warmups;r<repeats;++r) {
         g=a; b=original_b; INTEGER info=-1;
         auto start=std::chrono::steady_clock::now();
         if(inverse_op>=0) inverse(inverse_op,upper,n,g.data(),piv.data(),work.data(),lw,info,entry);
-        else if(rhs<0) factor(pot,upper,n,g.data(),piv.data(),info);
+        else if(rhs<0) factor(pot,upper,n,g.data(),piv.data(),info,entry);
         else solve(pot,upper,n,rhs,g.data(),piv.data(),b.data(),info,entry,driver);
 #ifdef MPLAPACK_FACTOR_CUDA
         cudaError_t status = cudaDeviceSynchronize();
 #endif
         double seconds=std::chrono::duration<double>(std::chrono::steady_clock::now()-start).count();
-        // In sample mode only, the first call includes the runtime/device probe
-        // performed below. Otherwise an eager runtime could hide cold startup.
-        if(samples) { seconds+=cold_setup_seconds; cold_setup_seconds=0; }
+        // In sample mode without warmup, the first call includes the runtime
+        // probe performed below. Warmups consume that cold setup outside timing.
+        if(samples && r>=0) { seconds+=cold_setup_seconds; cold_setup_seconds=0; }
 #ifdef MPLAPACK_FACTOR_CUDA
         if (status != cudaSuccess)
             throw std::runtime_error(std::string("CUDA runtime (timing invalid; possible CPU fallback): ")+cudaGetErrorString(status));
 #endif
         if (info) throw std::runtime_error("factorization info="+std::to_string(info));
+        if(r<0) { cold_setup_seconds=0; continue; }
         best=std::min(best,seconds);
         if(samples) {
             const char *name=inverse_op>=0?inverse_names[inverse_op]:rhs<0?(pot?(complex?"Cpotrf":"Rpotrf"):(complex?"Cgetrf":"Rgetrf")):driver?(pot?(complex?"Cposv":"Rposv"):(complex?"Cgesv":"Rgesv")):(pot?(complex?"Cpotrs":"Rpotrs"):(complex?"Cgetrs":"Rgetrs"));
-            std::printf("%s,%ld,%ld,%d,%s,%.9g\n",name,long(n),long(rhs),r,r?"warm":"cold",seconds);
+            std::printf("%s,%ld,%ld,%d,%s,%.9g\n",name,long(n),long(rhs),r,(r || warmups)?"warm":"cold",seconds);
             std::fflush(stdout);
         }
     }
@@ -156,7 +175,7 @@ template<class T> void run(INTEGER n, bool pot, bool complex, bool upper,INTEGER
 }
 int main(int argc, char **argv) {
     try {
-        INTEGER limit=2048,rhs=-1; int repeats=-1,inverse_op=-1; bool pot=false, complex=false, upper=false,entry=false,driver=true,samples=false;
+        INTEGER limit=2048,rhs=-1; int repeats=-1,inverse_op=-1,warmups=0; bool pot=false, complex=false, upper=false,entry=false,driver=true,samples=false;
         std::set<INTEGER> sizes;
         for (int i=1;i<argc;++i) {
             if (!std::strcmp(argv[i],"--samples")) samples=true;
@@ -177,6 +196,11 @@ int main(int argc, char **argv) {
                 throw std::runtime_error("--legacy requires CUDA benchmark");
 #endif
             }
+            else if (!std::strcmp(argv[i],"--warmup") && i+1<argc) {
+                std::string v=argv[++i]; size_t end=0; long r=std::stol(v,&end);
+                if(end!=v.size() || r<0 || r>100) throw std::runtime_error("invalid warmup");
+                warmups=int(r);
+            }
             else if (!std::strcmp(argv[i],"--repeat") && i+1<argc) {
                 std::string v=argv[++i]; size_t end=0; long r=std::stol(v,&end);
                 if(end!=v.size() || r<1 || r>100) throw std::runtime_error("invalid repeat");
@@ -195,7 +219,7 @@ int main(int argc, char **argv) {
                 long n=std::stol(value,&end);
                 if (end!=value.size() || n<1 || n>100000) throw std::runtime_error("invalid size");
                 if (single) sizes.insert(n); else limit=n;
-            } else throw std::runtime_error("usage: Rfactor [--potrf | --gesv | --posv | --getrs | --potrs | --trtri | --lauum | --potri | --getri] [--nrhs N (0=n)] [--entry | --legacy] [--repeat N] [--samples] [--complex] [--upper] [--max N | --n N ...]");
+            } else throw std::runtime_error("usage: Rfactor [--potrf | --gesv | --posv | --getrs | --potrs | --trtri | --lauum | --potri | --getri] [--nrhs N (0=n)] [--entry | --legacy] [--repeat N] [--warmup N] [--samples] [--complex] [--upper] [--max N | --n N ...]");
         }
 #ifdef MPLAPACK_FACTOR_CUDA
         const auto setup_start=std::chrono::steady_clock::now();
@@ -212,7 +236,7 @@ int main(int argc, char **argv) {
         }
         std::puts(samples?"routine,n,nrhs,call,temperature,seconds":rhs<0?"routine,n,repeats,seconds,gflops":"routine,n,nrhs,repeats,seconds,gflops");
         for (INTEGER n:sizes) {
-            if (complex) run<COMPLEX>(n,pot,true,upper,rhs,entry,driver,repeats,inverse_op,samples); else run<REAL>(n,pot,false,upper,rhs,entry,driver,repeats,inverse_op,samples);
+            if (complex) run<COMPLEX>(n,pot,true,upper,rhs,entry,driver,repeats,inverse_op,samples,warmups); else run<REAL>(n,pot,false,upper,rhs,entry,driver,repeats,inverse_op,samples,warmups);
         }
     } catch (const std::exception &e) { std::fprintf(stderr,"%s\n",e.what()); return 1; }
 }
