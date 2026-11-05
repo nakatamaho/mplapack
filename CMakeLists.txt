@@ -1225,15 +1225,28 @@ if(MPLAPACK_BUILD_TESTS)
       # Complex Level 1/2/3 (and Rgemmtr) through the dispatchers, every
       # call on the GPU (common/test/Cblas_gpu_test.cpp, cu_freal engine).
       set(_cexe mpfr_cuda_Cblas_${_variant}_test)
+      if(_variant STREQUAL "host")
+        set(_cblas_inverse_sources ${_inverse_sources})
+      else()
+        set(_cblas_inverse_sources
+          "${_mplapack_mpfr_cuda_dir}/Rinverse_device_cuda.cu"
+          "${_mplapack_mpfr_cuda_dir}/Rinverse_rt_cuda.cu"
+          "${_mplapack_mpfr_cuda_dir}/Rinverse_dynamic_cuda.cu")
+      endif()
       add_executable(${_cexe}
         "${_mplapack_opt_common}/test/Cblas_gpu_test.cpp"
         ${_mplapack_mpfr_cuda_cblas}
         "${_mplapack_mpfr_cuda_dir}/Cblas_mpfr_bridge_cuda.cpp"
         ${_mplapack_mpfr_cuda_cblas_device}
+        # The dispatcher set includes goal-11 BLAS1 and triangular solves.
+        # Compile their implementation with this target's host/device mode;
+        # do not link a GPU library into the host-emulation test.
+        "${_mplapack_mpfr_cuda_dir}/Rinverse_bridge_cuda.cpp"
+        ${_cblas_inverse_sources}
         "${_fixed}"
         "${_mplapack_mpfr_cuda_dir}/Rgemm_rt_cuda.cu")
       if(_variant STREQUAL "host")
-        target_compile_definitions(${_cexe} PRIVATE MPLAPACK_MPFR_CUDA_HOST_EMULATION)
+        target_compile_definitions(${_cexe} PRIVATE MPLAPACK_MPFR_CUDA_HOST_EMULATION MPLAPACK_CBLAS_PROVIDES_RT_GLOBALS)
         target_link_libraries(${_cexe} PRIVATE mplapack_mpfr_opt CUDA::cudart)
       else()
         target_link_libraries(${_cexe} PRIVATE mplapack_mpfr_opt "${MPLAPACK_MPC_CUDA_LIBRARY}" CUDA::cudart)
