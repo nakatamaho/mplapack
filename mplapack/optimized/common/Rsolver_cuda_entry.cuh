@@ -74,8 +74,11 @@ static void triangular(chol_schedule &ctx,bool upper,char trans,bool unit,long n
     g.s.trans=trans!='N'; g.s.nounit=!unit; g.s.alpha_one=1; g.s.m=n; g.s.n=rhs;
     g.a=reinterpret_cast<F*>(a); g.c=reinterpret_cast<F*>(b); g.al=one.data(); g.lda=n; g.ldc=n;
 #if defined(__CUDACC__)
-    mplapack_blas::k_blas_lanes<SolveOps><<<(unsigned)((rhs+63)/64),64,0,ctx.stream()>>>(g,rhs);
-    ctx.error=cudaGetLastError();
+    if(mplapack_blas::trsm_team_shape(g.s)) ctx.error=mplapack_blas::trsm_team_device(mplapack_blas::trsm_args(g),ctx.stream());
+    else {
+        mplapack_blas::k_blas_lanes<SolveOps><<<(unsigned)((rhs+63)/64),64,0,ctx.stream()>>>(g,rhs);
+        ctx.error=cudaGetLastError();
+    }
 #else
     ctx.error=mplapack_blas::blas_device<SolveOps>(g);
 #endif

@@ -57,9 +57,7 @@ template<class Ops> class real_lu : public chol_schedule {
         g.a=reinterpret_cast<F*>(a); g.c=reinterpret_cast<F*>(b);
         g.al=constants.data(); g.lda=ld; g.ldc=ld;
 #if defined(__CUDACC__)
-        long lanes=mplapack_blas::blas_lanes(g.s);
-        mplapack_blas::k_blas_lanes<Ops><<<(unsigned)((lanes+63)/64),64,0,stream()>>>(g,lanes);
-        error=cudaGetLastError();
+        error=mplapack_blas::trsm_team_device(mplapack_blas::trsm_args(g),stream());
 #else
         error=mplapack_blas::blas_device<Ops>(g);
 #endif

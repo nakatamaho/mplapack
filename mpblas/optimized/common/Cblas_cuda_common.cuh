@@ -57,10 +57,82 @@
 #endif
 
 #include "Cblas_cuda_jobs_common.h"
+#include "Rtrsm_team_common.h"
 
 namespace mplapack_blas_dev {
 
 using mplapack_blas::gpu_operand;
+
+// Arithmetic adapter for the small, value-semantic complex device types.
+// The MPFR arena-backed types retain their checked production scheduler.
+template<class Ops> struct ctrsm_team_engine {
+    using V=typename cgpu_types<Ops>::DC;
+    struct M { V *p; long ld; };
+    MPLAPACK_DEV_HD V reg(int) const { return V(0); }
+    MPLAPACK_DEV_HD V at(const M &a,long i,long j) const { return a.p[i+j*a.ld]; }
+    MPLAPACK_DEV_HD void put(M &a,long i,long j,const V &v) const { a.p[i+j*a.ld]=v; }
+    MPLAPACK_DEV_HD void set(V &r,const V &v) const { r=v; }
+    MPLAPACK_DEV_HD void one(V &r) const { r=V(1); }
+    MPLAPACK_DEV_HD bool iszero(const V &v) const { return v==V(0); }
+    MPLAPACK_DEV_HD void mul(V &r,const V &a,const V &b) const { r=a*b; }
+    MPLAPACK_DEV_HD void sub(V &r,const V &a,const V &b) const { r=a-b; }
+    MPLAPACK_DEV_HD void div(V &r,const V &a,const V &b) const { r=a/b; }
+    MPLAPACK_DEV_HD void conjugate(V &r,const V &v) const { r=conj(v); }
+};
+template<class Job> struct ctrsm_constants {
+    MPLAPACK_DEV_HD static bool zero(const typename Job::DC &v) { return v==typename Job::DC(0); }
+    MPLAPACK_DEV_HD static bool one(const typename Job::DC &v) { return v==typename Job::DC(1); }
+};
+template<class Job> struct cgpu_is_ctrsm { static constexpr bool value=false; };
+template<class Ops> struct cgpu_is_ctrsm<job_Ctrsm<Ops>> {
+    static constexpr bool value=sizeof(typename cgpu_types<Ops>::DC)<=64;
+};
+template<class Ops> MPLAPACK_DEV_HD mplapack_blas::trsm_team_args<ctrsm_team_engine<Ops>> ctrsm_args(job_Ctrsm<Ops> &j) {
+    mplapack_blas::trsm_team_args<ctrsm_team_engine<Ops>> t{};
+    t.s.op=mplapack_blas::L3_TRSM; t.s.left=lsame(j.side,"L"); t.s.upper=lsame(j.uplo,"U");
+    t.s.trans=!lsame(j.ta,"N"); t.s.nounit=lsame(j.diag,"N");
+    t.s.alpha_one=ctrsm_constants<job_Ctrsm<Ops>>::one(j.alpha);
+    t.s.m=j.m; t.s.n=j.n; t.x.al={&j.alpha,1}; t.x.a={j.A,j.lda}; t.x.c={j.B,j.ldb}; return t;
+}
+#if MPLAPACK_CBLAS_CUDA_DEVICE
+template<class Ops,bool Conjugate,bool Local=false> __global__ void k_ctrsm_team(job_Ctrsm<Ops> j) {
+    // alpha lives in each thread's copy of j, not in host memory.
+    mplapack_blas::trsm_team_body<ctrsm_team_engine<Ops>,Conjugate,false,Local>(ctrsm_args(j),nullptr);
+}
+template<class Ops> static int ctrsm_team_device(job_Ctrsm<Ops> j,cudaStream_t stream=nullptr) {
+    auto t=ctrsm_args(j);
+    if(mplapack_blas::trsm_block_eligible(t.s)) {
+        using V=typename ctrsm_team_engine<Ops>::V;
+        V *alpha=nullptr;
+        int error=cudaMalloc(&alpha,sizeof(V));
+        if(error) return error;
+        error=cudaMemcpyAsync(alpha,&j.alpha,sizeof(V),cudaMemcpyHostToDevice,stream);
+        t.x.al.p=alpha;
+        if(!error) {
+            if(lsame(j.ta,"C")) error=mplapack_blas::trsm_team_device<ctrsm_team_engine<Ops>,true>(t,stream);
+            else error=mplapack_blas::trsm_team_device(t,stream);
+        }
+        int e=cudaStreamSynchronize(stream); if(!error) error=e;
+        e=cudaFree(alpha); if(!error) error=e;
+        return error;
+    }
+    const bool left=lsame(j.side,"L");
+    const int width=mplapack_blas::trsm_team_width<ctrsm_team_engine<Ops>>(left);
+    const dim3 threads=left?dim3(width==1?64:32,width):dim3(width,128/width);
+    const unsigned blocks=(unsigned)((j.units()+width-1)/width);
+    if(!blocks || !j.m || !j.n) return 0;
+    if constexpr(sizeof(typename ctrsm_team_engine<Ops>::V)<=64) {
+        if((left?j.m:j.n)<=64) {
+            if(lsame(j.ta,"C")) k_ctrsm_team<Ops,true,true><<<blocks,threads,0,stream>>>(j);
+            else k_ctrsm_team<Ops,false,true><<<blocks,threads,0,stream>>>(j);
+            return cudaGetLastError();
+        }
+    }
+    if(lsame(j.ta,"C")) k_ctrsm_team<Ops,true><<<blocks,threads,0,stream>>>(j);
+    else k_ctrsm_team<Ops,false><<<blocks,threads,0,stream>>>(j);
+    return cudaGetLastError();
+}
+#endif
 
 #if MPLAPACK_CBLAS_CUDA_DEVICE
 // The job is read from device memory: its scalars may exceed the size of the
@@ -80,11 +152,24 @@ template<class Job> static int job_device(Job job, long units, Job *scratch)
 #if MPLAPACK_CBLAS_CUDA_DEVICE
     if (units <= 0) return 0;
     cudaError_t e=cudaMemcpy(scratch,&job,sizeof(Job),cudaMemcpyHostToDevice);
-    if(e==cudaSuccess) k_job<Job><<<(unsigned)((units+63)/64),64>>>(scratch,units);
+    if(e==cudaSuccess) {
+        if constexpr(cgpu_is_ctrsm<Job>::value) {
+            if(mplapack_blas::trsm_team_shape(ctrsm_args(job).s) && !ctrsm_constants<Job>::zero(job.alpha))
+                e=(cudaError_t)ctrsm_team_device(job);
+            else k_job<Job><<<(unsigned)((units+63)/64),64>>>(scratch,units);
+        } else k_job<Job><<<(unsigned)((units+63)/64),64>>>(scratch,units);
+    }
     if(e==cudaSuccess) e=cudaGetLastError();
     return (int)(e==cudaSuccess ? cudaDeviceSynchronize() : e);
 #else
     (void)scratch;
+    if constexpr(cgpu_is_ctrsm<Job>::value) {
+        auto t=ctrsm_args(job);
+        if(mplapack_blas::trsm_team_shape(t.s) && !ctrsm_constants<Job>::zero(job.alpha)) {
+            if(lsame(job.ta,"C")) return mplapack_blas::trsm_team_device<decltype(t.e),true>(t);
+            return mplapack_blas::trsm_team_device(t);
+        }
+    }
     for(long u=0;u<units;++u) job(u);
     return 0;
 #endif
@@ -128,11 +213,7 @@ template <class E, class Job> int run_job(Job job, long units, const gpu_operand
         dev[q] = buf[q].data() - ops[q].lo;
     }
     job.bind(dev);
-#ifdef _OPENMP
-#pragma omp parallel for schedule(dynamic, 1)
-#endif
-    for (long u = 0; u < units; u++)
-        job(u);
+    job_device(job,units,static_cast<Job*>(nullptr));
     for (int q = 0; q < nops; q++)
         if (ops[q].download && ops[q].count)
             gpu_operand_scatter(ops[q], buf[q].data());

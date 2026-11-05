@@ -44,9 +44,15 @@ class chol_schedule {
     template<class Job> void launch(Job j,long units) {
         if(error || units<=0) return;
 #if defined(__CUDACC__)
+        if constexpr(cgpu_is_ctrsm<Job>::value) {
+            if(mplapack_blas::trsm_team_shape(ctrsm_args(j).s) && !(j.alpha==typename Job::DC(0))) {
+                error=ctrsm_team_device(j,stream()); return;
+            }
+        }
         k_elements<<<(unsigned)((units+63)/64),64,0,stream()>>>(j,units);
         error=cudaGetLastError();
 #else
+        if constexpr(cgpu_is_ctrsm<Job>::value) { error=job_device(j,units,static_cast<Job*>(nullptr)); return; }
         for(long i=0;i<units;++i) j(i);
 #endif
     }
@@ -83,7 +89,10 @@ template<class Ops> class real_cholesky : public chol_schedule {
         using namespace mplapack_blas;
         long lanes=blas_lanes(g.s);
         if(lanes<=0) return;
-        if(syrk_tiled<Ops>(g.s)) {
+        if(trsm_team_shape(g.s)) {
+            error=trsm_team_device(trsm_args(g),stream());
+            return;
+        } else if(syrk_tiled<Ops>(g.s)) {
             unsigned nb=(unsigned)((g.s.n+BLAS_TILE-1)/BLAS_TILE);
             k_syrk_tiled<Ops><<<dim3(nb,nb),dim3(BLAS_TILE,BLAS_TILE),0,stream()>>>(g);
         } else k_blas_lanes<Ops><<<(unsigned)((lanes+63)/64),64,0,stream()>>>(g,lanes);

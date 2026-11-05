@@ -51,6 +51,12 @@ template <int PB> struct fixed_args {
     real_t<PB> *al, *be, *a, *b, *c;
 };
 
+template<int PB> static trsm_team_args<l3_fixed_engine<PB,true>> fixed_trsm_args(const fixed_args<PB> &f) {
+    trsm_team_args<l3_fixed_engine<PB,true>> t{}; t.s=f.s;
+    t.x.al={f.al,1}; t.x.be={f.be,1}; t.x.a={f.a,f.s.lda};
+    t.x.b={f.b,f.s.ldb}; t.x.c={f.c,f.s.ldc}; return t;
+}
+
 template <int PB, bool TRSM> L3_HD bool fixed_lane(const fixed_args<PB> &f, long lane)
 {
     typedef l3_fixed_engine<PB, TRSM> E;
@@ -115,6 +121,7 @@ template <int PB> int blas3_fixed(const l3_shape &s, const real_t<PB> &alpha, co
     f.s = s;
     f.al = &al, f.be = &be;
     f.a = const_cast<real_t<PB> *>(A), f.b = const_cast<real_t<PB> *>(B), f.c = C;
+    if(trsm_team_shape(s)) return trsm_team_device<l3_fixed_engine<PB,true>,false,true>(fixed_trsm_args(f));
     int failed = 0;
 #ifdef _OPENMP
 #pragma omp parallel for schedule(dynamic, 1) reduction(|:failed)
@@ -143,7 +150,9 @@ template <int PB> int blas3_fixed(const l3_shape &s, const real_t<PB> &alpha, co
     f.al = dal.p, f.be = dbe.p, f.a = dA.p, f.b = dB.p, f.c = dC.p;
     const int threads = 64;
     if (lanes > 0) {
-        if (s.op == L3_TRSM)
+        if(trsm_team_shape(s)) {
+            if(trsm_team_device<l3_fixed_engine<PB,true>,false,true>(fixed_trsm_args(f),nullptr,status.p)) return 3;
+        } else if (s.op == L3_TRSM)
             fixed_kernel<PB, true><<<(unsigned)((lanes + threads - 1) / threads), threads>>>(f, lanes, status.p);
         else
             fixed_kernel<PB, false><<<(unsigned)((lanes + threads - 1) / threads), threads>>>(f, lanes, nullptr);

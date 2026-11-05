@@ -45,6 +45,7 @@
 #include "Rgemm_kernel_cuda.h"
 #include <mpc_cuda/cu_fround.cuh>
 #include "../../common/Rblas_lanes_common.h"
+#include "../../common/Rtrsm_team_common.h"
 
 #define L3_HD MPLAPACK_BLAS_HD
 

@@ -188,6 +188,27 @@ int main()
 #endif
     const char *ul[] = {"U", "L"}, *tr[] = {"N", "T"}, *sd[] = {"L", "R"}, *dg[] = {"N", "U"};
     // {150, 70}, {40, 150}: several blocks of the engine (alpha general only)
+#ifdef RBLAS_TEST_GPU
+    if(std::getenv("MPLAPACK_TRSM_TEAM_CHECK")) {
+        for(long order:{0L,1L,7L,63L,64L,65L,200L,1000L})
+            for(const char *s:sd) for(const char *u:ul) for(const char *t:{"N","T","C"}) for(const char *d:dg) {
+                if(std::getenv("MPLAPACK_TRSM_TEAM_QUICK") && order>200) continue;
+                const long m=*s=='L'?order:37,n=*s=='L'?37:order,lda=order+3,ldb=m+3;
+                std::vector<REAL> a(size_t(lda)*(order+1)),b(size_t(ldb)*(n+1));
+                fill_tri(a,order,lda); fill(b);
+                for(size_t k=0;k<b.size();k+=17) b[k]=REAL(-0.0);
+                for(int ak=0;ak<3;++ak) {
+                    const REAL al=ak==0?REAL(0):ak==1?REAL(1):REAL(-0.75);
+                    auto ref=b,got=b;
+                    Rtrsm_reference_cpu(s,u,t,d,m,n,al,a.data(),lda,ref.data(),ldb);
+                    Rtrsm(s,u,t,d,m,n,al,a.data(),lda,got.data(),ldb);
+                    compare(tag("team Rtrsm",{s,u,t,d},{order,ak}),ref,got);
+                }
+            }
+        std::printf("TRSM team: %ld checks, %ld failures\n",checks,failures);
+        return failures?1:0;
+    }
+#endif
     const long sizes[][2] = {{1, 1}, {7, 5}, {19, 23}, {150, 70}, {40, 150}};
     const long incs[] = {1, 2, -2};
     for (auto &z : sizes) {

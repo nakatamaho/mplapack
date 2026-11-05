@@ -109,6 +109,9 @@ template<class Tag> struct complex_factor_engine {
     L3_HD void put(M &a,long i,long j,const V &v) const { checked(v); a.p[i+j*a.ld]=v; }
     L3_HD void set(V &r,const V &a) const { r=a; }
     L3_HD void zero(V &r) const { r=V(); }
+    L3_HD void one(V &r) const { r=V(1); }
+    L3_HD void conjugate(V &r,const V &a) const { r=conj(a); }
+    L3_HD void sub(V &r,const V &a,const V &b) const { r=a-b; checked(r); }
     L3_HD void add(V &r,const V &a,const V &b) const { r=a+b; checked(r); }
     L3_HD void mul(V &r,const V &a,const V &b) const { r=a*b; checked(r); }
     L3_HD void div(V &r,const V &a,const V &b) const { if(iszero(b)) { ok=false; r=V(); } else { r=a/b; checked(r); } }

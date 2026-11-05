@@ -45,6 +45,7 @@
 #include <vector>
 #include "Rgemm_cuda_ops_common.h"
 #include "Rblas_lanes_common.h"
+#include "Rtrsm_team_common.h"
 #include "Rblas_cuda_bridge_common.h"
 
 #if defined(__CUDACC__)
@@ -95,6 +96,13 @@ template <class Ops> MPLAPACK_BLAS_HD void gpu_lane(const gpu_lane_args<Ops> &g,
     x.b.p = g.b, x.b.ld = g.ldb;
     x.c.p = g.c, x.c.ld = g.ldc;
     blas_lane(e, g.s, x, lane);
+}
+
+template<class Ops> static trsm_team_args<ops_engine<Ops>> trsm_args(const gpu_lane_args<Ops> &g) {
+    using E=ops_engine<Ops>;
+    trsm_team_args<E> t{}; t.s=g.s;
+    t.x.al={g.al,1}; t.x.be={g.be,1}; t.x.a={g.a,g.lda};
+    t.x.b={g.b,g.ldb}; t.x.c={g.c,g.ldc}; return t;
 }
 
 template <class Ops> static int blas_device(const gpu_lane_args<Ops> &g);
@@ -315,7 +323,10 @@ template <class Ops> int blas_device(const gpu_lane_args<Ops> &g)
     if (lanes <= 0)
         return 0;
     const int threads = 64;
-    if (syrk_tiled<Ops>(s)) {
+    if (trsm_team_shape(s)) {
+        e=(cudaError_t)trsm_team_device(trsm_args(g));
+        if(e==cudaSuccess) e=cudaDeviceSynchronize();
+    } else if (syrk_tiled<Ops>(s)) {
         const unsigned nb = (unsigned)((s.n + BLAS_TILE - 1) / BLAS_TILE);
         k_syrk_tiled<Ops><<<dim3(nb, nb), dim3(BLAS_TILE, BLAS_TILE)>>>(g);
         e = cudaGetLastError();
@@ -374,7 +385,9 @@ template <class Ops> int blas_device(const gpu_lane_args<Ops> &g)
     const long lanes = blas_lanes(s);
     if (lanes <= 0)
         return 0;
-    if (syrk_tiled<Ops>(s)) {
+    if (trsm_team_shape(s)) {
+        return trsm_team_device(trsm_args(g));
+    } else if (syrk_tiled<Ops>(s)) {
         // the tiled kernel, the threads of a block phase by phase
         const long nb = (s.n + BLAS_TILE - 1) / BLAS_TILE;
 #ifdef _OPENMP

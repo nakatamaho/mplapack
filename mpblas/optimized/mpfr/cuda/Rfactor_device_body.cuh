@@ -216,6 +216,45 @@ template<class E> class factor_context {
 #endif
     }
     void launch(factor_job<E> j,long units) {
+#ifndef MPLAPACK_MPFR_FACTOR_COMPLEX
+        if constexpr(!E::runtime) {
+            if(!error && units>0 && j.op==0 && trsm_team_shape(j.s)) {
+                trsm_team_args<E> t{}; t.e=j.e; t.s=j.s;
+                t.x.a=j.a; t.x.c=j.c; t.x.al=j.constants;
+#ifndef MPLAPACK_MPFR_CUDA_HOST_EMULATION
+                error=trsm_team_device<E,false,true>(t,stream(),failed.p);
+#else
+                error=trsm_team_device<E,false,true>(t);
+#endif
+                return;
+            }
+        }
+#else
+        // Fixed complex values fit in shared memory. Bound physical threads
+        // to the existing arena pool; join both streams before and after the
+        // solve so no arena index aliases a concurrently running update.
+        if constexpr(sizeof(typename E::V)<=1024) {
+            if(!error && units>0 && j.op==0 && trsm_team_shape(j.s)) {
+                finish();
+                const long lanes=j.s.left?j.s.n:j.s.m;
+                const long chunk=(factor_pool/128)*(j.s.left?4:16);
+                for(long base=0;base<lanes && !error;base+=chunk) {
+                    trsm_team_args<E> t{}; t.e=j.e; t.s=j.s;
+                    t.x.a=j.a; t.x.c=E::shift(j.c,j.s.left?base*j.c.ld:base); t.x.al=j.constants;
+                    if(j.s.left) t.s.n=std::min(chunk,lanes-base);
+                    else t.s.m=std::min(chunk,lanes-base);
+#ifndef MPLAPACK_MPFR_CUDA_HOST_EMULATION
+                    if(j.s.trans==1) error=trsm_team_device<E,true,true>(t,stream(),failed.p);
+                    else error=trsm_team_device<E,false,true>(t,stream(),failed.p);
+#else
+                    if(j.s.trans==1) error=trsm_team_device<E,true,true>(t);
+                    else error=trsm_team_device<E,false,true>(t);
+#endif
+                }
+                finish(); return;
+            }
+        }
+#endif
         if(j.op==1 || (j.op==0 && j.s.op==L3_SYRK)) {
             factor_update_job<typename E::Update> u{};
             u.e=j.e.update(); u.a=j.a; u.b=j.b; u.c=j.c; u.constants=j.constants;

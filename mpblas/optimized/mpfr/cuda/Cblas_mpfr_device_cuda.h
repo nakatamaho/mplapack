@@ -82,6 +82,23 @@
 
 namespace mplapack_blas_dev {
 
+// Fixed-precision complex BLAS uses value-semantic components; the same team
+// schedule is valid with its MPC division and the existing scoped stack guard.
+template<int PB> struct cgpu_is_ctrsm<job_Ctrsm<mpfr_fixed<PB>>> { static constexpr bool value=true; };
+
+// Host launch predicates inspect the value representation directly. Avoid
+// instantiating noinline arithmetic helpers (and their weak exports) on host.
+template<int PB> struct ctrsm_constants<job_Ctrsm<mpfr_fixed<PB>>> {
+    using V=mcomplex<PB>;
+    MPLAPACK_DEV_HD static bool zero(const V &v) { return v.re_.v.is_zero() && v.im_.v.is_zero(); }
+    MPLAPACK_DEV_HD static bool one(const V &v) {
+        const auto &r=v.re_.v;
+        if(!v.im_.v.is_zero() || r.sign!=1 || r.exp!=1 || r.m[r.N-1]!=0x8000000000000000ULL) return false;
+        for(int i=0;i<r.N-1;++i) if(r.m[i]) return false;
+        return true;
+    }
+};
+
 // Runtime precision (mpfr_rt<NL>): the precision of the call is set before
 // the launch (the variables are defined in Cblas_mpfr_device_cuda.cu).
 template <class Job> int cgpu_run_rt(Job job, const mplapack_blas::gpu_operand<typename Job::E> *ops, int nops, long prec)
