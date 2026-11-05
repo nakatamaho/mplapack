@@ -168,6 +168,11 @@ int main(int argc,char **argv) {
     for(long prec:{256,512,768,1024,2048,200}) {
         if(argc>1 && std::atol(argv[1])!=prec) continue; selected=true;
         mpfrxx::set_default_precision_bits(prec); mpfrxx::set_default_mpc_precision_bits(prec);
+        if(std::getenv("MPLAPACK_FACTOR_LARGE_CHECK")) {
+            trial(false,false,1000,1000,0); trial(true,false,1000,1000,0); trial(true,true,1000,1000,0);
+            std::printf("p=%ld n=1000 checks=%ld errors=%ld signed_zero_diffs=%ld\n",prec,checks,errors,zeros);
+            std::fflush(stdout); continue;
+        }
         long first=checks,ec=elements,zc=zeros,fail=errors,lc=cases[0],cc=cases[1];
         if(probe) {
             // Stack sizing only: every panel branch, blocked updates and both

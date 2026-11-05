@@ -2,6 +2,7 @@
 #ifndef MPLAPACK_POTRF_GPU_COMMON_CUH
 #define MPLAPACK_POTRF_GPU_COMMON_CUH
 #include "../../../mpblas/optimized/common/Rlapack_cuda_common.cuh"
+#include "Rpotrf_small_common.cuh"
 
 namespace mplapack_lapack_gpu {
 // Only scheduling differs from the reference. A panel-ready event releases
@@ -44,6 +45,12 @@ class chol_schedule {
     template<class Job> void launch(Job j,long units) {
         if(error || units<=0) return;
 #if defined(__CUDACC__)
+        if constexpr(cgpu_is_cgemm<Job>::value) {
+            if(j.k>0 && !(j.alpha==typename Job::DC(0))) { error=cgemm_tiled_stream(j,stream()); return; }
+        }
+        if constexpr(cgpu_is_herk<Job>::value) {
+            if(herk_tiled_eligible(j)) { error=herk_tiled_stream(j,stream()); return; }
+        }
         if constexpr(cgpu_is_ctrsm<Job>::value) {
             if(mplapack_blas::trsm_team_shape(ctrsm_args(j).s) && !(j.alpha==typename Job::DC(0))) {
                 error=ctrsm_team_device(j,stream()); return;
@@ -52,6 +59,12 @@ class chol_schedule {
         k_elements<<<(unsigned)((units+63)/64),64,0,stream()>>>(j,units);
         error=cudaGetLastError();
 #else
+        if constexpr(cgpu_is_cgemm<Job>::value) {
+            if(j.k>0 && !(j.alpha==typename Job::DC(0))) { error=cgemm_tiled_host(j); return; }
+        }
+        if constexpr(cgpu_is_herk<Job>::value) {
+            if(herk_tiled_eligible(j)) { error=herk_tiled_host(j); return; }
+        }
         if constexpr(cgpu_is_ctrsm<Job>::value) { error=job_device(j,units,static_cast<Job*>(nullptr)); return; }
         for(long i=0;i<units;++i) j(i);
 #endif
@@ -69,7 +82,7 @@ class chol_schedule {
 };
 template<class Context> static long chol_recursive(Context &ctx,bool upper,long n,typename Context::E *a,long ld) {
     if(ctx.error || !n) return 0;
-    if(n==1) return ctx.base(a);
+    if(n<=4) return ctx.small(upper,n,a,ld);
     long n1=n/2,n2=n-n1;
     long info=chol_recursive(ctx,upper,n1,a,ld);
     if(ctx.error || info) return info;
@@ -112,6 +125,10 @@ template<class Ops> class real_cholesky : public chol_schedule {
         if(!error) error=transfer(constants.data(),c,2,false);
     }
     ~real_cholesky() { finish(); }
+    long small(bool upper,long n,E *a,long ld) {
+        launch(small_chol_job<Ops,E>{upper,n,a,ld,status.data()},1);
+        return feedback(status.data());
+    }
     long base(E *a) {
         launch(base_chol<Ops>{a,status.data()},1);
         return feedback(status.data());
@@ -166,6 +183,10 @@ template<class Ops> class complex_cholesky : public chol_schedule {
     using R=dreal<Ops>; using E=dcomplex<R>;
     complex_cholesky(long,long) { if(!error) error=status.allocate(1); }
     ~complex_cholesky() { finish(); }
+    long small(bool upper,long n,E *a,long ld) {
+        launch(small_chol_job<Ops,E>{upper,n,a,ld,status.data()},1);
+        return feedback(status.data());
+    }
     long base(E *a) {
         launch(complex_chol_base<Ops>{a,status.data()},1);
         return feedback(status.data());

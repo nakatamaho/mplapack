@@ -29,11 +29,31 @@ template<class E,class R> struct lu_reciprocal {
     }
 };
 template<class E,class R> struct lu_scale {
-    E *a; const E *reciprocal; const long *multiply;
+    E *a; const E *reciprocal; const long *multiply; const long *info=nullptr;
     MPLAPACK_DEV_HD void operator()(long i) const {
+        if(info && *info) return;
         a[i+1]=*multiply?*reciprocal*a[i+1]:a[i+1]/a[0];
     }
 };
+#if defined(__CUDACC__)
+template<class E,class R> __global__ void k_lu_leaf(E *a,long m,long *piv,long *status,E *reciprocal,R sfmin) {
+    __shared__ long idx[256];
+    const int t=threadIdx.x;
+    if(m>1) {
+        idx[t]=pivot_part(a,m,t,256);
+        __syncthreads();
+        for(int s=128;s;s/=2) {
+            if(t<s) idx[t]=pivot_merge(a,idx[t],idx[t+s]);
+            __syncthreads();
+        }
+    }
+    if(t==0) {
+        *piv=m==1?1:idx[0]+1;
+        lu_base<E>{a,piv,status,m==1}(0);
+        if(m>1 && !status[0]) lu_reciprocal<E,R>{a,reciprocal,sfmin,status+1}(0);
+    }
+}
+#endif
 template<class Ops> class real_lu : public chol_schedule {
     using F=typename Ops::F;
     buffer<F> work[2],constants;
@@ -114,7 +134,7 @@ template<class Blas,class R> class lu_context : public Blas {
     R sfmin;
   public:
     lu_context(long n,long nb,R safe):Blas(n,nb),sfmin(safe) {
-        if(!this->error) this->error=status.allocate(1);
+        if(!this->error) this->error=status.allocate(2);
         if(!this->error) this->error=reciprocal.allocate(1);
     }
     ~lu_context() { this->finish(); }
@@ -124,21 +144,17 @@ template<class Blas,class R> class lu_context : public Blas {
     long recursive(long m,long n,E *a,long ld,long *piv) {
         if(this->error || !m || !n) return 0;
         if(m==1 || n==1) {
-            if(m!=1) {
 #if defined(__CUDACC__)
-                k_iamax<<<1,256,0,this->stream()>>>(a,m,piv);
-                this->error=cudaGetLastError();
+            k_lu_leaf<<<1,256,0,this->stream()>>>(a,m,piv,status.data(),reciprocal.data(),sfmin);
+            this->error=cudaGetLastError();
 #else
-                this->error=iamax(a,m,piv);
+            if(m>1) this->error=iamax(a,m,piv);
+            lu_base<E>{a,piv,status.data(),m==1}(0);
+            if(m>1 && !status.data()[0]) lu_reciprocal<E,R>{a,reciprocal.data(),sfmin,status.data()+1}(0);
 #endif
-            }
-            this->launch(lu_base<E>{a,piv,status.data(),m==1},1);
-            long info=this->feedback(status.data());
-            if(m>1 && !info) {
-                this->launch(lu_reciprocal<E,R>{a,reciprocal.data(),sfmin,status.data()},1);
-                this->launch(lu_scale<E,R>{a,reciprocal.data(),status.data()},m-1);
-            }
-            return info;
+            // Queue scaling before feedback, but never scale a singular column.
+            if(m>1) this->launch(lu_scale<E,R>{a,reciprocal.data(),status.data()+1,status.data()},m-1);
+            return this->feedback(status.data());
         }
         long n1=std::min(m,n)/2,n2=n-n1;
         long info=recursive(m,n1,a,ld,piv);

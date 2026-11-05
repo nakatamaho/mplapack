@@ -186,6 +186,11 @@ int main(int argc,char **argv) {
         if(argc==1 && (prec==64 || prec==333 || prec==4096)) continue;
         selected=true;
         mpfrxx::set_default_precision_bits(prec);
+        if(std::getenv("MPLAPACK_FACTOR_LARGE_CHECK")) {
+            trial(false,false,1000,1000,0); trial(true,false,1000,1000,0); trial(true,true,1000,1000,0);
+            std::printf("p=%ld n=1000 checks=%ld errors=%ld signed_zero_diffs=%ld\n",prec,checks,errors,zero_differences);
+            std::fflush(stdout); continue;
+        }
         long first=checks,ec=elements,zc=zero_differences,fail=errors;
         long cases_before[2]={routine_cases[0],routine_cases[1]};
         long errors_before[2]={routine_errors[0],routine_errors[1]};

@@ -73,6 +73,7 @@ template<class E> struct factor_job {
                 }
             }
         } else if(op==4) {
+            if(status[0]) return; // singular leaf: queued scaling is a no-op
             auto t=e.reg(0);
             if(status[1]) e.mul(t,e.at(constants,3,0),e.at(a,lane+1,0));
             else e.div(t,e.at(a,lane+1,0),e.at(a,0,0));
@@ -119,7 +120,45 @@ template<class E> struct factor_update_job {
         }
     }
 };
+// Two scalar recursive Cholesky leaves and their intervening solve/update.
+// Reuse the exact jobs; no host feedback is needed between these phases.
+template<class E> L3_HD void factor_chol_leaf(factor_job<E> &j,bool upper,long n) {
+    j.op=7; j(0);
+    if(n==1 || j.status[0]) return;
+    auto off=E::shift(j.a,upper?j.a.ld:1),diag=E::shift(j.a,1+j.a.ld);
+    j.op=0; j.c=off; j.s.op=L3_TRSM;
+    j.s.left=upper; j.s.upper=upper; j.s.trans=1; j.s.nounit=1;
+    j.s.m=1; j.s.n=1; j.s.alpha_one=1;
+    j(0);
+    factor_update_job<E> update{};
+    update.e=j.e; update.a=off; update.c=diag; update.constants=j.constants;
+    update.op=0; update.s.op=L3_SYRK; update.s.upper=upper; update.s.trans=upper;
+    update.s.n=1; update.s.k=1; update.s.beta_one=1;
+    update(0);
+    if(!update.e.ok) j.e.ok=false;
+    j.op=7; j.a=diag; j(0);
+    if(j.status[0]) j.status[0]=2;
+}
 #ifndef MPLAPACK_MPFR_CUDA_HOST_EMULATION
+template<class E> __global__ void factor_chol_leaf_kernel(factor_job<E> j,bool upper,long n,int *failed) {
+    j.e.thread(0); factor_chol_leaf(j,upper,n);
+    if(!j.e.ok) atomicExch(failed,1);
+}
+template<class E> __global__ void factor_lu_leaf_kernel(factor_job<E> j,int *failed) {
+    j.e.thread(threadIdx.x);
+    if(j.m>1) {
+        j.op=2;
+        for(long chunk=threadIdx.x;chunk<(j.m+127)/128;chunk+=blockDim.x) j(chunk);
+    }
+    __syncthreads();
+    if(threadIdx.x==0) {
+        // Only candidate indices survive phase2; reclaim its temporary arena
+        // exactly as the former separate pivot/reciprocal launch did.
+        const bool was_ok=j.e.ok; j.e.thread(0); j.e.ok=j.e.ok && was_ok;
+        j.op=3; j(0);
+    }
+    if(!j.e.ok) atomicExch(failed,1);
+}
 template<class Job> __global__ void factor_kernel(Job job,long units,int *failed,long offset) {
     long tid=(long)blockIdx.x*blockDim.x+threadIdx.x;
     if(tid<offset) return;
@@ -303,11 +342,31 @@ template<class E> class factor_context {
         if(error || !m || !n) return 0;
         if(m==1 || n==1) {
             auto j=job(2,a); j.m=m; j.piv=piv;
+#ifndef MPLAPACK_MPFR_CUDA_HOST_EMULATION
+#ifdef MPLAPACK_MPFR_FACTOR_COMPLEX
+            constexpr bool fuse_leaf=sizeof(typename E::V)<=192;
+#else
+            constexpr bool fuse_leaf=true;
+#endif
+            bool fused=false;
+            if constexpr(fuse_leaf) {
+                if(!far) {
+                    factor_lu_leaf_kernel<<<1,factor_threads,0,stream()>>>(j,failed.p);
+                    error=cudaGetLastError(); fused=true;
+                }
+            }
+            // Larger complex frames retain separate kernels and the existing
+            // scoped stack budget instead of increasing reservation globally.
+            if(!fused) {
+                if(m>1) launch(j,(m+127)/128);
+                j.op=3; launch(j,1);
+            }
+#else
             if(m>1) launch(j,(m+127)/128);
             j.op=3; launch(j,1);
-            long info=feedback();
-            if(m>1 && !info) { j.op=4; launch(j,m-1); }
-            return info;
+#endif
+            if(m>1) { j.op=4; launch(j,m-1); }
+            return feedback();
         }
         long n1=std::min(m,n)/2,n2=n-n1;
         long info=lu_recursive(m,n1,a,piv);
@@ -350,7 +409,21 @@ template<class E> class factor_context {
     }
     long chol_recursive(bool upper,long n,M a) {
         if(error || !n) return 0;
-        if(n==1) { launch(job(7,a),1); return feedback(); }
+        if constexpr(E::runtime) {
+            // Runtime scratch-register and complex engines retain separate
+            // scalar phases: do not extend temporary or MPC stack lifetimes.
+            if(n==1) { launch(job(7,a),1); return feedback(); }
+        } else if(n<=2) {
+            auto j=job(7,a);
+#ifndef MPLAPACK_MPFR_CUDA_HOST_EMULATION
+            factor_chol_leaf_kernel<<<1,1,0,stream()>>>(j,upper,n,failed.p);
+            error=cudaGetLastError();
+#else
+            j.e.thread(0); factor_chol_leaf(j,upper,n);
+            if(!j.e.ok) *failed.p=1;
+#endif
+            return feedback();
+        }
         long n1=n/2,n2=n-n1;
         long info=chol_recursive(upper,n1,a);
         if(error || info) return info;

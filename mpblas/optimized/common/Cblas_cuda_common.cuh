@@ -318,24 +318,51 @@ template <class Ops> struct cgpu_is_cgemm<job_Cgemm<Ops> > {
 };
 
 #if MPLAPACK_CBLAS_CUDA_DEVICE
-template <class Ops> __global__ void k_cgemm_tiled(const job_Cgemm<Ops> *job)
+template <class Ops> __device__ void cgemm_tiled_body(const job_Cgemm<Ops> &job)
 {
     typedef cgemm_tile<Ops> T;
     __shared__ typename T::shared sh;
-    const T t(*job);
+    const T t(job);
     const int ti = threadIdx.x, tj = threadIdx.y;
     const long i0 = (long)blockIdx.x * CG_TILE, j0 = (long)blockIdx.y * CG_TILE;
     const long i = i0 + ti, jj = j0 + tj;
     typename T::DC acc;
     t.init(acc, i, jj);
-    for (long p0 = 0; p0 < job->k; p0 += CG_TILE) {
+    for (long p0 = 0; p0 < job.k; p0 += CG_TILE) {
         t.load(sh, i0, j0, p0, ti, tj);
         __syncthreads();
-        const long kc = job->k - p0 < CG_TILE ? job->k - p0 : CG_TILE;
+        const long kc = job.k - p0 < CG_TILE ? job.k - p0 : CG_TILE;
         t.step(sh, acc, i, jj, kc, ti, tj);
         __syncthreads();
     }
     t.finish(acc, i, jj);
+}
+template<class Ops> __global__ void k_cgemm_tiled(const job_Cgemm<Ops> *job) { cgemm_tiled_body(*job); }
+template<class Ops> __global__ void k_cgemm_tiled_value(job_Cgemm<Ops> job) { cgemm_tiled_body(job); }
+template<class Ops> static int cgemm_tiled_stream(const job_Cgemm<Ops> &j,cudaStream_t stream) {
+    if(j.m && j.n) k_cgemm_tiled_value<<<dim3((unsigned)((j.m+CG_TILE-1)/CG_TILE),(unsigned)((j.n+CG_TILE-1)/CG_TILE)),dim3(CG_TILE,CG_TILE),0,stream>>>(j);
+    return cudaGetLastError();
+}
+#else
+template<class Ops> static int cgemm_tiled_host(const job_Cgemm<Ops> &job) {
+    using T=cgemm_tile<Ops>;
+    const T t(job);
+    const long nbi=(job.m+CG_TILE-1)/CG_TILE,nbj=(job.n+CG_TILE-1)/CG_TILE;
+#ifdef _OPENMP
+#pragma omp parallel for schedule(dynamic, 1)
+#endif
+    for(long b=0;b<nbi*nbj;++b) {
+        const long i0=(b%nbi)*CG_TILE,j0=(b/nbi)*CG_TILE;
+        typename T::shared sh;
+        typename T::DC acc[CG_TILE][CG_TILE];
+        for(int y=0;y<CG_TILE;++y) for(int x=0;x<CG_TILE;++x) t.init(acc[y][x],i0+x,j0+y);
+        for(long p=0;p<job.k;p+=CG_TILE) {
+            for(int y=0;y<CG_TILE;++y) for(int x=0;x<CG_TILE;++x) t.load(sh,i0,j0,p,x,y);
+            for(int y=0;y<CG_TILE;++y) for(int x=0;x<CG_TILE;++x) t.step(sh,acc[y][x],i0+x,j0+y,job.k-p<CG_TILE?job.k-p:CG_TILE,x,y);
+        }
+        for(int y=0;y<CG_TILE;++y) for(int x=0;x<CG_TILE;++x) t.finish(acc[y][x],i0+x,j0+y);
+    }
+    return 0;
 }
 #endif
 
@@ -383,31 +410,7 @@ template <class Ops> int cgemm_tiled_run(job_Cgemm<Ops> job, const gpu_operand<t
         dev[q] = buf[q].data() - ops[q].lo;
     }
     job.bind(dev);
-    const T t(job);
-    const long nbi = (job.m + CG_TILE - 1) / CG_TILE, nbj = (job.n + CG_TILE - 1) / CG_TILE;
-#ifdef _OPENMP
-#pragma omp parallel for schedule(dynamic, 1)
-#endif
-    for (long b = 0; b < nbi * nbj; b++) {
-        const long i0 = (b % nbi) * CG_TILE, j0 = (b / nbi) * CG_TILE;
-        std::vector<typename T::shared> shv(1);
-        std::vector<typename T::DC> acc((size_t)(CG_TILE * CG_TILE));
-        for (int tj = 0; tj < CG_TILE; tj++)
-            for (int ti = 0; ti < CG_TILE; ti++)
-                t.init(acc[(size_t)(ti + tj * CG_TILE)], i0 + ti, j0 + tj);
-        for (long p0 = 0; p0 < job.k; p0 += CG_TILE) {
-            for (int tj = 0; tj < CG_TILE; tj++)
-                for (int ti = 0; ti < CG_TILE; ti++)
-                    t.load(shv[0], i0, j0, p0, ti, tj);
-            const long kc = job.k - p0 < CG_TILE ? job.k - p0 : CG_TILE;
-            for (int tj = 0; tj < CG_TILE; tj++)
-                for (int ti = 0; ti < CG_TILE; ti++)
-                    t.step(shv[0], acc[(size_t)(ti + tj * CG_TILE)], i0 + ti, j0 + tj, kc, ti, tj);
-        }
-        for (int tj = 0; tj < CG_TILE; tj++)
-            for (int ti = 0; ti < CG_TILE; ti++)
-                t.finish(acc[(size_t)(ti + tj * CG_TILE)], i0 + ti, j0 + tj);
-    }
+    cgemm_tiled_host(job);
     for (int q = 0; q < nops; q++)
         if (ops[q].download && ops[q].count)
             gpu_operand_scatter(ops[q], buf[q].data());

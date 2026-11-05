@@ -160,6 +160,10 @@ int main() {
     int devices=0; if(cudaGetDeviceCount(&devices)!=cudaSuccess || !devices) return 77;
 #endif
     setenv(PREFIX "_LAPACK_CUDA_MIN","0",1);
+    if(std::getenv("MPLAPACK_FACTOR_LARGE_CHECK")) {
+        test<REAL>(1000,1000,0); test<COMPLEX>(1000,1000,0);
+        std::printf("PASS %ld LU entry checks at n=1000\n",checks); return 0;
+    }
     reject<REAL>(); reject<COMPLEX>();
     tiny<REAL>(); tiny<COMPLEX>();
     unblocked<mplapack_lapack_gpu::real_lu<TestOps>,REAL>();

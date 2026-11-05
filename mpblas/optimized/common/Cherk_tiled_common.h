@@ -50,8 +50,7 @@ template<class Job> MPLAPACK_DEV_HD void herk_step(const herk_shared<Job> &s,typ
     }
 }
 #if MPLAPACK_CBLAS_CUDA_DEVICE
-template<class Job> __global__ void k_herk_tiled(const Job *arg) {
-    const Job &j=*arg;
+template<class Job> __device__ void herk_tiled_body(const Job &j) {
     constexpr int T=herk_shared<Job>::T;
     const int x=threadIdx.x,y=threadIdx.y;
     const long i0=(long)blockIdx.x*T,j0=(long)blockIdx.y*T;
@@ -67,6 +66,14 @@ template<class Job> __global__ void k_herk_tiled(const Job *arg) {
         __syncthreads();
     }
     if(mine) j.C[i+c*j.ldc]=value;
+}
+template<class Job> __global__ void k_herk_tiled(const Job *arg) { herk_tiled_body(*arg); }
+template<class Job> __global__ void k_herk_tiled_value(Job arg) { herk_tiled_body(arg); }
+template<class Job> static int herk_tiled_stream(const Job &j,cudaStream_t stream) {
+    constexpr int T=herk_shared<Job>::T;
+    const unsigned blocks=(unsigned)((j.n+T-1)/T);
+    if(blocks) k_herk_tiled_value<<<dim3(blocks,blocks),dim3(T,T),0,stream>>>(j);
+    return cudaGetLastError();
 }
 template<class Job> static int herk_tiled_device(const Job &j,const Job *scratch) {
     constexpr int T=herk_shared<Job>::T;

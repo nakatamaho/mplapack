@@ -117,6 +117,10 @@ int main() {
     if(cudaGetDeviceCount(&devices)!=cudaSuccess || !devices) return 77;
 #endif
     setenv(PREFIX "_LAPACK_CUDA_MIN","0",1);
+    if(std::getenv("MPLAPACK_FACTOR_LARGE_CHECK")) {
+        for(auto u:{"U","L"}) { test<REAL>(u,1000,0); test<COMPLEX>(u,1000,0); }
+        std::printf("PASS %ld Cholesky entry checks at n=1000\n",checks); return 0;
+    }
     reject<REAL>(); reject<COMPLEX>();
     INTEGER nb=iMlaenv(1,"Rpotrf","L",600,-1,-1,-1);
     for(INTEGER n:{INTEGER(1),INTEGER(2),INTEGER(3),nb-1,nb,nb+1,2*nb+3,INTEGER(131),INTEGER(257),INTEGER(599)})
