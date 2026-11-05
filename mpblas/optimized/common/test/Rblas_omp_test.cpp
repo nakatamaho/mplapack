@@ -189,6 +189,30 @@ int main()
     const char *ul[] = {"U", "L"}, *tr[] = {"N", "T"}, *sd[] = {"L", "R"}, *dg[] = {"N", "U"};
     // {150, 70}, {40, 150}: several blocks of the engine (alpha general only)
 #ifdef RBLAS_TEST_GPU
+    if(std::getenv("MPLAPACK_SYRK_TILE_CHECK")) {
+        for(long n:{0L,1L,7L,63L,64L,65L,200L,1000L})
+            for(const char *u:ul) for(const char *t:{"N","T"}) for(int two:{0,1}) for(int kind=0;kind<3;++kind) {
+                if(n>=200 && kind!=2) continue;
+                const long ld=n+3;
+                std::vector<REAL> a(size_t(ld)*(n+1)),b(a.size()),c(a.size());
+                fill(a); fill(b); fill(c);
+                for(size_t q=0;q<a.size();q+=17) a[q]=REAL(-0.0);
+                for(size_t q=0;q<b.size();q+=19) b[q]=REAL(0);
+                const REAL al=kind==0?REAL(0):kind==1?REAL(1):REAL(-0.75);
+                const REAL be=kind==0?REAL(0):kind==1?REAL(1):REAL(0.625);
+                auto ref=c,got=c;
+                if(two) {
+                    Rsyr2k_reference_cpu(u,t,n,n,al,a.data(),ld,b.data(),ld,be,ref.data(),ld);
+                    Rsyr2k(u,t,n,n,al,a.data(),ld,b.data(),ld,be,got.data(),ld);
+                } else {
+                    Rsyrk_reference_cpu(u,t,n,n,al,a.data(),ld,be,ref.data(),ld);
+                    Rsyrk(u,t,n,n,al,a.data(),ld,be,got.data(),ld);
+                }
+                compare(tag(two?"tiled Rsyr2k":"tiled Rsyrk",{u,t},{n,kind}),ref,got);
+            }
+        std::printf("SYRK tiles: %ld checks, %ld failures\n",checks,failures);
+        return failures?1:0;
+    }
     if(std::getenv("MPLAPACK_TRSM_TEAM_CHECK")) {
         for(long order:{0L,1L,7L,63L,64L,65L,200L,1000L})
             for(const char *s:sd) for(const char *u:ul) for(const char *t:{"N","T","C"}) for(const char *d:dg) {

@@ -48,7 +48,7 @@ static void rblas_test_gpu_setup()
     setenv("MPLAPACK_MPFR_CUDA_L12", "1", 1);
     // Whole-BLAS tests need runtime signed zeros. The dedicated TRSM matrix
     // also tests the checked fixed engine when explicitly requested.
-    setenv("MPLAPACK_MPFR_CUDA_FORCE_RUNTIME", "1", std::getenv("MPLAPACK_TRSM_TEAM_CHECK")?0:1);
+    setenv("MPLAPACK_MPFR_CUDA_FORCE_RUNTIME", "1", (std::getenv("MPLAPACK_TRSM_TEAM_CHECK") || std::getenv("MPLAPACK_SYRK_TILE_CHECK"))?0:1);
 }
 static bool rblas_test_have_gpu() { return mplapack_mpfr_cuda::device_count() > 0; }
 #else

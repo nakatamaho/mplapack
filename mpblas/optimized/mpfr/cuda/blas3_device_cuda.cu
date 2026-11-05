@@ -37,6 +37,7 @@
 #include <vector>
 #include "blas3_kernel_cuda.h"
 #include "mpfr_cuda_stack.h"
+#include "Rsyrk_fixed_tiled.cuh"
 
 #ifndef MPLAPACK_MPFR_CUDA_HOST_EMULATION
 #include <cuda_runtime.h>
@@ -121,6 +122,7 @@ template <int PB> int blas3_fixed(const l3_shape &s, const real_t<PB> &alpha, co
     f.s = s;
     f.al = &al, f.be = &be;
     f.a = const_cast<real_t<PB> *>(A), f.b = const_cast<real_t<PB> *>(B), f.c = C;
+    if(fixed_syrk_tiled_shape(s) && !alpha.is_zero()) return fixed_syrk_tiled(s,f.al,f.be,f.a,f.b,f.c);
     if(trsm_team_shape(s)) return trsm_team_device<l3_fixed_engine<PB,true>,false,true>(fixed_trsm_args(f));
     int failed = 0;
 #ifdef _OPENMP
@@ -150,7 +152,9 @@ template <int PB> int blas3_fixed(const l3_shape &s, const real_t<PB> &alpha, co
     f.al = dal.p, f.be = dbe.p, f.a = dA.p, f.b = dB.p, f.c = dC.p;
     const int threads = 64;
     if (lanes > 0) {
-        if(trsm_team_shape(s)) {
+        if(fixed_syrk_tiled_shape(s) && !alpha.is_zero()) {
+            if(fixed_syrk_tiled(s,f.al,f.be,f.a,f.b,f.c)) return 3;
+        } else if(trsm_team_shape(s)) {
             if(trsm_team_device<l3_fixed_engine<PB,true>,false,true>(fixed_trsm_args(f),nullptr,status.p)) return 3;
         } else if (s.op == L3_TRSM)
             fixed_kernel<PB, true><<<(unsigned)((lanes + threads - 1) / threads), threads>>>(f, lanes, status.p);

@@ -191,6 +191,24 @@ int main()
     const char *ul[] = {"U", "L"}, *tr[] = {"N", "T", "C"}, *sd[] = {"L", "R"}, *dg[] = {"N", "U"};
     // {150, 70, 40}: several blocks of the engine (alpha, beta general only)
 #ifdef RBLAS_TEST_GPU
+    if(std::getenv("MPLAPACK_SYRK_TILE_CHECK")) {
+        for(long n:{0L,1L,7L,63L,64L,65L,200L,1000L})
+            for(const char *u:ul) for(const char *t:{"N","C"}) for(int kind=0;kind<3;++kind) {
+                if(n>=200 && kind!=2) continue;
+                const long ld=n+3;
+                std::vector<COMPLEX> a(size_t(ld)*(n+1)),c(a.size());
+                fill(a); fill(c);
+                for(size_t q=0;q<a.size();q+=17) a[q]=COMPLEX(REAL(-0.0),REAL(0));
+                const REAL al=kind==0?REAL(0):kind==1?REAL(1):REAL(-0.75);
+                const REAL be=kind==0?REAL(0):kind==1?REAL(1):REAL(0.625);
+                auto ref=c,got=c;
+                Cherk_reference_cpu(u,t,n,n,al,a.data(),ld,be,ref.data(),ld);
+                Cherk(u,t,n,n,al,a.data(),ld,be,got.data(),ld);
+                compare(tag("tiled Cherk",{u,t},{n,kind}),ref,got);
+            }
+        std::printf("HERK tiles: %ld checks, %ld failures, %ld zero signs\n",checks,failures,zero_signs);
+        return failures?1:0;
+    }
     if(std::getenv("MPLAPACK_TRSM_TEAM_CHECK")) {
         for(long order:{0L,1L,7L,63L,64L,65L,200L,1000L})
             for(const char *s:sd) for(const char *u:ul) for(const char *t:tr) for(const char *d:dg) {

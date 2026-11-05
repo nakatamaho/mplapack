@@ -58,6 +58,7 @@
 
 #include "Cblas_cuda_jobs_common.h"
 #include "Rtrsm_team_common.h"
+#include "Cherk_tiled_common.h"
 
 namespace mplapack_blas_dev {
 
@@ -153,7 +154,10 @@ template<class Job> static int job_device(Job job, long units, Job *scratch)
     if (units <= 0) return 0;
     cudaError_t e=cudaMemcpy(scratch,&job,sizeof(Job),cudaMemcpyHostToDevice);
     if(e==cudaSuccess) {
-        if constexpr(cgpu_is_ctrsm<Job>::value) {
+        if constexpr(cgpu_is_herk<Job>::value) {
+            if(herk_tiled_eligible(job)) e=(cudaError_t)herk_tiled_device(job,scratch);
+            else k_job<Job><<<(unsigned)((units+63)/64),64>>>(scratch,units);
+        } else if constexpr(cgpu_is_ctrsm<Job>::value) {
             if(mplapack_blas::trsm_team_shape(ctrsm_args(job).s) && !ctrsm_constants<Job>::zero(job.alpha))
                 e=(cudaError_t)ctrsm_team_device(job);
             else k_job<Job><<<(unsigned)((units+63)/64),64>>>(scratch,units);
@@ -163,6 +167,9 @@ template<class Job> static int job_device(Job job, long units, Job *scratch)
     return (int)(e==cudaSuccess ? cudaDeviceSynchronize() : e);
 #else
     (void)scratch;
+    if constexpr(cgpu_is_herk<Job>::value) {
+        if(herk_tiled_eligible(job)) return herk_tiled_host(job);
+    }
     if constexpr(cgpu_is_ctrsm<Job>::value) {
         auto t=ctrsm_args(job);
         if(mplapack_blas::trsm_team_shape(t.s) && !ctrsm_constants<Job>::zero(job.alpha)) {

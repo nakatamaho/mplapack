@@ -85,6 +85,10 @@ namespace mplapack_blas_dev {
 // Fixed-precision complex BLAS uses value-semantic components; the same team
 // schedule is valid with its MPC division and the existing scoped stack guard.
 template<int PB> struct cgpu_is_ctrsm<job_Ctrsm<mpfr_fixed<PB>>> { static constexpr bool value=true; };
+template<int PB> struct cgpu_is_herk<job_Cherk<mpfr_fixed<PB>>> { static constexpr bool value=true; };
+template<int PB> struct herk_constants<job_Cherk<mpfr_fixed<PB>>> {
+    static bool zero_alpha(const job_Cherk<mpfr_fixed<PB>> &j) { return j.alpha.v.is_zero(); }
+};
 
 // Host launch predicates inspect the value representation directly. Avoid
 // instantiating noinline arithmetic helpers (and their weak exports) on host.

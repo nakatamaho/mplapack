@@ -134,10 +134,31 @@ template<class Tag> struct complex_factor_engine {
         }
     }
     template<class X> L3_HD void herk(const l3_shape &s,X &x,long lane) const {
-        if(lane%s.n) return;
-        long j=lane/s.n;
-        Cherk_columns_dev<DR,V>(s.upper?"U":"L",s.trans?"C":"N",s.n,s.k,DR(-1),x.a.p,x.a.ld,DR(1),x.c.p,x.c.ld,j,j+1);
-        for(long i=s.upper?0:j;i<(s.upper?j+1:s.n);++i) checked(x.c.p[i+j*x.c.ld]);
+        const long i=lane%s.n,j=lane/s.n;
+        if((s.upper?i>j:i<j) || s.k==0) return;
+        V &out=x.c.p[i+j*x.c.ld];
+        if(!s.trans) {
+            V value=i==j?V(out.real()):out;
+            for(long k=0;k<s.k;++k) {
+                const V a=x.a.p[j+k*x.a.ld];
+                if(a!=V(0)) {
+                    const V temp=DR(-1)*conj(a);
+                    const V product=temp*x.a.p[i+k*x.a.ld];
+                    if(i==j) value=V(value.real()+product.real());
+                    else value+=product;
+                }
+            }
+            out=value;
+        } else if(i==j) {
+            DR value=DR(0);
+            for(long k=0;k<s.k;++k) value+=(conj(x.a.p[k+j*x.a.ld])*x.a.p[k+j*x.a.ld]).real();
+            out=DR(-1)*value+DR(1)*out.real();
+        } else {
+            V value=V(0);
+            for(long k=0;k<s.k;++k) value+=conj(x.a.p[k+i*x.a.ld])*x.a.p[k+j*x.a.ld];
+            out=DR(-1)*value+DR(1)*out;
+        }
+        checked(out);
     }
     L3_HD void gemm(const gemm_shape &s,M al,M be,M a,M b,M c,long i,long j) const {
         Cgemm_dev<DR,V>(s.nota?"N":"C",s.notb?"N":"C",1,1,s.k,al.p[0],
