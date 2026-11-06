@@ -65,12 +65,20 @@ template<class H> void residual(const char *u,INTEGER n,INTEGER ld,const std::ve
     }
     check(error/(REAL(n)*norm*Rlamch("E"))<=REAL(30),"backward error <=30");
 }
-template<class H> void test(const char *u,INTEGER n,INTEGER bad) {
+REAL signed_zero(long i,long,REAL *) { return REAL(i%2?-0.0:0.0); }
+COMPLEX signed_zero(long i,long j,COMPLEX *) { return COMPLEX(REAL(i%2?-0.0:0.0),REAL(j%2?-0.0:0.0)); }
+template<class H> void test(const char *u,INTEGER n,INTEGER bad,bool sparse=false,bool near=false) {
     INTEGER ld=n+3;
     std::vector<H> a(ld*n,H(19)),b;
     for(long j=0;j<n;++j) for(long i=0;i<n;++i) {
         long lo=std::min(i,j),hi=std::max(i,j);
-        a[i+j*ld]=i==j?diagonal(n,(H*)nullptr):element(lo,hi,(H*)nullptr);
+        a[i+j*ld]=i==j?diagonal(near?0:n,(H*)nullptr):element(lo,hi,(H*)nullptr);
+        if(i!=j && (near || (sparse && (lo+hi)%3))) a[i+j*ld]=signed_zero(lo,hi,(H*)nullptr);
+    }
+    if(near) {
+        INTEGER cut=std::min(n-1,iMlaenv(1,"Rpotrf",u,n,-1,-1,-1));
+        H value=H(REAL(1)-REAL(64)*Rlamch("E"));
+        a[cut-1+cut*ld]=value; a[cut+(cut-1)*ld]=value;
     }
     // The diagonal can carry an imaginary part; successful sqrt must clear it.
     if(bad) a[(bad-1)+(bad-1)*ld]=H(-1);
@@ -84,7 +92,7 @@ template<class H> void test(const char *u,INTEGER n,INTEGER bad) {
         check(false,"bit identity");
     }
     check(true,"bit identity");
-    if(!bad && n<=131) residual(u,n,ld,b);
+    if(!bad && !sparse && !near && n<=131) residual(u,n,ld,b);
 }
 template<class H> void reject() {
     std::vector<H> a(16,H(7)),old=a;
@@ -127,6 +135,14 @@ int main() {
         for(auto u:{"U","L"}) for(INTEGER bad:{INTEGER(0),INTEGER(1),n/2+1,n}) {
             test<REAL>(u,n,bad); test<COMPLEX>(u,n,bad);
         }
+    const INTEGER boundary_n=3*nb+5;
+    for(auto u:{"U","L"}) {
+        test<REAL>(u,boundary_n,0,true); test<COMPLEX>(u,boundary_n,0,true);
+        test<REAL>(u,boundary_n,0,true,true); test<COMPLEX>(u,boundary_n,0,true,true);
+        for(INTEGER bad:{INTEGER(1),nb-1,nb,nb+1,nb+2,2*nb,2*nb+1,boundary_n}) {
+            test<REAL>(u,boundary_n,bad,true); test<COMPLEX>(u,boundary_n,bad,true);
+        }
+    }
     setenv(PREFIX "_LAPACK_FAST","1",1);
     for(auto u:{"U","L"}) { test<REAL>(u,nb+1,0); test<COMPLEX>(u,nb+1,0); }
     unsetenv(PREFIX "_LAPACK_FAST");

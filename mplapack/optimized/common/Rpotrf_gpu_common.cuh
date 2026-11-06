@@ -3,6 +3,8 @@
 #define MPLAPACK_POTRF_GPU_COMMON_CUH
 #include "../../../mpblas/optimized/common/Rlapack_cuda_common.cuh"
 #include "Rpotrf_small_common.cuh"
+#include "Rpotrf_right_common.cuh"
+#include "../../../mpblas/optimized/common/Rpotrf_output_common.h"
 
 namespace mplapack_lapack_gpu {
 // Only scheduling differs from the reference. A panel-ready event releases
@@ -125,6 +127,9 @@ template<class Ops> class real_cholesky : public chol_schedule {
         if(!error) error=transfer(constants.data(),c,2,false);
     }
     ~real_cholesky() { finish(); }
+    void right(long n,long nb,long col,long k,long first,long cols,E *a,long ld) {
+        bf_right_launch<Ops,false>(*this,n,nb,col,k,first,cols,a,ld);
+    }
     long small(bool upper,long n,E *a,long ld) {
         launch(small_chol_job<Ops,E>{upper,n,a,ld,status.data()},1);
         return feedback(status.data());
@@ -183,6 +188,9 @@ template<class Ops> class complex_cholesky : public chol_schedule {
     using R=dreal<Ops>; using E=dcomplex<R>;
     complex_cholesky(long,long) { if(!error) error=status.allocate(1); }
     ~complex_cholesky() { finish(); }
+    void right(long n,long nb,long col,long k,long first,long cols,E *a,long ld) {
+        bf_right_launch<Ops,true>(*this,n,nb,col,k,first,cols,a,ld);
+    }
     long small(bool upper,long n,E *a,long ld) {
         launch(small_chol_job<Ops,E>{upper,n,a,ld,status.data()},1);
         return feedback(status.data());
@@ -216,6 +224,25 @@ template<class Ops> class complex_cholesky : public chol_schedule {
 };
 template<class Context> static long cholesky(Context &ctx,bool upper,long n,long nb,typename Context::E *a,long ld) {
     if(nb<=1 || nb>=n) return chol_recursive(ctx,upper,n,a,ld);
+    if(!upper) {
+        for(long col=0;col<n && !ctx.error;col+=nb) {
+            const long kb=std::min(nb,n-col),first=col+kb,near=std::min(nb,n-first);
+            auto *diag=a+col+col*ld;
+            long info=chol_recursive(ctx,false,kb,diag,ld);
+            if(ctx.error || info) { ctx.finish(); return info?col+info:0; }
+            if(first<n) {
+                ctx.solve(false,n-first,kb,diag,ld,a+first+col*ld);
+                // Current panel can solve alongside the preceding far update.
+                // Both updates below must follow it, in increasing source k.
+                ctx.join_update(); ctx.release_update();
+                ctx.right(n,nb,col,kb,first,near,a,ld);
+                ctx.far=true;
+                ctx.right(n,nb,col,kb,first+near,n-first-near,a,ld);
+                ctx.far=false;
+            }
+        }
+        ctx.finish(); return 0;
+    }
     for(long j=0;j<n;j+=nb) {
         long jb=std::min(nb,n-j);
         auto *diag=a+j+j*ld;

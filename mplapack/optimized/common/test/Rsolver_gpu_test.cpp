@@ -229,6 +229,11 @@ int main(int argc,char **argv) {
                 }
             }
         }
+        // A failed second block must not publish speculative trailing updates,
+        // and POSV must leave every RHS untouched.
+        for(const char *u:{"U","L"}) {
+            test<REAL>(197,3,true,true,u,3); test<COMPLEX>(197,3,true,true,u,3);
+        }
         std::printf("PASS p=%ld cumulative checks=%ld elements=%ld zero-sign-errors=%ld\n",p,checks,comparisons,zero_sign_errors); std::fflush(stdout);
     }
 }

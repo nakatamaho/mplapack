@@ -30,7 +30,7 @@ template<int PB> bool fixed_call(const factor_shape &s,mpfr_class *a,long lda,lo
     if(factor_fixed<PB>(s,packed.data(),safe,piv,info,t)) return false;
     for(const auto &v:packed) if(!fits<PB>(v)) return false;
     auto before=Clock::now();
-    for(long j=0;j<s.n+s.nrhs;++j) for(long i=0;i<s.m;++i) if(referenced(s,i,j)) {
+    for(long j=0;j<s.n+s.nrhs;++j) for(long i=0;i<s.m;++i) if(referenced(s,i,j) && factor_output(s,info,i,j)) {
         const auto &v=packed[i+j*s.m]; mpfr_ptr x=a[i+j*lda].get_mpfr_t();
         if(v.is_zero()) mpfr_set_zero(x,v.sign); else unpack<PB>(v,x);
     }
@@ -48,7 +48,7 @@ static bool runtime_call(const factor_shape &s,long prec,mpfr_class *a,long lda,
     if(factor_runtime(s,prec,packed.pack,safe.pack,piv,info,t)) return false;
     for(size_t i=0;i<(size_t)s.m*(s.n+s.nrhs);++i) if(!rt_fits(packed,i)) return false;
     auto before=Clock::now();
-    for(long j=0;j<s.n+s.nrhs;++j) for(long i=0;i<s.m;++i) if(referenced(s,i,j))
+    for(long j=0;j<s.n+s.nrhs;++j) for(long i=0;i<s.m;++i) if(referenced(s,i,j) && factor_output(s,info,i,j))
         rt_unpack(packed,i+j*s.m,prec,nl,a[i+j*lda].get_mpfr_t());
     t.upload+=std::chrono::duration<double>(packed_at-start).count();
     t.download+=std::chrono::duration<double>(Clock::now()-before).count();

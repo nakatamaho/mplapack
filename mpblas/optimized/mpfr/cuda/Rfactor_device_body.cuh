@@ -10,6 +10,7 @@
 #include "Rfactor_kernel_cuda.h"
 #include "blas3_kernel_cuda.h"
 #include "mpfr_cuda_stack.h"
+#include "../../common/Rpotrf_right_common.h"
 #ifndef MPLAPACK_MPFR_CUDA_HOST_EMULATION
 #include <cuda_runtime.h>
 #endif
@@ -118,6 +119,72 @@ template<class E> struct factor_update_job {
             gemm_engine_element(e,g,al,constants,a,b,ab,c,lane%g.m,lane/g.m,false);
 #endif
         }
+    }
+};
+template<class E> struct factor_right_policy {
+    using V=typename E::V; using M=typename E::M;
+    E e;
+    L3_HD V reg(int slot) const { return e.reg(slot); }
+    L3_HD V at(const M &a,long i,long j) const { return e.at(a,i,j); }
+    L3_HD bool iszero(const V &v) const { return e.iszero(v); }
+    L3_HD bool ok() const { return e.ok; }
+    L3_HD void init(V &v,const V &a,bool diag) const {
+#ifdef MPLAPACK_MPFR_FACTOR_COMPLEX
+        v=diag?V(a.real()):a;
+#else
+        e.set(v,a);
+#endif
+    }
+    L3_HD void scaled(V &v,const V &b,bool rank,const M &constants) const {
+#ifdef MPLAPACK_MPFR_FACTOR_COMPLEX
+        using R=typename E::DR;
+        // Cpotrf passes -cone, including the negative imaginary zero.
+        v=rank?R(-1)*conj(b):(-V(1))*conj(b);
+#else
+        e.mul(v,e.at(constants,1,0),b);
+#endif
+    }
+    L3_HD void product(V &v,const V &a,const V &b) const {
+#ifdef MPLAPACK_MPFR_FACTOR_COMPLEX
+        v=a*b;
+#else
+        e.mul(v,a,b);
+#endif
+    }
+    L3_HD void accumulate(V &v,const V &term,bool diag) const {
+#ifdef MPLAPACK_MPFR_FACTOR_COMPLEX
+        if(diag) v=V(v.real()+term.real()); else v+=term;
+#else
+        e.add(v,v,term);
+#endif
+    }
+    L3_HD void put(M &a,long i,long j,const V &v) const { e.put(a,i,j,v); }
+};
+// Arena-backed engines retain their existing scalar jobs and bounded physical
+// thread pool. Only independent output elements are redistributed.
+template<class E> struct factor_right_runtime_job {
+    E e; typename E::M a{},constants{};
+    long n=0,nb=0,col=0,k=0,first=0,cols=0;
+    L3_HD void operator()(long lane) {
+        const long rows=n-first,i=first+lane%rows,j=first+lane/rows;
+        if(i<j || i>=n || j>=first+cols) return;
+        factor_update_job<E> u{}; u.e=e; u.constants=constants;
+        if(i/nb==j/nb) {
+            const long begin=(j/nb)*nb,size=n-begin<nb?n-begin:nb;
+            u.op=0; u.s.op=L3_SYRK; u.s.n=size; u.s.k=k; u.s.beta_one=1;
+            u.a=E::shift(a,begin+col*a.ld); u.c=E::shift(a,begin+begin*a.ld);
+            u((i-begin)+(j-begin)*size);
+        } else {
+            u.op=1; u.a=E::shift(a,i+col*a.ld); u.b=E::shift(a,j+col*a.ld); u.c=E::shift(a,i+j*a.ld);
+            u.g={1,0,1,1,k,a.ld,a.ld,a.ld,0,1};
+#ifdef MPLAPACK_MPFR_FACTOR_COMPLEX
+            using V=typename E::V;
+            V scalars[2]={V(1),-V(1)};
+            u.constants={scalars,2}; // -cone, not complex(-1,+0)
+#endif
+            u(0);
+        }
+        if(!u.e.ok) e.ok=false;
     }
 };
 // Two scalar recursive Cholesky leaves and their intervening solve/update.
@@ -332,6 +399,29 @@ template<class E> class factor_context {
         j.g={ !upper,upper,m,n,k,a.ld,b.ld,c.ld,0,1 };
         launch(j,m*n);
     }
+    void right(long n,long nb,long col,long k,long first,long cols,M a) {
+        if(error || cols<=0) return;
+#ifdef MPLAPACK_MPFR_FACTOR_COMPLEX
+        constexpr bool value_math=E::Traits::value_math;
+#else
+        constexpr bool value_math=!E::runtime;
+#endif
+        using U=typename E::Update;
+        if constexpr(value_math) {
+            mplapack_lapack_gpu::right_chol_job<factor_right_policy<U>> j{};
+            j.p.e=engine.update(); j.a=a; j.constants=constants;
+            j.n=n; j.nb=nb; j.col=col; j.k=k; j.first=first; j.cols=cols;
+#ifndef MPLAPACK_MPFR_CUDA_HOST_EMULATION
+            error=mplapack_lapack_gpu::right_chol_device(j,stream(),failed.p);
+#else
+            error=mplapack_lapack_gpu::right_chol_host(j);
+#endif
+        } else {
+            factor_right_runtime_job<U> j{}; j.e=engine.update(); j.a=a; j.constants=constants;
+            j.n=n; j.nb=nb; j.col=col; j.k=k; j.first=first; j.cols=cols;
+            execute(j,(n-first)*cols);
+        }
+    }
     void swap(long n,M a,long k1,long k2,long *piv) {
         auto j=job(5,a); j.k1=k1; j.k2=k2; j.piv=piv; launch(j,n);
     }
@@ -435,6 +525,21 @@ template<class E> class factor_context {
     }
     long chol(bool upper,long n,long nb,M a) {
         if(nb<=1 || nb>=n) return chol_recursive(upper,n,a);
+        if(!upper) {
+            for(long col=0;col<n && !error;col+=nb) {
+                const long kb=std::min(nb,n-col),first=col+kb,near=std::min(nb,n-first);
+                M diag=E::shift(a,col+col*a.ld);
+                long info=chol_recursive(false,kb,diag);
+                if(error || info) { finish(); return info?col+info:0; }
+                if(first<n) {
+                    solve(false,n-first,kb,diag,E::shift(a,first+col*a.ld),true);
+                    join(); release();
+                    right(n,nb,col,kb,first,near,a);
+                    far=true; right(n,nb,col,kb,first+near,n-first-near,a); far=false;
+                }
+            }
+            finish(); return 0;
+        }
         for(long col=0;col<n && !error;col+=nb) {
             long jb=std::min(nb,n-col);
             M diag=E::shift(a,col+col*a.ld);

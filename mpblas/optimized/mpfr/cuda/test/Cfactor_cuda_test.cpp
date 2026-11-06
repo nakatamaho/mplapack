@@ -68,7 +68,7 @@ bool backward(bool chol,bool upper,long m,long n,long ld,const std::vector<COMPL
     }
     return residual/(REAL(std::max(m,n))*norm*Rlamch("E"))<=REAL(30);
 }
-void trial(bool chol,bool upper,long m,long n,int kind) {
+void trial(bool chol,bool upper,long m,long n,int kind,long failure=0) {
     ++cases[chol]; long lda=m+3;
     std::vector<COMPLEX> a(lda*n),b;
     std::vector<INTEGER> p(std::min(m,n)+3,-71),q=p;
@@ -93,6 +93,19 @@ void trial(bool chol,bool upper,long m,long n,int kind) {
         // even a failed pivot must retain exactly what the oracle retains.
         if(kind>=3) for(long j=0;j<n;++j)
             mpfr_set_si(mpc_imagref(a[j+j*lda].mpc_data()),-3,MPFR_RNDN);
+        if(kind==5) {
+            for(long j=0;j<n;++j) for(long i=0;i<n;++i) {
+                a[i+j*lda]=i==j?COMPLEX(1,-3):COMPLEX(0);
+                if(i!=j) {
+                    auto z=a[i+j*lda].mpc_data();
+                    mpfr_set_zero(mpc_realref(z),(i+j)%2?1:-1);
+                    mpfr_set_zero(mpc_imagref(z),i<j?-1:1);
+                }
+            }
+            const long cut=std::min(n-1,long(iMlaenv(1,"Cpotrf","L",n,-1,-1,-1)));
+            COMPLEX value=COMPLEX(REAL(1)-REAL(64)*Rlamch("E"));
+            a[cut-1+cut*lda]=value; a[cut+(cut-1)*lda]=value;
+        }
     } else {
         if(kind==1) for(long i=0;i<m;++i) a[i+(n/2)*lda]=0;
         if(kind==2 && n>1) for(long i=0;i<m;++i) a[i+lda]=a[i];
@@ -105,6 +118,7 @@ void trial(bool chol,bool upper,long m,long n,int kind) {
             mpfr_mul_2si(mpc_imagref(z),mpc_imagref(z),-1073741823L,MPFR_RNDN);
         }
     }
+    if(chol && failure) a[(failure-1)*(lda+1)]=-1;
     b=a; auto original=a; INTEGER info=-99,ref=-98; bool ran;
 #ifndef MPLAPACK_MPFR_CUDA_HOST_EMULATION
     size_t before=0,after=0; cudaDeviceGetLimit(&before,cudaLimitStackSize);
@@ -196,6 +210,12 @@ int main(int argc,char **argv) {
             trial(false,false,134,131,0); trial(false,false,131,134,0);
             trial(true,false,131,131,0); trial(true,true,131,131,0);
         }
+        }
+        const long nb=iMlaenv(1,"Cpotrf","L",512,-1,-1,-1),boundary_n=3*nb+5;
+        for(bool upper:{false,true}) {
+            trial(true,upper,boundary_n,boundary_n,5);
+            for(long bad:{1L,nb-1,nb,nb+1,nb+2,2*nb,2*nb+1,boundary_n})
+                trial(true,upper,boundary_n,boundary_n,0,bad);
         }
         setenv("MPLAPACK_MPFR_LAPACK_FAST","1",1);
         long fast_n=frames?3:33;

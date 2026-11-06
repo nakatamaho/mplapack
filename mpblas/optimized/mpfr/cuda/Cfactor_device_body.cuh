@@ -35,6 +35,7 @@ using namespace mplapack_blas_dev;
     return true;
 template<class Tag> struct complex_factor_traits;
 template<int PB> struct complex_factor_traits<factor_fixed_tag<PB>> {
+    static constexpr bool value_math=true; // add/multiply do not use the MPC arena
     using DR=factor_real<PB>; using DC=factor_complex_value<PB>;
     static DC host_one(int sign,long) { return DC(sign); }
     L3_HD static bool fits(const DR &v) { return v.valid && (v.v.is_zero() || (v.v.exp>=-1073741823L && v.v.exp<=1073741823L)); }
@@ -54,6 +55,7 @@ template<int PB> struct complex_factor_traits<factor_fixed_tag<PB>> {
 };
 #undef CFACTOR_HYPOT
 template<int NL> struct complex_factor_traits<factor_runtime_tag<NL>> {
+    static constexpr bool value_math=false;
     using DR=rreal<NL>; using DC=factor_runtime_complex<NL>;
     static DC host_one(int sign,long prec) {
         DC v; v.re_.kind=sign*3; v.re_.exp=1;

@@ -104,7 +104,7 @@ template<class Context,class Host> static bool potrf_call(const char *name,const
         // Transactional publication: CUDA errors cannot leave partial host output.
         if(device.copy(staging.data(),n,true)) return false;
         for(long j=0;j<n;++j) for(long i=0;i<n;++i)
-            if(upper?i<=j:i>=j) potrf_unpack(staging[i+j*n],a[i+j*lda]);
+            if((upper?i<=j:i>=j) && potrf_output(upper,n,nb,result,i,j)) potrf_unpack(staging[i+j*n],a[i+j*lda]);
         info=result;
         auto downloaded=Clock::now();
         const char *verbose=potrf_env("_CUDA_VERBOSE");

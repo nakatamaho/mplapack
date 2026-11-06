@@ -179,7 +179,8 @@ template<class Host> static bool solver_call(const char *name,bool factorize,boo
         if((factorize && da.copy(ha.data(),n,true)) || (!result && db.copy(hb.data(),n,true)) ||
            (factorize && !chol && transfer(piv.get(),dp.data(),n,true))) return false;
         // No publication before every operation, including downloads, succeeds.
-        if(factorize) for(long j=0;j<n;++j) for(long i=0;i<n;++i) if(!chol || (upper?i<=j:i>=j)) unpack_solve(ha[i+j*n],a[i+j*lda]);
+        if(factorize) for(long j=0;j<n;++j) for(long i=0;i<n;++i)
+            if(!chol || ((upper?i<=j:i>=j) && potrf_output(upper,n,nb,result,i,j))) unpack_solve(ha[i+j*n],a[i+j*lda]);
         if(!result) for(long j=0;j<rhs;++j) for(long i=0;i<n;++i) unpack_solve(hb[i+j*n],b[i+j*ldb]);
         if(factorize && !chol) for(long i=0;i<n;++i) ipiv[i]=piv[i];
         info=result;

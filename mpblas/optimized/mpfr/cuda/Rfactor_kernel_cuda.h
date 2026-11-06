@@ -3,6 +3,7 @@
 #define MPLAPACK_MPFR_FACTOR_KERNEL_CUDA_H
 #include "Rgemm_kernel_cuda.h"
 #include "Rgemm_rt_cuda.h"
+#include "../../common/Rpotrf_output_common.h"
 namespace mplapack_mpfr_cuda {
 struct factor_shape {
     bool chol, upper;
@@ -12,6 +13,9 @@ struct factor_shape {
     bool factorize=true;
     char trans='N';
 };
+static inline bool factor_output(const factor_shape &s,long info,long i,long j) {
+    return j>=s.n || !s.chol || mplapack_lapack_gpu::potrf_output(s.upper,s.n,s.nb,info,i,j);
+}
 struct factor_times { double upload=0, factor=0, download=0; };
 __attribute__((visibility("hidden"))) size_t factor_stack_bytes(long prec,bool runtime);
 __attribute__((visibility("hidden"))) bool factor_memory_fits(long m,long n,long prec,bool fixed);

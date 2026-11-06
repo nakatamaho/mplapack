@@ -62,7 +62,7 @@ template<class Tag> bool call(const factor_shape &s,long prec,mpc_class *a,long 
     if(factor_complex<Tag>(s,prec,packed.data(),safe,piv,info,times)) return false;
     for(const auto &v:packed) if(!Pack::fits(v.re_) || !Pack::fits(v.im_)) return false;
     auto before=Clock::now();
-    for(long j=0;j<s.n+s.nrhs;++j) for(long i=0;i<s.m;++i) if(j>=s.n || !s.chol || (s.upper?i<=j:i>=j)) {
+    for(long j=0;j<s.n+s.nrhs;++j) for(long i=0;i<s.m;++i) if((j>=s.n || !s.chol || (s.upper?i<=j:i>=j)) && factor_output(s,info,i,j)) {
         auto z=a[i+j*lda].mpc_data(); const auto &v=packed[i+j*s.m];
         Pack::put(v.re_,mpc_realref(z),prec); Pack::put(v.im_,mpc_imagref(z),prec);
     }
