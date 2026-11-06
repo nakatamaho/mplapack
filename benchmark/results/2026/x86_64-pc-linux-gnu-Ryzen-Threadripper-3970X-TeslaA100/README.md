@@ -17,3 +17,4 @@ Same machine as ../../2022/x86_64-pc-linux-gnu-Ryzen-Threadripper-3970X-TeslaA10
 | `gemm-sweep/` | November 2026: GPU kernel-only Rgemm NN/NT/TN/TT sweep, n = multiples of 7 and 31 and powers of two |
 | `roofline/` | November 2026: % of the roofline (arithmetic peaks of each type and memory bandwidth, LAWN 41 counts) for every GPU kernel |
 | [gpu-opt/](gpu-opt/) | November 2026: goal10 TRSM, SYRK/HERK, panels, ordered right-looking Lower Cholesky and MPFR GEMM; original/final kernel and whole-factor comparisons, CPU reference, precision controls, validation and limitations |
+| [gpu-opt/upper/](gpu-opt/upper/) | November7: item4b left-looking Upper Cholesky, exact tiled updates and arena-safe stream overlap; both peak models, paired controls, remaining MPFR256/512 target misses and sanitizer limitations |

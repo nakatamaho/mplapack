@@ -1,0 +1,11 @@
+Host-load observation, 2026-11-07T06:43:19+09:00
+uptime: load average 41.21, 41.16, 40.84 (up17 days,17:09).
+Visible high-CPU process: resident-before 1 2048 (99.8%).
+/sys/fs/cgroup/cpu.max: max 100000
+cpu.stat: nr_periods0, nr_throttled0, throttled_usec0.
+This is an observation during the resident sweep, not a history of host load
+during the whole-factor matrix/repeated runs. Empty GPU process receipts still
+bracket accepted runs. Significant whole-entry control variability is retained,
+not normalized away or attributed conclusively to host load. Whole-entry timers
+include CPU setup/transfers. The final required/repeated tables must not be
+reported as proving that all controls are unchanged.

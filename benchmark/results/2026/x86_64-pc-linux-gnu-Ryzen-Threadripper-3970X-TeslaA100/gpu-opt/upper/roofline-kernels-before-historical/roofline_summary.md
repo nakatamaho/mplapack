@@ -1,0 +1,30 @@
+| type | kernel | form | n | bound | % of roofline | % of GEMM plateau |
+|---|---|---|---:|---|---:|---:|
+| dd | cgemm | CN | 2048 | arith | 82.4 |  |
+| dd | cherk | UC | 2048 | arith | 3.0 |  |
+| dd | ctrsm | LUCN | 2048 | arith | 5.6 |  |
+| dd | ctrsm | LUCN_p64 | 2048 | arith | 7.9 |  |
+| dd | gemm | TN | 2048 | arith | 100.1 |  |
+| dd | syrk | UT | 2048 | arith | 93.6 |  |
+| dd | trsm | LUTN_p64 | 2048 | arith | 5.8 |  |
+| td | cgemm | CN | 2048 | arith | 102.2 |  |
+| td | cherk | UC | 2048 | arith | 4.7 |  |
+| td | ctrsm | LUCN | 2048 | arith | 9.1 |  |
+| td | ctrsm | LUCN_p64 | 2048 | arith | 10.3 |  |
+| td | gemm | TN | 2048 | arith | 101.1 |  |
+| td | syrk | UT | 2048 | arith | 97.6 |  |
+| td | trsm | LUTN_p64 | 2048 | arith | 7.1 |  |
+| qd | cgemm | CN | 2048 | arith | 100.7 |  |
+| qd | cherk | UC | 2048 | arith | 5.7 |  |
+| qd | ctrsm | LUCN | 2048 | arith | 10.5 |  |
+| qd | ctrsm | LUCN_p64 | 2048 | arith | 11.0 |  |
+| qd | gemm | TN | 2048 | arith | 99.5 |  |
+| qd | syrk | UT | 2048 | arith | 98.1 |  |
+| qd | trsm | LUTN_p64 | 2048 | arith | 9.2 |  |
+| mpfr512 | cgemm | CN | 2048 | arith | 10.6 |  |
+| mpfr512 | cherk | UC | 2048 | arith | 1.2 |  |
+| mpfr512 | ctrsm | LUCN | 2048 | arith | 2.1 |  |
+| mpfr512 | ctrsm | LUCN_p64 | 2048 | arith | 0.3 |  |
+| mpfr512 | gemm | TN | 2048 | arith | 33.1 |  |
+| mpfr512 | syrk | UT | 2048 | arith | 25.3 |  |
+| mpfr512 | trsm | LUTN_p64 | 2048 | arith | 2.6 |  |

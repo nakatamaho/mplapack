@@ -1,0 +1,6 @@
+p=256 passed
+p=512 passed
+p=768 passed
+p=1024 passed
+p=2048 passed
+50 direct HERK calls, 263100 components/padding compared, 0 ordinary mismatches, 0 legacy public zero signs

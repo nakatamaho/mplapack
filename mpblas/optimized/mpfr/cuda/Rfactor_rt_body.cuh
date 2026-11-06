@@ -31,6 +31,74 @@ struct factor_runtime_engine : l3_rt_engine {
     RT_HD int compare(const V &a,const V &b) const { return cu_mpfr_cmp(a.x,b.x); }
     RT_HD void root(V &r,const V &a) const { arena_reset(); cu_mpfr_sqrt(r.x,a.x,CU_MPFR_RNDN); checked(r); }
 };
+// Runtime registers are views into per-thread scratch, not value objects.
+// Keep the ordered accumulator in the private device matrix between stages;
+// sharing copied register descriptors would alias another thread's scratch.
+RT_HD void runtime_dot_init(factor_job<factor_runtime_engine> &j,long i,long col) {
+    auto v=j.e.reg(0);
+    j.e.mul(v,j.e.at(j.constants,0,0),j.e.at(j.c,i,col));
+    j.e.put(j.c,i,col,v);
+}
+RT_HD void runtime_dot_pivot(factor_job<factor_runtime_engine> &j,long k,long col) {
+    if(!j.s.nounit) return;
+    auto v=j.e.reg(0);
+    j.e.div(v,j.e.at(j.c,k,col),j.e.at(j.a,k,k));
+    j.e.put(j.c,k,col,v);
+}
+RT_HD void runtime_dot_update(factor_job<factor_runtime_engine> &j,long i,long col,long k) {
+    auto v=j.e.reg(0),term=j.e.reg(1);
+    j.e.mul(term,j.e.at(j.a,k,i),j.e.at(j.c,k,col));
+    j.e.sub(v,j.e.at(j.c,i,col),term);
+    j.e.put(j.c,i,col,v);
+}
+#ifndef MPLAPACK_MPFR_CUDA_HOST_EMULATION
+__global__ void runtime_dot_kernel(factor_job<factor_runtime_engine> j,long first,long cols,int *failed) {
+    const long i=threadIdx.x,c=2L*blockIdx.x+threadIdx.y,col=first+c;
+    const long tid=128L*blockIdx.x+threadIdx.x+64*threadIdx.y;
+    j.e.thread(tid);
+    const bool mine=i<j.s.m && c<cols;
+    if(mine) runtime_dot_init(j,i,col);
+    __syncthreads();
+    for(long k=0;k<j.s.m;++k) {
+        if(mine && i==k) runtime_dot_pivot(j,k,col);
+        __syncthreads();
+        if(mine && i>k) runtime_dot_update(j,i,col,k);
+        __syncthreads();
+    }
+    if(!j.e.ok) atomicExch(failed,1);
+}
+#endif
+template<> void factor_context<factor_runtime_engine>::launch(factor_job<factor_runtime_engine> j,long units) {
+    if(error || units<=0) return;
+    if(j.op==0 && trsm_dot_shape(j.s) && j.s.m>=8) {
+        // Reuse, never enlarge, the existing arena/scratch pool. Both streams
+        // must be idle before physical indices are reused for a panel chunk.
+        finish();
+        constexpr long chunk=(factor_pool/128)*2;
+        for(long first=0;first<j.s.n && !error;first+=chunk) {
+            const long cols=std::min(chunk,j.s.n-first);
+#ifndef MPLAPACK_MPFR_CUDA_HOST_EMULATION
+            runtime_dot_kernel<<<(unsigned)((cols+1)/2),dim3(64,2),0,stream()>>>(j,first,cols,failed.p);
+            error=cudaGetLastError();
+#else
+            j.e.thread(0);
+            for(long c=first;c<first+cols;++c) for(long i=0;i<j.s.m;++i) runtime_dot_init(j,i,c);
+            for(long k=0;k<j.s.m;++k) {
+                for(long c=first;c<first+cols;++c) runtime_dot_pivot(j,k,c);
+                for(long c=first;c<first+cols;++c) for(long i=k+1;i<j.s.m;++i) runtime_dot_update(j,i,c,k);
+            }
+            if(!j.e.ok) *failed.p=1;
+#endif
+        }
+        finish(); return;
+    }
+    // The unchanged checked element jobs retain bounded runtime updates.
+    if(j.op==1 || (j.op==0 && j.s.op==L3_SYRK)) {
+        factor_update_job<factor_runtime_engine> u{};
+        u.e=j.e;u.a=j.a;u.b=j.b;u.c=j.c;u.constants=j.constants;
+        u.s=j.s;u.g=j.g;u.op=j.op;execute(u,units);
+    } else execute(j,units);
+}
 #ifndef MPLAPACK_MPFR_CUDA_HOST_EMULATION
 struct factor_arena_guard {
     char *base=mpc_cuda_arena_base;

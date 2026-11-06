@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="667" viewBox="0 0 1080 667">
+<title>Real Upper Cholesky: before / after</title>
+<rect width="100%" height="100%" fill="white"/>
+<g font-family="sans-serif" font-size="12" fill="#172b4d">
+<text x="20" y="27" font-size="18">Real Upper Cholesky: before / after</text>
+<text x="20" y="48">Explicit GPU entry; one warmup, best of three. Ratios are not hardware occupancy.</text>
+<rect x="220" y="58" width="12" height="10" fill="#2563eb"/>
+<text x="238" y="68">Speedup (higher is better)</text>
+<line x1="220.0" x2="220.0" y1="80" y2="627" stroke="#e2e8f0"/>
+<text x="220.0" y="647" text-anchor="middle">0</text>
+<line x1="607.5" x2="607.5" y1="80" y2="627" stroke="#e2e8f0"/>
+<text x="607.5" y="647" text-anchor="middle">1</text>
+<line x1="995.0" x2="995.0" y1="80" y2="627" stroke="#e2e8f0"/>
+<text x="995.0" y="647" text-anchor="middle">2</text>
+<text x="208" y="100" text-anchor="end">dd  n=1024</text>
+<rect x="220" y="88" width="431.396" height="10" fill="#2563eb"/>
+<text x="656.396" y="98">1.113×</text>
+<text x="208" y="138" text-anchor="end">dd  n=2048</text>
+<rect x="220" y="126" width="454.712" height="10" fill="#2563eb"/>
+<text x="679.712" y="136">1.173×</text>
+<text x="208" y="176" text-anchor="end">dd  n=4096</text>
+<rect x="220" y="164" width="397.955" height="10" fill="#2563eb"/>
+<text x="622.955" y="174">1.027×</text>
+<text x="208" y="214" text-anchor="end">td  n=1024</text>
+<rect x="220" y="202" width="564.113" height="10" fill="#2563eb"/>
+<text x="789.113" y="212">1.456×</text>
+<text x="208" y="252" text-anchor="end">td  n=2048</text>
+<rect x="220" y="240" width="468.562" height="10" fill="#2563eb"/>
+<text x="693.562" y="250">1.209×</text>
+<text x="208" y="290" text-anchor="end">td  n=4096</text>
+<rect x="220" y="278" width="431.220" height="10" fill="#2563eb"/>
+<text x="656.220" y="288">1.113×</text>
+<text x="208" y="328" text-anchor="end">qd  n=1024</text>
+<rect x="220" y="316" width="443.388" height="10" fill="#2563eb"/>
+<text x="668.388" y="326">1.144×</text>
+<text x="208" y="366" text-anchor="end">qd  n=2048</text>
+<rect x="220" y="354" width="434.617" height="10" fill="#2563eb"/>
+<text x="659.617" y="364">1.122×</text>
+<text x="208" y="404" text-anchor="end">qd  n=4096</text>
+<rect x="220" y="392" width="395.930" height="10" fill="#2563eb"/>
+<text x="620.930" y="402">1.022×</text>
+<text x="208" y="442" text-anchor="end">mpfr512  n=1024</text>
+<rect x="220" y="430" width="511.450" height="10" fill="#2563eb"/>
+<text x="736.450" y="440">1.320×</text>
+<text x="208" y="480" text-anchor="end">mpfr512  n=2048</text>
+<rect x="220" y="468" width="464.857" height="10" fill="#2563eb"/>
+<text x="689.857" y="478">1.200×</text>
+<text x="208" y="518" text-anchor="end">mpfr512  n=4096</text>
+<rect x="220" y="506" width="398.532" height="10" fill="#2563eb"/>
+<text x="623.532" y="516">1.028×</text>
+<text x="208" y="556" text-anchor="end">mpfr256  n=1024</text>
+<rect x="220" y="544" width="563.073" height="10" fill="#2563eb"/>
+<text x="788.073" y="554">1.453×</text>
+<text x="208" y="594" text-anchor="end">mpfr1024  n=1024</text>
+<rect x="220" y="582" width="461.157" height="10" fill="#2563eb"/>
+<text x="686.157" y="592">1.190×</text>
+<line x1="607.5" x2="607.5" y1="80" y2="627" stroke="#b45309" stroke-dasharray="4,3"/>
+</g></svg>

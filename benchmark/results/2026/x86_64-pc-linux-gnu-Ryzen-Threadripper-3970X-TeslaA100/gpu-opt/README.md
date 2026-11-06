@@ -1,7 +1,13 @@
 # GPU kernel optimization — factorization goal 10
 
 November 2026, Threadripper 3970X / A100 80GB PCIe, CUDA 13.1, GCC 15.2.
-Original implementation: `1577e80c5`; final implementation: `659967a52`.
+Historical items1–5: original implementation `1577e80c5`; final implementation `659967a52`.
+
+**November7 item4b supplement:** [ordered Upper Cholesky](upper/README.md),
+with new paired timings, both roofline models, stream-overlap profiles and exact
+validation. Native complex Upper meets the1.5× Lower target; MPFR256/512 retains
+measured shortfalls. Control variability and the full-complex sanitizer exception
+are explicit. The tables below remain the original items1–5 evidence.
 Reference bodies, CPU kernels, fast modes and default dispatch gates were not changed.
 
 ## Results

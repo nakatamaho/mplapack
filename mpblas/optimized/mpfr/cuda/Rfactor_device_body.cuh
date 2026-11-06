@@ -14,6 +14,9 @@
 #endif
 #include "mpfr_cuda_stack.h"
 #include "../../common/Rpotrf_right_common.h"
+#ifdef MPLAPACK_MPFR_FACTOR_COMPLEX
+#include "Rpotrf_upper_cuda.h"
+#endif
 #ifndef MPLAPACK_MPFR_CUDA_HOST_EMULATION
 #include <cuda_runtime.h>
 #endif
@@ -357,7 +360,7 @@ template<class E> class factor_context {
             if(!error && units>0 && j.op==0 && trsm_team_shape(j.s)) {
                 finish();
                 const long lanes=j.s.left?j.s.n:j.s.m;
-                const long chunk=(factor_pool/128)*(j.s.left?4:16);
+                const long chunk=(factor_pool/128)*(trsm_dot_shape(j.s)?2:j.s.left?4:16);
                 for(long base=0;base<lanes && !error;base+=chunk) {
                     trsm_team_args<E> t{}; t.e=j.e; t.s=j.s;
                     t.x.a=j.a; t.x.c=E::shift(j.c,j.s.left?base*j.c.ld:base); t.x.al=j.constants;
@@ -379,6 +382,22 @@ template<class E> class factor_context {
             factor_update_job<typename E::Update> u{};
             u.e=j.e.update(); u.a=j.a; u.b=j.b; u.c=j.c; u.constants=j.constants;
             u.s=j.s; u.g=j.g; u.op=j.op;
+#ifdef MPLAPACK_MPFR_FACTOR_COMPLEX
+            if constexpr(E::Traits::value_math && sizeof(typename E::V)<=320) {
+                bool dot_rank=j.op==0 && j.s.upper && j.s.trans;
+                bool dot_gemm=j.op==1 && !j.g.nota && j.g.notb;
+                if(!error && units>0 && (dot_rank || dot_gemm)) {
+                    upper_update_job<typename E::Update> t{u.e,u.a,dot_rank?u.a:u.b,u.c,u.constants,
+                        dot_rank?u.s.n:u.g.m,dot_rank?u.s.n:u.g.n,dot_rank?u.s.k:u.g.k,dot_rank};
+#ifndef MPLAPACK_MPFR_CUDA_HOST_EMULATION
+                    error=upper_update_device(t,stream(),failed.p);
+#else
+                    error=upper_update_host(t);
+#endif
+                    return;
+                }
+            }
+#endif
 #ifndef MPLAPACK_MPFR_FACTOR_COMPLEX
             if constexpr(!E::runtime) {
                 constexpr bool tuned=sizeof(typename E::V)<=80 || sizeof(typename E::V)==144;
@@ -573,6 +592,23 @@ template<class E> class factor_context {
             long info=chol_recursive(upper,jb,diag);
             if(error || info) { finish(); return info?info+col:0; }
             join();
+#ifdef MPLAPACK_MPFR_FACTOR_COMPLEX
+            // MPC solves join both streams to reuse the bounded arena safely.
+            // Release the far stream after the panel, then enqueue BOTH GEMMs
+            // before either solve can join them. The two updates read only
+            // prefix rows and write disjoint column ranges, so moving the far
+            // update before the near solve preserves every ordered dot product.
+            release();
+            for(int phase=0;phase<2;++phase) for(int part=0;part<2;++part) {
+                long c=col+jb+(part?std::min(nb,n-col-jb):0);
+                long rest=part?n-c:std::min(nb,n-c); far=part;
+                if(rest) {
+                    M off=E::shift(a,col+c*a.ld);
+                    if(!phase) update(true,jb,rest,col,E::shift(a,col*a.ld),E::shift(a,c*a.ld),off);
+                    else solve(true,jb,rest,diag,off,true);
+                }
+            }
+#else
             for(int part=0;part<2;++part) {
                 long c=col+jb+(part?std::min(nb,n-col-jb):0);
                 long rest=part?n-c:std::min(nb,n-c); far=part;
@@ -584,6 +620,7 @@ template<class E> class factor_context {
                 }
                 if(!part) release();
             }
+#endif
             far=false;
         }
         return 0;

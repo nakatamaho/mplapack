@@ -100,8 +100,19 @@ template<class Ops,bool Conjugate,bool Local=false> __global__ void k_ctrsm_team
     // alpha lives in each thread's copy of j, not in host memory.
     mplapack_blas::trsm_team_body<ctrsm_team_engine<Ops>,Conjugate,false,Local>(ctrsm_args(j),nullptr);
 }
+template<class Ops,bool Conjugate> __global__ void k_ctrsm_dot(job_Ctrsm<Ops> j) {
+    mplapack_blas::trsm_dot_body<ctrsm_team_engine<Ops>,Conjugate,false>(ctrsm_args(j),nullptr);
+}
 template<class Ops> static int ctrsm_team_device(job_Ctrsm<Ops> j,cudaStream_t stream=nullptr) {
     auto t=ctrsm_args(j);
+    if(mplapack_blas::trsm_dot_shape(t.s)) {
+        if(j.m && j.n) {
+            const unsigned blocks=(unsigned)((j.n+1)/2);
+            if(lsame(j.ta,"C")) k_ctrsm_dot<Ops,true><<<blocks,dim3(64,2),0,stream>>>(j);
+            else k_ctrsm_dot<Ops,false><<<blocks,dim3(64,2),0,stream>>>(j);
+        }
+        return cudaGetLastError();
+    }
     if(mplapack_blas::trsm_block_eligible(t.s)) {
         using V=typename ctrsm_team_engine<Ops>::V;
         V *alpha=nullptr;
@@ -239,11 +250,11 @@ template <class E, class Job> int run_job(Job job, long units, const gpu_operand
 
 static const int CG_TILE = 16;
 
-template <class Ops> struct cgemm_tile {
+template <class Ops, int Tile=CG_TILE> struct cgemm_tile {
     typedef typename cgpu_types<Ops>::DC DC;
     struct shared {
-        DC a[CG_TILE][CG_TILE + 1]; // a[l][t]: op(A)(row i0 + t, l) as used
-        DC b[CG_TILE][CG_TILE + 1]; // b[l][t]: op(B)(l, column j0 + t)
+        DC a[Tile][Tile + 1]; // a[l][t]: op(A)(row i0 + t, l) as used
+        DC b[Tile][Tile + 1]; // b[l][t]: op(B)(l, column j0 + t)
     };
     const job_Cgemm<Ops> &j;
     bool nota, conja, notb, conjb;
@@ -318,51 +329,60 @@ template <class Ops> struct cgpu_is_cgemm<job_Cgemm<Ops> > {
 };
 
 #if MPLAPACK_CBLAS_CUDA_DEVICE
-template <class Ops> __device__ void cgemm_tiled_body(const job_Cgemm<Ops> &job)
+template <class Ops,int Tile=CG_TILE> __device__ void cgemm_tiled_body(const job_Cgemm<Ops> &job)
 {
-    typedef cgemm_tile<Ops> T;
+    typedef cgemm_tile<Ops,Tile> T;
     __shared__ typename T::shared sh;
     const T t(job);
     const int ti = threadIdx.x, tj = threadIdx.y;
-    const long i0 = (long)blockIdx.x * CG_TILE, j0 = (long)blockIdx.y * CG_TILE;
+    const long i0 = (long)blockIdx.x * Tile, j0 = (long)blockIdx.y * Tile;
     const long i = i0 + ti, jj = j0 + tj;
     typename T::DC acc;
     t.init(acc, i, jj);
-    for (long p0 = 0; p0 < job.k; p0 += CG_TILE) {
+    for (long p0 = 0; p0 < job.k; p0 += Tile) {
         t.load(sh, i0, j0, p0, ti, tj);
         __syncthreads();
-        const long kc = job.k - p0 < CG_TILE ? job.k - p0 : CG_TILE;
+        const long kc = job.k - p0 < Tile ? job.k - p0 : Tile;
         t.step(sh, acc, i, jj, kc, ti, tj);
         __syncthreads();
     }
     t.finish(acc, i, jj);
 }
 template<class Ops> __global__ void k_cgemm_tiled(const job_Cgemm<Ops> *job) { cgemm_tiled_body(*job); }
-template<class Ops> __global__ void k_cgemm_tiled_value(job_Cgemm<Ops> job) { cgemm_tiled_body(job); }
+template<class Ops,int Tile=CG_TILE> __global__ void k_cgemm_tiled_value(job_Cgemm<Ops> job) { cgemm_tiled_body<Ops,Tile>(job); }
 template<class Ops> static int cgemm_tiled_stream(const job_Cgemm<Ops> &j,cudaStream_t stream) {
+    // A long-k 64x64 near update otherwise exposes only sixteen blocks.
+    if(!lsame(j.ta,"N") && j.m>0 && j.n>0 && j.m<=64 && j.n<=64) {
+        k_cgemm_tiled_value<Ops,8><<<dim3((unsigned)((j.m+7)/8),(unsigned)((j.n+7)/8)),dim3(8,8),0,stream>>>(j);
+        return cudaGetLastError();
+    }
     if(j.m && j.n) k_cgemm_tiled_value<<<dim3((unsigned)((j.m+CG_TILE-1)/CG_TILE),(unsigned)((j.n+CG_TILE-1)/CG_TILE)),dim3(CG_TILE,CG_TILE),0,stream>>>(j);
     return cudaGetLastError();
 }
 #else
-template<class Ops> static int cgemm_tiled_host(const job_Cgemm<Ops> &job) {
-    using T=cgemm_tile<Ops>;
+template<class Ops,int Tile> static int cgemm_tiled_host_width(const job_Cgemm<Ops> &job) {
+    using T=cgemm_tile<Ops,Tile>;
     const T t(job);
-    const long nbi=(job.m+CG_TILE-1)/CG_TILE,nbj=(job.n+CG_TILE-1)/CG_TILE;
+    const long nbi=(job.m+Tile-1)/Tile,nbj=(job.n+Tile-1)/Tile;
 #ifdef _OPENMP
 #pragma omp parallel for schedule(dynamic, 1)
 #endif
     for(long b=0;b<nbi*nbj;++b) {
-        const long i0=(b%nbi)*CG_TILE,j0=(b/nbi)*CG_TILE;
+        const long i0=(b%nbi)*Tile,j0=(b/nbi)*Tile;
         typename T::shared sh;
-        typename T::DC acc[CG_TILE][CG_TILE];
-        for(int y=0;y<CG_TILE;++y) for(int x=0;x<CG_TILE;++x) t.init(acc[y][x],i0+x,j0+y);
-        for(long p=0;p<job.k;p+=CG_TILE) {
-            for(int y=0;y<CG_TILE;++y) for(int x=0;x<CG_TILE;++x) t.load(sh,i0,j0,p,x,y);
-            for(int y=0;y<CG_TILE;++y) for(int x=0;x<CG_TILE;++x) t.step(sh,acc[y][x],i0+x,j0+y,job.k-p<CG_TILE?job.k-p:CG_TILE,x,y);
+        typename T::DC acc[Tile][Tile];
+        for(int y=0;y<Tile;++y) for(int x=0;x<Tile;++x) t.init(acc[y][x],i0+x,j0+y);
+        for(long p=0;p<job.k;p+=Tile) {
+            for(int y=0;y<Tile;++y) for(int x=0;x<Tile;++x) t.load(sh,i0,j0,p,x,y);
+            for(int y=0;y<Tile;++y) for(int x=0;x<Tile;++x) t.step(sh,acc[y][x],i0+x,j0+y,job.k-p<Tile?job.k-p:Tile,x,y);
         }
-        for(int y=0;y<CG_TILE;++y) for(int x=0;x<CG_TILE;++x) t.finish(acc[y][x],i0+x,j0+y);
+        for(int y=0;y<Tile;++y) for(int x=0;x<Tile;++x) t.finish(acc[y][x],i0+x,j0+y);
     }
     return 0;
+}
+template<class Ops> static int cgemm_tiled_host(const job_Cgemm<Ops> &job) {
+    if(!lsame(job.ta,"N") && job.m<=64 && job.n<=64) return cgemm_tiled_host_width<Ops,8>(job);
+    return cgemm_tiled_host_width<Ops,CG_TILE>(job);
 }
 #endif
 

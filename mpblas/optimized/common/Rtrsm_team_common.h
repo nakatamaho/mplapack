@@ -7,10 +7,13 @@
 #include <cuda_runtime.h>
 #endif
 namespace mplapack_blas {
-// Dot-product forms retain the lane implementation: reversing their summation
-// to make an axpy solve would change the reference result.
+// Upper transpose panels can stage each solved row for independent output
+// accumulators. Every accumulator still subtracts k in increasing order.
+MPLAPACK_BLAS_HD inline bool trsm_dot_shape(const blas_shape &s) {
+    return s.op==L3_TRSM && s.left && s.upper && s.trans && s.m<=64;
+}
 MPLAPACK_BLAS_HD inline bool trsm_team_shape(const blas_shape &s) {
-    return s.op==L3_TRSM && ((s.left && !s.trans) || (!s.left && s.trans));
+    return s.op==L3_TRSM && ((s.left && !s.trans) || (!s.left && s.trans) || trsm_dot_shape(s));
 }
 template<class E> struct trsm_team_args {
     E e; blas_shape s; blas_mats<E> x;
@@ -138,6 +141,33 @@ template<class E,bool Conjugate=false,bool Checked=false,bool Local=false> __dev
     }
     if constexpr(Checked) if(!g.e.ok) atomicExch(failed,1);
 }
+template<class E,bool Conjugate,bool Checked> __device__ void trsm_dot_body(trsm_team_args<E> g,int *failed) {
+    using V=typename E::V;
+    __shared__ __align__(16) unsigned char storage[2*sizeof(V)];
+    auto *pivot=reinterpret_cast<V*>(storage);
+    const long i=threadIdx.x,j=2L*blockIdx.x+threadIdx.y;
+    const bool mine=i<g.s.m && j<g.s.n;
+    auto value=g.e.reg(0),term=g.e.reg(1);
+    // Unlike NoTrans, the reference multiplies alpha even when it equals one.
+    if(mine) g.e.mul(value,g.e.at(g.x.al,0,0),g.e.at(g.x.c,i,j));
+    for(long k=0;k<g.s.m;++k) {
+        if(mine && i==k) {
+            if(g.s.nounit) g.e.div(value,value,trsm_team_a<E,Conjugate>(g.e,g.x.a,k,k));
+            g.e.set(pivot[threadIdx.y],value);
+            g.e.put(g.x.c,i,j,value);
+        }
+        __syncthreads();
+        if(mine && i>k) {
+            g.e.mul(term,trsm_team_a<E,Conjugate>(g.e,g.x.a,k,i),pivot[threadIdx.y]);
+            g.e.sub(value,value,term); // no zero skip in the dot-product form
+        }
+        __syncthreads();
+    }
+    if constexpr(Checked) if(!g.e.ok) atomicExch(failed,1);
+}
+template<class E,bool Conjugate,bool Checked> __global__ void k_trsm_dot(trsm_team_args<E> g,int *failed) {
+    trsm_dot_body<E,Conjugate,Checked>(g,failed);
+}
 template<class E,bool Conjugate=false,bool Checked=false,bool Local=false> __global__ void k_trsm_team(trsm_team_args<E> g,int *failed) {
     trsm_team_body<E,Conjugate,Checked,Local>(g,failed);
 }
@@ -145,6 +175,10 @@ template<class E,bool Conjugate=false,bool Checked=false> static int trsm_team_p
     trsm_team_args<E> g,cudaStream_t stream=nullptr,int *failed=nullptr) {
     const long lanes=g.s.left?g.s.n:g.s.m;
     if(!lanes || !g.s.m || !g.s.n) return 0;
+    if(trsm_dot_shape(g.s)) {
+        k_trsm_dot<E,Conjugate,Checked><<<(unsigned)((g.s.n+1)/2),dim3(64,2),0,stream>>>(g,failed);
+        return cudaGetLastError();
+    }
     const int width=trsm_team_width<E>(g.s.left);
     const dim3 threads=g.s.left?dim3(32,width):dim3(width,128/width);
     if constexpr(sizeof(typename E::V)<=64) {
@@ -159,6 +193,23 @@ template<class E,bool Conjugate=false,bool Checked=false> static int trsm_team_p
 #else
 template<class E,bool Conjugate=false,bool Checked=false> static int trsm_team_plain_device(trsm_team_args<E> g) {
     const long lanes=g.s.left?g.s.n:g.s.m,order=g.s.left?g.s.m:g.s.n;
+    if(trsm_dot_shape(g.s)) {
+        for(long j=0;j<g.s.n;++j) {
+            typename E::V value[64];
+            for(long i=0;i<g.s.m;++i) g.e.mul(value[i],g.e.at(g.x.al,0,0),g.e.at(g.x.c,i,j));
+            for(long k=0;k<g.s.m;++k) {
+                if(g.s.nounit) g.e.div(value[k],value[k],trsm_team_a<E,Conjugate>(g.e,g.x.a,k,k));
+                g.e.put(g.x.c,k,j,value[k]);
+                for(long i=k+1;i<g.s.m;++i) {
+                    auto term=g.e.reg(1);
+                    g.e.mul(term,trsm_team_a<E,Conjugate>(g.e,g.x.a,k,i),value[k]);
+                    g.e.sub(value[i],value[i],term);
+                }
+            }
+        }
+        if constexpr(Checked) return g.e.ok?0:1;
+        return 0;
+    }
     const int width=g.s.left?4:16,stride=g.s.left?32:8;
     for(long base=0;base<lanes;base+=width) {
         trsm_team_shared<E> sh;
