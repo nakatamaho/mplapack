@@ -228,7 +228,16 @@ int main(int argc, char **argv) {
         cold_setup_seconds=std::chrono::duration<double>(std::chrono::steady_clock::now()-setup_start).count();
 #endif
 #if defined(MPLAPACK_BUILD_WITH_MPFR)
-        mpfr_set_default_prec(512);
+        long precision=512;
+        if(const char *p=std::getenv("MPFRXX_DEFAULT_PRECISION_BITS")) {
+            std::string value=p;size_t end=0;precision=std::stol(value,&end);
+            if(end!=value.size() || precision<MPFR_PREC_MIN || precision>MPFR_PREC_MAX)
+                throw std::runtime_error("invalid MPFRXX_DEFAULT_PRECISION_BITS");
+        }
+        mpfr_set_default_prec(precision);
+        REAL probe=0;
+        if(mpfr_get_prec(probe.get_mpfr_t())!=precision)
+            throw std::runtime_error("MPFR benchmark precision mismatch");
 #endif
         if (sizes.empty()) {
             for (INTEGER n=1;n<=limit;n*=2) sizes.insert(n);
