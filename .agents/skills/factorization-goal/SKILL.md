@@ -1,7 +1,7 @@
 ---
 name: factorization-goal
 description: >
-  Execute ONE numbered goal (01-11, 07a) of the MPLAPACK dedicated LU /
+  Execute ONE numbered goal (01-12, 07a) of the MPLAPACK dedicated LU /
   Cholesky work: CPU and GPU implementations of Rgetrf/Cgetrf, Rpotrf/Cpotrf and the
   routines around them (panels, laswp, solvers, inverses, and the GPU/CPU BLAS
   kernels they rest on). Use ONLY when the
@@ -12,7 +12,7 @@ description: >
 
 # factorization-goal — run one goal of the LU / Cholesky series
 
-The user's message specifies the goal number NN (01-11 or 07a). If no number is
+The user's message specifies the goal number NN (01-12 or 07a). If no number is
 given, ask for it and stop.
 
 Specification files live next to this skill:
