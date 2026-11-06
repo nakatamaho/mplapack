@@ -54,31 +54,31 @@
 | qd | gemm_sweep | NN | 2048 | arith | 99.4 |  |
 | qd | iCamax | inc1 | 2097152 | memory | 5.8 | 2.8 |
 | qd | iRamax | inc1 | 2097152 | memory | 2.7 |  |
-| mpfr256 | gemm_sweep | NN | 2048 | arith | 45.2 |  |
-| mpfr512 | Cdotc | inc1 | 2097152 | arith | 4.9 | 14.3 |
-| mpfr512 | Cdotu | inc1 | 2097152 | arith | 4.8 | 14.0 |
-| mpfr512 | Cgetri | UN | 496 | arith | 0.1 | 0.4 |
-| mpfr512 | Clauum | UN | 496 | arith | 0.0 | 0.1 |
+| mpfr256 | gemm_sweep | NN | 2048 | arith | 54.2 |  |
+| mpfr512 | Cdotc | inc1 | 2097152 | arith | 7.7 | 14.3 |
+| mpfr512 | Cdotu | inc1 | 2097152 | arith | 7.5 | 14.0 |
+| mpfr512 | Cgetri | UN | 496 | arith | 0.2 | 0.4 |
+| mpfr512 | Clauum | UN | 496 | arith | 0.1 | 0.1 |
 | mpfr512 | Cpotri | UN | 248 | arith | 0.0 | 0.0 |
 | mpfr512 | Ctbsv | UNN_k64 | 2048 | arith | 0.0 | 0.1 |
-| mpfr512 | Ctpsv | UNN_k64 | 2048 | arith | 0.3 | 0.9 |
-| mpfr512 | Ctrsv | UNN_k64 | 2048 | arith | 0.3 | 0.9 |
-| mpfr512 | Ctrtri | UN | 496 | arith | 0.0 | 0.1 |
+| mpfr512 | Ctpsv | UNN_k64 | 2048 | arith | 0.5 | 0.9 |
+| mpfr512 | Ctrsv | UNN_k64 | 2048 | arith | 0.5 | 0.9 |
+| mpfr512 | Ctrtri | UN | 496 | arith | 0.1 | 0.1 |
 | mpfr512 | RCasum | inc1 | 2097152 | arith | 2.8 | 7.5 |
-| mpfr512 | RCnrm2 | inc1 | 2097152 | arith | 0.6 | 1.7 |
-| mpfr512 | Rasum | inc1 | 2097152 | arith | 1.4 | 3.9 |
+| mpfr512 | RCnrm2 | inc1 | 2097152 | arith | 1.0 | 1.7 |
+| mpfr512 | Rasum | inc1 | 2097152 | arith | 1.5 | 3.9 |
 | mpfr512 | Raxpy | inc1 | 2097152 | memory | 7.8 | 14.5 |
 | mpfr512 | Rcopy | inc1 | 2097152 | memory | 56.8 |  |
-| mpfr512 | Rdot | inc1 | 2097152 | memory | 2.3 | 6.4 |
-| mpfr512 | Rgetri | UN | 1022 | arith | 0.2 | 0.6 |
-| mpfr512 | Rlauum | UN | 1022 | arith | 0.2 | 0.5 |
-| mpfr512 | Rnrm2 | inc1 | 2097152 | arith | 0.6 | 1.7 |
-| mpfr512 | Rpotri | UN | 511 | arith | 0.0 | 0.1 |
+| mpfr512 | Rdot | inc1 | 2097152 | arith | 3.4 | 6.4 |
+| mpfr512 | Rgetri | UN | 1022 | arith | 0.3 | 0.6 |
+| mpfr512 | Rlauum | UN | 1022 | arith | 0.3 | 0.5 |
+| mpfr512 | Rnrm2 | inc1 | 2097152 | arith | 1.0 | 1.7 |
+| mpfr512 | Rpotri | UN | 511 | arith | 0.1 | 0.1 |
 | mpfr512 | Rtbsv | UNN_k64 | 2048 | arith | 0.0 | 0.0 |
-| mpfr512 | Rtpsv | UNN_k64 | 2048 | arith | 0.1 | 0.4 |
-| mpfr512 | Rtrsv | UNN_k64 | 2048 | arith | 0.1 | 0.4 |
+| mpfr512 | Rtpsv | UNN_k64 | 2048 | arith | 0.2 | 0.4 |
+| mpfr512 | Rtrsv | UNN_k64 | 2048 | arith | 0.2 | 0.4 |
 | mpfr512 | Rtrtri | UN | 1022 | arith | 0.1 | 0.2 |
-| mpfr512 | gemm_sweep | NN | 2048 | arith | 34.0 |  |
+| mpfr512 | gemm_sweep | NN | 2048 | arith | 52.8 |  |
 | mpfr512 | iCamax | inc1 | 2097152 | memory | 3.3 | 4.5 |
 | mpfr512 | iRamax | inc1 | 2097152 | memory | 1.7 |  |
-| mpfr1024 | gemm_sweep | NN | 1024 | arith | 13.6 |  |
+| mpfr1024 | gemm_sweep | NN | 1024 | arith | 26.5 |  |

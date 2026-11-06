@@ -55,9 +55,29 @@ Per operation, cu_freal against level 1:
 - The add path barely depends on the exponent gap (within ~5%); the sign matters
   more (opposite signs ~10-15% slower), heavy cancellation more (~30% at 256 bits).
 
+## Use in the roofline of all kernels (November 6, 2026)
+
+`../peaks.csv` now carries the level 2 MPFR peaks (madd = 1/(1/mul + 1/add),
+add weighted by the GEMM path mix; `benchmark/mpfr_level_peaks.py`), and
+`peaks-level1.csv` the level 1 ones; `div` stays the peak_bench value in both
+(not modelled). Recomputed with them: `../roofline_summary.md`,
+`../goal11/` (level 2), `level1/`, `level1-goal11/` (level 1). The path mix is
+GEMM's for every kernel; TRSM, the panels and the inverses have their own mix
+(not measured), so their level 2 % is approximate.
+
+The goal 10 MPFR kernel times so far (items 1-4, from bench_local/results/gpu-opt;
+`goal10/kernels-goal10-after.csv`) against the old, level 2 and level 1 bounds:
+`goal10/table.md`. For example MPFR 512 n = 1024: trsm LLNU / RLTN
+38.9 / 38.5% (old) -> 60.3 / 59.9% (level 2), 26.6 / 26.4% (level 1); syrk UT
+24.0 -> 37.3%; Lower potrf2 (blocked, after item 4) 4.5 -> 6.9%.
+
 ## Reproduce
 
     nvcc -O3 -std=c++17 -fmad=false -arch=sm_80 -U_GNU_SOURCE -D_XOPEN_SOURCE=700 \
          -Iexternal/i/MPC_CUDA/include benchmark/mpfr_path_bench.cu -o mpfr_path_bench
     ./mpfr_path_bench > paths.csv
     python3 benchmark/mpfr_gemm_paths.py 1024 300 > gemm_path_mix.txt
+    python3 benchmark/mpfr_level_peaks.py ../peaks-double-operands-20261104.csv paths.csv \
+            gemm_path_mix.txt ../peaks.csv peaks-level1.csv
+    python3 benchmark/roofline.py ../peaks.csv ../../kernel-bench/kernels.csv ../../gemm-sweep ..
+    python3 benchmark/roofline.py peaks-level1.csv ../../kernel-bench/kernels.csv ../../gemm-sweep level1

@@ -9,19 +9,21 @@ nrm2 2n mul + n add (the scaled square and sum; complex 4n + 2n); copy, iamax no
 n additions); trsv / tpsv n(n-1)/2 mul + add + n div; tbsv (band k = 64) n·k mul + add + n div; getri, trtri, lauum,
 potri (= trtri + lauum) from LAWN 41.
 
+MPFR 512: level 2 peaks (../mpfr/README.md, recomputed November 6, 2026; level 1 in ../mpfr/level1-goal11/).
+
 | kernel (n) | dd | td | qd | MPFR 512 |
 |---|---:|---:|---:|---:|
 | Raxpy (2^21, memory bound) | 94 | 100 | 52 | 7.8 |
 | Rcopy (2^21, memory bound) | 84 | 95 | 37 | 57 |
-| Rdot fast (2^21) | 6.1 | 6.0 | 5.9 | 2.3 |
-| Cdotc fast (2^21) | 12.5 | 14.7 | 28.5 | 4.9 |
-| Rasum fast (2^21) | 3.0 | 3.1 | 3.0 | 1.4 |
-| Rnrm2 fast (2^21) | 2.7 | 4.1 | 6.1 | 0.6 |
+| Rdot fast (2^21) | 6.1 | 6.0 | 5.9 | 3.4 |
+| Cdotc fast (2^21) | 12.5 | 14.7 | 28.5 | 7.7 |
+| Rasum fast (2^21) | 3.0 | 3.1 | 3.0 | 1.5 |
+| Rnrm2 fast (2^21) | 2.7 | 4.1 | 6.1 | 1.0 |
 | iRamax (2^21, memory bound) | 2.7 | 2.8 | 2.7 | 1.7 |
-| Rtrsv / Rtpsv (2048) | 0.2 | 0.2 | 0.4 | 0.1 |
-| Ctrsv / Ctpsv (2048) | 0.3 | 0.6 | 0.9 | 0.3 |
+| Rtrsv / Rtpsv (2048) | 0.2 | 0.2 | 0.4 | 0.2 |
+| Ctrsv / Ctpsv (2048) | 0.3 | 0.6 | 0.9 | 0.5 |
 | Rtbsv / Ctbsv (2048, k = 64) | 0.0 | 0.0 | 0.0-0.1 | 0.0 |
-| MPFR Rgetri / Rtrtri / Rlauum (1022) | | | | 0.2 / 0.1 / 0.2 |
+| MPFR Rgetri / Rtrtri / Rlauum (1022) | | | | 0.3 / 0.1 / 0.3 |
 | MPFR Rpotri (511), Cgetri / Ctrtri / Clauum (496) | | | | 0.0-0.1 |
 
 Reading: the element-wise kernels reach the memory bandwidth for dd/td; the fast reductions and iamax are far from

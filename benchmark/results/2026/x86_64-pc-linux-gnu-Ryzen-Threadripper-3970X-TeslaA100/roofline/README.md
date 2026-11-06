@@ -12,6 +12,13 @@ How close each GPU kernel is to the limit of the hardware for its type.
    `madd` (c = c + c·b), `add`, `mul`, `div`, and the device-memory bandwidth
    (read + write, 1.40 TB/s). `peaks-shared-gpu-reference.csv` is an earlier
    run while another job shared the GPU (lower; kept for reference only).
+   **MPFR (since November 6, 2026)**: the MPFR `madd`/`add`/`mul` rows are the
+   level 2 bound of `mpfr/README.md` (cu_freal with full-width random significands
+   and the GEMM sign/exponent-gap mix, `benchmark/mpfr_level_peaks.py`); the
+   peak_bench rows used operands converted from double (53 significant bits) and
+   same-sign additions only and overestimated the rate (kept in
+   `peaks-double-operands-20261104.csv`). MPFR `div` is still the peak_bench value.
+   The hardware bound (level 1) of the same kernels is in `mpfr/level1/`.
 2. **Counts**: multiplications and additions separately, from LAPACK Working
    Note 41 (https://netlib.org/lapack/lawnspdf/lawn41.pdf); a complex
    multiplication = 4 real multiplications + 2 additions.
@@ -31,21 +38,26 @@ counts: a QD_BF dd addition is about 20 FP64 instructions (A100: 4.85e12/s,
 2.4e11 additions/s; measured 2.3e11), a multiplication about 9 with FMA (5.4e11;
 measured 4.6e11).
 
-## Result (% of roofline, n = 2048; MPFR 1024: n = 1024)
+## Result (% of roofline, n = 2048; MPFR 1024: n = 1024; MPFR: level 2)
+
+Measured before goal 10 (../kernel-bench). MPFR columns recomputed on November 6
+with the level 2 peaks (previously 46/34/14 for gemm NN, i.e. the old peaks
+were 1.2/1.6/1.9 times too high for 256/512/1024 bits). MPFR sizes are the
+largest measured n <= 2048 (see `roofline_summary.md`).
 
 | kernel | dd | td | qd | MPFR 256 | MPFR 512 | MPFR 1024 |
 |---|---:|---:|---:|---:|---:|---:|
-| gemm NN | 100 | 101 | 99 | 46 | 34 | 14 |
-| gemm update (k = 64) | 96 | 100 | 99 | 41 | 32 | 15 |
-| syrk Upper/Trans | 93 | 98 | 96 | 32 | 21 | 12 |
-| syrk Lower/NoTrans | 51 | 50 | 53 | 25 | 13 | 6 |
-| cgemm NN | 61 | 60 | 57 | 19 | 9 | 9 |
-| cherk Lower (k = 64) | 1.8 | 3.8 | 5.3 | 0.5 | 0.3 | 0.2 |
-| trsm Left Lower NoTrans Unit | 1.4 | 4.5 | 7.3 | 2.3 | 2.0 | 1.5 |
-| trsm Right Lower Trans (m × 64) | 3.4 | 5.3 | 6.4 | 3.1 | 2.6 | 1.1 |
-| ctrsm Left Lower NoTrans Unit | 3.1 | 4.8 | 4.9 | 0.8 | 0.4 | 0.3 |
-| getrf2 (LU panel n × 64) | 0.7 | 1.8 | 3.3 | 1.6 | 1.8 | 0.9 |
-| potrf2 (n = 256) | 0.1 | 0.3 | 0.3 | 0.2 | 0.2 | 0.1 |
+| gemm NN | 100 | 101 | 99 | 54 | 53 | 26 |
+| gemm update (k = 64) | 96 | 100 | 99 | 49 | 50 | 29 |
+| syrk Upper/Trans | 93 | 98 | 96 | 38 | 32 | 23 |
+| syrk Lower/NoTrans | 51 | 50 | 53 | 30 | 21 | 12 |
+| cgemm NN | 61 | 60 | 57 | 23 | 13 | 18 |
+| cherk Lower (k = 64) | 1.8 | 3.8 | 5.3 | 0.6 | 0.5 | 0.4 |
+| trsm Left Lower NoTrans Unit | 1.4 | 4.5 | 7.3 | 2.8 | 3.0 | 3.0 |
+| trsm Right Lower Trans (m × 64) | 3.4 | 5.3 | 6.4 | 3.7 | 4.0 | 2.1 |
+| ctrsm Left Lower NoTrans Unit | 3.1 | 4.8 | 4.9 | 0.9 | 0.6 | 0.5 |
+| getrf2 (LU panel n × 64) | 0.7 | 1.8 | 3.3 | 1.9 | 2.9 | 1.8 |
+| potrf2 (n = 256) | 0.1 | 0.3 | 0.3 | 0.2 | 0.3 | 0.2 |
 | trtri | 0.1 | 0.2 | 0.2 | - | - | - |
 | lauum | 1.5 | 1.5 | 1.1 | - | - | - |
 | laswp (memory bound) | 5.5 | 7.2 | 8.5 | - | - | - |
