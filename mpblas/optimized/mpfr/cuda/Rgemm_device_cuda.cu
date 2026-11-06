@@ -29,14 +29,15 @@
 
 /*
  * CUDA implementation of mplapack_mpfr_cuda::gemm<PB> (PB = 256, 512, 768, 1024, 2048).
- * One thread per output element; the per-element arithmetic is in
- * Rgemm_kernel_cuda.h and is shared with the host implementation.
+ * Shared operand tiles with one ordered accumulator per output element;
+ * host emulation executes the same tile phases.
  */
 
 #include <cstdio>
 #include <cstdlib>
 #include <cuda_runtime.h>
 #include "Rgemm_kernel_cuda.h"
+#include "Rgemm_tiled_cuda.h"
 #include "Rgemm_winograd_cuda.h"
 
 namespace mplapack_mpfr_cuda {
@@ -251,8 +252,24 @@ template <int PB> int gemm(const gemm_shape &s, const real_t<PB> &alpha, const r
     if (gy > MAX_GRID_Y)
         gy = MAX_GRID_Y;
     dim3 grid((unsigned)gx, (unsigned)gy), block(BLOCK_X, BLOCK_Y);
-    gemm_kernel<PB><<<grid, block>>>(s, alpha, beta, dA.get<F>(), dB.get<F>(), dAB.get<F>(), dC.get<F>());
-    if (failed(cudaGetLastError(), "gemm_kernel launch") || failed(cudaDeviceSynchronize(), "gemm_kernel"))
+    cudaError_t launch_error=cudaSuccess;
+    bool tiled=false;
+    if constexpr(PB==256 || PB==512 || PB==1024) {
+        // Shared loads alone do not improve 256/512-bit NoTrans; retain the
+        // original kernel there and at the untuned precisions.
+        if(s.k>0 && (PB==1024 || !s.nota)) {
+            if constexpr(PB==1024) {
+                if(s.nota) launch_error=(cudaError_t)value_gemm_device(make_value_gemm_job<PB,true>(s,alpha,beta,dA.get<F>(),dB.get<F>(),dAB.get<F>(),dC.get<F>()),0);
+                else launch_error=(cudaError_t)value_gemm_device(make_value_gemm_job<PB,false>(s,alpha,beta,dA.get<F>(),dB.get<F>(),dAB.get<F>(),dC.get<F>()),0);
+            } else launch_error=(cudaError_t)value_gemm_device(make_value_gemm_job<PB,false>(s,alpha,beta,dA.get<F>(),dB.get<F>(),dAB.get<F>(),dC.get<F>()),0);
+            tiled=true;
+        }
+    }
+    if(!tiled) {
+        gemm_kernel<PB><<<grid, block>>>(s, alpha, beta, dA.get<F>(), dB.get<F>(), dAB.get<F>(), dC.get<F>());
+        launch_error=cudaGetLastError();
+    }
+    if (failed(launch_error, "gemm_kernel launch") || failed(cudaDeviceSynchronize(), "gemm_kernel"))
         return 4;
     if (failed(cudaMemcpy(C, dC.get<F>(), bytesC, cudaMemcpyDeviceToHost), "copy C back"))
         return 5;

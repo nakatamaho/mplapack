@@ -9,6 +9,9 @@
 #include <limits>
 #include "Rfactor_kernel_cuda.h"
 #include "blas3_kernel_cuda.h"
+#ifndef MPLAPACK_MPFR_FACTOR_COMPLEX
+#include "Rgemm_tiled_cuda.h"
+#endif
 #include "mpfr_cuda_stack.h"
 #include "../../common/Rpotrf_right_common.h"
 #ifndef MPLAPACK_MPFR_CUDA_HOST_EMULATION
@@ -321,6 +324,17 @@ template<class E> class factor_context {
         if(!j.e.ok) *failed.p=1;
 #endif
     }
+#ifndef MPLAPACK_MPFR_FACTOR_COMPLEX
+    template<bool Nota> void value_update(factor_update_job<typename E::Update> u) {
+        using U=typename E::Update;
+        value_gemm_job<U,Nota,false> t{u.e,u.g,E::shift(u.constants,1),u.constants,u.a,u.b,u.b,u.c};
+#ifndef MPLAPACK_MPFR_CUDA_HOST_EMULATION
+        error=value_gemm_device(t,stream(),failed.p);
+#else
+        error=value_gemm_host(t);
+#endif
+    }
+#endif
     void launch(factor_job<E> j,long units) {
 #ifndef MPLAPACK_MPFR_FACTOR_COMPLEX
         if constexpr(!E::runtime) {
@@ -364,7 +378,19 @@ template<class E> class factor_context {
         if(j.op==1 || (j.op==0 && j.s.op==L3_SYRK)) {
             factor_update_job<typename E::Update> u{};
             u.e=j.e.update(); u.a=j.a; u.b=j.b; u.c=j.c; u.constants=j.constants;
-            u.s=j.s; u.g=j.g; u.op=j.op; execute(u,units);
+            u.s=j.s; u.g=j.g; u.op=j.op;
+#ifndef MPLAPACK_MPFR_FACTOR_COMPLEX
+            if constexpr(!E::runtime) {
+                constexpr bool tuned=sizeof(typename E::V)<=80 || sizeof(typename E::V)==144;
+                if constexpr(tuned) {
+                    if(!error && units>0 && j.op==1 && u.g.k>0) {
+                        if(u.g.nota) value_update<true>(u);else value_update<false>(u);
+                        return;
+                    }
+                }
+            }
+#endif
+            execute(u,units);
         } else execute(j,units);
     }
     long feedback() {

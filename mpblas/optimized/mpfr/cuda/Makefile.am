@@ -140,7 +140,7 @@ $(MPLAPACK_MPFR_CUDA_LAPACK_OPTIMIZED_SOURCES) \
 Rfactor_bridge_cuda.cpp Rfactor_device_cuda.cu Rfactor_rt_cuda.cu \
 Rfactor_kernel_cuda.h Rfactor_device_body.cuh Rfactor_rt_body.cuh mpfr_cuda_stack.h \
 Cfactor_bridge_cuda.cpp Cfactor_device_cuda.cu Cfactor_rt_cuda.cu Cfactor_kernel_cuda.h Cfactor_device_body.cuh Cfactor_fixed_types.h Cfactor_runtime_types.h \
-Rgemm.cpp Rgemm_bridge_cuda.cpp Rgemm_device_cuda.cu Rgemm_kernel_cuda.h \
+Rgemm.cpp Rgemm_bridge_cuda.cpp Rgemm_device_cuda.cu Rgemm_kernel_cuda.h Rgemm_tiled_cuda.h \
 Rgemm_rt_cuda.cu Rgemm_rt_cuda.h Rgemm_winograd_cuda.h mpfr_pack_cuda.h \
 Rsyrk.cpp Rsyr2k.cpp Rsymm.cpp Rtrmm.cpp Rtrsm.cpp \
 blas3_bridge_cuda.cpp blas3_device_cuda.cu blas3_kernel_cuda.h \

@@ -36,6 +36,7 @@
 
 #include <vector>
 #include "Rgemm_kernel_cuda.h"
+#include "Rgemm_tiled_cuda.h"
 #include "Rgemm_winograd_cuda.h"
 
 namespace mplapack_mpfr_cuda {
@@ -47,6 +48,14 @@ template <int PB> int gemm(const gemm_shape &s, const real_t<PB> &alpha, const r
         for (long j = 0; j < s.n; j++)
             for (long l = 0; l < s.k; l++)
                 gemm_alpha_opB<PB>(s, alpha, B, AB.data(), l, j);
+    }
+    if constexpr(PB==256 || PB==512 || PB==1024) {
+        if(s.k>0 && (PB==1024 || !s.nota)) {
+            if constexpr(PB==1024) {
+                if(s.nota) return value_gemm_host(make_value_gemm_job<PB,true>(s,alpha,beta,A,B,AB.data(),C));
+            }
+            return value_gemm_host(make_value_gemm_job<PB,false>(s,alpha,beta,A,B,AB.data(),C));
+        }
     }
 #ifdef _OPENMP
 #pragma omp parallel for

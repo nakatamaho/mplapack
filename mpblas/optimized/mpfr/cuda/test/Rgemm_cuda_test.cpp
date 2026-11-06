@@ -198,8 +198,11 @@ void check_ineligible(int prec)
 
 } // namespace
 
-int main()
+int main(int argc,char **argv)
 {
+    char *end=nullptr;
+    long selected=argc==2?std::strtol(argv[1],&end,10):0;
+    if(argc>2 || (argc==2 && (selected<=0 || *end))) return 2;
     if (mplapack_mpfr_cuda::device_count() == 0) {
         std::printf("SKIPPED: no CUDA device\n");
         return 77;
@@ -214,10 +217,14 @@ int main()
     // 256, 512, 768, 1024 and 2048 use the fixed-precision kernels (unless forced to the
     // runtime-precision ones); the others use the runtime-precision kernels.
     const int precs[] = {256, 512, 768, 1024, 2048, 64, 200, 333, 4096};
-    const char *trans[] = {"N", "T"};
+    const char *trans[] = {"N", "T", "C"};
     const double betas[] = {0.0, 1.0, 0.75, -1.25};
-    const mplapackint shapes[][3] = {{1, 1, 1}, {7, 5, 3}, {37, 29, 41}, {16, 64, 8}};
+    const mplapackint shapes[][3] = {{1, 1, 1}, {7, 5, 3}, {37, 29, 41}, {16, 64, 8},
+        {8, 16, 8}, {9, 17, 9}, {15, 31, 7}, {17, 33, 17}};
+    bool found=false;
     for (int prec : precs) {
+        if(selected && prec!=selected) continue;
+        found=true;
         mpfrxx::set_default_precision_bits(prec);
         for (const char *ta : trans)
             for (const char *tb : trans)
@@ -227,6 +234,8 @@ int main()
                             check_eligible(prec, ta, tb, sh[0], sh[1], sh[2], beta, alpha_kind);
         check_ineligible(prec);
     }
+
+    if(!found) { gmp_randclear(rng);return 2; }
 
     // Operands of a precision other than the default one: never eligible.
     mpfrxx::set_default_precision_bits(256);
