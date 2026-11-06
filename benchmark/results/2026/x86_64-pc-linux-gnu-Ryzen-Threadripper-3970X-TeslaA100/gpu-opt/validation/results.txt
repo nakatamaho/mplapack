@@ -1,0 +1,19 @@
+legacy zero signs: 256 TT 1000,17,7 beta=0 alpha=1 count=2
+legacy zero signs: 256 TT 1000,17,7 beta=0 alpha=2 count=1
+legacy zero signs: 256 TC 1000,17,7 beta=0 alpha=1 count=1
+legacy zero signs: 256 CN 1000,17,7 beta=0 alpha=1 count=3
+legacy zero signs: 256 CT 1000,17,7 beta=-1.25 alpha=1 count=2
+legacy zero signs: 512 TT 1000,17,7 beta=0 alpha=1 count=1
+legacy zero signs: 512 TC 1000,17,7 beta=0 alpha=1 count=3
+legacy zero signs: 512 TC 1000,17,7 beta=0 alpha=2 count=3
+legacy zero signs: 512 CN 1000,17,7 beta=0 alpha=1 count=1
+legacy zero signs: 512 CT 1000,17,7 beta=0 alpha=1 count=1
+legacy zero signs: 512 CT 1000,17,7 beta=0 alpha=2 count=27
+legacy zero signs: 512 CC 1000,17,7 beta=0 alpha=1 count=3
+legacy zero signs: 512 CC 1000,17,7 beta=0 alpha=2 count=32
+legacy zero signs: 1024 TT 1000,17,7 beta=0 alpha=2 count=1
+legacy zero signs: 1024 TC 1000,17,7 beta=-1.25 alpha=1 count=1
+legacy zero signs: 1024 CN 1000,17,7 beta=0 alpha=2 count=1
+legacy zero signs: 1024 CT 1000,17,7 beta=-1.25 alpha=1 count=1
+legacy zero signs: 1024 CT 1000,17,7 beta=-1.25 alpha=2 count=2
+10758501 elements, 86 zero-sign differences, 0 failures

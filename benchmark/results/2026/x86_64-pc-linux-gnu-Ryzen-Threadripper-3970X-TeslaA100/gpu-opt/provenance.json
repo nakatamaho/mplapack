@@ -1,0 +1,42 @@
+{
+  "original_revision": "1577e80c5af779d0ec627880a952a37fad59d032",
+  "implementation_commits": [
+    "861b1038c",
+    "ba73551e8",
+    "767e48eec",
+    "6067ce60d",
+    "659967a52"
+  ],
+  "benchmark_fixes": [
+    "418b4915a",
+    "69420059e"
+  ],
+  "machine": "Ryzen Threadripper 3970X / A100 80GB PCIe",
+  "cuda": "13.1",
+  "gcc": "15.2",
+  "gpu_cpu_threads": 1,
+  "cpu_reference_threads": 32,
+  "cpu_binding": "OMP_PLACES=cores OMP_PROC_BIND=spread",
+  "warmups": 1,
+  "repeats": 3,
+  "statistic": "best3; precision and isolated/control tables additionally median of 3 interleaved rounds",
+  "empty_process_receipts": 720,
+  "unique_archives": 37,
+  "supplemental_gemm_elements_per_stage": 10758501,
+  "supplemental_gemm_ordinary_mismatches": 0,
+  "supplemental_gemm_unchanged_legacy_zero_sign_exceptions": 86,
+  "supplemental_gemm_oracle": "separately named included reference; host/before/after case reports identical",
+  "full_mpfr_complex_memcheck": "UNVERIFIED: approved external MPC-CUDA defect; no waiver for BF or MPFR real",
+  "ncu": "ERR_NVGPUCTRPERM; no measured occupancy/stall claims",
+  "excluded": "historical one-repeat factor data; 3 one-repeat HERK rows replaced; factor labels256/1024 from old hardcoded512 driver; rejected tile/register pilots",
+  "library_sha256": {
+    "after-libs/libmplapack_td_opt_cuda.so.3": "7b6b8f16c3f1951e102f295b091ea3df7f94b25c2c885168569123ee1c7bffce",
+    "after-libs/libmplapack_dd_opt_cuda.so.3": "965025660b1fe08800390e118c92124c9a26affa6d4bc72ab06ff6c0b1711f2c",
+    "after-libs/libmplapack_qd_opt_cuda.so.3": "2e46b4877c6c57cefe25d4b7160a5536cdacd1c6141fc98c4e604389b721f018",
+    "after-libs/libmplapack_mpfr_opt_cuda.so.3": "9a3fd6c4d842b5375f74d73045be45b9044a2a140efe4c0ff5a6eeb8429a1f15",
+    "before-libs/libmplapack_td_opt_cuda.so.3": "7aaaa2ad3f1dae6b2abd33ef883ac1ed5ae98b9fd6c41a7b09ac0af55b6298c0",
+    "before-libs/libmplapack_dd_opt_cuda.so.3": "52b747d99bffc455fde6b2687749ef1f517d25b1602275ebbd6fb1579e6ce453",
+    "before-libs/libmplapack_qd_opt_cuda.so.3": "49113e732787c4e7b6ff21485e2a471c31d1c5f343121b7a3f9cc15a3468449d",
+    "before-libs/libmplapack_mpfr_opt_cuda.so.3": "bbea9690ef12ef6e475d0ccc76d59bd1283f1d4e086ab5440d27ae957bb4db6b"
+  }
+}

@@ -1,0 +1,4 @@
+stage,type,kind,routine,n,round0_s,round1_s,round2_s,median_s
+original,mpfr512,complex,getrf,2048,23.7398517,23.6946784,23.6787769,23.6946784
+before5,mpfr512,complex,getrf,2048,25.4316341,25.5169782,25.5198013,25.5169782
+after5,mpfr512,complex,getrf,2048,25.2345822,25.3850261,25.4101105,25.3850261
