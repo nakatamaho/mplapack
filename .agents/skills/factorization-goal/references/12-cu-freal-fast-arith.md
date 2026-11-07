@@ -66,7 +66,9 @@ upstream PR independent of PR #1). Every zero result is then the canonical
 MPFR signed-zero semantics in the unused sign field of zero values must keep
 their results (verify; stop if any MPLAPACK result changes). The fast
 patch's oracle compares against cu_freal WITH the zero-sign fix (all fields)
-and against MPFR including the sign of zero. Details:
+and against MPFR: every non-zero MPFR result bit for bit (sign included);
+when MPFR returns a zero (+0 or -0), cu_freal must return the canonical +0
+(cu_freal has no -0). Details:
 bench_local/pi_instructions/goal12_addendum_zero.md.
 
 ## Policy: a second mpc_cuda patch, kept in MPLAPACK, offered upstream
