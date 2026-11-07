@@ -67,6 +67,12 @@ of the legacy fixed-precision MPFR BLAS.
   host emulation and GPU, all forms of the routine touched, n = 0, 1, block
   boundaries, lda > n; the existing GPU BLAS / factorization / solver / inverse
   tests that use the kernel still pass. compute-sanitizer memcheck on one size.
+  The MPFR runtime-precision device and host solver tests at 768, 1024 and
+  2048 bits (mpfr_cuda_solver_{device,host}_runtime_*; one to two hours each)
+  are part of "existing tests" and must run to completion: ba73551e8 (item 2)
+  broke mpfr_cuda_solver_device_runtime_{768,1024,2048} (illegal memory
+  access in the runtime complex HERK lanes) and the item's validation did not
+  run them; fixed under goal 12, addendum 3.
 - Performance, measured before and after with the kernel benchmark
   (benchmark/Rkernel_bench.cpp / kernel_bench.py, square sizes n = multiples of
   7 and 31 and powers of two, GPU kernel only) and the roofline
