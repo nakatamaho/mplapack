@@ -53,6 +53,22 @@ exponent convention and the unused low SB bits (SB = N*64 - PB, 0 or 32)
 must stay exactly as they are. Every MPLAPACK result therefore stays
 unchanged, which the existing bit-identity tests confirm.
 
+## Maintainer decision (November 7, 2026): zero results
+
+The goal's first run found that the old cu_fsub negates the sign of a zero b,
+so +0 - +0 returns a zero with sign = -1 (MPFR RNDN: +0). This is an
+upstream bug. It is fixed FIRST, by a separate small patch
+`patch-cu_freal-zero-sign` (applied after the 07a patch, before the fast
+patch; its own commit "mpc_cuda patch: canonical +0 for zero results of
+cu_freal (factorization goal 12)"; a version against plain abd9407 for an
+upstream PR independent of PR #1). Every zero result is then the canonical
++0 (set_zero()); non-zero results are unchanged. MPLAPACK kernels that keep
+MPFR signed-zero semantics in the unused sign field of zero values must keep
+their results (verify; stop if any MPLAPACK result changes). The fast
+patch's oracle compares against cu_freal WITH the zero-sign fix (all fields)
+and against MPFR including the sign of zero. Details:
+bench_local/pi_instructions/goal12_addendum_zero.md.
+
 ## Policy: a second mpc_cuda patch, kept in MPLAPACK, offered upstream
 
 As in 07a:
