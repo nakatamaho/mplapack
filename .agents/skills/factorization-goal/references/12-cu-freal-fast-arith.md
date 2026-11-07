@@ -166,7 +166,9 @@ As in 07a:
 
 - Task 2's oracle: 0 mismatches, host and device, all PB listed.
 - All existing MPFR CUDA tests, run to completion (including the runtime
-  768/1024/2048-bit solver tests, one to two hours each) (fixed and runtime precision; BLAS, factor,
+  768/1024/2048-bit solver tests, one to two hours each) — host-only tests may run
+  in parallel, GPU tests one at a time; the runtime 2048-bit tests once at the
+  end of the goal (failures then fixed in their own commit) (fixed and runtime precision; BLAS, factor,
   solver, inverse, Rgemm/Winograd, cu_fround tests) pass in both build
   systems, bit-identical results unchanged; compute-sanitizer memcheck on one
   size of the MPFR real factor test (MPFR complex stays UNVERIFIED as decided

@@ -149,7 +149,12 @@ division defect (MPFR complex memcheck stays UNVERIFIED as decided in goal 10).
   tests.
 - All existing tests that use the kernels pass, **run to completion**,
   including the MPFR runtime-precision solver/inverse tests at 768/1024/2048
-  bits (one to two hours each). compute-sanitizer memcheck on one size per
+  bits (one to two hours each).
+  Host-only tests may run in parallel (ctest -j8..16); GPU tests one at a
+  time and never during timings. The runtime 2048-bit tests run once at the
+  end of the goal (before the report), the other precisions before every
+  commit; a failure found at the end is fixed in its own commit and the
+  affected tests are rerun. compute-sanitizer memcheck on one size per
   item (MPFR complex: UNVERIFIED as decided).
 - Performance before/after with the kernel benchmark and the roofline at the
   sizes of item 5; report the targets met and missed (with a profile for the

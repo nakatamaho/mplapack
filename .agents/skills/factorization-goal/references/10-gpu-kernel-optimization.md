@@ -72,7 +72,8 @@ of the legacy fixed-precision MPFR BLAS.
   are part of "existing tests" and must run to completion: ba73551e8 (item 2)
   broke mpfr_cuda_solver_device_runtime_{768,1024,2048} (illegal memory
   access in the runtime complex HERK lanes) and the item's validation did not
-  run them; fixed under goal 12, addendum 3.
+  run them; fixed under goal 12, addendum 3. (Policy since November 8: host-only tests in
+  parallel; the runtime 2048-bit tests once at the end of a goal.)
 - Performance, measured before and after with the kernel benchmark
   (benchmark/Rkernel_bench.cpp / kernel_bench.py, square sizes n = multiples of
   7 and 31 and powers of two, GPU kernel only) and the roofline
