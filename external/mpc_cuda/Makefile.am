@@ -22,7 +22,8 @@ EXTRACT_STAMP=.mpc_cuda_extract_done
 CONFIGURE_STAMP=.mpc_cuda_configure_done
 BUILD_STAMP=.mpc_cuda_build_done
 INSTALL_INTERNAL_STAMP=.mpc_cuda_install_internal_done
-PATCHES=$(srcdir)/patches/patch-cu_freal-correctly-rounded-div-sqrt
+PATCHES=$(srcdir)/patches/patch-cu_freal-correctly-rounded-div-sqrt \
+        $(srcdir)/patches/patch-cu_freal-zero-sign
 EXTRA_DIST=$(PATCHES) patches/README.md
 
 all: extract config build install_internal
@@ -54,6 +55,7 @@ work/$(EXTRACT_STAMP): $(PATCHES)
 	cd $(SRCDIR); tar xfj $(abs_srcdir)/../$(MPFR_DISTFILE)
 	cd $(SRCDIR); tar xfJ $(abs_srcdir)/../$(MPC_DISTFILE)
 	cd $(SRCDIR); patch -p1 --batch < $(abs_srcdir)/patches/patch-cu_freal-correctly-rounded-div-sqrt
+	cd $(SRCDIR); patch -p1 --batch < $(abs_srcdir)/patches/patch-cu_freal-zero-sign
 	touch $(abs_builddir)/work/$(EXTRACT_STAMP)
 
 # glibc 2.42 exposes C23 rsqrt declarations that conflict with CUDA 13.1;

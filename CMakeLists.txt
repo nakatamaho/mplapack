@@ -460,6 +460,7 @@ if(_mplapack_mpc_cuda_bundled)
   # and must not be built in parallel.
   find_program(MPLAPACK_PATCH_EXECUTABLE patch REQUIRED)
   set(_mplapack_mpc_cuda_patch "${_mplapack_external}/mpc_cuda/patches/patch-cu_freal-correctly-rounded-div-sqrt")
+  set(_mplapack_mpc_cuda_zero_patch "${_mplapack_external}/mpc_cuda/patches/patch-cu_freal-zero-sign")
   ExternalProject_Add(mpc_cuda_bundled
     URL "${_mplapack_external}/mpc_cuda/download/mpc_cuda-0.0.1-abd9407.tar.xz"
     URL_HASH SHA256=bcac28655a62d381ffe38fc09704aca39f45610d1f697c351b4fc0acaa2278e7
@@ -469,6 +470,7 @@ if(_mplapack_mpc_cuda_bundled)
       COMMAND ${CMAKE_COMMAND} -E tar xf "${_mplapack_external}/mpfr/download/mpfr-4.2.2.tar.bz2"
       COMMAND ${CMAKE_COMMAND} -E tar xf "${_mplapack_external}/mpc/download/mpc-1.4.1.tar.xz"
       COMMAND "${MPLAPACK_PATCH_EXECUTABLE}" -p1 --batch -i "${_mplapack_mpc_cuda_patch}"
+      COMMAND "${MPLAPACK_PATCH_EXECUTABLE}" -p1 --batch -i "${_mplapack_mpc_cuda_zero_patch}"
     CONFIGURE_COMMAND <SOURCE_DIR>/configure "--prefix=${_mplapack_mpc_cuda_root}"
       "--with-cuda-arch=sm_${_mplapack_mpc_cuda_arch}" "NVCC=${_mplapack_mpc_cuda_nvcc}"
     BUILD_IN_SOURCE ON
@@ -482,7 +484,7 @@ if(_mplapack_mpc_cuda_bundled)
   ExternalProject_Add_Step(mpc_cuda_bundled patch_input
     INDEPENDENT TRUE
     DEPENDEES mkdir DEPENDERS download
-    DEPENDS "${_mplapack_mpc_cuda_patch}")
+    DEPENDS "${_mplapack_mpc_cuda_patch}" "${_mplapack_mpc_cuda_zero_patch}")
 endif()
 
 if(MPLAPACK_ENABLE_MPFR_CUDA)
@@ -1078,6 +1080,23 @@ if(MPLAPACK_BUILD_TESTS)
       add_test(NAME mpfr_cuda_inverse_${_variant}_forced COMMAND ${_invexe})
       set_tests_properties(mpfr_cuda_inverse_${_variant}_forced PROPERTIES SKIP_RETURN_CODE 77
         ENVIRONMENT "OMP_NUM_THREADS=1;MPFRXX_DEFAULT_PRECISION_BITS=512;MPLAPACK_MPFR_CUDA_FORCE_RUNTIME=1")
+      set(_zeroexe mpfr_cuda_cu_fzero_${_variant}_test)
+      if(_variant STREQUAL "host")
+        add_executable(${_zeroexe} "${_mplapack_mpfr_cuda_dir}/test/cu_fzero_test.cpp")
+      else()
+        add_executable(${_zeroexe} "${_mplapack_mpfr_cuda_dir}/test/cu_fzero_device_test.cu")
+        target_link_libraries(${_zeroexe} PRIVATE CUDA::cudart)
+        target_compile_options(${_zeroexe} PRIVATE "$<$<COMPILE_LANGUAGE:CUDA>:-fmad=false>")
+        set_target_properties(${_zeroexe} PROPERTIES CUDA_STANDARD 17
+          CUDA_STANDARD_REQUIRED ON CUDA_ARCHITECTURES "${MPLAPACK_CUDA_ARCHITECTURES}")
+      endif()
+      target_include_directories(${_zeroexe} PRIVATE "${MPLAPACK_MPC_CUDA_INCLUDE_DIR}")
+      target_link_libraries(${_zeroexe} PRIVATE mplapack_mpfr_opt)
+      if(_mplapack_mpc_cuda_bundled)
+        add_dependencies(${_zeroexe} mpc_cuda_bundled)
+      endif()
+      add_test(NAME mpfr_cuda_cu_fzero_${_variant} COMMAND ${_zeroexe})
+      set_tests_properties(mpfr_cuda_cu_fzero_${_variant} PROPERTIES SKIP_RETURN_CODE 77)
       set(_roundexe mpfr_cuda_cu_fround_${_variant}_test)
       if(_variant STREQUAL "host")
         add_executable(${_roundexe} "${_mplapack_mpfr_cuda_dir}/test/cu_fround_test.cpp")

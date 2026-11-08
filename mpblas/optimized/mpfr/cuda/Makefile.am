@@ -153,7 +153,16 @@ EXTRA_libmplapack_mpfr_opt_cuda_la_DEPENDENCIES = Rgemm_dlink_cuda.lo
 CLEANFILES = Rgemm_dlink_cuda.lo .libs/Rgemm_dlink_cuda.o Rgemm_dlink_cuda.o
 
 check_PROGRAMS = Rtrisolve_gpu_host_test_mpfr Rfactor_gpu_host_test_mpfr Cfactor_gpu_host_test_mpfr solver_gpu_host_test_mpfr inverse_gpu_host_test_mpfr Rblas1_gpu_host_test_mpfr
-TESTS = Rfactor_gpu_host_test_mpfr Cfactor_gpu_host_test_mpfr test/solver_host_sweep.sh test/inverse_host_sweep.sh
+TESTS = Rfactor_gpu_host_test_mpfr Cfactor_gpu_host_test_mpfr test/solver_host_sweep.sh test/inverse_host_sweep.sh cu_fzero_host_test_mpfr cu_fzero_device_test_mpfr
+check_PROGRAMS += cu_fzero_host_test_mpfr
+cu_fzero_host_test_mpfr_SOURCES = test/cu_fzero_test.cpp test/cu_freal_before_zero.cuh
+cu_fzero_host_test_mpfr_CXXFLAGS = $(AM_CXXFLAGS) -std=c++17
+cu_fzero_host_test_mpfr_LDADD = $(MPLAPACK_MPFR_LIBS)
+cu_fzero_host_test_mpfr_LDFLAGS = -Wl,--disable-new-dtags -Wl,-rpath,$(MPFR_LIBDIR):$(GMP_LIBDIR)
+check_DATA = cu_fzero_device_test_mpfr
+cu_fzero_device_test_mpfr: $(srcdir)/test/cu_fzero_device_test.cu $(srcdir)/test/cu_fzero_test.cpp $(srcdir)/test/cu_freal_before_zero.cuh $(MPC_CUDA_INCLUDEDIR)/mpc_cuda/cu_freal.cuh
+	$(NVCC) $(NVCC_MPFR_CUDA_FLAGS) -I$(MPFR_INCLUDEDIR) -I$(GMP_INCLUDEDIR) $(srcdir)/test/cu_fzero_device_test.cu -o $@ -L$(MPFR_LIBDIR) -L$(GMP_LIBDIR) -lmpfr -lgmp -Xlinker -rpath -Xlinker $(MPFR_LIBDIR):$(GMP_LIBDIR)
+CLEANFILES += cu_fzero_device_test_mpfr
 Rtrisolve_gpu_host_test_mpfr_SOURCES = ../../common/test/Rtrisolve_gpu_test.cpp Rinverse_bridge_cuda.cpp test/Rinverse_fixed_host.cpp test/Rinverse_runtime_host.cpp test/Rinverse_dynamic_host.cpp \
 ../../common/blas_cuda/Rtrsv.cpp ../../common/blas_cuda/Rtbsv.cpp ../../common/blas_cuda/Rtpsv.cpp \
 ../../common/blas_cuda/Ctrsv.cpp ../../common/blas_cuda/Ctbsv.cpp ../../common/blas_cuda/Ctpsv.cpp
@@ -200,5 +209,5 @@ if IS_MINGW
 libmplapack_mpfr_opt_cuda_la_LDFLAGS += -fopenmp -no-undefined
 endif
 
-EXTRA_DIST = test/inverse_host_sweep.sh test/solver_host_sweep.sh test/solver_pivot_publication.cpp test/Cfactor_device_globals.cu README.md Rgemm_host_cuda.cpp test/Rgemm_cuda_test.cpp test/Rgemm_winograd_cuda_test.cpp test/blas3_cuda_test.cpp \
+EXTRA_DIST = test/cu_fzero_device_test.cu test/inverse_host_sweep.sh test/solver_host_sweep.sh test/solver_pivot_publication.cpp test/Cfactor_device_globals.cu README.md Rgemm_host_cuda.cpp test/Rgemm_cuda_test.cpp test/Rgemm_winograd_cuda_test.cpp test/blas3_cuda_test.cpp \
     test/Rfactor_cuda_test.cpp test/Rfactor_bench.cpp test/Cfactor_bench.cpp test/Rfactor_panel_bench.cpp test/Cfactor_panel_bench.cpp test/run_factor_bench.py test/cu_fround_test.cpp test/cu_fround_device_test.cu test/cu_fround_bench.cu test/Rtrsm_round_bench.cpp test/run_round_bench.py

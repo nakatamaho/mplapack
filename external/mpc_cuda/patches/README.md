@@ -1,5 +1,77 @@
 # mpc_cuda patches / proposed upstream PR
 
+## Canonical cu_freal zero results (goal 12)
+
+Status: **not yet submitted**. Both builds and full integration tests pass
+following the independent runtime complex HERK repair a3c422820. No upstream
+PR has been made. This section does not change the submission status of the
+division/sqrt patch below.
+
+`patch-cu_freal-zero-sign` applies to **abd9407**, independently of PR #1;
+MPLAPACK applies it after the division/sqrt patch. Both extraction stamps depend
+on both patches. The tarball and SHA256 are unchanged. The patch includes
+standalone `tools/test_fzero.cpp`, its CUDA wrapper and a frozen original-header
+oracle. Build with `-Iinclude -lmpfr -lgmp`; the CUDA test returns 77 without a GPU.
+
+Reproducer: `cu_freal<256> z(0.0); auto r=z-z;` formerly returned a zero with
+`sign=-1`. `cu_fsub` negated the zero subtrahend, and `cu_fadd` returned it
+verbatim. The patch handles both-zero addition before returning an operand,
+avoids negating a zero subtrahend, and canonicalizes zero results of
+`cu_neg`, `cu_abs` and `cu_scale2`. It retains all signatures and nonzero paths.
+Existing multiplication, numeric/precision conversions and the RN div/sqrt
+APIs already canonicalize zero. Copying the struct is still a bitwise copy;
+this patch does not redefine copy semantics or special-function algorithms.
+
+The oracle compares nonzero results with MPFR RNDN and the frozen abd9407
+implementation, field by field. For either MPFR zero sign, the required result
+is canonical +0: zero sentinel, sign=1, all limbs zero. Inputs include both
+zero signs, poisoned zero limbs, powers of two, both signs of full-width random
+significands, and every pair in the test corpus. Helpers, double conversion and
+precision round-trips are also checked. PB=224,256,512,768,992,1024,2048:
+**42,632 MPFR comparisons and 41,014 nonzero old-result comparisons per PB,
+zero failures on host and A100**, for each execution mode. CMake focused tests
+2/2 PASS; autotools default tests 6/6 PASS. Full CMake MPFR CUDA regression:
+**84/84 PASS**, no skips, 67963.31 seconds, including complete forced-runtime
+768/1024/2048 solver tests. The initial failures were independently reproduced
+with pre-patch headers and repaired separately in a3c422820 (runtime HERK and
+its right-looking column caller). Touching this patch re-extracts/repatches/
+rebuilds/installs mpc_cuda in both build systems. Both installed headers match.
+Six relevant archives have unique symbols; stable dynamic exports remain 3346.
+
+MPLAPACK's fixed Rtrsm and resident real/complex factor policies save operand
+zero signs before invoking arithmetic and restore signed zero afterward. Their
+strict signed-zero tests are not weakened. Generic public fixed BLAS packing
+canonicalizes zeros. The goal10 public fixed-complex corpus remains at 45996
+checks / 1096 existing zero-sign exceptions, and quick TRSM at 504 checks /
+22194 existing exceptions, zero failures. CMake Rgemm has 6 existing sign-only
+zero differences; fixed Cblas has 1096 and fixed/runtime blas3 has 580/0.
+No new exception or tolerance was added. Runtime768 solver --quick memcheck
+passes 2761 checks / 1779332 comparisons with zero signed-zero differences and
+zero sanitizer errors; this focused pass does not lift the general upstream
+complex memcheck qualification. Raw logs: bench_local/results/goal12/.
+
+### Proposed upstream PR text (independent of PR #1)
+
+**Title:** Canonicalize zero results of cu_freal arithmetic and helpers
+
+cu_freal documents a single zero representation. Currently `(+0)-(+0)` creates
+a flagged zero with sign=-1, and neg/abs/scale2 can propagate noncanonical zero
+inputs. Handle the both-zero add case explicitly, skip negation of a zero
+subtrahend, and use set_zero in the unary helpers when the input is zero.
+Nonzero arithmetic and API signatures are unchanged. Multiplication and
+conversions already use the canonical representation. This patch is independent
+of the correctly-rounded division/square-root addition.
+
+The included standalone host/CUDA test compares the sign, exponent and every
+limb against MPFR RNDN, mapping MPFR's signed zeros to cu_freal's documented +0,
+and checks nonzero results against a frozen original implementation. It covers
+seven precisions including two with 32 unused bits, zero signs and poisoned
+zero limbs, full-width operands, binary operators and unary/conversion helpers.
+Applications that require MPFR signed-zero semantics must retain a separate
+sign policy; cu_freal itself has no signed-zero contract.
+
+## Correctly rounded division/sqrt patch
+
 Status: **submitted upstream** as https://github.com/tkouya/mpc_cuda/pull/1
 (2026-10-30; the upstream branch also adds tools/test_fround.cu to
 `make check-fixed`, and documents the API in doc/manual.md and manual.ja.md).
