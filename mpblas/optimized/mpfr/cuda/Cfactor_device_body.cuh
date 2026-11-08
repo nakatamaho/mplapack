@@ -136,6 +136,16 @@ template<class Tag> struct complex_factor_engine {
         }
     }
     template<class X> L3_HD void herk(const l3_shape &s,X &x,long lane) const {
+        if constexpr (!Traits::value_math) {
+            // Runtime MPC operations need bounded scratch. Retain the original
+            // one-active-lane-per-column reference path; fixed arithmetic keeps
+            // the independent-element update below.
+            if(lane%s.n) return;
+            const long j=lane/s.n;
+            Cherk_columns_dev<DR,V>(s.upper?"U":"L",s.trans?"C":"N",s.n,s.k,DR(-1),x.a.p,x.a.ld,DR(1),x.c.p,x.c.ld,j,j+1);
+            for(long i=s.upper?0:j;i<(s.upper?j+1:s.n);++i) checked(x.c.p[i+j*x.c.ld]);
+            return;
+        }
         const long i=lane%s.n,j=lane/s.n;
         if((s.upper?i>j:i<j) || s.k==0) return;
         V &out=x.c.p[i+j*x.c.ld];

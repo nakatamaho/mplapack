@@ -179,7 +179,14 @@ template<class E> struct factor_right_runtime_job {
             const long begin=(j/nb)*nb,size=n-begin<nb?n-begin:nb;
             u.op=0; u.s.op=L3_SYRK; u.s.n=size; u.s.k=k; u.s.beta_one=1;
             u.a=E::shift(a,begin+col*a.ld); u.c=E::shift(a,begin+begin*a.ld);
+#ifdef MPLAPACK_MPFR_FACTOR_COMPLEX
+            // Runtime complex HERK owns a whole column. Let its diagonal
+            // lane submit that column once, including the rows below it.
+            if(i!=j) return;
+            u((j-begin)*size);
+#else
             u((i-begin)+(j-begin)*size);
+#endif
         } else {
             u.op=1; u.a=E::shift(a,i+col*a.ld); u.b=E::shift(a,j+col*a.ld); u.c=E::shift(a,i+j*a.ld);
             u.g={1,0,1,1,k,a.ld,a.ld,a.ld,0,1};
