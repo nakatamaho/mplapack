@@ -36,35 +36,17 @@
 #include "../../../reference/iCamax.cpp"
 #undef iCamax
 
-#include <vector>
-#include "../Rblas_split_common.h"
+#include "../Riamax_chunks_common.h"
 
+// Goal 13: one pass over zx in fixed contiguous chunks (4096 elements), each
+// chunk scanned serially, the chunk winners combined in chunk order.  The
+// scores are RCabs1 exactly as the reference computes them and ties keep the
+// first index, so the result is the reference index bit for bit for every
+// thread count.  NaNs still go to the reference (unchanged contract).
 bool iCamax_omp(INTEGER const n, COMPLEX *zx, INTEGER const incx, INTEGER &result)
 {
     using namespace mplapack_blas;
     if (n < 2 || incx != 1)
         return false;
-    std::vector<REAL> v((size_t)n);
-    std::vector<char> ok((size_t)n);
-    if (!blas_split(2.0 * n, n, [&](long i0, long i1) {
-            for (long i = i0; i < i1; i++) {
-                v[(size_t)i] = RCabs1(zx[i]);
-                ok[(size_t)i] = v[(size_t)i] == v[(size_t)i];
-            }
-        }))
-        return false;
-    for (INTEGER i = 0; i < n; i++)
-        if (!ok[(size_t)i])
-            return false;
-    // the reference: dmax = v(1); for i = 2..n: if (v(i) > dmax) take i
-    INTEGER best = 1;
-    REAL dmax = v[0];
-    for (INTEGER i = 2; i <= n; i = i + 1) {
-        if (v[(size_t)(i - 1)] > dmax) {
-            best = i;
-            dmax = v[(size_t)(i - 1)];
-        }
-    }
-    result = best;
-    return true;
+    return iamax_chunks(n, [&](long i) { return RCabs1(zx[i]); }, result);
 }

@@ -569,7 +569,9 @@ as vector length. `<P>_CUDA_VERBOSE` reports launch errors. Element-wise
 operations and iamax do not need FAST. Invalid/zero increments and n<=0
 are rejected; negative increments work for copy/axpy/dot/nrm2; asum/iamax
 retain their positive-increment contract. NaN/infinite GPU inputs are
-ineligible. CPU iamax is unchanged.
+ineligible. CPU iamax is the goal 13 chunked scan (reference index bit for
+bit, thread-count independent); the entry and CPU contracts are otherwise
+unchanged.
 
 `Rblas1_reduction_common.h` defines adjacent-pair combination. Each tree
 level has a separate synchronization boundary, with no floating-point
@@ -580,10 +582,24 @@ the device. `Rblas1_jobs_common.h` exposes internal device-pointer jobs for
 kernel-only measurements. Workspace is O(n), launches O(log n); this is a
 correctness-first baseline, not a tuned crossover claim.
 
+Goal 13 replaces the iamax tree: the CPU (`iRamax_omp`, `iCamax_omp`,
+`Riamax_chunks_common.h`) scans fixed contiguous chunks of 4096 elements in
+one pass and combines the chunk winners in chunk order; the GPU reduces
+(score, index) in registers and shared memory to one winner per block
+(<= 2048 blocks x 256 threads, >= 16 elements per thread) and one small
+second kernel over the block winners. Scores are exact and the tie rule is
+"smallest index wins", which is associative and commutative, so every
+launch shape, thread count and chunking returns the reference index.
+Workspace is O(n/16) pairs on the GPU, O(n/4096) scores on the CPU; two
+kernel launches. MPFR uses the same scheme with its checked arithmetic
+(pool chunk scan, hierarchical combine); the >4096-bit dynamic path keeps
+the goal 11 tree.
+
 Norm nodes carry `(scale, sumsq)` and combine the smaller scale through a
 ratio no greater than one. No original input is squared without scaling.
 Complex norm leaves are real/imaginary components in that order. Iamax
-combines exact scores with strict greater-than, keeping the first tie.
+combines exact scores with strict greater-than, keeping the first tie (the
+goal 13 one-pass paths use the equivalent smallest-index rule).
 
 Error checks assume finite inputs and a representable result; dot/asum
 also require no intermediate overflow/underflow. Use effective unit

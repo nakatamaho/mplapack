@@ -7,6 +7,8 @@
 #include <cmath>
 #include <vector>
 #include <random>
+#include <algorithm>
+#include "../Riamax_chunks_common.h"
 #define Rdot test_Rdot_reference
 #include "../../../reference/Rdot.cpp"
 #undef Rdot
@@ -98,6 +100,78 @@ int main() {
         exercise([&]{return Rnrm2(3,x,1);},ref,REAL(64.0)*u*ref,"scaled Rnrm2");
         ref=test_RCnrm2_reference(2,z,1);
         exercise([&]{return RCnrm2(2,z,1);},ref,REAL(64.0)*u*ref,"scaled RCnrm2");
+    }
+    // Goal 13: one-pass chunked iamax on the CPU. Chunk boundaries, all-equal
+    // ties, first/last maxima, boundary ties, thread-count independence.
+    {
+        bool iRamax_omp(INTEGER const n, REAL *dx, INTEGER const incx, INTEGER &result);
+        bool iCamax_omp(INTEGER const n, COMPLEX *zx, INTEGER const incx, INTEGER &result);
+        const long C=mplapack_blas::iamax_chunk_length;
+        std::mt19937_64 r2(20261110);
+        auto randx=[&](long n) {
+            std::vector<REAL> x((size_t)n);
+            for(auto &v:x) v=REAL(double(int(r2()%2001)-1000))/REAL(997.0);
+            return x;
+        };
+        for(long n:{C-1,C,C+1,2*C-1,2*C,2*C+1}) {
+            auto x=randx(n);
+            INTEGER idx=0;
+            check(iRamax_omp(n,x.data(),1,idx) && idx==test_iRamax_reference(n,x.data(),1),"iamax chunk random");
+            std::vector<COMPLEX> z((size_t)n);
+            for(long i=0;i<n;++i) z[i]=COMPLEX(x[i],x[i]);
+            idx=0;
+            check(iCamax_omp(n,z.data(),1,idx) && idx==test_iCamax_reference(n,z.data(),1),"iCamax chunk random");
+        }
+        {   // all elements equal: the reference keeps the first index
+            const long n=3*C+5;
+            std::vector<REAL> x((size_t)n,REAL(2.5));
+            std::vector<COMPLEX> z((size_t)n,COMPLEX(REAL(1.0),REAL(2.0)));
+            INTEGER idx=0;
+            check(iRamax_omp(n,x.data(),1,idx) && idx==1,"iamax all-equal first tie");
+            idx=0;
+            check(iCamax_omp(n,z.data(),1,idx) && idx==1,"iCamax all-equal first tie");
+        }
+        {   // maximum at the first and the last index
+            const long n=2*C+7;
+            std::vector<REAL> x((size_t)n,REAL(1.0));
+            INTEGER idx=0;
+            x[0]=REAL(9.0);
+            check(iRamax_omp(n,x.data(),1,idx) && idx==1,"iamax max first");
+            x[0]=REAL(1.0);x[n-1]=REAL(9.0);
+            idx=0;
+            check(iRamax_omp(n,x.data(),1,idx) && idx==n,"iamax max last");
+            std::vector<COMPLEX> z((size_t)n,COMPLEX(REAL(1.0),REAL(0.0)));
+            z[n-1]=COMPLEX(REAL(4.0),REAL(4.0)); // RCabs1 = 8
+            idx=0;
+            check(iCamax_omp(n,z.data(),1,idx) && idx==n,"iCamax max last");
+        }
+        {   // tie exactly at a chunk boundary (0-based C-1 and C)
+            const long n=2*C;
+            std::vector<REAL> x((size_t)n,REAL(1.0));
+            x[C-1]=REAL(7.0);x[C]=REAL(7.0);
+            INTEGER idx=0;
+            check(iRamax_omp(n,x.data(),1,idx) && idx==C,"iamax boundary tie");
+            std::vector<COMPLEX> z((size_t)n,COMPLEX(REAL(0.0),REAL(0.0)));
+            z[C-1]=COMPLEX(REAL(3.0),REAL(1.0));z[C]=COMPLEX(REAL(2.0),REAL(2.0));
+            idx=0;
+            check(iCamax_omp(n,z.data(),1,idx) && idx==C,"iCamax boundary tie");
+        }
+#ifdef _OPENMP
+        {   // the chunked scan must not depend on the thread count
+            const long n=2*C+1;
+            auto x=randx(n);
+            const unsigned saved=omp_get_max_threads();
+            std::vector<INTEGER> res;
+            for(int k:{1,2,7,32}) {
+                omp_set_num_threads(k);
+                INTEGER idx=0;
+                check(iRamax_omp(n,x.data(),1,idx),"iamax threaded status");
+                res.push_back(idx);
+            }
+            omp_set_num_threads(saved);
+            check(std::adjacent_find(res.begin(),res.end(),std::not_equal_to<INTEGER>())==res.end(),"iamax thread independence");
+        }
+#endif
     }
     std::printf("BLAS1 fast: %ld checks, %ld failures\n",checks,failures);
     return failures?1:0;

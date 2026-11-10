@@ -29,6 +29,49 @@ template<class V,class R> struct blas1_element_job {
         if(axpy) y[i]=y[i]+V(alpha)*x[i];else y[i]=x[i];
     }
 };
+// Goal 13 one-pass iamax for MPFR. Each lane scans one contiguous chunk of x
+// (coalesced reads), then the partials are combined hierarchically with the
+// min-index tie rule (order independent, so the reference index results).
+template<class Tag,bool Complex,class V,class R> struct blas1_iamax_scan {
+    const V *x;long n;long chunk;mplapack_blas1::state<R> *out;
+    MPLAPACK_DEV_HD void operator()(long lane) const {
+        using namespace mplapack_blas1;
+        state<R> best;bool visited=false;
+        const long i0=lane*chunk;
+        if(i0>=n) { out[lane]=best;return; }
+        const long i1=i0+chunk<n?i0+chunk:n;
+        for(long i=i0;i<i1;++i) {
+            state<R> s;
+            if constexpr(Complex) s=complex_leaf<R,V>(iamax,x[i],V(0.0),i);
+            else s=leaf<R>(iamax,x[i],R(0.0),i);
+            if(!visited || s.re>best.re) { best=s;visited=true; }
+        }
+        out[lane]=best;
+    }
+};
+template<class R> struct blas1_iamax_combine {
+    const mplapack_blas1::state<R> *in;long m;long group;mplapack_blas1::state<R> *out;
+    MPLAPACK_DEV_HD void operator()(long lane) const {
+        using namespace mplapack_blas1;
+        state<R> best;bool visited=false;
+        const long i0=lane*group;
+        if(i0>=m) { out[lane]=best;return; }
+        const long i1=i0+group<m?i0+group:m;
+        for(long i=i0;i<i1;++i)
+            if(!visited || in[i].re>best.re || (in[i].re==best.re && in[i].index<best.index)) { best=in[i];visited=true; }
+        out[lane]=best;
+    }
+};
+template<class R> struct blas1_iamax_finish {
+    long m;const mplapack_blas1::state<R> *in;mplapack_blas1::state<R> *out;
+    MPLAPACK_DEV_HD void operator()(long) const {
+        using namespace mplapack_blas1;
+        state<R> best;bool visited=false;
+        for(long i=0;i<m;++i)
+            if(!visited || in[i].re>best.re || (in[i].re==best.re && in[i].index<best.index)) { best=in[i];visited=true; }
+        *out=best;
+    }
+};
 template<class Tag,bool Complex> int run_blas1(mplapack_blas1::operation op,long n,long prec,
     value<Tag,Complex> *x,value<Tag,Complex> *y,value<Tag,false> alpha,mplapack_blas1::state<value<Tag,false>> &result) {
     using namespace mplapack_blas1;
@@ -49,9 +92,27 @@ template<class Tag,bool Complex> int run_blas1(mplapack_blas1::operation op,long
     struct precision_guard { long p;~precision_guard() { mplapack_mpfr_rt_prec_h=p; } } guard{previous};
 #endif
     factor_buffer<V> dx,dy;factor_buffer<S> a;
-    if(dx.allocate(n) || dx.upload(x,n) || ((element || product) && (dy.allocate(n) || dy.upload(y,n))) || (!element && a.allocate(count))) return 1;
+    if(element) {
+        if(dx.allocate(n) || dx.upload(x,n) || dy.allocate(n) || dy.upload(y,n)) return 1;
+    } else if(op==mplapack_blas1::iamax) {
+        // One pass (goal 13): each pool lane scans one contiguous chunk, then
+        // the pool partials are combined hierarchically with the min-index tie
+        // rule.  Same exact scores as the reference scan, so the index is the
+        // reference's.
+        if(dx.allocate(n) || dx.upload(x,n) || a.allocate(2*factor_pool)) return 1;
+    } else {
+        if(dx.allocate(n) || dx.upload(x,n) || ((element || product) && (dy.allocate(n) || dy.upload(y,n))) || a.allocate(count)) return 1;
+    }
     launcher ctx;if(ctx.error) return ctx.error;
     if(element) ctx.launch(blas1_element_job<V,R>{op==axpy,dx.p,dy.p,alpha},n);
+    else if(op==mplapack_blas1::iamax) {
+        const long chunk=(n+factor_pool-1)/factor_pool;
+        ctx.launch(blas1_iamax_scan<Tag,Complex,V,R>{dx.p,n,chunk,a.p},factor_pool);
+        const long g1=64;
+        const long m1=(factor_pool+g1-1)/g1;
+        ctx.launch(blas1_iamax_combine<R>{a.p,factor_pool,g1,a.p+factor_pool},m1);
+        ctx.launch(blas1_iamax_finish<R>{m1,a.p+factor_pool,a.p},1);
+    }
     else schedule<R,V,Complex,blas1_root<Tag>>(ctx,op,n,dx.p,dy.p,a.p);
     ctx.finish();if(ctx.error) return ctx.error;
     if(element?dy.download(y,n):a.download(&result,1)) return 1;

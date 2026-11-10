@@ -10,6 +10,56 @@
 #include <cuda_runtime.h>
 #endif
 namespace mplapack_blas1 __attribute__((visibility("hidden"))) {
+
+// ---- one-pass iamax (factorization goal 13) ----------------------------
+// A (score, index) partial; the winner is the maximum score with the smallest
+// index on ties.  Scores are exact and comparisons are exact, so this rule is
+// associative and commutative: any combination tree gives the reference scan
+// result (strict > keeps the first index).
+template<class R> struct iamax_pair { R score; long index; };
+template<class X,class R,bool Complex> MPLAPACK_DEV_HD R iamax_score(const X &v) {
+    if constexpr(Complex) return mplapack_blas_dev::RCabs1(v);
+    else return abs(v);
+}
+template<class R> MPLAPACK_DEV_HD bool iamax_better(const iamax_pair<R> &a,const iamax_pair<R> &b) {
+    return b.score>a.score || (b.score==a.score && b.index<a.index);
+}
+constexpr int iamax_threads=256,iamax_max_blocks=2048,iamax_elems_thread=16;
+#if defined(__CUDACC__) && !defined(MPLAPACK_GEMM_CUDA_HOST_EMULATION)
+template<class X,class R,bool Complex> __global__ void k_iamax_pass(const X *x,long n,iamax_pair<R> *out) {
+    __shared__ iamax_pair<R> sh[iamax_threads];
+    const int tid=threadIdx.x;
+    iamax_pair<R> best;best.score=R(0.0);best.index=0;
+    bool visited=false;
+    for(long i=(long)blockIdx.x*iamax_threads+tid;i<n;i+=(long)gridDim.x*iamax_threads) {
+        const R s=iamax_score<X,R,Complex>(x[i]);
+        if(!visited || s>best.score) { best.score=s;best.index=i;visited=true; }
+    }
+    sh[tid]=best;
+    __syncthreads();
+    for(int stride=iamax_threads/2;stride>0;stride>>=1) {
+        if(tid<stride && iamax_better<R>(sh[tid],sh[tid+stride])) sh[tid]=sh[tid+stride];
+        __syncthreads();
+    }
+    if(tid==0) out[blockIdx.x]=sh[0];
+}
+template<class R> __global__ void k_iamax_final(const iamax_pair<R> *in,long nb,iamax_pair<R> *out) {
+    __shared__ iamax_pair<R> sh[iamax_threads];
+    const int tid=threadIdx.x;
+    iamax_pair<R> best;best.score=R(0.0);best.index=0;
+    bool visited=false;
+    for(long i=tid;i<nb;i+=iamax_threads) {
+        if(!visited || iamax_better<R>(best,in[i])) { best=in[i];visited=true; }
+    }
+    sh[tid]=best;
+    __syncthreads();
+    for(int stride=iamax_threads/2;stride>0;stride>>=1) {
+        if(tid<stride && iamax_better<R>(sh[tid],sh[tid+stride])) sh[tid]=sh[tid+stride];
+        __syncthreads();
+    }
+    if(tid==0) *out=sh[0];
+}
+#endif
 #if defined(__CUDACC__) && !defined(MPLAPACK_GEMM_CUDA_HOST_EMULATION)
 template<class J> __global__ void kernel(J job,long count) {
     for(long i=long(blockIdx.x)*blockDim.x+threadIdx.x;i<count;i+=long(blockDim.x)*gridDim.x) job(i);
@@ -46,12 +96,64 @@ template<class Ops> struct root {
     using R=mplapack_blas_dev::dreal<Ops>;
     MPLAPACK_DEV_HD static R sqrt(const R &x) { return R(mplapack_lapack_gpu::square_root<Ops>(x.v)); }
 };
+template<class X,class R,bool Complex> int iamax_kernels(long n,const X *dx,iamax_pair<R> *part,iamax_pair<R> *out) {
+#if defined(__CUDACC__) && !defined(MPLAPACK_GEMM_CUDA_HOST_EMULATION)
+    const long blocks0=(n+iamax_elems_thread*iamax_threads-1)/(iamax_elems_thread*iamax_threads);
+    const long nb=blocks0<iamax_max_blocks?blocks0:iamax_max_blocks;
+    k_iamax_pass<X,R,Complex><<<unsigned(nb),iamax_threads>>>(dx,n,part);
+    int error=cudaGetLastError();
+    if(!error) { k_iamax_final<R><<<1,iamax_threads>>>(part,nb,out); error=cudaGetLastError(); }
+    if(!error) error=cudaDeviceSynchronize();
+    return error;
+#else
+    (void)part;
+    iamax_pair<R> best;best.score=R(0.0);best.index=0;
+    bool visited=false;
+    for(long i=0;i<n;++i) {
+        const R s=iamax_score<X,R,Complex>(dx[i]);
+        if(!visited || s>best.score) { best.score=s;best.index=i;visited=true; }
+    }
+    *out=best;
+    return 0;
+#endif
+}
+// One-pass iamax (factorization goal 13): one kernel over x reduces
+// (score, index) in registers and shared memory to one winner per block; a
+// single small second kernel reduces the block winners.  No O(n) workspace,
+// no per-level launches.  The min-index tie rule is order independent, so the
+// result equals the reference scan bit for bit.  Emulation runs the same
+// staged data with one serial scan (same exact scores, same first-tie rule).
+template<class Ops,bool Complex> int run_iamax(long n,
+    const typename std::conditional<Complex,typename mplapack_blas_dev::cgpu_types<Ops>::DC,typename mplapack_blas_dev::cgpu_types<Ops>::DR>::type *x,
+    state<typename mplapack_blas_dev::cgpu_types<Ops>::DR> &result) {
+    using R=typename mplapack_blas_dev::cgpu_types<Ops>::DR;
+    using X=typename std::conditional<Complex,typename mplapack_blas_dev::cgpu_types<Ops>::DC,R>::type;
+    using P=iamax_pair<R>;
+#if defined(__CUDACC__) && !defined(MPLAPACK_GEMM_CUDA_HOST_EMULATION)
+    size_t free=0,total=0;
+    if(cudaMemGetInfo(&free,&total) || free/sizeof(X)<size_t(n)) return 1;
+    const long blocks0=(n+iamax_elems_thread*iamax_threads-1)/(iamax_elems_thread*iamax_threads);
+    const long nb=blocks0<iamax_max_blocks?blocks0:iamax_max_blocks;
+    if(free<size_t(n)*sizeof(X)+size_t(nb+1)*sizeof(P)) return 1;
+#else
+    const long nb=0;
+#endif
+    buffer<X> dx;buffer<P> part,res;
+    if(dx.allocate(n) || (nb && part.allocate(nb)) || res.allocate(1) || dx.up(x,n)) return 1;
+    int error=iamax_kernels<X,R,Complex>(n,dx.p,part.p,res.p);
+    if(error) return error;
+    P r;
+    if(res.down(&r,1)) return 1;
+    result.re=r.score;result.index=r.index;
+    return 0;
+}
 template<class Ops,bool Complex> int run_bf(operation op,long n,
     const typename std::conditional<Complex,typename mplapack_blas_dev::cgpu_types<Ops>::DC,typename mplapack_blas_dev::cgpu_types<Ops>::DR>::type *x,
     const typename std::conditional<Complex,typename mplapack_blas_dev::cgpu_types<Ops>::DC,typename mplapack_blas_dev::cgpu_types<Ops>::DR>::type *y,
     state<typename mplapack_blas_dev::cgpu_types<Ops>::DR> &result) {
     using R=typename mplapack_blas_dev::cgpu_types<Ops>::DR;
     using X=typename std::conditional<Complex,typename mplapack_blas_dev::cgpu_types<Ops>::DC,R>::type;
+    if(op==mplapack_blas1::iamax) return run_iamax<Ops,Complex>(n,x,result);
     long count=Complex && op==norm?2*n:n;
     const bool product=op==dot || op==dotc || op==dotu;
 #if defined(__CUDACC__) && !defined(MPLAPACK_GEMM_CUDA_HOST_EMULATION)

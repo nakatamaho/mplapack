@@ -105,6 +105,9 @@ template<class H> struct gpu {
     buffer<F> alpha;
 #endif
     buffer<V> a,x,y,p,work; buffer<S> tree; buffer<long> piv;
+#if defined(KERNEL_BENCH_BF_CUDA)
+    buffer<mplapack_blas1::iamax_pair<R>> ipart,ires;
+#endif
     std::vector<V> ha,hx,hy;
     std::unique_ptr<Launcher> ctx;
     event start,stop;
@@ -135,7 +138,17 @@ template<class H> struct gpu {
 #endif
         stage(a,ha,aa);stage(x,hx,xx);stage(y,hy,yy);
         if(s.solve()) p.allocate(s.n+1);
-        if(s.vector() && s.id>=2) tree.allocate(complex && s.id==10?2*s.n:s.n);
+        if(s.vector() && s.id>=2) tree.allocate(complex && s.id==10?2*s.n:
+#if defined(KERNEL_BENCH_MPFR_RESIDENT)
+            (s.id==2 || s.id==3)?2*size_t(mplapack_mpfr_cuda::factor_pool):
+#endif
+            s.n);
+#if defined(KERNEL_BENCH_BF_CUDA)
+        if(s.id==2 || s.id==3) {
+            const long nb=std::min((s.n+mplapack_blas1::iamax_elems_thread*mplapack_blas1::iamax_threads-1)/(mplapack_blas1::iamax_elems_thread*mplapack_blas1::iamax_threads),long(mplapack_blas1::iamax_max_blocks));
+            ipart.allocate(nb);ires.allocate(1);
+        }
+#endif
 #if defined(KERNEL_BENCH_MPFR_RESIDENT)
         if(s.inverse()) {
             inv.reset(new mplapack_inverse_gpu::inverse_schedule<IA,Launcher>());check(inv->error,"inverse context");
@@ -163,7 +176,29 @@ template<class H> struct gpu {
             mplapack_trisolve::shape t{s.n,64,s.storage()==1?65:s.n,s.storage(),true,true,false,false};
             using A=typename std::conditional<complex,mplapack_trisolve::Carithmetic<V>,mplapack_trisolve::Rarithmetic<V>>::type;
             mplapack_trisolve::schedule<V,A>(*ctx,t,a.p,x.p,p.p);
-        } else if(s.vector() && s.id>=2) mplapack_blas1::schedule<R,V,complex,Root>(*ctx,operation(s.id),s.n,x.p,y.p,tree.p);
+        } else if(s.vector() && s.id>=2) {
+#if defined(KERNEL_BENCH_BF_CUDA)
+            if(s.id==2 || s.id==3) {
+                // Goal 13 one-pass iamax kernels on the staged device vector.
+                if constexpr(complex) check(mplapack_blas1::iamax_kernels<C,R,true>(s.n,x.p,ipart.p,ires.p),"iamax kernels");
+                else check(mplapack_blas1::iamax_kernels<R,R,false>(s.n,x.p,ipart.p,ires.p),"iamax kernels");
+            } else
+#endif
+#if defined(KERNEL_BENCH_MPFR_RESIDENT)
+            if(s.id==2 || s.id==3) {
+                // Goal 13 one-pass MPFR iamax: chunked pool scan, hierarchical
+                // combine, single-lane finish.  The result lands in tree[0].
+                const long pool=long(mplapack_mpfr_cuda::factor_pool);
+                const long chunk=(s.n+pool-1)/pool;
+                if constexpr(complex) ctx->launch(mplapack_mpfr_inverse::blas1_iamax_scan<Tag,true,C,R>{x.p,s.n,chunk,tree.p},mplapack_mpfr_cuda::factor_pool);
+                else ctx->launch(mplapack_mpfr_inverse::blas1_iamax_scan<Tag,false,R,R>{x.p,s.n,chunk,tree.p},mplapack_mpfr_cuda::factor_pool);
+                const long g1=64,m1=(pool+g1-1)/g1;
+                ctx->launch(mplapack_mpfr_inverse::blas1_iamax_combine<R>{tree.p,pool,g1,tree.p+pool},m1);
+                ctx->launch(mplapack_mpfr_inverse::blas1_iamax_finish<R>{m1,tree.p+pool,tree.p},1);
+            } else
+#endif
+            mplapack_blas1::schedule<R,V,complex,Root>(*ctx,operation(s.id),s.n,x.p,y.p,tree.p);
+        }
         else if(s.id<2) {
 #if defined(KERNEL_BENCH_MPFR_RESIDENT)
             ctx->launch(mplapack_mpfr_inverse::blas1_element_job<V,R>{s.id==0,x.p,y.p,R(1)},s.n);
@@ -205,6 +240,13 @@ template<class H> struct gpu {
     }
     void result(std::vector<H> &out,REAL &r,COMPLEX &c,long &index) {
         if(s.id>=2 && s.id<=10) {
+#if defined(KERNEL_BENCH_BF_CUDA)
+            if(s.id==2 || s.id==3) {
+                mplapack_blas1::iamax_pair<R> q;ires.download(&q,1);
+                unpack_value(q.score,r);index=q.index+1;
+                return;
+            }
+#endif
             S q;tree.download(&q,1);unpack_value(q.re,r);
             if(s.id==5 || s.id==6) {REAL im;unpack_value(q.im,im);c=COMPLEX(r,im);} index=q.index+1;
         } else {

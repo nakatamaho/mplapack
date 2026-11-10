@@ -143,6 +143,40 @@ int main() {
     REAL r=17.0;
     check(!MPLAPACK_CUDA_ENTRY(Rdot)(3,ties,1,ties,1,r) && r==REAL(17.0),"per-call disabled");
     check(!MPLAPACK_CUDA_ENTRY(Raxpy)(3,REAL(1.0),ties,1,ties,1) && ties[1]==REAL(-7.0),"disabled output untouched");
+    // Goal 13: one-pass GPU iamax. Chunk-boundary ties, all-equal vectors,
+    // the maximum at the first and the last index (the scores are exact, so the
+    // index must equal the reference scan in every launch shape).
+    {
+        setenv(PREFIX "_BLAS_CUDA_L12","1",1);setenv(PREFIX "_CUDA_L12","1",1);
+        const long C=4096;
+        std::mt19937_64 r3(20261110);
+        for(long n:{C-1,C,C+1,2*C-1,2*C,2*C+1,3*C}) {
+            std::vector<REAL> x((size_t)n);
+            for(auto &v:x) v=REAL(double(int(r3()%2001)-1000))/REAL(997.0);
+            INTEGER index=77;
+            check(MPLAPACK_CUDA_ENTRY(iRamax)(n,x.data(),1,index) && index==test_iRamax_reference(n,x.data(),1),"GPU iamax chunk random");
+            std::vector<COMPLEX> z((size_t)n);
+            for(long i=0;i<n;++i) z[i]=COMPLEX(x[i],x[(i+7)%n]);
+            index=77;
+            check(MPLAPACK_CUDA_ENTRY(iCamax)(n,z.data(),1,index) && index==test_iCamax_reference(n,z.data(),1),"GPU iCamax chunk random");
+        }
+        {   // all equal and first/last maxima
+            const long n=2*C+3;
+            std::vector<REAL> x((size_t)n,REAL(1.5));
+            std::vector<COMPLEX> z((size_t)n,COMPLEX(REAL(0.5),REAL(0.5)));
+            INTEGER index=77;
+            check(MPLAPACK_CUDA_ENTRY(iRamax)(n,x.data(),1,index) && index==1,"GPU iamax all-equal");
+            check(MPLAPACK_CUDA_ENTRY(iCamax)(n,z.data(),1,index) && index==1,"GPU iCamax all-equal");
+            x[0]=REAL(8.0);index=77;
+            check(MPLAPACK_CUDA_ENTRY(iRamax)(n,x.data(),1,index) && index==1,"GPU iamax max first");
+            x[0]=REAL(1.5);x[n-1]=REAL(8.0);index=77;
+            check(MPLAPACK_CUDA_ENTRY(iRamax)(n,x.data(),1,index) && index==n,"GPU iamax max last");
+            x[n-1]=REAL(1.5);x[C-1]=REAL(6.0);x[C]=REAL(6.0);index=77;
+            check(MPLAPACK_CUDA_ENTRY(iRamax)(n,x.data(),1,index) && index==C,"GPU iamax boundary tie");
+            z[C-1]=COMPLEX(REAL(2.0),REAL(2.0));z[C]=COMPLEX(REAL(1.0),REAL(3.0));index=77;
+            check(MPLAPACK_CUDA_ENTRY(iCamax)(n,z.data(),1,index) && index==C,"GPU iCamax boundary tie");
+        }
+    }
     std::printf("BLAS1 GPU: %ld checks, %ld failures\n",checks,failures);
     unsetenv(PREFIX "_MPBLAS_FAST");
     return blas1_cpu_checks();

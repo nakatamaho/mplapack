@@ -11,7 +11,8 @@ template<class Tag,bool Complex,class H> bool blas1_packed(mplapack_blas1::opera
     const bool product=op==dot || op==dotc || op==dotu,element=op==axpy || op==copy;
     // Account for both operands and the reduction state (including complex norm's
     // two real leaves), plus the existing arena, pool and inherited stack budget.
-    size_t count=Complex && op==mplapack_blas1::norm?2*size_t(n):size_t(n);
+    size_t count=Complex && op==mplapack_blas1::norm?2*size_t(n):
+        op==mplapack_blas1::iamax?size_t(mplapack_mpfr_inverse::blas1_iamax_states):size_t(n);
     if(!memory_fits(count,sizeof(S)+2*sizeof(V),n,p,fixed)) return false;
     std::vector<V> a(n),b(product || element?n:0);
     long ix=incx<0?-(n-1)*incx:0,iy=(product || element) && incy<0?-(n-1)*incy:0;
