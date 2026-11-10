@@ -92,7 +92,7 @@ new paths: `paths-v0.0.2-dev.csv`, `peaks-v0.0.2-dev.csv`,
 madd 1.4533e10 -> 3.2442e10 (256), 5.8724e9 -> 1.4133e10 (512),
 1.8367e9 -> 4.3469e9 (1024) pairs/s (2.23x/2.41x/2.37x); the level 1 bounds are
 unchanged. Kernel-only GEMM NN sweep (best of 3): 256 n2048 15.87 -> 37.31
-GFLOPS, 512 n2048 6.25 -> 16.67, 1024 n2048 13.22 -> 42.11. MPFR 512 GPU
+GFLOPS, 512 n2048 6.25 -> 16.67, 1024 n2048 1.32 -> 4.21 (3.19x). MPFR 512 GPU
 factor entries (whole entry, warmup 1/best of 3, one neutral driver binary,
 only the library swapped): real getrf 4096 9.26 -> 4.92 s, real potrf U 4096
 9.46 -> 4.86 s, complex getrf 4096 160.2 -> 107.3 s, complex potrf L 4096
