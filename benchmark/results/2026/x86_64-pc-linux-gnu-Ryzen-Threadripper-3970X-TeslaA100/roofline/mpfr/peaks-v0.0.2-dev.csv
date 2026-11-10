@@ -1,0 +1,26 @@
+type,op,ops_per_second,note
+memory,copy_bytes,1.399968e+12,read+write of 2x4 GiB
+dd,madd,1.604107e+11,best of ILP 1/2/4
+dd,add,2.300947e+11,best of ILP 1/2/4
+dd,mul,4.634509e+11,best of ILP 1/2/4
+dd,div,3.524747e+10,best of ILP 1/2/4
+td,madd,4.920647e+10,best of ILP 1/2/4
+td,add,8.259249e+10,best of ILP 1/2/4
+td,mul,1.184792e+11,best of ILP 1/2/4
+td,div,1.271324e+10,best of ILP 1/2/4
+qd,madd,2.301044e+10,best of ILP 1/2/4
+qd,add,4.621227e+10,best of ILP 1/2/4
+qd,mul,4.564706e+10,best of ILP 1/2/4
+qd,div,5.766458e+09,best of ILP 1/2/4
+mpfr256,madd,3.244156e+10,"level 2: cu_freal, full-width significands, GEMM sign/gap mix"
+mpfr256,add,8.823075e+10,"level 2: cu_freal, full-width significands, GEMM sign/gap mix"
+mpfr256,mul,5.130641e+10,"level 2: cu_freal, full-width significands, GEMM sign/gap mix"
+mpfr256,div,1.274396e+09,best of ILP 1/2
+mpfr512,madd,1.413281e+10,"level 2: cu_freal, full-width significands, GEMM sign/gap mix"
+mpfr512,add,5.785318e+10,"level 2: cu_freal, full-width significands, GEMM sign/gap mix"
+mpfr512,mul,1.870130e+10,"level 2: cu_freal, full-width significands, GEMM sign/gap mix"
+mpfr512,div,4.044111e+08,best of ILP 1/2
+mpfr1024,madd,4.346867e+09,"level 2: cu_freal, full-width significands, GEMM sign/gap mix"
+mpfr1024,add,2.902852e+10,"level 2: cu_freal, full-width significands, GEMM sign/gap mix"
+mpfr1024,mul,5.112426e+09,"level 2: cu_freal, full-width significands, GEMM sign/gap mix"
+mpfr1024,div,8.057777e+07,best of ILP 1/2

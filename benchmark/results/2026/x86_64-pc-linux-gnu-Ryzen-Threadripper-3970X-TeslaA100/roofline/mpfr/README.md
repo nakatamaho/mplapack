@@ -81,3 +81,24 @@ The goal 10 MPFR kernel times so far (items 1-4, from bench_local/results/gpu-op
             gemm_path_mix.txt ../peaks.csv peaks-level1.csv
     python3 benchmark/roofline.py ../peaks.csv ../../kernel-bench/kernels.csv ../../gemm-sweep ..
     python3 benchmark/roofline.py peaks-level1.csv ../../kernel-bench/kernels.csv ../../gemm-sweep level1
+
+## v0.0.2-dev update (goal 12, November 10, 2026)
+
+The bundled mpc_cuda moved to upstream v0.0.2-dev (0f219b0, plus the rebased
+correctly-rounded div/sqrt and canonical-zero patches). Regenerated from the
+new paths: `paths-v0.0.2-dev.csv`, `peaks-v0.0.2-dev.csv`,
+`peaks-level1-v0.0.2-dev.csv` (the old `paths.csv` / `peaks.csv` /
+`peaks-level1.csv` remain the abd9407 "before" reference). Level 2 (old -> new):
+madd 1.4533e10 -> 3.2442e10 (256), 5.8724e9 -> 1.4133e10 (512),
+1.8367e9 -> 4.3469e9 (1024) pairs/s (2.23x/2.41x/2.37x); the level 1 bounds are
+unchanged. Kernel-only GEMM NN sweep (best of 3): 256 n2048 15.87 -> 37.31
+GFLOPS, 512 n2048 6.25 -> 16.67, 1024 n2048 13.22 -> 42.11. MPFR 512 GPU
+factor entries (whole entry, warmup 1/best of 3, one neutral driver binary,
+only the library swapped): real getrf 4096 9.26 -> 4.92 s, real potrf U 4096
+9.46 -> 4.86 s, complex getrf 4096 160.2 -> 107.3 s, complex potrf L 4096
+37.2 -> 19.9 s, complex potrf U 4096 58.0 -> 32.3 s; all 24 measured points
+improved (raw CSVs in bench_local/results/goal12/{campaign,factor}/).
+-v0.0.2-dev stack frames of the arithmetic paths (Xptxas -v): 416/224/128 bytes
+at 1024/512/256 (abd9407: 688/208/112). The fixed-precision complex factor
+stack budget in mpblas/optimized/mpfr/cuda/mpfr_cuda_stack.h was raised for
+v0.0.2-dev's deeper cu_mpc_div frames (16/32 KiB; see the goal-12 commit).
