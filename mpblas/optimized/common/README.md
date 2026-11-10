@@ -659,10 +659,16 @@ The existing enable/minimum variables from the BLAS1 section apply; the
 minimum is compared with n*n (full/packed) or n*(k+1) (band). FAST does not
 change solve arithmetic. `<P>_CUDA_VERBOSE=1` reports launch errors.
 
-`Rtrisolve_jobs.h` solves columns in reference order. N launches a pivot
-then parallel independent updates, preserving the **pre-division** zero
-skip. T/C launches independent products then subtracts in reference order
-(upper ascending, lower descending), followed by division. Expressions are
+Goal 13 replaces the per-column launches by a **wavefront**: one persistent
+single-block kernel (`wave_job` in `Rtrisolve_jobs.h`, 512 threads for the BF
+backends with double-buffered shared-memory column staging and a prefetched
+diagonal; 256 threads for MPFR; the >4096-bit dynamic residency keeps the
+per-column flat schedule) runs all the column steps. N keeps the pivot
+then parallel independent updates with the **pre-division** zero skip; T/C
+launches independent products then folds them in the reference order
+(upper ascending, lower descending) on one thread, then divides. Every
+element keeps the exact reference sequence of terms, so the result is
+bit-identical; emulation runs the same phases serially. The expressions are
 extracted from the unchanged reference TRSV bodies by
 `misc/gen_blas_tri_cuda.py`; no existing arithmetic or CPU solve is changed.
 All U/L, N/T/C, unit/nonunit, negative/nonunit increments and native band/

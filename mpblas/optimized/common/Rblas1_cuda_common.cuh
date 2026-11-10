@@ -65,6 +65,16 @@ template<class R> __global__ void k_iamax_final(const iamax_pair<R> *in,long nb,
 template<class J> __global__ void kernel(J job,long count) {
     for(long i=long(blockIdx.x)*blockDim.x+threadIdx.x;i<count;i+=long(blockDim.x)*gridDim.x) job(i);
 }
+// Goal 13 wavefront: one persistent block runs the whole schedule; the
+// dynamic shared memory stages the diagonal and double-buffered columns of A
+// so the serial column chain is not latency-bound on the global loads.
+template<class J> __global__ void k_wave_block(J job,long cap) {
+    extern __shared__ unsigned char mplapack_wave_sh[];
+    typedef typename J::vtype V;
+    V *c0=reinterpret_cast<V *>(mplapack_wave_sh);
+    V *c1=c0+cap,*dg=c1+cap;
+    job.block_run(threadIdx.x,blockDim.x,c0,c1,dg,cap);
+}
 struct launcher {
     int error=0;
     template<class J> void launch(J job,long n) {
@@ -72,6 +82,30 @@ struct launcher {
         long blocks=(n+127)/128;if(blocks>65535) blocks=65535;
         kernel<<<unsigned(blocks),128>>>(job,n);
         error=cudaGetLastError();
+    }
+    template<class J> void launch_wave(J job) {
+        if(error) return;
+        const long n=job.s.n;
+        long cap=n;
+        size_t smem=size_t(3)*size_t(cap)*sizeof(typename J::vtype);
+        const size_t smax=150*1024;
+        if(smem>smax) { cap=0;smem=0; }
+        if(smem>48*1024) {
+            if(cudaFuncSetAttribute(k_wave_block<J>,cudaFuncAttributeMaxDynamicSharedMemorySize,int(smem))!=cudaSuccess) {
+                cap=0;smem=0;
+            }
+        }
+        k_wave_block<J><<<1,512,unsigned(smem)>>>(job,cap);
+        error=cudaGetLastError();
+
+        if(error) {
+            // the staged configuration does not fit (registers/shared): the
+            // unstaged wavefront produces the same result
+            error=0;
+            k_wave_block<J><<<1,512>>>(job,0);
+            error=cudaGetLastError();
+        }
+        if(!error) error=cudaDeviceSynchronize();
     }
 };
 template<class V> struct buffer {
@@ -85,6 +119,7 @@ template<class V> struct buffer {
 struct launcher {
     int error=0;
     template<class J> void launch(J job,long n) { for(long i=0;i<n;++i) job(i); }
+    template<class J> void launch_wave(J job) { job.block_run(0,1,nullptr,nullptr,nullptr,0); }
 };
 template<class V> struct buffer {
     std::vector<V> v;V *p=nullptr;

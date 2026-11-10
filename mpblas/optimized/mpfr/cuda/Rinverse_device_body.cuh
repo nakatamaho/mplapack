@@ -22,11 +22,34 @@ template<class J> struct checked_job {
     inverse_engine e; J j;
     L3_HD void operator()(long lane) { j(lane); if(failure()) e.ok=false; }
 };
+// Goal 13 wavefront: the whole triangular schedule runs in one block.
+template<class J> struct wave_checked_job {
+    inverse_engine e; J j;
+    L3_HD void block_run(int tid,int T) { e.thread(tid); j.block_run(tid,T,nullptr,nullptr,nullptr,0); if(failure()) e.ok=false; }
+};
+#ifndef MPLAPACK_MPFR_CUDA_HOST_EMULATION
+template<class J> __global__ void k_mpfr_wave(wave_checked_job<J> job,int *failed) {
+    job.block_run(threadIdx.x,blockDim.x);
+    if(!job.e.ok) atomicExch(failed,1);
+}
+#endif
 struct launcher : factor_context<inverse_engine> {
     launcher():factor_context<inverse_engine>(inverse_engine{},inverse_engine::M{},1,1) {}
     long *status_data() { return status.p; }
     long feedback(long *) { return factor_context<inverse_engine>::feedback(); }
     template<class J> void launch(J j,long lanes) { this->execute(checked_job<J>{inverse_engine{},j},lanes); }
+    template<class J> void launch_wave(J j) {
+        if(error) return;
+        wave_checked_job<J> w{inverse_engine{},j};
+#ifndef MPLAPACK_MPFR_CUDA_HOST_EMULATION
+        k_mpfr_wave<J><<<1,256>>>(w,failed.p);
+        error=cudaGetLastError();
+        if(!error) error=cudaDeviceSynchronize();
+#else
+        w.block_run(0,1);
+        if(!w.e.ok) *failed.p=1;
+#endif
+    }
     void finish() {
         factor_context<inverse_engine>::finish(); int f=0;
         if(!error) error=failed.download(&f,1);

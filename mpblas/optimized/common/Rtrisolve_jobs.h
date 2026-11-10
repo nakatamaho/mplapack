@@ -47,14 +47,87 @@ template<class V,class A> struct column_job {
         }
     }
 };
-template<class V,class A,class L> void schedule(L &ctx,const shape &s,const V *a,V *x,V *p) {
-    for(long step=0;step<s.n && !ctx.error;++step) {
-        long j=s.upper==s.notrans?s.n-1-step:step;
-        long count=s.last(j)-s.first(j);
-        if(s.notrans) ctx.launch(pivot_job<V,A>{s,j,a,x,p},1);
-        if(count) ctx.launch(column_job<V,A>{s,j,a,x,p},count);
-        if(!s.notrans) ctx.launch(pivot_job<V,A>{s,j,a,x,p},1);
+// Goal 13 wavefront solve: one persistent single-block kernel runs all the
+// column steps (no launch per column).  Every element keeps the reference
+// sequence of terms: NoTrans finalizes x(j) (pre-division zero skip, division)
+// and then all pending updates x(i) -= x(j)*A(i,j) run in the thread-strided
+// phase; Trans/C forms compute the products in parallel and fold them in the
+// reference order on one thread, then divide.  The updates of the independent
+// elements of a column run concurrently while the columns themselves proceed
+// one after another, exactly as the reference schedule orders them, so the
+// result is bit-identical.  Emulation runs block_run(0,1): the same phases
+// serially (the sync points are no-ops off the device).
+#if defined(__CUDA_ARCH__)
+#define MPLAPACK_WAVE_SYNC __syncthreads()
+#else
+#define MPLAPACK_WAVE_SYNC
+#endif
+template<class V,class A> struct wave_job {
+    typedef V vtype;
+    shape s;const V *a;V *x,*p;
+    MPLAPACK_DEV_HD const V &at(long i,long j,const V *c,long cap) const { return cap>=s.n?c[i]:a[s.index(i,j)]; }
+    MPLAPACK_DEV_HD void prefetch(long j,long tid,long T,V *c) {
+        for(long i=s.first(j)+tid;i<s.last(j);i+=T) c[i]=a[s.index(i,j)];
     }
+    MPLAPACK_DEV_HD void pivot(long j,const V *dg,long cap) {
+        if(s.notrans) {
+            p[s.n]=x[j]; // retain pre-division zero-skip even after underflow
+            if(x[j]!=V(0.0) && !s.unit) x[j]=A::divide(x[j],at(j,j,dg,cap));
+        } else {
+            V temp=x[j];
+            if(s.upper) for(long i=s.first(j);i<s.last(j);++i) temp=temp-p[i];
+            else for(long i=s.last(j);i-->s.first(j);) temp=temp-p[i];
+            if(!s.unit) {
+                V d=at(j,j,dg,cap);
+                temp=A::divide(temp,s.conjugate?A::conjugate(d):d);
+            }
+            x[j]=temp;
+        }
+    }
+    MPLAPACK_DEV_HD void parallel(long j,long tid,long T,const V *c,long cap) {
+        const long i0=s.first(j),i1=s.last(j);
+        if(s.notrans) {
+            for(long i=i0+tid;i<i1;i+=T)
+                if(p[s.n]!=V(0.0)) x[i]=A::update(x[i],at(i,j,c,cap),x[j]);
+        } else {
+            for(long i=i0+tid;i<i1;i+=T) {
+                V d=at(i,j,c,cap);
+                p[i]=A::product(x[i],s.conjugate?A::conjugate(d):d);
+            }
+        }
+    }
+    // c0/c1 hold whole columns of A (double buffered, indexed by absolute i),
+    // dg the diagonal; cap < n disables the staging (global loads instead).
+    MPLAPACK_DEV_HD void block_run(int tid,int T,V *c0,V *c1,V *dg,long cap) {
+        const bool pf=cap>=s.n && c0 && c1 && dg;
+        if(pf) for(long j=tid;j<s.n;j+=T) dg[j]=a[s.index(j,j)];
+        const bool uppercol=s.upper==s.notrans;
+        long cur=0;
+        if(pf) prefetch(uppercol?s.n-1:0,tid,T,c0);
+        MPLAPACK_WAVE_SYNC;
+        for(long step=0;step<s.n;++step) {
+            const long j=uppercol?s.n-1-step:step;
+            const long jn=step+1<s.n?(uppercol?j-1:j+1):-1;
+            V *ccur=pf?(cur==0?c0:c1):nullptr,*cnext=pf?(cur==0?c1:c0):nullptr;
+            if(s.notrans) {
+                if(tid==0) pivot(j,dg,cap);
+                MPLAPACK_WAVE_SYNC;
+                if(s.last(j)>s.first(j)) parallel(j,tid,T,ccur,cap);
+                if(pf && jn>=0) prefetch(jn,tid,T,cnext);
+                MPLAPACK_WAVE_SYNC;
+            } else {
+                if(s.last(j)>s.first(j)) parallel(j,tid,T,ccur,cap);
+                MPLAPACK_WAVE_SYNC;
+                if(tid==0) pivot(j,dg,cap);
+                if(pf && jn>=0) prefetch(jn,tid,T,cnext);
+                MPLAPACK_WAVE_SYNC;
+            }
+            cur^=1;
+        }
+    }
+};
+template<class V,class A,class L> void schedule(L &ctx,const shape &s,const V *a,V *x,V *p) {
+    ctx.launch_wave(wave_job<V,A>{s,a,x,p});
 }
 }
 #endif

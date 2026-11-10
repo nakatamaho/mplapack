@@ -62,8 +62,27 @@ template<class J> struct dynamic_tri_job {
         if(failure()) e.ok=false;
     }
 };
+template<class J> struct wave_pivot_job {
+    J j;long col;
+    L3_HD void operator()(long) { j.pivot(col,nullptr,0); }
+};
+template<class J> struct wave_parallel_job {
+    J j;long col;
+    L3_HD void operator()(long lane) { j.parallel(col,lane,1,nullptr,0); }
+};
 struct dynamic_tri_launcher : dynamic_launcher {
     template<class J> void launch(J j,long n) { this->execute(dynamic_tri_job<J>{dynamic_engine{},j},n); }
+    // The dynamic residency keeps the per-column flat schedule (goal 13's
+    // single-block wavefront needs one slot per concurrent lane).
+    template<class J> void launch_wave(J j) {
+        const mplapack_trisolve::shape &s=j.s;
+        for(long step=0;step<s.n && !error;++step) {
+            const long col=s.upper==s.notrans?s.n-1-step:step;
+            const long count=s.last(col)-s.first(col);
+            this->execute(dynamic_tri_job<wave_pivot_job<J>>{dynamic_engine{},wave_pivot_job<J>{j,col}},1);
+            if(count) this->execute(dynamic_tri_job<wave_parallel_job<J>>{dynamic_engine{},wave_parallel_job<J>{j,col}},count);
+        }
+    }
 };
 // Shared residency only: the BLAS1 and solve schedules remain separate.
 int run_dynamic_work(mplapack_blas1::operation op,long n,long prec,rt_pack &packed,long &index,const mplapack_trisolve::shape *tri) {
