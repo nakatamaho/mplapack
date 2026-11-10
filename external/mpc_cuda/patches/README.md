@@ -2,16 +2,23 @@
 
 ## Canonical cu_freal zero results (goal 12)
 
-Status: **not yet submitted**. Both builds and full integration tests pass
-following the independent runtime complex HERK repair a3c422820. No upstream
-PR has been made. This section does not change the submission status of the
+Status: **not yet submitted** (PR in preparation by the maintainer). Verified
+against v0.0.2-dev: the cu_fzero oracle passes at every PB on host and A100
+(all combinations of +/-0 inputs, poisoned zero limbs, random operands,
++,-,*, neg/abs/scale2, conversions: 298424 MPFR comparisons and 287098
+frozen-original comparisons per execution mode, 0 failures). No upstream PR
+has been made. This section does not change the submission status of the
 division/sqrt patch below.
 
-`patch-cu_freal-zero-sign` applies to **abd9407**, independently of PR #1;
-MPLAPACK applies it after the division/sqrt patch. Both extraction stamps depend
-on both patches. The tarball and SHA256 are unchanged. The patch includes
-standalone `tools/test_fzero.cpp`, its CUDA wrapper and a frozen original-header
-oracle. Build with `-Iinclude -lmpfr -lgmp`; the CUDA test returns 77 without a GPU.
+`patch-cu_freal-zero-sign` applies to **v0.0.2-dev 0f219b0** (rebased from the
+abd9407 version; the same five minimal edits, since v0.0.2-dev kept the old
+zero handling in cu_fadd/cu_fsub/cu_neg/cu_abs/cu_scale2), independently of
+PR #1; MPLAPACK applies it after the division/sqrt patch. Both extraction
+stamps depend on both patches. The tarball changes only with the goal-12
+bundled update. The standalone tests are carried by MPLAPACK
+(`test/cu_fzero_test.cpp` with the frozen abd9407 oracle
+`test/cu_freal_before_zero.cuh`, host and device); the CUDA test returns 77
+without a GPU.
 
 Reproducer: `cu_freal<256> z(0.0); auto r=z-z;` formerly returned a zero with
 `sign=-1`. `cu_fsub` negated the zero subtrahend, and `cu_fadd` returned it
@@ -75,10 +82,15 @@ sign policy; cu_freal itself has no signed-zero contract.
 Status: **submitted upstream** as https://github.com/tkouya/mpc_cuda/pull/1
 (2026-10-30; the upstream branch also adds tools/test_fround.cu to
 `make check-fixed`, and documents the API in doc/manual.md and manual.ja.md).
-Base: upstream https://github.com/tkouya/mpc_cuda commit **abd9407**, bundled
-as `mpc_cuda-0.0.1-abd9407.tar.xz`. The distfile and its recorded SHA256 are
-unchanged. Remove the patch when the bundled upstream revision contains it.
+Base: upstream https://github.com/tkouya/mpc_cuda branch `v0.0.2-dev`,
+commit **0f219b0** (goal 12 update; the bundled distfile is
+`mpc_cuda-0.0.2-dev-0f219b0.tar.xz`, `git archive` of that commit plus the
+generated `configure`). The old abd9407 0.0.1 distfile and its SHA256 are
+kept for reference. Both patches were rebased to the v0.0.2-dev tree; remove
+a patch when the bundled upstream revision contains it.
 This branch and 3.1 use the same patch/commit; no separate backport branch.
+Upstream checks in the patched tree (goal 12, sm_80): `make check-fixed`,
+`check-fixed-gpu`, `check-fmath` all pass.
 
 ## Proposed PR: correctly rounded finite cu_freal division and square root
 

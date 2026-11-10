@@ -16,8 +16,10 @@ __attribute__((visibility("hidden"))) inline size_t runtime_stack_bytes(long p) 
 }
 // Complex panels also call MPC division/hypot. Keep their policy separate
 // from real panels and BLAS; stack reservations are scoped by the same guard.
+// mpc_cuda v0.0.2-dev's cu_mpc_div needs more per-thread stack than
+// abd9407's; the fixed-precision budget is raised accordingly.
 __attribute__((visibility("hidden"))) inline size_t complex_fixed_stack_bytes(long p) {
-    return p<=1024?8192:16384;
+    return p<=1024?16384:32768;
 }
 __attribute__((visibility("hidden"))) inline size_t complex_runtime_stack_bytes(long p) {
     return p<=1024?8192:p<=2048?16384:65536;

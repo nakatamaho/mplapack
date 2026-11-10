@@ -1,25 +1,18 @@
 From: MPLAPACK maintainers
 Subject: [PATCH] Add correctly rounded finite cu_freal division and sqrt
 
-Against mpc_cuda abd9407 (0.0.1). Add cu_fdiv_rn/cu_sqrt_rn without changing
-cu_fmath or operators. Newton at PB+64 uses a conservative 64-ulp filter;
-ambiguous results use exact integer midpoint products and ties-to-even.
-Host/device MPFR comparison tests and benchmarks are carried by MPLAPACK
-in mpblas/optimized/mpfr/cuda/test/cu_fround_test.cpp. See patches/README.md
-for reproducible commands, limitations and verification status.
+Rebased to mpc_cuda v0.0.2-dev (0f219b0). Add cu_fdiv_rn/cu_sqrt_rn without
+changing cu_fmath or the operators; the implementation is unchanged from the
+version proposed against abd9407 (upstream PR #1): Newton at PB+64 with a
+conservative 64-ulp filter, ambiguous results decided by exact integer
+midpoint products and ties-to-even. The Makefile.in hunk of the original
+patch is dropped: v0.0.2-dev's install rule already wildcards
+include/mpc_cuda/*.cuh. Host/device MPFR comparison tests and benchmarks are
+carried by MPLAPACK in mpblas/optimized/mpfr/cuda/test/cu_fround_test.cpp.
+See patches/README.md for reproducible commands, limitations and status.
 
---- a/Makefile.in
-+++ b/Makefile.in
-@@ -277,7 +277,8 @@
- 	$(MKDIR_P) $(DESTDIR)$(pkgincdir)/mpfr $(DESTDIR)$(pkgincdir)/mpc
- 	$(INSTALL_DATA) include/mpc_cuda/*.h $(DESTDIR)$(pkgincdir)/
- 	$(INSTALL_DATA) include/mpc_cuda/cu_freal.cuh include/mpc_cuda/cu_fcomplex.cuh \
--	    include/mpc_cuda/cu_fmath.cuh include/mpc_cuda/cu_fcmath.cuh $(DESTDIR)$(pkgincdir)/
-+	    include/mpc_cuda/cu_fmath.cuh include/mpc_cuda/cu_fcmath.cuh \
-+	    include/mpc_cuda/cu_fround.cuh $(DESTDIR)$(pkgincdir)/
- 	$(MKDIR_P) $(DESTDIR)$(includedir)
- 	$(INSTALL_DATA) include/mpc_cuda.cuh include/mpc_cuda.h $(DESTDIR)$(includedir)/
- 	cd src/mpfr_cuda && find . -name '*.h' -print | tar -cf - -T - | tar -xf - -C $(DESTDIR)$(pkgincdir)/mpfr
+--- a/include/mpc_cuda.cuh
++++ b/include/mpc_cuda.cuh
 --- a/include/mpc_cuda.cuh
 +++ b/include/mpc_cuda.cuh
 @@ -52,6 +52,7 @@
@@ -29,7 +22,7 @@ for reproducible commands, limitations and verification status.
 +#include "mpc_cuda/cu_fround.cuh"
  #include "mpc_cuda/cu_fcmath.cuh"
  
- #endif /* MPC_CUDA_UMBRELLA_CUH */
+ /* fused, correctly-rounded operations on the fixed-precision types (host
 --- /dev/null
 +++ b/include/mpc_cuda/cu_fround.cuh
 @@ -0,0 +1,145 @@

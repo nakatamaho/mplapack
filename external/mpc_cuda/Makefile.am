@@ -2,13 +2,13 @@
 # Used by libmplapack_mpfr_opt_cuda (--enable-mpfr-cuda) when no installed
 # mpc_cuda is given with --with-mpc-cuda-includedir.
 #
-# The distfile is `git archive` of upstream commit abd9407 with a generated
-# configure.  mpc_cuda builds from the GMP/MPFR/MPC sources, taken from the
+# The distfile is `git archive` of upstream v0.0.2-dev commit 0f219b0 with a
+# generated configure (the abd9407 0.0.1 distfile is kept for reference).  mpc_cuda builds from the GMP/MPFR/MPC sources, taken from the
 # distfiles of ../gmp, ../mpfr and ../mpc.  It needs CUDA 13 (older nvcc
 # rejects the early-clobber asm constraints) and builds for one GPU
 # architecture, sm_$(MPFR_CUDA_ARCH), to which MPC_CUDA_EXTRA_GENCODE adds the
 # other architectures of --with-mpfr-cuda-arch (e.g. 80,90: sm_80 and sm_90).
-MPC_CUDA_VERSION=0.0.1-abd9407
+MPC_CUDA_VERSION=0.0.2-dev-0f219b0
 MPC_CUDA_DISTFILE=mpc_cuda/download/mpc_cuda-$(MPC_CUDA_VERSION).tar.xz
 GMP_DISTFILE=gmp/download/gmp-6.3.0.tar.xz
 MPFR_DISTFILE=mpfr/download/mpfr-4.2.2.tar.bz2

@@ -462,8 +462,8 @@ if(_mplapack_mpc_cuda_bundled)
   set(_mplapack_mpc_cuda_patch "${_mplapack_external}/mpc_cuda/patches/patch-cu_freal-correctly-rounded-div-sqrt")
   set(_mplapack_mpc_cuda_zero_patch "${_mplapack_external}/mpc_cuda/patches/patch-cu_freal-zero-sign")
   ExternalProject_Add(mpc_cuda_bundled
-    URL "${_mplapack_external}/mpc_cuda/download/mpc_cuda-0.0.1-abd9407.tar.xz"
-    URL_HASH SHA256=bcac28655a62d381ffe38fc09704aca39f45610d1f697c351b4fc0acaa2278e7
+    URL "${_mplapack_external}/mpc_cuda/download/mpc_cuda-0.0.2-dev-0f219b0.tar.xz"
+    URL_HASH SHA256=ddb4e96084250f49ca3f5f268eb6fffb145d8811cc985ecb774a13b054b4a209
     PREFIX "${CMAKE_CURRENT_BINARY_DIR}/external/mpc_cuda"
     PATCH_COMMAND
       ${CMAKE_COMMAND} -E tar xf "${_mplapack_external}/gmp/download/gmp-6.3.0.tar.xz"
@@ -1097,6 +1097,23 @@ if(MPLAPACK_BUILD_TESTS)
       endif()
       add_test(NAME mpfr_cuda_cu_fzero_${_variant} COMMAND ${_zeroexe})
       set_tests_properties(mpfr_cuda_cu_fzero_${_variant} PROPERTIES SKIP_RETURN_CODE 77)
+      set(_faexe mpfr_cuda_cu_farith_${_variant}_test)
+      if(_variant STREQUAL "host")
+        add_executable(${_faexe} "${_mplapack_mpfr_cuda_dir}/test/cu_farith_test.cpp")
+      else()
+        add_executable(${_faexe} "${_mplapack_mpfr_cuda_dir}/test/cu_farith_device_test.cu")
+        target_link_libraries(${_faexe} PRIVATE CUDA::cudart)
+        target_compile_options(${_faexe} PRIVATE "$<$<COMPILE_LANGUAGE:CUDA>:-fmad=false>")
+        set_target_properties(${_faexe} PROPERTIES CUDA_STANDARD 17
+          CUDA_STANDARD_REQUIRED ON CUDA_ARCHITECTURES "${MPLAPACK_CUDA_ARCHITECTURES}")
+      endif()
+      target_include_directories(${_faexe} PRIVATE "${MPLAPACK_MPC_CUDA_INCLUDE_DIR}")
+      target_link_libraries(${_faexe} PRIVATE mplapack_mpfr_opt)
+      if(_mplapack_mpc_cuda_bundled)
+        add_dependencies(${_faexe} mpc_cuda_bundled)
+      endif()
+      add_test(NAME mpfr_cuda_cu_farith_${_variant} COMMAND ${_faexe})
+      set_tests_properties(mpfr_cuda_cu_farith_${_variant} PROPERTIES SKIP_RETURN_CODE 77)
       set(_roundexe mpfr_cuda_cu_fround_${_variant}_test)
       if(_variant STREQUAL "host")
         add_executable(${_roundexe} "${_mplapack_mpfr_cuda_dir}/test/cu_fround_test.cpp")
