@@ -1,6 +1,7 @@
 // Reuse inverse-local checked arithmetic, scoped arena, stack and launch pool.
 #ifndef MPLAPACK_MPFR_BLAS1_DEVICE_BODY_CUH
 #define MPLAPACK_MPFR_BLAS1_DEVICE_BODY_CUH
+#include <algorithm>
 #include "Rblas1_kernel_cuda.h"
 #include "Rinverse_device_body.cuh"
 #include "../../common/Rblas1_jobs_common.h"
@@ -101,7 +102,8 @@ template<class Tag,bool Complex> int run_blas1(mplapack_blas1::operation op,long
         // reference's.
         if(dx.allocate(n) || dx.upload(x,n) || a.allocate(2*factor_pool)) return 1;
     } else {
-        if(dx.allocate(n) || dx.upload(x,n) || ((element || product) && (dy.allocate(n) || dy.upload(y,n))) || a.allocate(count)) return 1;
+        const long ws=count>0?std::max(count,(count+fast_sub_elements-1)/fast_sub_elements+(count+fast_chunk_length-1)/fast_chunk_length):0;
+        if(dx.allocate(n) || dx.upload(x,n) || ((element || product) && (dy.allocate(n) || dy.upload(y,n))) || a.allocate(ws)) return 1;
     }
     launcher ctx;if(ctx.error) return ctx.error;
     if(element) ctx.launch(blas1_element_job<V,R>{op==axpy,dx.p,dy.p,alpha},n);

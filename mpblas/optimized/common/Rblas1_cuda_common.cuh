@@ -5,6 +5,7 @@
 #include "Rlapack_sqrt_common.h"
 #include "Rblas1_jobs_common.h"
 #include <vector>
+#include <algorithm>
 #include <type_traits>
 #if defined(__CUDACC__) && !defined(MPLAPACK_GEMM_CUDA_HOST_EMULATION)
 #include <cuda_runtime.h>
@@ -156,13 +157,15 @@ template<class Ops,bool Complex> int run_bf(operation op,long n,
     if(op==mplapack_blas1::iamax) return run_iamax<Ops,Complex>(n,x,result);
     long count=Complex && op==norm?2*n:n;
     const bool product=op==dot || op==dotc || op==dotu;
+    // goal 13 fast schedule workspace: sub-lane plus chunk states
+    const long ws=count>0?std::max(count,(count+fast_sub_elements-1)/fast_sub_elements+(count+fast_chunk_length-1)/fast_chunk_length):0;
 #if defined(__CUDACC__) && !defined(MPLAPACK_GEMM_CUDA_HOST_EMULATION)
     size_t free=0,total=0;
-    if(cudaMemGetInfo(&free,&total) || free/sizeof(state<R>)<size_t(count) ||
-       free-size_t(count)*sizeof(state<R>)<size_t(n)*sizeof(X)*(product?2:1)) return 1;
+    if(cudaMemGetInfo(&free,&total) || free/sizeof(state<R>)<size_t(ws) ||
+       free-size_t(ws)*sizeof(state<R>)<size_t(n)*sizeof(X)*(product?2:1)) return 1;
 #endif
     buffer<X> dx,dy;buffer<state<R>> a;
-    if(dx.allocate(n) || a.allocate(count) || dx.up(x,n) || (product && (dy.allocate(n) || dy.up(y,n)))) return 1;
+    if(dx.allocate(n) || a.allocate(ws) || dx.up(x,n) || (product && (dy.allocate(n) || dy.up(y,n)))) return 1;
     launcher ctx;
     schedule<R,X,Complex,root<Ops>>(ctx,op,n,dx.p,dy.p,a.p);
     if(ctx.error) return ctx.error;

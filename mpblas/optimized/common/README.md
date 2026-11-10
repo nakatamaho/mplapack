@@ -579,8 +579,24 @@ atomics, races, or scheduling-dependent accumulation. Consequently repeated
 runs, and CPU thread-count changes, have the same summation order. GPU
 operands are staged once; all tree levels and the final square root stay on
 the device. `Rblas1_jobs_common.h` exposes internal device-pointer jobs for
-kernel-only measurements. Workspace is O(n), launches O(log n); this is a
-correctness-first baseline, not a tuned crossover claim.
+kernel-only measurements.
+
+Goal 13 replaces the fast-mode order by a **fixed two-level scheme that
+depends on n alone** (`fast_sub_elements` = 32 elements per sub-lane for the
+BF backends, 8 for MPFR; `fast_sub_lanes` = 32 sub-lanes per chunk): a
+chunk of `fast_chunk_length` elements is split into sub-lanes (sub-lane s
+takes chunk*chunk_length + s + sub_lanes*k, coalesced on the GPU), each
+sub-lane is reduced by a fixed pairwise mini-tree over its elements, the
+sub-lane states of a chunk are combined by the adjacent-pair tree with
+ascending strides, and the chunk results are combined by the same
+adjacent-pair tree.  The CPU (`Rblas1_fast_common.h`, dd/td/qd additionally
+with the libQD3 word arithmetic of the SIMD BLAS) and the GPU
+(`Rblas1_jobs_common.h`) run this exact order, so their fast results are
+identical bit for bit and independent of thread counts, launch shapes and
+scheduling; the tests check exactly that.  Workspace is O(n/32) states, GPU
+launches O(log(n/256)); MPFR keeps the goal 11 state chain inside the
+sub-lane (the scalar mini-tree exceeds the bounded per-lane device scratch
+of the checked runtime-precision arithmetic).
 
 Goal 13 replaces the iamax tree: the CPU (`iRamax_omp`, `iCamax_omp`,
 `Riamax_chunks_common.h`) scans fixed contiguous chunks of 4096 elements in
@@ -604,8 +620,12 @@ goal 13 one-pass paths use the equivalent smallest-index rule).
 Error checks assume finite inputs and a representable result; dot/asum
 also require no intermediate overflow/underflow. Use effective unit
 roundoff `u=4*Rlamch("E")`, conservatively allowing BF arithmetic error.
-Dot/asum use absolute bounds of order `4*n*u*sum(abs(terms))` (complex
-products allow twice that for their components); division by the exact
+With the goal 13 two-level order, every element-to-result path has about
+`(fast_sub_elements + ceil(log2(fast_sub_lanes)) + ceil(log2(n/fast_chunk_length)) + 2)`
+rounding steps, so dot/asum use the absolute bound
+`64*u*sum(abs(terms))` for the BF backends (complex products twice that for
+their components), independent of n; the MPFR state chain keeps the
+conservative `4*n*u*sum(abs(terms))` envelope. Division by the exact
 result gives the corresponding relative bound when it is nonzero. The
 focused bounded-input tests use the conservative envelope `32*n*n*u`.
 For scaled norms in normal arithmetic the test bound is

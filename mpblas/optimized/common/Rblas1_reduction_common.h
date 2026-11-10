@@ -7,6 +7,25 @@
 #define MPLAPACK_BLAS1_HD
 #endif
 namespace mplapack_blas1 __attribute__((visibility("hidden"))) {
+// Goal 13 fast-mode two-level order, fixed by the element count alone: a chunk
+// of fast_chunk_length = fast_sub_lanes * fast_sub_elements elements is split
+// into fast_sub_lanes sub-lanes of fast_sub_elements sequential elements
+// (sub-lane s takes chunk*fast_chunk_length + s + fast_sub_lanes*k, a
+// coalesced pattern on the GPU), each sub-lane is reduced by a fixed pairwise
+// mini-tree, the sub-lane states of a chunk are combined by the adjacent-pair
+// tree with ascending strides, and the chunk results are combined by the same
+// adjacent-pair tree.  The CPU and the GPU run this exact order.
+// The sub-lane length is 32 for the BF backends (their values are register
+// sized) and 8 for MPFR (the checked device arithmetic has a bounded per-lane
+// scratch; 32 live complex values overflow the launch budget).  The CPU and
+// the GPU of one backend always share the same value.
+#ifdef MPLAPACK_BUILD_WITH_MPFR
+constexpr long fast_sub_elements=8;
+#else
+constexpr long fast_sub_elements=32;
+#endif
+constexpr long fast_sub_lanes=32;
+constexpr long fast_chunk_length=fast_sub_elements*fast_sub_lanes;
 enum operation { dot, dotc, dotu, asum, norm, iamax, axpy, copy };
 template<class R> struct state {
     R re, im, scale;

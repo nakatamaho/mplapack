@@ -100,6 +100,30 @@ int main() {
         REDUCE_CHECK(Rnrm2,test_Rnrm2_reference,x,n>0,norm_units*test_Rnrm2_reference(n,x.data(),inc))
         REDUCE_CHECK(RCnrm2,test_RCnrm2_reference,z,n>0,norm_units*test_RCnrm2_reference(n,z.data(),inc))
 #undef REDUCE_CHECK
+        // Goal 13: the CPU and GPU fast reductions share one order fixed by n,
+        // so their results are identical bit for bit (all ops, both strides).
+        setenv("MPLAPACK_MPBLAS_FAST","1",1);
+        if(n>0) {
+            bool Rdot_par(INTEGER const n, REAL *dx, INTEGER const incx, REAL *dy, INTEGER const incy, REAL &result);
+            bool Rasum_omp(INTEGER const n, REAL *dx, INTEGER const incx, REAL &result);
+            bool Rnrm2_omp(INTEGER const n, REAL *x, INTEGER const incx, REAL &result);
+            bool Cdotc_omp(INTEGER const n, COMPLEX *zx, INTEGER const incx, COMPLEX *zy, INTEGER const incy, COMPLEX &result);
+            bool Cdotu_omp(INTEGER const n, COMPLEX *zx, INTEGER const incx, COMPLEX *zy, INTEGER const incy, COMPLEX &result);
+            bool RCasum_omp(INTEGER const n, COMPLEX *zx, INTEGER const incx, REAL &result);
+            bool RCnrm2_omp(INTEGER const n, COMPLEX *x, INTEGER const incx, REAL &result);
+            {
+                REAL cr=17.0;if(Rdot_par(n,x.data(),inc,y.data(),inc,cr) && MPLAPACK_CUDA_ENTRY(Rdot)(n,x.data(),inc,y.data(),inc,r)) check(same(cr,r),"CPU==GPU fast Rdot");
+                cr=17.0;if(Rasum_omp(n,x.data(),inc,cr) && inc>0 && MPLAPACK_CUDA_ENTRY(Rasum)(n,x.data(),inc,r)) check(same(cr,r),"CPU==GPU fast Rasum");
+                cr=17.0;if(Rnrm2_omp(n,x.data(),inc,cr) && MPLAPACK_CUDA_ENTRY(Rnrm2)(n,x.data(),inc,r)) check(same(cr,r),"CPU==GPU fast Rnrm2");
+                COMPLEX cc(17.0,19.0);
+                if(Cdotc_omp(n,z.data(),inc,w.data(),inc,cc) && MPLAPACK_CUDA_ENTRY(Cdotc)(n,z.data(),inc,w.data(),inc,c)) check(same(cc,c),"CPU==GPU fast Cdotc");
+                if(Cdotu_omp(n,z.data(),inc,w.data(),inc,cc) && MPLAPACK_CUDA_ENTRY(Cdotu)(n,z.data(),inc,w.data(),inc,c)) check(same(cc,c),"CPU==GPU fast Cdotu");
+                cc=COMPLEX(17.0,19.0);REAL cr2=17.0;
+                if(RCasum_omp(n,z.data(),inc,cr2) && inc>0 && MPLAPACK_CUDA_ENTRY(RCasum)(n,z.data(),inc,r)) check(same(cr2,r),"CPU==GPU fast RCasum");
+                if(RCnrm2_omp(n,z.data(),inc,cr2) && MPLAPACK_CUDA_ENTRY(RCnrm2)(n,z.data(),inc,r)) check(same(cr2,r),"CPU==GPU fast RCnrm2");
+            }
+        }
+        unsetenv("MPLAPACK_MPBLAS_FAST");
         check(MPLAPACK_CUDA_ENTRY(iRamax)(n,x.data(),inc,index)==(n>0 && inc>0),"iRamax status");
         if(n>0 && inc>0) check(index==test_iRamax_reference(n,x.data(),inc),"iRamax first tie");
         check(MPLAPACK_CUDA_ENTRY(iCamax)(n,z.data(),inc,index)==(n>0 && inc>0),"iCamax status");

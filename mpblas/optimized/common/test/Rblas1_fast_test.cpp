@@ -173,6 +173,55 @@ int main() {
         }
 #endif
     }
+    // Goal 13: the fast reductions have an order fixed by n alone, so the
+    // result must not depend on the OpenMP thread count (1, 2, 7, 32) or on
+    // serial execution, and chunk boundaries (255/256/257, 2047/2048/2049) must
+    // behave like any other size.
+    {
+        auto vec=[&](long n,long seed) {
+            std::mt19937_64 r3(seed);
+            std::vector<REAL> x((size_t)n),y((size_t)n);
+            std::vector<COMPLEX> z((size_t)n),w((size_t)n);
+            for(long i=0;i<n;++i) {
+                x[i]=REAL(double(int(r3()%2001)-1000))/REAL(997.0);
+                y[i]=REAL(double(int(r3()%2001)-1000))/REAL(991.0);
+                z[i]=COMPLEX(x[i],y[i]);w[i]=COMPLEX(y[i],-x[i]);
+            }
+            return std::make_tuple(x,y,z,w);
+        };
+        for(long n:{1L,7L,31L,63L,255L,256L,257L,511L,512L,513L,2047L,2048L,2049L,4097L}) {
+            auto [x,y,z,w]=vec(n,20261111);
+            std::vector<std::vector<REAL>> res(3);
+            std::vector<std::vector<COMPLEX>> cres(3);
+#ifdef _OPENMP
+            const unsigned saved=omp_get_max_threads();
+            setenv("MPLAPACK_MPBLAS_FAST","1",1);
+            for(int k:{1,2,7,32}) {
+                omp_set_num_threads(k);
+                res[0].push_back(Rdot(n,x.data(),1,y.data(),1));
+                res[1].push_back(Rasum(n,x.data(),1));
+                res[2].push_back(Rnrm2(n,x.data(),1));
+                cres[0].push_back(Cdotc(n,z.data(),1,w.data(),1));
+                cres[1].push_back(RCasum(n,z.data(),1));
+                cres[2].push_back(RCnrm2(n,z.data(),1));
+            }
+            omp_set_num_threads(saved);
+            setenv("MPLAPACK_BLAS_OMP","0",1);
+            res[0].push_back(Rdot(n,x.data(),1,y.data(),1));
+            res[1].push_back(Rasum(n,x.data(),1));
+            res[2].push_back(Rnrm2(n,x.data(),1));
+            cres[0].push_back(Cdotc(n,z.data(),1,w.data(),1));
+            cres[1].push_back(RCasum(n,z.data(),1));
+            cres[2].push_back(RCnrm2(n,z.data(),1));
+            unsetenv("MPLAPACK_BLAS_OMP");
+            for(int q=0;q<3;++q)
+                check(std::adjacent_find(res[q].begin(),res[q].end(),[&](const REAL &a,const REAL &b){return !same(a,b);})==res[q].end(),"fast real reduction thread independence");
+            for(int q=0;q<3;++q)
+                check(std::adjacent_find(cres[q].begin(),cres[q].end(),[&](const COMPLEX &a,const COMPLEX &b){return !same(a,b);})==cres[q].end(),"fast complex reduction thread independence");
+            unsetenv("MPLAPACK_MPBLAS_FAST");
+#endif
+        }
+    }
     std::printf("BLAS1 fast: %ld checks, %ld failures\n",checks,failures);
     return failures?1:0;
 }
