@@ -5,6 +5,7 @@
 #include "Rlapack_sqrt_common.h"
 #include "Rblas1_jobs_common.h"
 #include <vector>
+#include <cstdio>
 #include <algorithm>
 #include <type_traits>
 #if defined(__CUDACC__) && !defined(MPLAPACK_GEMM_CUDA_HOST_EMULATION)
@@ -83,13 +84,66 @@ template<class V> struct buffer {
     int down(V *h,size_t n) { return cudaMemcpy(h,p,n*sizeof(V),cudaMemcpyDeviceToHost); }
 };
 
+template<class J> __global__ void chunk_kernel(J job,long units,char staged) {
+    extern __shared__ unsigned char mplapack_chunk_sh[];
+    for(long c=blockIdx.x;c<units;c+=gridDim.x)
+        job.block_run((int)threadIdx.x,(int)blockDim.x,c,staged?reinterpret_cast<char *>(mplapack_chunk_sh):nullptr);
+}
+template<class J> __global__ void chunk_tree_kernel(J job,long units) {
+    extern __shared__ unsigned char mplapack_chunk_sh[];
+    job.block_run((int)threadIdx.x,(int)blockDim.x,0,reinterpret_cast<char *>(mplapack_chunk_sh));
+}
 struct launcher {
     int error=0;
+    static constexpr bool chunked_reductions=true;
     template<class J> void launch(J job,long n) {
         if(error) return;
         long blocks=(n+127)/128;if(blocks>65535) blocks=65535;
         kernel<<<unsigned(blocks),128>>>(job,n);
         error=cudaGetLastError();
+    }
+    // Goal 13 (continued) fast reductions: one chunk of the fixed two-level
+    // order per block iteration, folded in shared memory (see
+    // Rblas1_jobs_common.h).  32 threads = one warp = the fast_sub_lanes
+    // sub-lane workers; the same threads stage the chunk coalesced.
+    template<class J> void launch_chunked(J job,long units) {
+        if(error) return;
+        if(units<=0) return;
+        const unsigned T=128;
+        const long blocks=units<65535?units:65535;
+        size_t full=J::smem_bytes();
+        unsigned smem;bool staged;
+#if defined(MPLAPACK_CHUNK_DEBUG_NOSTAGE)
+        staged=false;smem=(unsigned)J::sublane_smem_bytes();
+#else
+        if(full<=160*1024) { staged=true;smem=(unsigned)full; }
+        else {
+            // chunk elements too large for the shared memory: the unstaged
+            // variant reads x/y from global memory (same order)
+            staged=false;smem=(unsigned)J::sublane_smem_bytes();
+            if(smem>160*1024) { error=1;return; }
+        }
+#endif
+        if(smem>48*1024 && cudaFuncSetAttribute(chunk_kernel<J>,cudaFuncAttributeMaxDynamicSharedMemorySize,(int)smem)!=cudaSuccess) { error=1;return; }
+        chunk_kernel<J><<<unsigned(blocks),T,smem>>>(job,units,staged?(char)1:(char)0);
+        error=cudaGetLastError();
+    }
+    // Returns 0 when the one-kernel shared-memory tree was launched; nonzero
+    // asks the schedule for the per-stage global-memory fallback (identical
+    // order, one launch per stride).
+    template<class J> int launch_chunk_tree(J job,long units) {
+        if(error) return 1;
+        if(units<=0) return 1;
+        const size_t need=J::smem_bytes(units);
+        unsigned smem=0;
+        if(need>48*1024) {
+            if(need>160*1024 || cudaFuncSetAttribute(chunk_tree_kernel<J>,cudaFuncAttributeMaxDynamicSharedMemorySize,(int)need)!=cudaSuccess)
+                return 1; // the chunk states do not fit the shared memory
+            smem=(unsigned)need;
+        } else smem=(unsigned)need;
+        chunk_tree_kernel<J><<<1,256,smem>>>(job,units);
+        error=cudaGetLastError();
+        return error?1:0;
     }
     template<class J> void launch_wave(J job) {
         if(error) return;
@@ -115,10 +169,21 @@ struct launcher {
 #else
 struct launcher {
     int error=0;
+    static constexpr bool chunked_reductions=true;
     template<class J> void launch(J job,long n) { for(long i=0;i<n;++i) job(i); }
     template<class J> void launch_wave(J job) {
         std::vector<int> f(size_t(job.s.n>0?job.s.n:0)*2,0);
         job.block_run(0,1,f.data(),f.data()+ (job.s.n>0?job.s.n:0));
+    }
+    template<class J> void launch_chunked(J job,long units) {
+        std::vector<char> sh(J::smem_bytes());
+        for(long c=0;c<units;++c) job.block_run(0,1,c,sh.data());
+    }
+    template<class J> int launch_chunk_tree(J job,long units) {
+        if(units<=0) return 1;
+        std::vector<char> sh(J::smem_bytes(units));
+        job.block_run(0,1,0,sh.data());
+        return 0;
     }
 };
 template<class V> struct buffer {
@@ -192,8 +257,9 @@ template<class Ops,bool Complex> int run_bf(operation op,long n,
     if(op==mplapack_blas1::iamax) return run_iamax<Ops,Complex>(n,x,result);
     long count=Complex && op==norm?2*n:n;
     const bool product=op==dot || op==dotc || op==dotu;
-    // goal 13 fast schedule workspace: sub-lane plus chunk states
-    const long ws=count>0?std::max(count,(count+fast_sub_elements-1)/fast_sub_elements+(count+fast_chunk_length-1)/fast_chunk_length):0;
+    // goal 13 (continued) fast schedule workspace: one state per chunk (the
+    // chunk kernel folds the sub-lanes in shared memory)
+    const long ws=count>0?(count+fast_chunk_length-1)/fast_chunk_length:0;
 #if defined(__CUDACC__) && !defined(MPLAPACK_GEMM_CUDA_HOST_EMULATION)
     size_t free=0,total=0;
     if(cudaMemGetInfo(&free,&total) || free/sizeof(state<R>)<size_t(ws) ||

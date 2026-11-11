@@ -23,6 +23,12 @@ template<class J> struct checked_job {
     inverse_engine e; J j;
     L3_HD void operator()(long lane) { j(lane); if(failure()) e.ok=false; }
 };
+// Block-cooperative checked wrapper for the shared-memory chunk reductions
+// (the chunk jobs carry no engine of their own).
+template<class J> struct block_checked_job {
+    inverse_engine e; J j;
+    L3_HD void block_run(int tid,int T,long u,char *sh) { j.block_run(tid,T,u,sh); if(failure()) e.ok=false; }
+};
 // Goal 13 wavefront: the whole triangular schedule runs in one block with
 // per-element flags (see Rtrisolve_jobs.h).  The runtime-precision engine
 // keeps one live value per owner thread — the same residency the flat
@@ -40,6 +46,8 @@ template<class J> __global__ void k_mpfr_wave(wave_checked_job<J> job,int *faile
 }
 #endif
 struct launcher : factor_context<inverse_engine> {
+    // the checked arithmetic keeps the lane-parallel sub-lane schedule
+    static constexpr bool chunked_reductions=false;
     launcher():factor_context<inverse_engine>(inverse_engine{},inverse_engine::M{},1,1) {}
     long *status_data() { return status.p; }
     long feedback(long *) { return factor_context<inverse_engine>::feedback(); }
@@ -74,6 +82,35 @@ struct launcher : factor_context<inverse_engine> {
         w.block_run(0,1,f.data(),f.data()+(j.s.n>0?j.s.n:0));
         if(!w.e.ok) *failed.p=1;
 #endif
+    }
+    // Goal 13 (continued) fast reductions: one chunk of the fixed two-level
+    // order per block iteration, folded in shared memory (see
+    // Rblas1_jobs_common.h); 32 threads = one warp = the sub-lane workers.
+    // The grid stays within the pool: the arena is indexed by the physical
+    // thread id.  The engine wraps the chunk job like checked_job wraps the
+    // lane jobs.
+    template<class J> void launch_chunked(J job,long units) {
+        if(error) return;
+        block_checked_job<J> w{inverse_engine{},job};
+        size_t full=J::smem_bytes();
+        if(full<=160*1024) {
+            error=execute_blocks(w,units,32,full,true);
+            return;
+        }
+        // chunk elements too large for the shared memory: unstaged variant
+        // (x/y from global memory, same order)
+        size_t sm=J::sublane_smem_bytes();
+        if(sm>160*1024) { error=1;return; }
+        error=execute_blocks(w,units,32,sm,false);
+    }
+    // Returns 0 when the one-kernel shared-memory tree was launched; nonzero
+    // asks the schedule for the per-stage global-memory fallback.
+    template<class J> int launch_chunk_tree(J job,long units) {
+        if(error) return 1;
+        const size_t need=J::smem_bytes(units);
+        if(need>160*1024) return 1; // the chunk states do not fit
+        block_checked_job<J> w{inverse_engine{},job};
+        return execute_blocks(w,1,256,need,true);
     }
     void finish() {
         factor_context<inverse_engine>::finish(); int f=0;

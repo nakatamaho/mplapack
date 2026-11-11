@@ -249,6 +249,18 @@ template<class Job> __global__ void factor_kernel(Job job,long units,int *failed
     for(long lane=tid-offset;lane<units;lane+=(long)gridDim.x*blockDim.x-offset) job(lane);
     if(!job.e.ok) atomicExch(failed,1);
 }
+// Block-cooperative variant of factor_kernel: block b handles units
+// grid-strided, the threads of the block cooperate through the job's
+// block_run (shared memory reductions).  The physical thread id stays within
+// factor_pool, which the arena indexing requires.
+template<class Job> __global__ void factor_block_kernel(Job job,long units,char staged,int *failed) {
+    extern __shared__ unsigned char mplapack_factor_block_sh[];
+    const long tid=(long)blockIdx.x*blockDim.x+threadIdx.x;
+    job.e.thread(tid);
+    for(long u=blockIdx.x;u<units;u+=gridDim.x)
+        job.block_run((int)threadIdx.x,(int)blockDim.x,u,staged?reinterpret_cast<char *>(mplapack_factor_block_sh):nullptr);
+    if(!job.e.ok) atomicExch(failed,1);
+}
 using factor_stack_guard=mpfr_stack_guard;
 template<class T> struct factor_buffer {
     T *p=nullptr;
@@ -332,6 +344,28 @@ template<class E> class factor_context {
         j.e.thread(0);
         for(long i=0;i<units;++i) j(i);
         if(!j.e.ok) *failed.p=1;
+#endif
+    }
+    // Block-cooperative launch for the shared-memory chunk reductions; the
+    // return value is 0 on success, nonzero on a launch failure.
+    template<class Job> int execute_blocks(Job j,long units,int T,size_t smem,bool staged=true) {
+        if(error || !units) return error?1:0;
+#ifndef MPLAPACK_MPFR_CUDA_HOST_EMULATION
+        long blocks=(units+T-1)/T;
+        if(E::runtime) blocks=std::min((long)factor_blocks,blocks);
+        if((long)blocks*T>factor_pool) blocks=factor_pool/T;
+        if(blocks<1) { error=1;return 1; }
+        if(smem>48*1024 && cudaFuncSetAttribute(factor_block_kernel<Job>,cudaFuncAttributeMaxDynamicSharedMemorySize,(int)smem)!=cudaSuccess) { error=1;return 1; }
+        const char st=staged?(char)1:(char)0;
+        factor_block_kernel<Job><<<(unsigned)blocks,(unsigned)T,(unsigned)smem,stream()>>>(j,units,st,failed.p);
+        error=cudaGetLastError();
+        return error?1:0;
+#else
+        j.e.thread(0);
+        std::vector<char> sh(smem?smem:1);
+        for(long u=0;u<units;++u) j.block_run(0,1,u,sh.data());
+        if(!j.e.ok) *failed.p=1;
+        return 0;
 #endif
     }
 #ifndef MPLAPACK_MPFR_FACTOR_COMPLEX
