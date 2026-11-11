@@ -14,10 +14,12 @@ template<class Ops,bool Complex> int run_bf(const shape &s,
     size_t free=0,total=0;
     if(cudaMemGetInfo(&free,&total) || (count+2*size_t(s.n)+1)>free/sizeof(V)) return 1;
 #endif
-    mplapack_blas1::buffer<V> da,dx,p;
-    if(da.allocate(count) || dx.allocate(s.n) || p.allocate(s.n+1) || da.up(a,count) || dx.up(x,s.n)) return 1;
+    mplapack_blas1::buffer<V> da,dx;
+    if(da.allocate(count) || dx.allocate(s.n) || da.up(a,count) || dx.up(x,s.n)) return 1;
     mplapack_blas1::launcher ctx;
-    schedule<V,A>(ctx,s,da.p,dx.p,p.p);
+    // the flag wavefront does not use the p[] workspace; the schedule keeps
+    // the argument for the MPFR runtime-precision flat schedule
+    schedule<V,A>(ctx,s,da.p,dx.p,dx.p);
     if(ctx.error) return ctx.error;
     return dx.down(x,s.n);
 }

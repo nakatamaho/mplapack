@@ -3,6 +3,7 @@
 #define MPLAPACK_MPFR_INVERSE_DEVICE_BODY_CUH
 #include "Rinverse_kernel_cuda.h"
 #include "Cfactor_device_body.cuh"
+#include <vector>
 #include "../../../../mplapack/optimized/common/Rinverse_schedule.h"
 namespace mplapack_mpfr_inverse {
 using namespace mplapack_mpfr_cuda;
@@ -22,14 +23,19 @@ template<class J> struct checked_job {
     inverse_engine e; J j;
     L3_HD void operator()(long lane) { j(lane); if(failure()) e.ok=false; }
 };
-// Goal 13 wavefront: the whole triangular schedule runs in one block.
+// Goal 13 wavefront: the whole triangular schedule runs in one block with
+// per-element flags (see Rtrisolve_jobs.h).  The runtime-precision engine
+// keeps one live value per owner thread — the same residency the flat
+// per-column schedule uses.
 template<class J> struct wave_checked_job {
     inverse_engine e; J j;
-    L3_HD void block_run(int tid,int T) { e.thread(tid); j.block_run(tid,T,nullptr,nullptr,nullptr,0); if(failure()) e.ok=false; }
+    L3_HD void block_run(int tid,int T,int *flags,int *prog) { e.thread(tid); j.block_run(tid,T,flags,prog); if(failure()) e.ok=false; }
 };
 #ifndef MPLAPACK_MPFR_CUDA_HOST_EMULATION
-template<class J> __global__ void k_mpfr_wave(wave_checked_job<J> job,int *failed) {
-    job.block_run(threadIdx.x,blockDim.x);
+template<class J> __global__ void k_mpfr_wave(wave_checked_job<J> job,int *failed,int *buf) {
+    const long gtid=(long)blockIdx.x*blockDim.x+threadIdx.x;
+    const long gT=(long)gridDim.x*blockDim.x;
+    job.block_run(gtid,gT,buf,buf+job.j.s.n);
     if(!job.e.ok) atomicExch(failed,1);
 }
 #endif
@@ -42,11 +48,30 @@ struct launcher : factor_context<inverse_engine> {
         if(error) return;
         wave_checked_job<J> w{inverse_engine{},j};
 #ifndef MPLAPACK_MPFR_CUDA_HOST_EMULATION
-        k_mpfr_wave<J><<<1,256>>>(w,failed.p);
-        error=cudaGetLastError();
+        const long n=j.s.n;
+        if(n<=0) return;
+        const int T=256;
+        int perSM=0,sms=0;
+        if(cudaOccupancyMaxActiveBlocksPerMultiprocessor(&perSM,(const void *)k_mpfr_wave<J>,T,0)!=cudaSuccess || perSM<=0)
+            perSM=1;
+        if(cudaDeviceGetAttribute(&sms,cudaDevAttrMultiProcessorCount,0)!=cudaSuccess || sms<=0)
+            sms=1;
+        // The checked arithmetic arena is indexed by the physical thread id
+        // (factor_pool slots); the grid must not exceed it.
+        long cap=(long)perSM*sms;
+        const long poolcap=mplapack_mpfr_cuda::factor_pool/T;
+        if(cap>poolcap) cap=poolcap;
+        long blocks=cap;
+        factor_buffer<int> fb;
+        if(fb.allocate(size_t(n)*2) || cudaMemset(fb.p,0,size_t(n)*2*sizeof(int))) { error=1;return; }
+        wave_checked_job<J> w2{inverse_engine{},j};
+        int *p=fb.p,*fp=failed.p;
+        void *args[3]={&w2,&fp,&p};
+        error=cudaLaunchCooperativeKernel((const void *)k_mpfr_wave<J>,dim3(unsigned(blocks)),dim3(T),args,0,0);
         if(!error) error=cudaDeviceSynchronize();
 #else
-        w.block_run(0,1);
+        std::vector<int> f(size_t(j.s.n>0?j.s.n:0)*2,0);
+        w.block_run(0,1,f.data(),f.data()+(j.s.n>0?j.s.n:0));
         if(!w.e.ok) *failed.p=1;
 #endif
     }

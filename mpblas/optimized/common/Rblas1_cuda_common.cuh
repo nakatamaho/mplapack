@@ -65,16 +65,24 @@ template<class R> __global__ void k_iamax_final(const iamax_pair<R> *in,long nb,
 template<class J> __global__ void kernel(J job,long count) {
     for(long i=long(blockIdx.x)*blockDim.x+threadIdx.x;i<count;i+=long(blockDim.x)*gridDim.x) job(i);
 }
-// Goal 13 wavefront: one persistent block runs the whole schedule; the
-// dynamic shared memory stages the diagonal and double-buffered columns of A
-// so the serial column chain is not latency-bound on the global loads.
-template<class J> __global__ void k_wave_block(J job,long cap) {
-    extern __shared__ unsigned char mplapack_wave_sh[];
-    typedef typename J::vtype V;
-    V *c0=reinterpret_cast<V *>(mplapack_wave_sh);
-    V *c1=c0+cap,*dg=c1+cap;
-    job.block_run(threadIdx.x,blockDim.x,c0,c1,dg,cap);
+// Goal 13 (continued) wavefront, grid version: the elements are spread over
+// as many resident blocks as the device holds (cooperative launch), so the
+// n^2/2 term updates are not confined to one SM; the columns still finalize
+// one after another through per-element progress flags in global memory
+// (2 ints per element: flag + owner-private term count, pre-zeroed).
+template<class J> __global__ void k_wave_grid(J job,int *buf) {
+    const long gtid=(long)blockIdx.x*blockDim.x+threadIdx.x;
+    const long gT=(long)gridDim.x*blockDim.x;
+    job.block_run(gtid,gT,buf,buf+job.s.n);
 }
+template<class V> struct buffer {
+    V *p=nullptr;
+    ~buffer() { cudaFree(p); }
+    int allocate(size_t n) { return cudaMalloc(&p,n*sizeof(V)); }
+    int up(const V *h,size_t n) { return cudaMemcpy(p,h,n*sizeof(V),cudaMemcpyHostToDevice); }
+    int down(V *h,size_t n) { return cudaMemcpy(h,p,n*sizeof(V),cudaMemcpyDeviceToHost); }
+};
+
 struct launcher {
     int error=0;
     template<class J> void launch(J job,long n) {
@@ -86,40 +94,32 @@ struct launcher {
     template<class J> void launch_wave(J job) {
         if(error) return;
         const long n=job.s.n;
-        long cap=n;
-        size_t smem=size_t(3)*size_t(cap)*sizeof(typename J::vtype);
-        const size_t smax=150*1024;
-        if(smem>smax) { cap=0;smem=0; }
-        if(smem>48*1024) {
-            if(cudaFuncSetAttribute(k_wave_block<J>,cudaFuncAttributeMaxDynamicSharedMemorySize,int(smem))!=cudaSuccess) {
-                cap=0;smem=0;
-            }
-        }
-        k_wave_block<J><<<1,512,unsigned(smem)>>>(job,cap);
-        error=cudaGetLastError();
-
-        if(error) {
-            // the staged configuration does not fit (registers/shared): the
-            // unstaged wavefront produces the same result
-            error=0;
-            k_wave_block<J><<<1,512>>>(job,0);
-            error=cudaGetLastError();
-        }
+        if(n<=0) return;
+        const int T=256;
+        int perSM=0,sms=0;
+        if(cudaOccupancyMaxActiveBlocksPerMultiprocessor(&perSM,(const void *)k_wave_grid<J>,T,0)!=cudaSuccess || perSM<=0)
+            perSM=1;
+        if(cudaDeviceGetAttribute(&sms,cudaDevAttrMultiProcessorCount,0)!=cudaSuccess || sms<=0)
+            sms=1;
+        long cap=(long)perSM*sms; // resident blocks (cooperative launch limit)
+        long blocks=cap;         // fill the device: consecutive elements land on
+                                 // consecutive threads across all blocks
+        buffer<int> fb;
+        if(fb.allocate(size_t(n)*2) || cudaMemset(fb.p,0,size_t(n)*2*sizeof(int))) { error=1;return; }
+        J j2=job;
+        void *args[2]={&j2,&fb.p};
+        error=cudaLaunchCooperativeKernel((const void *)k_wave_grid<J>,dim3(unsigned(blocks)),dim3(T),args,0,0);
         if(!error) error=cudaDeviceSynchronize();
     }
-};
-template<class V> struct buffer {
-    V *p=nullptr;
-    ~buffer() { cudaFree(p); }
-    int allocate(size_t n) { return cudaMalloc(&p,n*sizeof(V)); }
-    int up(const V *h,size_t n) { return cudaMemcpy(p,h,n*sizeof(V),cudaMemcpyHostToDevice); }
-    int down(V *h,size_t n) { return cudaMemcpy(h,p,n*sizeof(V),cudaMemcpyDeviceToHost); }
 };
 #else
 struct launcher {
     int error=0;
     template<class J> void launch(J job,long n) { for(long i=0;i<n;++i) job(i); }
-    template<class J> void launch_wave(J job) { job.block_run(0,1,nullptr,nullptr,nullptr,0); }
+    template<class J> void launch_wave(J job) {
+        std::vector<int> f(size_t(job.s.n>0?job.s.n:0)*2,0);
+        job.block_run(0,1,f.data(),f.data()+ (job.s.n>0?job.s.n:0));
+    }
 };
 template<class V> struct buffer {
     std::vector<V> v;V *p=nullptr;

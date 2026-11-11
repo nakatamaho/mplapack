@@ -64,11 +64,11 @@ template<class J> struct dynamic_tri_job {
 };
 template<class J> struct wave_pivot_job {
     J j;long col;
-    L3_HD void operator()(long) { j.pivot(col,nullptr,0); }
+    L3_HD void operator()(long) { j.pivot(col); }
 };
 template<class J> struct wave_parallel_job {
     J j;long col;
-    L3_HD void operator()(long lane) { j.parallel(col,lane,1,nullptr,0); }
+    L3_HD void operator()(long lane) { j.parallel(col,lane,1); }
 };
 struct dynamic_tri_launcher : dynamic_launcher {
     template<class J> void launch(J j,long n) { this->execute(dynamic_tri_job<J>{dynamic_engine{},j},n); }
