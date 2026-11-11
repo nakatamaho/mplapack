@@ -29,6 +29,19 @@ template<class J> struct block_checked_job {
     inverse_engine e; J j;
     L3_HD void block_run(int tid,int T,long u,char *sh) { j.block_run(tid,T,u,sh); if(failure()) e.ok=false; }
 };
+// Leaf wrapper: the leaf jobs carry no engine of their own either.
+template<class J> struct leaf_checked_job {
+    inverse_engine e; J j;
+    L3_HD void block_run(int tid,int T,typename J::e_type *aii) { j.block_run(tid,T,aii); if(failure()) e.ok=false; }
+};
+#ifndef MPLAPACK_MPFR_CUDA_HOST_EMULATION
+template<class J> __global__ void factor_leaf_kernel(leaf_checked_job<J> job,long n,int *failed) {
+    extern __shared__ unsigned char mplapack_leaf_sh[];
+    job.e.thread((long)threadIdx.x);
+    job.block_run((int)threadIdx.x,(int)blockDim.x,reinterpret_cast<typename J::e_type *>(mplapack_leaf_sh));
+    if(!job.e.ok) atomicExch(failed,1);
+}
+#endif
 // Goal 13 wavefront: the whole triangular schedule runs in one block with
 // per-element flags (see Rtrisolve_jobs.h).  The runtime-precision engine
 // keeps one live value per owner thread — the same residency the flat
@@ -46,8 +59,11 @@ template<class J> __global__ void k_mpfr_wave(wave_checked_job<J> job,int *faile
 }
 #endif
 struct launcher : factor_context<inverse_engine> {
-    // the checked arithmetic keeps the lane-parallel sub-lane schedule
+    // the checked arithmetic keeps the lane-parallel sub-lane schedule and
+    // the lane-parallel TRMM (the shared-memory staging does not fit its
+    // element size for the larger precisions)
     static constexpr bool chunked_reductions=false;
+    static constexpr bool tiled_mm=false;
     launcher():factor_context<inverse_engine>(inverse_engine{},inverse_engine::M{},1,1) {}
     long *status_data() { return status.p; }
     long feedback(long *) { return factor_context<inverse_engine>::feedback(); }
@@ -80,6 +96,25 @@ struct launcher : factor_context<inverse_engine> {
 #else
         std::vector<int> f(size_t(j.s.n>0?j.s.n:0)*2,0);
         w.block_run(0,1,f.data(),f.data()+(j.s.n>0?j.s.n:0));
+        if(!w.e.ok) *failed.p=1;
+#endif
+    }
+    // Goal 13 (continued): one block per inverse leaf; the leaf's per-row
+    // scratch (aii) lives in dynamic shared memory.
+    template<class J> void launch_leaf(J j) {
+        if(error) return;
+        leaf_checked_job<J> w{inverse_engine{},j};
+        const long n=j.n;
+#ifndef MPLAPACK_MPFR_CUDA_HOST_EMULATION
+        const unsigned smem=(unsigned)(n*sizeof(typename J::e_type));
+        if(smem>48*1024 && cudaFuncSetAttribute(factor_leaf_kernel<J>,cudaFuncAttributeMaxDynamicSharedMemorySize,(int)smem)!=cudaSuccess) { error=1;return; }
+        factor_leaf_kernel<J><<<1,128,smem>>>(w,n,failed.p);
+        error=cudaGetLastError();
+        if(!error) error=cudaDeviceSynchronize();
+#else
+        std::vector<typename J::e_type> aii(n>0?(size_t)n:1);
+        w.e.thread(0);
+        w.block_run(0,1,aii.data());
         if(!w.e.ok) *failed.p=1;
 #endif
     }

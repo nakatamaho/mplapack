@@ -5,10 +5,24 @@
 #include "Rpotrf_small_common.cuh"
 #include "Rpotrf_right_common.cuh"
 #include "../../../mpblas/optimized/common/Rpotrf_output_common.h"
+#include <vector>
 
 namespace mplapack_lapack_gpu {
 // Only scheduling differs from the reference. A panel-ready event releases
 // the far update; update-done is waited on before touching the next block row.
+#if defined(__CUDACC__)
+template<class J> __global__ void mm_leftn_kernel(J j,long ncols) {
+    extern __shared__ unsigned char mplapack_mm_sh[];
+    for(long c=blockIdx.x;c<ncols;c+=gridDim.x)
+        j.block_run((int)threadIdx.x,(int)blockDim.x,c,reinterpret_cast<typename J::e_type *>(mplapack_mm_sh));
+}
+#endif
+#if defined(__CUDACC__)
+template<class J> __global__ void leaf_kernel(J j,long n) {
+    extern __shared__ unsigned char mplapack_leaf_sh[];
+    j.block_run((int)threadIdx.x,(int)blockDim.x,reinterpret_cast<typename J::e_type *>(mplapack_leaf_sh));
+}
+#endif
 class chol_schedule {
   public:
     int error=0;
@@ -44,6 +58,32 @@ class chol_schedule {
     void release_update() {}
     void finish() {}
 #endif
+    template<class J> void launch_mm_leftn(J j,long ncols,long m) {
+        if(error) return;
+#if defined(__CUDACC__)
+        const unsigned smem=(unsigned)(m*sizeof(typename J::e_type));
+        if(smem>48*1024 && cudaFuncSetAttribute(mm_leftn_kernel<J>,cudaFuncAttributeMaxDynamicSharedMemorySize,(int)smem)!=cudaSuccess) { error=1;return; }
+        long blocks=ncols<65535?ncols:65535;
+        mm_leftn_kernel<J><<<(unsigned)blocks,128,smem>>>(j,ncols);
+        error=cudaGetLastError();
+#else
+        std::vector<typename J::e_type> xs(m>0?(size_t)m:1);
+        for(long c=0;c<ncols;++c) j.block_run(0,1,c,xs.data());
+#endif
+    }
+    template<class J> void launch_leaf(J j) {
+        if(error) return;
+        const long n=j.n;
+#if defined(__CUDACC__)
+        const unsigned smem=(unsigned)(n*sizeof(typename J::e_type));
+        if(smem>48*1024 && cudaFuncSetAttribute(leaf_kernel<J>,cudaFuncAttributeMaxDynamicSharedMemorySize,(int)smem)!=cudaSuccess) { error=1;return; }
+        leaf_kernel<J><<<1,2,smem>>>(j,n);
+        error=cudaGetLastError();
+#else
+        std::vector<typename J::e_type> aii(n>0?(size_t)n:1);
+        j.block_run(0,1,aii.data());
+#endif
+    }
     template<class Job> void launch(Job j,long units) {
         if(error || units<=0) return;
 #if defined(__CUDACC__)
