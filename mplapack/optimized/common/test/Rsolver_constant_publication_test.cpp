@@ -44,6 +44,9 @@ int main(int argc,char **argv) {
     std::printf("%s computed=%d info=%ld errors=%ld copies=%d fences=%d skipped=%d control=%d\n",PREFIX,computed?1:0,long(info),errors,copies,waits,skips,control?1:0);
     auto release=reinterpret_cast<void(*)()>(dlsym(RTLD_DEFAULT,"mplapack_test_pivot_release")); if(release) release();
     bool correct=computed && info==0 && errors==0;
-    if(control) return copies==1 && skips==1 && !correct?1:0; // CTest WILL_FAIL.
+    // Goal 13 (continued): the triangular-solve wavefront orders its own
+    // constants (device synchronization plus fences), so the delayed run is
+    // now CORRECT; the test asserts that instead of the old WILL_FAIL.
+    if(control) return correct && copies==1 && skips==1?0:1;
     return correct && copies==1 && waits==1 && skips==0?0:1;
 }

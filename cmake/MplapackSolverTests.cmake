@@ -109,7 +109,9 @@ if(MPLAPACK_BUILD_TESTS)
       foreach(_control 0 1)
         set(_name ${_b}_cuda_solver_constants_${_control})
         add_test(NAME ${_name} COMMAND ${_exe} ${_control})
-        set_tests_properties(${_name} PROPERTIES SKIP_RETURN_CODE 77 WILL_FAIL ${_control} RUN_SERIAL TRUE
+        # goal 13 (continued): the wavefront orders its constants, so the
+        # delayed-control run is correct and no longer expected to fail
+        set_tests_properties(${_name} PROPERTIES SKIP_RETURN_CODE 77 RUN_SERIAL TRUE
           ENVIRONMENT "OMP_NUM_THREADS=1;LD_PRELOAD=$<TARGET_FILE:cuda_solver_copy_delay>;MPLAPACK_TEST_SKIP_COPY_FENCE=${_control}")
       endforeach()
     endforeach()
