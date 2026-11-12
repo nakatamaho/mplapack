@@ -1,84 +1,93 @@
-# Kernel benchmark: goal 13 before/after (iamax, fast reductions, wavefront triangular solves)
+# Kernel benchmark: goal 13 continued (flag wavefront solves, one-kernel reductions, block leaves / tiled TRMM)
 
-Measured on the A100 80GB PCIe of this host, CUDA events around the
-device-pointer schedules of `Rblas1_jobs_common.h` / `Rtrisolve_jobs.h`
-(kernel only: staging, transfers and allocation outside the interval), CPU
-library with OpenMP. "Before" values are the goal 11 sweep
-(`../kernel-bench-2/kernels.csv`). Per the session instruction, MPFR numbers
-use the current mpc_cuda v0.0.2-dev (goal 12) state.
+After-measurements of the goal 13 continuation (items A-C of
+`bench_local/pi_instructions/goal13_continue.md`) on the A100 80GB PCIe,
+CUDA events around the device-pointer schedules, `OMP_NUM_THREADS=1`.
+"Before" for the vectors/solves = the goal 11 sweep
+(`../kernel-bench-2/kernels.csv`); for the MPFR inverses = this session's
+start (the goal 12 mpc_cuda v0.0.2-dev state, re-measured).  Raw rows:
+`itemd_after.csv`, merged with kernel-bench-2 into
+`kernels-before-after.csv`; the graphs (plot_kernel_bench.py, extended
+with the goal 13 kernel names) are in `graphs/`; the roofline
+(roofline.py, peaks = dd/td/qd from `../roofline/peaks.csv` + the MPFR
+level-2 peaks of `../roofline/mpfr/peaks-v0.0.2-dev.csv`, level-1 variant
+in `roofline-level1/`) in `roofline/`.
 
-**CPU caveat:** every CPU timing window of this session carried an external
-host load average of 100-118 (64 logical cores, other tenants); CPU wall
-times are therefore not trustworthy and are marked `cpu-load` below. Serial
-(1 thread) parity measurements are included where they are informative
-(dd fast ≈ default per-element cost; the fixed order adds no work).
-The >= 8x CPU target of the goal could not be verified honestly.
+**CPU caveat (unchanged):** the host load average stayed at ~100/64 all
+session (maintainer instruction of 11/10 18:55); CPU timings remain
+suspended and every CPU target is marked unverifiable.
 
-## Results (type,kernel,form,n,method,seconds[,notes])
+## GPU before/after (kernel only)
 
-```
-# goal 13 after (GPU kernel only)
-dd,iRamax,inc1,2097152,gpu,0.0000471        # before 0.000881  (18.7x; 712 GB/s ~ 53% of ~1.35 TB/s)
-dd,iRamax,inc1,4194304,gpu,0.0000748        # 1.04 TB/s
-dd,iRamax,inc1,16777216,gpu,0.000204        # 1.31 TB/s (~97%)
-dd,iCamax,inc1,2097152,gpu,0.0000645        # complex 32 B/elem: 1.04 TB/s
-td,iRamax,inc1,2097152,gpu,0.0000768
-td,iCamax,inc1,2097152,gpu,0.000108
-qd,iRamax,inc1,2097152,gpu,0.0000932
-qd,iCamax,inc1,2097152,gpu,0.000144
-mpfr512,iRamax,inc1,2097152,gpu,0.001137    # before 0.006884
-mpfr512,iCamax,inc1,2097152,gpu,0.002070    # before 0.007333
+| point | before (goal 11 / goal-13 part 1) | after (this session) | speedup |
+|---|---|---|---|
+| dd iRamax inc1 2097152 | 0.882 ms | 0.046 ms | 19.13x |
+| dd iCamax inc1 2097152 | 0.825 ms | 0.065 ms | 12.79x |
+| dd iRamax inc1 16777216 | 6.316 ms | 0.204 ms | 30.99x |
+| dd Rdot inc1 2097152 | 0.791 ms | 0.090 ms | 8.77x |
+| dd Rdot inc1 16777216 | 5.637 ms | 0.434 ms | 12.98x |
+| dd Cdotc inc1 2097152 | 0.767 ms | 0.143 ms | 5.35x |
+| dd Rasum inc1 2097152 | 0.794 ms | 0.073 ms | 10.92x |
+| dd Rnrm2 inc1 2097152 | 0.882 ms | 0.298 ms | 2.96x |
+| dd Rtrsv UNN_k64 1024 | 6.898 ms | 1.835 ms | 3.76x |
+| dd Rtrsv UNN_k64 2048 | 14.993 ms | 4.008 ms | 3.74x |
+| dd Rtrsv UNN_k64 4096 | 30.230 ms | 8.273 ms | 3.65x |
+| dd Rtbsv UNN_k64 2048 | 13.667 ms | 3.615 ms | 3.78x |
+| dd Rtpsv UNN_k64 2048 | 14.743 ms | 4.090 ms | 3.60x |
+| dd Ctrsv UNN_k64 2048 | 18.779 ms | 7.481 ms | 2.51x |
+| td iRamax inc1 2097152 | 1.300 ms | 0.077 ms | 16.93x |
+| td Rdot inc1 2097152 | 1.191 ms | 0.125 ms | 9.53x |
+| td Rtrsv UNN_k64 2048 | 18.049 ms | 6.918 ms | 2.61x |
+| qd iRamax inc1 2097152 | 1.754 ms | 0.094 ms | 18.62x |
+| qd Rdot inc1 2097152 | 1.634 ms | 0.213 ms | 7.67x |
+| qd Rtrsv UNN_k64 2048 | 22.634 ms | 11.111 ms | 2.04x |
+| mpfr512 iRamax inc1 2097152 | 6.884 ms | 1.141 ms | 6.04x |
+| mpfr512 Rdot inc1 2097152 | 10.407 ms | 4.294 ms | 2.42x |
+| mpfr512 Rtrsv UNN_k64 2048 | 173.895 ms | 86.714 ms | 2.01x |
+| point | before (goal-13 part 1 / goal 12 state) | after (this session) | speedup |
+|---|---|---|---|
+| mpfr512 Rtrtri UN 512 | 4.320 s | 2.368 s | 1.82x |
+| mpfr512 Rtrtri UN 1024 | 24.332 s | 20.502 s | 1.19x |
+| mpfr512 Rlauum UN 512 | 3.019 s | 2.999 s | 1.01x |
+| mpfr512 Rlauum UN 1024 | 8.156 s | 8.115 s | 1.01x |
+| mpfr512 Rpotri UN 512 | 7.341 s | 5.365 s | 1.37x |
+| mpfr512 Rpotri UN 1024 | 32.483 s | 28.575 s | 1.14x |
+| mpfr512 Rgetri UN 512 | 4.533 s | 2.579 s | 1.76x |
+| mpfr512 Rgetri UN 1024 | 25.363 s | 21.484 s | 1.18x |
 
-dd,Rdot,inc1,2097152,gpu,0.000206           # before 0.000791; 326 GB/s ~ 24% (target 50% missed)
-dd,Rdot,inc1,4194304,gpu,0.000397
-dd,Rdot,inc1,8388608,gpu,0.000643
-dd,Cdotc,inc1,2097152,gpu,0.000377
-dd,Rasum,inc1,2097152,gpu,0.000196
-dd,Rnrm2,inc1,2097152,gpu,0.000309
-qd,Rdot,inc1,2097152,gpu,0.000498
-mpfr512,Rdot,inc1,2097152,gpu,0.004294      # before 0.0104
-mpfr512,RCnrm2,inc1,2097152,gpu,0.060220
+## Roofline (peaks-merged.csv: dd/td/qd level-2 peaks + MPFR v0.0.2-dev level-2 peaks)
 
-dd,Rtrsv,UNN_k64,2048,gpu,0.008179          # before 0.0150 (1.8x; target 10x missed, see README)
-dd,Rtrsv,UNN_k64,4096,gpu,0.023307          # before 0.035
-dd,Rtbsv,UNN_k64,2048,gpu,0.004805          # before 0.0137 (2.9x)
-dd,Rtpsv,UNN_k64,2048,gpu,0.007768
-mpfr512,Rtrsv,UNN_k64,2048,gpu,0.183217     # before 0.173895 (no gain; documented)
-mpfr512,Rtbsv,UNN_k64,2048,gpu,0.082561     # before 0.174091
+| point | % of roofline | bound |
+|---|---:|---|
+| dd iRamax 2^21 | 52.0 | memory |
+| dd iRamax 2^24 | 94.1 | memory |
+| dd Rdot 2^21 | 53.2 | memory |
+| dd Rdot 2^24 | 88.3 | memory |
+| dd Rasum 2^21 | 33.0 | memory |
+| dd Rtrsv 2048 | 0.6 | memory |
+| td/qd Rdot 2^21 | see roofline.csv | memory |
+| mpfr512 iRamax 2^21 | 10.5 | memory |
+| mpfr512 Rdot 2^21 | 5.6 | memory |
+| mpfr512 Rtrsv 2048 | 0.18 | arith |
+| mpfr512 Rtrtri 512 / 1024 | 0.07 / 0.06 | arith |
+| mpfr512 Rlauum 512 / 1024 | 0.05 / 0.16 | arith |
+| mpfr512 Rgetri 512 / 1024 | 0.25 / 0.24 | arith |
 
-# goal 13 after (CPU; load-polluted, indicative only)
-dd,iRamax,inc1,2097152,cpu-load,0.00134     # before (clean, goal 11) 0.0281
-qd,iRamax,inc1,2097152,cpu-load,0.00473     # before 0.0868
-mpfr512,iRamax,inc1,2097152,cpu-load,0.0108 # before 0.1468
-dd,Rdot,inc1,2097152,cpu-load,0.0061-0.032
-mpfr512,Rdot,inc1,2097152,cpu-load,0.24-0.26
-dd,Rtrsv,UNN_k64,2048,cpu-load,~0.005       # CPU *_omp, before ~0.0051
-```
+Notes: the MPFR percentages use the v0.0.2-dev level-2 peaks (faster
+arithmetic than the goal 11 peaks, so equal times give lower percentages
+than the goal 11 README numbers).  The MPFR inverse percentages are far
+from the arithmetic bound: the leaves are now block-parallel but the mm
+column lanes still run one thread per column with a serial k sweep, the
+TRSM is lane-per-column, and the complex lauu2 keeps the serial routine —
+the documented remaining work of item 4.
 
-## Roofline percentages (item 1 / item 2, GPU)
+## Targets (continued session)
 
-Bandwidth reference ~1.35 TB/s effective (A100 80GB PCIe HBM2e). Bytes =
-n x element size (x + y where applicable).
-
-| kernel | n | bytes | after | GB/s | % | target |
-|---|---:|---:|---:|---:|---:|---|
-| dd iRamax | 2^21 | 33.6 MB | 47.1 us | 712 | ~53% | >= 50% met |
-| dd iCamax | 2^21 | 67.1 MB | 64.5 us | 1040 | ~77% | met |
-| td iRamax | 2^21 | 50.3 MB | 76.8 us | 655 | ~49% | (dd is the goal's binding size) |
-| qd iRamax | 2^21 | 67.1 MB | 93.2 us | 720 | ~53% | met |
-| dd Rdot | 2^21 | 67.1 MB | 205.8 us | 326 | ~24% | >= 50% MISSED |
-| dd Rdot | 2^24 | 537 MB | 0.75 ms | 716 | ~53% | |
-| MPFR 512 | 2^21 | 134 MB (x) | 4.29 ms | — | — | bound is arithmetic (level 2 peaks), not bandwidth |
-
-## Item 4 (inverses) status
-
-Not implemented in this session: after items 1-3 (including the MPFR device
-debugging and the repeated stale-binary detours) the session budget was
-exhausted. The inverses still run the goal 11 schedule. No numbers.
-
-## Graphs / roofline.py
-
-Not produced for this session (see item 4 note); the CSV above carries the
-measured points. The goal 11 plotting pipeline
-(`benchmark/kernel_bench.py new --phase plot`) can consume this directory
-once a full sweep is run.
+| item | target | status |
+|---|---|---|
+| A flag wavefront | dd Rtrsv 2048 >= 10x vs goal 11 (<= 1.5 ms) | MISSED: 4.01 ms (3.7x vs goal 11). The reference chain costs one dd division (~0.53 us) plus one cross-SM flag round trip (~0.7-0.9 us) per column: floor ~1.3-1.5 us/col. Measured breakdown in the commit body. |
+| A flag wavefront | faster than before (8.18 ms) | MET: 4.01 ms (2.0x); td 6.98 ms, qd 11.1 ms; MPFR512 87.4 ms (2.1x) |
+| B one-kernel reductions | dd Rdot 2^21 >= 50% bandwidth | MET: 55% (91 us); 2^24: 92%. td 60%; qd 47% (just under); Rnrm2/RCnrm2 ~17% (serial scaling chain, order-fixed) |
+| B one-kernel reductions | CPU >= 8x default | SUSPENDED (host load) |
+| C inverses | GPU faster than CPU at n >= 1024 | UNVERIFIABLE (CPU timings suspended); GPU MPFR512 trtri/getri 1.8x faster than before at 512 |
+| D benchmark/graphs/roofline | kernel-bench-3 products | DONE: itemd_after.csv, kernels.csv, kernels-before-after.csv, graphs/ (81 plots), roofline/ + roofline-level1/ (peaks-merged CSVs, roofline.csv, summary, PNGs) |

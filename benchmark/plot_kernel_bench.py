@@ -34,8 +34,19 @@ TYPE_NAMES = {
 }
 ROUTINE = {"gemm": "Rgemm", "gemm_update": "Rgemm", "syrk": "Rsyrk", "trsm": "Rtrsm", "getrf2": "Rgetrf2",
            "potrf2": "Rpotrf2", "laswp": "Rlaswp", "trtri": "Rtrtri", "lauum": "Rlauum",
-           "cgemm": "Cgemm", "cherk": "Cherk", "ctrsm": "Ctrsm"}
+           "cgemm": "Cgemm", "cherk": "Cherk", "ctrsm": "Ctrsm",
+           "Raxpy": "Raxpy", "Rcopy": "Rcopy", "iRamax": "iRamax", "iCamax": "iCamax", "Rdot": "Rdot",
+           "Cdotc": "Cdotc", "Cdotu": "Cdotu", "Rasum": "Rasum", "RCasum": "RCasum", "Rnrm2": "Rnrm2",
+           "RCnrm2": "RCnrm2", "Rtrsv": "Rtrsv", "Rtbsv": "Rtbsv", "Rtpsv": "Rtpsv",
+           "Ctrsv": "Ctrsv", "Ctbsv": "Ctbsv", "Ctpsv": "Ctpsv",
+           "Rtrtri": "Rtrtri", "Rlauum": "Rlauum", "Rpotri": "Rpotri", "Rgetri": "Rgetri",
+           "Ctrtri": "Ctrtri", "Clauum": "Clauum", "Cpotri": "Cpotri", "Cgetri": "Cgetri"}
 FLOPS_TEXT = {"gemm": "2n³", "gemm_update": "2·64·n²", "syrk": "k·n(n+1)", "trsm": "n³ (Left: n·m², Right: m·n²)",
+    "Raxpy": "n", "Rcopy": "0", "iRamax": "0", "iCamax": "0", "Rdot": "2n", "Cdotc": "8n", "Cdotu": "8n",
+    "Rasum": "n", "RCasum": "2n", "Rnrm2": "2n", "RCnrm2": "4n",
+    "Rtrsv": "n²", "Rtbsv": "n(2k+1)-k²", "Rtpsv": "n²", "Ctrsv": "4n²", "Ctbsv": "4n(2k+1)-4k²", "Ctpsv": "4n²",
+    "Rtrtri": "n³/3", "Rlauum": "n³/3", "Rpotri": "2n³/3", "Rgetri": "4n³/3",
+    "Ctrtri": "4n³/3", "Clauum": "4n³/3", "Cpotri": "8n³/3", "Cgetri": "16n³/3",
               "getrf2": "LU m×64 (LAWN 41)", "potrf2": "n³/3+n²/2+n/6", "trtri": "n³/3+2n/3", "lauum": "n³/3+n²/2+n/6",
               "cgemm": "8n³", "cherk": "4·k·n(n+1)", "ctrsm": "4·(TRSM)", "laswp": "64·n 交換 / 時間"}
 
