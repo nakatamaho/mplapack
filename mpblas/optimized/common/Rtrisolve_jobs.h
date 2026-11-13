@@ -8,6 +8,7 @@
 #include <cuda/atomic>
 #endif
 #include <cstdio>
+#include <cstdlib>
 namespace mplapack_trisolve __attribute__((visibility("hidden"))) {
 struct shape {
     long n,k,lda; int storage; // 0 full, 1 band, 2 packed
@@ -76,6 +77,12 @@ template<class V,class A> struct column_job {
 template<class V,class A> struct wave_job {
     typedef V vtype;
     shape s;const V *a;V *x,*p;
+    // Test-only negative control (MPLAPACK_TEST_WAVE_PUBLISH_ONLY): the
+    // publisher raises the per-element flag but never stores the divided
+    // value, so every dependent reads a stale pre-division x(j).  The
+    // wave-order control asserts that this broken publication makes the
+    // result wrong — i.e. the flag protocol is load-bearing.
+    bool publish_only=false;
     MPLAPACK_DEV_HD bool below() const { return s.notrans!=s.upper; }
     MPLAPACK_DEV_HD long dep_lo(long i) const {
         if(!below()) return i+1;
@@ -192,7 +199,7 @@ template<class V,class A> struct wave_job {
                     if(st==1) x[e]=A::update(x[e],dd,x[j]);
                 }
                 const V pre=x[e];
-                if(pre!=V(0.0) && !s.unit) x[e]=A::divide(pre,dg);
+                if(pre!=V(0.0) && !s.unit && !publish_only) x[e]=A::divide(pre,dg);
                 flag_set(flags,e,pre==V(0.0)?2:1);
             } else {
                 for(long t=0;t<d;++t) {
@@ -204,7 +211,7 @@ template<class V,class A> struct wave_job {
 #endif
                     x[e]=x[e]-A::product(x[j],s.conjugate?A::conjugate(dd):dd);
                 }
-                if(!s.unit) x[e]=A::divide(x[e],s.conjugate?A::conjugate(dg):dg);
+                if(!s.unit && !publish_only) x[e]=A::divide(x[e],s.conjugate?A::conjugate(dg):dg);
                 flag_set(flags,e,1);
             }
             return;
@@ -228,7 +235,7 @@ template<class V,class A> struct wave_job {
                     }
                     if(t==d && flag_get(flags,e)==0) {
                         const V pre=x[e];
-                        if(pre!=V(0.0) && !s.unit) x[e]=A::divide(pre,a[s.index(e,e)]);
+                        if(pre!=V(0.0) && !s.unit && !publish_only) x[e]=A::divide(pre,a[s.index(e,e)]);
                         flag_set(flags,e,pre==V(0.0)?2:1);
                         --pending;progress=true;
                     }
@@ -242,7 +249,7 @@ template<class V,class A> struct wave_job {
                         ++t;progress=true;
                     }
                     if(t==d && flag_get(flags,e)==0) {
-                        if(!s.unit) {
+                        if(!s.unit && !publish_only) {
                             const V dd=a[s.index(e,e)];
                             x[e]=A::divide(x[e],s.conjugate?A::conjugate(dd):dd);
                         }
@@ -302,7 +309,10 @@ template<class V,class A> struct wave_job {
     }
 };
 template<class V,class A,class L> void schedule(L &ctx,const shape &s,const V *a,V *x,V *p) {
-    ctx.launch_wave(wave_job<V,A>{s,a,x,p});
+    // The publish-only negative control (see wave_job::publish_only).
+    wave_job<V,A> w{s,a,x,p};
+    if(const char *e=std::getenv("MPLAPACK_TEST_WAVE_PUBLISH_ONLY")) w.publish_only=*e=='1';
+    ctx.launch_wave(w);
 }
 }
 #endif

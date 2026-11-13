@@ -152,7 +152,7 @@ libmplapack_mpfr_opt_cuda_la_LIBADD = Rgemm_dlink_cuda.lo $(MPC_CUDA_LIBRARY) $(
 EXTRA_libmplapack_mpfr_opt_cuda_la_DEPENDENCIES = Rgemm_dlink_cuda.lo
 CLEANFILES = Rgemm_dlink_cuda.lo .libs/Rgemm_dlink_cuda.o Rgemm_dlink_cuda.o
 
-check_PROGRAMS = Rtrisolve_gpu_host_test_mpfr Rfactor_gpu_host_test_mpfr Cfactor_gpu_host_test_mpfr solver_gpu_host_test_mpfr inverse_gpu_host_test_mpfr Rblas1_gpu_host_test_mpfr
+check_PROGRAMS = Rtrisolve_gpu_host_test_mpfr Rtrisolve_wave_order_host_test_mpfr Rfactor_gpu_host_test_mpfr Cfactor_gpu_host_test_mpfr solver_gpu_host_test_mpfr inverse_gpu_host_test_mpfr Rblas1_gpu_host_test_mpfr
 TESTS = Rfactor_gpu_host_test_mpfr Cfactor_gpu_host_test_mpfr test/solver_host_sweep.sh test/inverse_host_sweep.sh cu_fzero_host_test_mpfr cu_fzero_device_test_mpfr cu_farith_host_test_mpfr cu_farith_device_test_mpfr
 check_PROGRAMS += cu_fzero_host_test_mpfr cu_farith_host_test_mpfr
 cu_fzero_host_test_mpfr_SOURCES = test/cu_fzero_test.cpp test/cu_freal_before_zero.cuh
@@ -176,6 +176,12 @@ Rtrisolve_gpu_host_test_mpfr_SOURCES = ../../common/test/Rtrisolve_gpu_test.cpp 
 Rtrisolve_gpu_host_test_mpfr_CPPFLAGS = $(MPLAPACK_MPFR_CUDA_CPPFLAGS) -DMPLAPACK_MPFR_CUDA_HOST_EMULATION
 Rtrisolve_gpu_host_test_mpfr_CXXFLAGS = $(AM_CXXFLAGS) -std=c++17
 Rtrisolve_gpu_host_test_mpfr_LDADD = ../libmplapack_mpfr_opt.la $(MPLAPACK_MPFR_LIBS) $(OPENMP_LIBS)
+Rtrisolve_wave_order_host_test_mpfr_SOURCES = ../../common/test/Rtrisolve_wave_order_test.cpp Rinverse_bridge_cuda.cpp test/Rinverse_fixed_host.cpp test/Rinverse_runtime_host.cpp test/Rinverse_dynamic_host.cpp \
+../../common/blas_cuda/Rtrsv.cpp ../../common/blas_cuda/Rtbsv.cpp ../../common/blas_cuda/Rtpsv.cpp \
+../../common/blas_cuda/Ctrsv.cpp ../../common/blas_cuda/Ctbsv.cpp ../../common/blas_cuda/Ctpsv.cpp
+Rtrisolve_wave_order_host_test_mpfr_CPPFLAGS = $(MPLAPACK_MPFR_CUDA_CPPFLAGS) -DMPLAPACK_MPFR_CUDA_HOST_EMULATION
+Rtrisolve_wave_order_host_test_mpfr_CXXFLAGS = $(AM_CXXFLAGS) -std=c++17
+Rtrisolve_wave_order_host_test_mpfr_LDADD = ../libmplapack_mpfr_opt.la $(MPLAPACK_MPFR_LIBS) $(OPENMP_LIBS)
 Rtrisolve_gpu_host_test_mpfr_LDFLAGS = -static -Wl,--disable-new-dtags -Wl,-rpath,$(MPC_LIBDIR):$(MPFR_LIBDIR):$(GMP_LIBDIR)
 
 Rblas1_gpu_host_test_mpfr_SOURCES = ../../common/test/Rblas1_gpu_test.cpp Rinverse_bridge_cuda.cpp test/Rinverse_fixed_host.cpp test/Rinverse_runtime_host.cpp test/Rinverse_dynamic_host.cpp \
