@@ -152,7 +152,7 @@ int main(int argc,char **argv) {
         }
     }
 #ifndef MPLAPACK_MPFR_CUDA_HOST_EMULATION
-    size_t now=0;check(!cudaDeviceGetLimit(&now,cudaLimitStackSize) && now==old_stack,"stack restored");
+    size_t now=0;check(!cudaDeviceGetLimit(&now,cudaLimitStackSize) && now>=old_stack,"stack raised only");
     check(cudaDeviceSynchronize()==cudaSuccess,"device sync");
 #endif
     std::printf("MPFR inverse p=%ld: %ld %s calls, %ld checks, %ld component comparisons, %ld failures\n",p,calls,dispatch?"fallback":"direct",checks,elements,errors);

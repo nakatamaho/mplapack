@@ -126,7 +126,7 @@ void trial(bool chol,bool upper,long m,long n,int kind,long failure=0) {
     if(chol) { complex_oracle_potrf(upper?"U":"L",n,b.data(),lda,ref); ran=Cpotrf_mpfr_cuda(upper?"U":"L",n,a.data(),lda,info); }
     else { complex_oracle_getrf(m,n,b.data(),lda,q.data(),ref); ran=Cgetrf_mpfr_cuda(m,n,a.data(),lda,p.data(),info); }
 #ifndef MPLAPACK_MPFR_CUDA_HOST_EMULATION
-    cudaDeviceGetLimit(&after,cudaLimitStackSize); check(before==after,"stack restored",m,n,kind);
+    cudaDeviceGetLimit(&after,cudaLimitStackSize); check(after>=before,"stack raised only",m,n,kind);
 #endif
     check(ran && info==ref && p==q,chol?"potrf status":"getrf status",m,n,kind);
     long bad=0;

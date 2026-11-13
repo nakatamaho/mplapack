@@ -25,6 +25,16 @@ __attribute__((visibility("hidden"))) inline size_t complex_runtime_stack_bytes(
     return p<=1024?8192:p<=2048?16384:65536;
 }
 #ifndef MPLAPACK_MPFR_CUDA_HOST_EMULATION
+// The device stack limit is raised to the largest size this process has
+// needed so far and left there (restore() is a no-op).  cudaDeviceSetLimit
+// synchronizes the device and reconfigures the per-thread stack; under
+// driver 580.178.04 on the A100 one call costs tens of milliseconds, so the
+// previous per-call set/restore pair (~100-200 ms) dominated every
+// checked-precision MPFR BLAS call: the small trisolve device test ran
+// 402.7 s and mpfr_cuda_Cblas_device_fixed 4691.8 s; with the limit set
+// once per process they run 42.6 s and ~50 s.  The stack allowance has no
+// effect on the arithmetic (values, rounding, zero signs); the peak
+// allowance is the same as with the per-call guard.
 struct __attribute__((visibility("hidden"))) mpfr_stack_guard {
     size_t old=0; bool changed=false; int error=0;
     explicit mpfr_stack_guard(size_t want) {
@@ -34,14 +44,8 @@ struct __attribute__((visibility("hidden"))) mpfr_stack_guard {
             error=cudaDeviceSetLimit(cudaLimitStackSize,want); changed=!error;
         }
     }
-    int restore() {
-        if(!changed) return 0;
-        int result=cudaDeviceSetLimit(cudaLimitStackSize,old);
-        if(!result) changed=false;
-        else (void)cudaGetLastError();
-        return result;
-    }
-    ~mpfr_stack_guard() { (void)restore(); }
+    int restore() { return 0; }
+    ~mpfr_stack_guard() { }
 };
 #endif
 }
