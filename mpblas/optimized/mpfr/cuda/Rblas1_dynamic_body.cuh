@@ -71,6 +71,8 @@ template<class J> struct wave_parallel_job {
     L3_HD void operator()(long lane) { j.parallel(col,lane,1); }
 };
 struct dynamic_tri_launcher : dynamic_launcher {
+    static constexpr bool tiled_mm=false;    // the lane TRMM (bounded per-lane scratch)
+    static constexpr bool block_leaves=false; // the lane leaves (one live value per lane)
     template<class J> void launch(J j,long n) { this->execute(dynamic_tri_job<J>{dynamic_engine{},j},n); }
     // The dynamic residency keeps the per-column flat schedule (goal 13's
     // single-block wavefront needs one slot per concurrent lane).

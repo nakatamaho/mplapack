@@ -324,11 +324,11 @@ template<class A,class Launcher> class inverse_schedule : public Launcher {
                 mm(true,upper,'N',unit,before,jb,one,inv,off,ld);
                 sm(upper,unit,before,jb,-one,diag,off,ld);
             }
-#if defined(MPLAPACK_INVERSE_SERIAL_LEAF)
-            J leaf=make(1,diag,ld);leaf.upper=upper;leaf.unit=unit;leaf.n=jb;launch(leaf,1);
-#else
-            trti2_leaf_job<E> leaf{diag,ld,jb,upper,unit};this->launch_leaf(leaf);
-#endif
+            if(this->block_leaves) {
+                trti2_leaf_job<E> leaf{diag,ld,jb,upper,unit};this->launch_leaf(leaf);
+            } else {
+                J leaf=make(1,diag,ld);leaf.upper=upper;leaf.unit=unit;leaf.n=jb;launch(leaf,1);
+            }
         }
         return 0;
     }
@@ -338,12 +338,7 @@ template<class A,class Launcher> class inverse_schedule : public Launcher {
             const long jb=std::min(nb,n-col),rest=n-col-jb;
             E *diag=a+col+col*ld,*off=upper?a+col*ld:a+col;
             mm(!upper,upper,A::transpose(),false,upper?col:jb,upper?jb:col,E(1),diag,off,ld);
-#if defined(MPLAPACK_INVERSE_SERIAL_LEAF)
-            if(true) {
-                J leaf=make(2,diag,ld);leaf.upper=upper;leaf.n=jb;launch(leaf,1);
-            } else
-#endif
-            if(A::cx) {
+            if(A::cx || !this->block_leaves) {
                 J leaf=make(2,diag,ld);leaf.upper=upper;leaf.n=jb;launch(leaf,1);
             } else {
                 lauu2_leaf_job<E> leaf{diag,ld,jb,upper};this->launch_leaf(leaf);

@@ -9,6 +9,7 @@ class bf_inverse_launcher : public mplapack_lapack_gpu::chol_schedule {
     mplapack_lapack_gpu::buffer<long> status;
   public:
     static constexpr bool tiled_mm=true;
+    static constexpr bool block_leaves=true;
     bf_inverse_launcher() { if(!error) error=status.allocate(1); }
     ~bf_inverse_launcher() { finish(); }
     long *status_data() { return status.data(); }

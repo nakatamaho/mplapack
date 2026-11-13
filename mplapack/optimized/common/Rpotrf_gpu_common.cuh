@@ -64,7 +64,11 @@ class chol_schedule {
         const unsigned smem=(unsigned)(m*sizeof(typename J::e_type));
         if(smem>48*1024 && cudaFuncSetAttribute(mm_leftn_kernel<J>,cudaFuncAttributeMaxDynamicSharedMemorySize,(int)smem)!=cudaSuccess) { error=1;return; }
         long blocks=ncols<65535?ncols:65535;
-        mm_leftn_kernel<J><<<(unsigned)blocks,128,smem>>>(j,ncols);
+        // the same stream as launch(): the two streams are non-blocking, so
+        // an unsorted default-stream launch would run unordered against the
+        // pending mm/sm kernels (found by the inverse device test's
+        // nondeterministic failures; racecheck sees no intra-kernel hazard).
+        mm_leftn_kernel<J><<<(unsigned)blocks,128,smem,stream()>>>(j,ncols);
         error=cudaGetLastError();
 #else
         std::vector<typename J::e_type> xs(m>0?(size_t)m:1);
@@ -77,7 +81,7 @@ class chol_schedule {
 #if defined(__CUDACC__)
         const unsigned smem=(unsigned)(n*sizeof(typename J::e_type));
         if(smem>48*1024 && cudaFuncSetAttribute(leaf_kernel<J>,cudaFuncAttributeMaxDynamicSharedMemorySize,(int)smem)!=cudaSuccess) { error=1;return; }
-        leaf_kernel<J><<<1,2,smem>>>(j,n);
+        leaf_kernel<J><<<1,2,smem,stream()>>>(j,n);
         error=cudaGetLastError();
 #else
         std::vector<typename J::e_type> aii(n>0?(size_t)n:1);

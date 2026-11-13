@@ -64,6 +64,7 @@ struct launcher : factor_context<inverse_engine> {
     // element size for the larger precisions)
     static constexpr bool chunked_reductions=false;
     static constexpr bool tiled_mm=false;
+    static constexpr bool block_leaves=true;
     launcher():factor_context<inverse_engine>(inverse_engine{},inverse_engine::M{},1,1) {}
     long *status_data() { return status.p; }
     long feedback(long *) { return factor_context<inverse_engine>::feedback(); }
@@ -101,6 +102,7 @@ struct launcher : factor_context<inverse_engine> {
     }
     // Goal 13 (continued): one block per inverse leaf; the leaf's per-row
     // scratch (aii) lives in dynamic shared memory.
+    template<class J> void launch_mm_leftn(J j,long ncols,long m) { (void)j;(void)ncols;(void)m; error=1; }
     template<class J> void launch_leaf(J j) {
         if(error) return;
         leaf_checked_job<J> w{inverse_engine{},j};
@@ -108,7 +110,10 @@ struct launcher : factor_context<inverse_engine> {
 #ifndef MPLAPACK_MPFR_CUDA_HOST_EMULATION
         const unsigned smem=(unsigned)(n*sizeof(typename J::e_type));
         if(smem>48*1024 && cudaFuncSetAttribute(factor_leaf_kernel<J>,cudaFuncAttributeMaxDynamicSharedMemorySize,(int)smem)!=cudaSuccess) { error=1;return; }
-        factor_leaf_kernel<J><<<1,128,smem>>>(w,n,failed.p);
+        // stream(): the schedule's mm/sm kernels run on the non-blocking
+        // stream, so the leaf must be ordered on the same one (the default
+        // stream ran unordered and corrupted the blocked inverses).
+        factor_leaf_kernel<J><<<1,128,smem,stream()>>>(w,n,failed.p);
         error=cudaGetLastError();
         if(!error) error=cudaDeviceSynchronize();
 #else

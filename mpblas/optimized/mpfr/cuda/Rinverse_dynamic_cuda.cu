@@ -154,10 +154,17 @@ struct dynamic_job {
 };
 static_assert(std::is_trivially_copyable<dynamic_job>::value,"CUDA job argument must be POD");
 struct dynamic_launcher : factor_context<dynamic_engine> {
+    static constexpr bool tiled_mm=false;     // the lane TRMM (bounded per-lane scratch)
+    static constexpr bool block_leaves=false; // the lane leaves (one live value per lane)
     dynamic_launcher():factor_context<dynamic_engine>(dynamic_engine{},dynamic_engine::M{},1,1) {}
     long *status_data() { return status.p; }
     long feedback(long *) { return factor_context<dynamic_engine>::feedback(); }
     void launch(const dynamic_inverse_job &j,long lanes) { this->execute(dynamic_job(j),lanes); }
+    // The block leaf / tiled TRMM paths are disabled for the runtime
+    // precision (block_leaves/tiled_mm=false); the schedule never calls
+    // these, but the names must exist for the template instantiation.
+    template<class J> void launch_leaf(J j) { (void)j; error=1; }
+    template<class J> void launch_mm_leftn(J j,long ncols,long m) { (void)j;(void)ncols;(void)m; error=1; }
     void finish() {
         factor_context<dynamic_engine>::finish();int f=0;
         if(!error) error=failed.download(&f,1);
