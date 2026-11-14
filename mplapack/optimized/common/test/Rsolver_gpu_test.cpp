@@ -119,7 +119,10 @@ template<class H> void test(INTEGER n,INTEGER rhs,bool driver,bool chol,const ch
     }
     check(true,"A/B/ipiv/info bit identity");
 #if defined(MPLAPACK_SOLVER_DEVICE_TEST) && defined(MPLAPACK_BUILD_WITH_MPFR)
-    check(cudaDeviceGetLimit(&after,cudaLimitStackSize)==cudaSuccess && stack==after,"scoped stack restoration");
+    // the goal 13 stack guard raises the device stack limit for the process
+    // lifetime and never restores it (the per-call set/restore pair cost
+    // 100-200 ms per call); only the "raised, never lowered" contract holds
+    check(cudaDeviceGetLimit(&after,cudaLimitStackSize)==cudaSuccess && after>=stack,"scoped stack raised only");
 #endif
 }
 template<class H> void reject() {
