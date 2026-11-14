@@ -62,6 +62,7 @@
 #include <type_traits>
 #include <vector>
 #include "mpfr_pack_cuda.h"
+#include "mpfr_cuda_stack.h"
 #include "Cblas_mpfr_dev_types.h"
 #include "../../common/blas_cuda/Cblas_bridge_body.h"
 
@@ -278,9 +279,15 @@ template <class Eng> struct pack_ctx {
     {
         if (!ok)
             return false;
-        int rc = mplapack_blas_dev::mpfr_cblas_stack(Eng::stack_bytes());
-        if (rc == 0)
-            rc = eng.run(j, ops, nops);
+        // The stack reservation must outlive the engine, not just the helper
+        // that raises it. All exits (including failed validation) restore in
+        // opt-in mode; host emulation has no device limit to change.
+#ifndef MPLAPACK_MPFR_CUDA_HOST_EMULATION
+        mplapack_mpfr_cuda::mpfr_stack_guard stack(Eng::stack_bytes());
+        if (stack.error)
+            return false;
+#endif
+        int rc = eng.run(j, ops, nops);
         if (rc != 0) {
             if (verbose())
                 std::fprintf(stderr, "mplapack mpfr cuda (complex BLAS): GPU error %d, computing on the CPU\n", rc);

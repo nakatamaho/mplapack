@@ -246,12 +246,9 @@ template <int NL> struct mpfr_rt {}; // the tag of cgpu_types
 // Defined in Cblas_mpfr_device_cuda.cu: sets the precision, then cgpu_run.
 template <class Job> int cgpu_run_rt(Job job, const mplapack_blas::gpu_operand<typename Job::E> *ops, int nops, long prec);
 
-// Defined in Cblas_mpfr_device_cuda.cu: raises the device stack limit to
-// at least bytes (never lowers it).  The multiple-precision complex
-// operations of the jobs, e.g. cu_mpc_div in Ctrsm with diag = N, overflow
-// the default 1 KB stack (A100, 512 bits: 8 KB suffice).  Returns a
-// cudaError_t (0: success); 0 in the host emulation.
-int mpfr_cblas_stack(size_t bytes);
+// Complex jobs need more than the default 1 KB device stack (e.g.
+// cu_mpc_div in Ctrsm). The bridge owns a call-scoped mpfr_stack_guard
+// around engine execution; see mpfr_cuda_stack.h for both policies.
 
 #if defined(MPLAPACK_MPFR_CDIV_HOST)
 #define MPLAPACK_RT(x) x

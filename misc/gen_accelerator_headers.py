@@ -89,6 +89,10 @@ def main():
             lines += ["// Triangular solves: opt-in via %s;" % ("MPLAPACK_MPFR_CUDA_L12=1" if backend == "mpfr" else "MPLAPACK_%s_BLAS_CUDA_L12=1" % backend.upper()),
                       "// existing enable/minimum gates apply. No CPU fallback on false.", ""]
             routines = routines + BLAS1 + [p + r for p in ("R", "C") for r in ("trsv", "tbsv", "tpsv")]
+        if backend == "mpfr" and accel == "cuda":
+            lines += ["// Device stack: raise only by default. MPLAPACK_MPFR_CUDA_STACK_RESTORE=1",
+                      "// restores the original limit per call (exact 1; read at every call).",
+                      "// Unset, 0 or other values keep the raised limit. Arithmetic is unchanged.", ""]
         for r in routines:
             if r not in decls:
                 sys.exit("%s is not declared in the BLAS/LAPACK headers for %s" % (r, backend))

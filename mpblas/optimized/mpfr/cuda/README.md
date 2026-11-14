@@ -90,8 +90,8 @@ Each routine is written once against an arithmetic engine:
   8 KiB at 768/1024, 16 KiB at 2048), retaining the largest limit used to avoid
   expensive per-BLAS-call resizing. It no longer requests a 64-KiB/thread
   reservation; a larger pre-existing caller limit is not lowered. Resident
-  factorization entries, in contrast, raise the limit
-  only for their call and restore its previous value.
+  factorization entries use the same policy. All MPFR CUDA calls restore
+  their original limit only with `MPLAPACK_MPFR_CUDA_STACK_RESTORE=1`.
   Complex divisions (`cu_mpc_div`) are unchanged.
 
 `cuda/R*.cpp` replaces the CPU dispatcher of `../../common/blas`. Calls that
@@ -213,11 +213,18 @@ Environment variables:
 | `MPLAPACK_MPFR_CUDA_WINOGRAD_CUTOFF=N` | Winograd/Strassen for the fixed precisions when `min(m,n,k) > N` (default 0: off) |
 | `MPLAPACK_MPFR_CUDA_RT_BLOCKS`, `MPLAPACK_MPFR_CUDA_RT_THREADS` | thread pool of the `cu_mpfr` kernels (default 256 x 32) |
 | `MPLAPACK_MPFR_CUDA_VERBOSE=1` | print CUDA errors that cause a CPU fallback |
+| `MPLAPACK_MPFR_CUDA_STACK_RESTORE=1` | restore the original device stack limit after each call that raised it; read per call, only exact `1` enables restoration; unset, `0`, or any other value retain the raised limit (default) |
 
 The `cu_mpfr` kernels take the limbs MPFR allocates internally from a
 per-thread arena of 16 KB per 1024 bits of precision, reset at every step of
 the dot product (as in mpc_cuda's matmul demo); they raise the device stack
-limit to 64 KB while they run.
+limit to at least 64 KB. By default every MPFR CUDA path only raises the
+limit, avoiding expensive per-call device stack reconfiguration. With
+`MPLAPACK_MPFR_CUDA_STACK_RESTORE=1`, a guard that raised the limit restores
+the value it read on entry, including on error paths. A guard that did not
+raise it does nothing. Restoration is best effort: its errors are cleared
+and do not change computation results. Arithmetic is identical in both
+modes. Heap-limit guards keep their separate call-scoped policy.
 
 ## Tests (CMake)
 
@@ -304,7 +311,7 @@ register-workspace pools: overlapping kernels must not reset or allocate from
 another stream's per-thread slab. The arena globals remain constant until
 both streams finish. The existing gpu_mutex serializes the whole call against
 other MPFR BLAS.
-Stack limits are raised only during the call and restored before publication;
+Stack limits follow the shared raise-only/opt-in restore policy above;
 fixed limits are those above, runtime 8 KiB through 1024 bits, 16 KiB through
 4096 bits, and the existing conservative 64 KiB above that.
 
@@ -435,7 +442,7 @@ and memory-budget rejection). Four main runs total 20,952 checks and
   LU 165 cases / 340,907 elements; Cholesky 58 / 135,044; total 476,143
   comparisons per precision, **0 numeric/zero-sign differences, 0 sanitizer
   errors**. Fixed limits 4/4/8/8/16 KiB, runtime 200-bit limit 8 KiB;
-  every factor call restores its previous limit.
+  every factor call uses the shared stack policy (restore is opt-in).
 - **Optional 4096-bit runtime**: final normal quick test passes 730 checks /
   476,143 comparisons, LU 165 cases / Cholesky 58, no errors or zero-sign
   differences, with a 16-KiB scoped limit. Memcheck was stopped after over
@@ -447,7 +454,7 @@ and memory-budget rejection). Four main runs total 20,952 checks and
   observes retained limits 4/4/8/8/16/16 KiB for 256/512/768/1024/2048/256
   bits, exact results including zeros, and the factor entry preserves the
   inherited 16-KiB limit. The BLAS bridge retains its right-sized maximum
-  to avoid repeated CUDA stack reallocations; the factor guard is scoped.
+  to avoid repeated CUDA stack reallocations; the factor guard follows the same policy.
 - **LAPACK real GE/PO drivers**: CPU and LD_PRELOAD CUDA both pass
   3,653 + 5,748 GE and 1,628 + 1,910 PO checks (12,939 each), including
   error exits. CPU 25.80 s; CUDA with MIN=0 1,532.51 s, **1,815 LU and
@@ -503,22 +510,24 @@ is changed.
 ### Complex stack policy
 
 Real limits remain **4/4/8/8/16 KiB**, unchanged. Complex factorization uses
-separate, scoped limits, restoring any smaller inherited limit before
-publication and never lowering an inherited larger one:
+separate limits, retaining them by default and restoring the original limit
+only with `MPLAPACK_MPFR_CUDA_STACK_RESTORE=1`. An inherited larger limit
+is never lowered. Current provisioned budgets (see `mpfr_cuda_stack.h`):
 
 | precision (bits) | automatic engine | complex fixed stack | forced/runtime stack |
 |---:|---|---:|---:|
-|256|cu_freal|8 KiB|8 KiB|
-|512|cu_freal|8 KiB|8 KiB|
-|768|cu_freal|8 KiB|8 KiB|
-|1024|cu_freal|8 KiB|8 KiB|
-|2048|cu_freal|16 KiB|16 KiB|
+|256|cu_freal|16 KiB|8 KiB|
+|512|cu_freal|16 KiB|8 KiB|
+|768|cu_freal|16 KiB|8 KiB|
+|1024|cu_freal|16 KiB|8 KiB|
+|2048|cu_freal|32 KiB|16 KiB|
 |200|cu_mpfr|—|8 KiB|
 
 Above 2048 bits the runtime policy retains the existing conservative 64-KiB
 complex-BLAS bound; that optional range is not verified here. The measured
-limits above are below the BLAS policy (16 KiB times ceil(PB/512), runtime
-64 KiB). On A100 sm_80 / CUDA 13.1, 4 KiB at 256 bits overflows in
+historical minimum fixed limits were 8/8/8/8/16 KiB; the budgets above
+were increased for mpc_cuda v0.0.2-dev. The BLAS policy is 16 KiB times
+ceil(PB/512), runtime 64 KiB. On A100 sm_80 / CUDA 13.1, 4 KiB at 256 bits overflows in
 cu_mpfr_hypot (an expected failing control, not a numerical acceptance run);
 the final 8-KiB replay is clean. Each of the six automatic
 precisions passes the blocked stack-sizing memcheck (6 LU / 12 Cholesky,
@@ -546,7 +555,8 @@ precisions, 241 LU / 136 Cholesky cases each (813 host checks / 9062456
 component comparisons), strict signed zeros, padding, singular/tiny/tied
 pivots, both triangles, imaginary diagonals, block boundaries and odd sizes
 through 599, rejection/unchanged outputs and small-matrix backward error.
-The device variant additionally checks stack restoration and memory budget.
+The device variant additionally forces a low stack and checks both stack
+policies with identical outputs, as well as the memory budget.
 `--quick` selects smaller same-kernel cases; `--stack-probe` selects blocked
 sizing cases with two-stream overlap; `--stack-frames` selects small frame
 paths without the large matrix arithmetic. Device absence returns 77.
@@ -736,8 +746,8 @@ including a larger inherited limit. The inverse stack reserve is twice the
 complex factor policy to allow the generated inverse/BLAS caller frames:
 fixed <=1024 bits 16 KiB, fixed 2048 bits 32 KiB; runtime <=1024 bits
 16 KiB, <=2048 bits 32 KiB, above that 128 KiB. This is a conservative
-reserve, not a measured minimum. Arena/precision and scoped stack state
-are restored before publication. Any rejection, allocation/launch/transfer
+reserve, not a measured minimum. Arena/precision state is restored before
+publication; stack restoration follows the shared opt-in policy. Any rejection, allocation/launch/transfer
 or arithmetic failure leaves A, work, pivots and info untouched. Pivots are
 input-only. GETRI queries and n=0 return false; reduced lwork, singular info,
 work[0] and precisely the reference-written scratch slots are preserved.

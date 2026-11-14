@@ -54,6 +54,7 @@
 #include <cstdlib>
 #include <vector>
 #include "Rgemm_rt_cuda.h"
+#include "mpfr_cuda_stack.h"
 #include "blas3_kernel_cuda.h"
 
 #ifdef MPLAPACK_MPFR_CUDA_HOST_EMULATION
@@ -378,7 +379,8 @@ struct device_mem {
     device_mem &operator=(const device_mem &);
 };
 
-// Raises a device limit for the lifetime of the object and restores it.
+// Heap limits remain call-scoped: unlike stack reservations, device malloc
+// consumes this budget. Do not apply the raise-only stack policy to the heap.
 struct limit_guard {
     cudaLimit which;
     size_t old;
@@ -429,7 +431,8 @@ int gemm_rt(const gemm_shape &s, long prec, const rt_pack &alpha, const rt_pack 
     const long threads = env_long("MPLAPACK_MPFR_CUDA_RT_THREADS", 32);
     const size_t pool = (size_t)blocks * threads;
     const size_t slab = (size_t)16 * 1024 * ((prec + 1023) / 1024);
-    limit_guard stack(cudaLimitStackSize, 64 * 1024);
+    mpfr_stack_guard stack(64 * 1024);
+    if (stack.error) return stack.error;
     limit_guard heap(cudaLimitMallocHeapSize, (size_t)64 * 1024 * 1024);
 
     device_pack dal, dbe, dA, dB, dC, dAB;
@@ -502,7 +505,8 @@ int blas3_rt(const l3_shape &s, long prec, const rt_pack &alpha, const rt_pack &
     const long threads = env_long("MPLAPACK_MPFR_CUDA_RT_THREADS", 32);
     const size_t pool = (size_t)blocks * threads;
     const size_t slab = (size_t)16 * 1024 * ((prec + 1023) / 1024);
-    limit_guard stack(cudaLimitStackSize, 64 * 1024);
+    mpfr_stack_guard stack(64 * 1024);
+    if (stack.error) return stack.error;
     limit_guard heap(cudaLimitMallocHeapSize, (size_t)64 * 1024 * 1024);
 
     device_pack dal, dbe, dA, dB, dC;

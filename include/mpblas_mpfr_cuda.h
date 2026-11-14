@@ -47,6 +47,10 @@
 // Triangular solves: opt-in via MPLAPACK_MPFR_CUDA_L12=1;
 // existing enable/minimum gates apply. No CPU fallback on false.
 
+// Device stack: raise only by default. MPLAPACK_MPFR_CUDA_STACK_RESTORE=1
+// restores the original limit per call (exact 1; read at every call).
+// Unset, 0 or other values keep the raised limit. Arithmetic is unchanged.
+
 bool Rgemm_mpfr_cuda(const char *transa, const char *transb, mplapackint const m, mplapackint const n, mplapackint const k, mpfr_class const alpha, mpfr_class *a, mplapackint const lda, mpfr_class *b, mplapackint const ldb, mpfr_class const beta, mpfr_class *c, mplapackint const ldc);
 bool Rpotrf_mpfr_cuda(const char *uplo, mplapackint const n, mpfr_class *a, mplapackint const lda, mplapackint &info);
 bool Cpotrf_mpfr_cuda(const char *uplo, mplapackint const n, mpc_class *a, mplapackint const lda, mplapackint &info);

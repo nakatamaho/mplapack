@@ -220,15 +220,11 @@ template <int PB> bool run_fixed(const gpu_call &g, mpfr_prec_t prec)
     if ((present(g.A) && !fixed_pack<PB>(g.A, true, prec, pA, bound, trsm)) || (present(g.B) && !fixed_pack<PB>(g.B, true, prec, pB, bound, trsm)) || !fixed_pack<PB>(g.O, g.read_o, prec, pO, bound, trsm))
         return false;
 #ifndef MPLAPACK_MPFR_CUDA_HOST_EMULATION
-    if (trsm) {
-        // Keep the small, precision-dependent BLAS limit. Resizing the CUDA
-        // stack on every tiny TRSM is very expensive. The factorization entry
-        // uses its own call-scoped guard; it never calls this BLAS bridge.
-        size_t current = 0, want = mplapack_mpfr_cuda::fixed_stack_bytes(PB);
-        if (cudaDeviceGetLimit(&current, cudaLimitStackSize) != cudaSuccess ||
-            (current < want && cudaDeviceSetLimit(cudaLimitStackSize, want) != cudaSuccess))
-            return false;
-    }
+    // Keep the guard alive through computation and publication, including
+    // every error return. The device launcher nests its own guard safely.
+    mplapack_mpfr_cuda::mpfr_stack_guard stack(trsm ? mplapack_mpfr_cuda::fixed_stack_bytes(PB) : 0);
+    if (stack.error)
+        return false;
 #endif
     if (mplapack_mpfr_cuda::blas3_fixed<PB>(packed_shape(g), a, b, pA.data(), count(g.A), pB.data(), count(g.B), pO.data(), count(g.O)) != 0)
         return false;

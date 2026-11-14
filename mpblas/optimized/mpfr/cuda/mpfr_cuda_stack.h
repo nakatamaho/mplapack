@@ -1,7 +1,10 @@
 // MPFR-only CUDA stack policy; no change to dd/td/qd or mpc_cuda.
+// Default: raise only. MPLAPACK_MPFR_CUDA_STACK_RESTORE=1 restores the
+// original limit per call (read on every guard construction; only exact "1").
 #ifndef MPLAPACK_MPFR_CUDA_STACK_H
 #define MPLAPACK_MPFR_CUDA_STACK_H
 #include <cstddef>
+#include <cstdlib>
 #ifndef MPLAPACK_MPFR_CUDA_HOST_EMULATION
 #include <cuda_runtime.h>
 #endif
@@ -26,7 +29,7 @@ __attribute__((visibility("hidden"))) inline size_t complex_runtime_stack_bytes(
 }
 #ifndef MPLAPACK_MPFR_CUDA_HOST_EMULATION
 // The device stack limit is raised to the largest size this process has
-// needed so far and left there (restore() is a no-op).  cudaDeviceSetLimit
+// needed so far and left there by default. cudaDeviceSetLimit
 // synchronizes the device and reconfigures the per-thread stack; under
 // driver 580.178.04 on the A100 one call costs tens of milliseconds, so the
 // previous per-call set/restore pair (~100-200 ms) dominated every
@@ -35,8 +38,15 @@ __attribute__((visibility("hidden"))) inline size_t complex_runtime_stack_bytes(
 // once per process they run 42.6 s and ~50 s.  The stack allowance has no
 // effect on the arithmetic (values, rounding, zero signs); the peak
 // allowance is the same as with the per-call guard.
+__attribute__((visibility("hidden"))) inline bool stack_restore_enabled() {
+    const char *v=std::getenv("MPLAPACK_MPFR_CUDA_STACK_RESTORE");
+    return v && v[0]=='1' && v[1]=='\0';
+}
 struct __attribute__((visibility("hidden"))) mpfr_stack_guard {
     size_t old=0; bool changed=false; int error=0;
+    const bool restore_per_call=stack_restore_enabled();
+    mpfr_stack_guard(const mpfr_stack_guard &)=delete;
+    mpfr_stack_guard &operator=(const mpfr_stack_guard &)=delete;
     explicit mpfr_stack_guard(size_t want) {
         if(!want) return;
         error=cudaDeviceGetLimit(&old,cudaLimitStackSize);
@@ -44,8 +54,17 @@ struct __attribute__((visibility("hidden"))) mpfr_stack_guard {
             error=cudaDeviceSetLimit(cudaLimitStackSize,want); changed=!error;
         }
     }
-    int restore() { return 0; }
-    ~mpfr_stack_guard() { }
+    int restore() {
+        if(restore_per_call && changed) {
+            changed=false;
+            // Restoration is best effort, never a computation failure. Clear
+            // the runtime error so it cannot poison the next kernel launch.
+            if(cudaDeviceSetLimit(cudaLimitStackSize,old)!=cudaSuccess)
+                (void)cudaGetLastError();
+        }
+        return 0;
+    }
+    ~mpfr_stack_guard() { (void)restore(); }
 };
 #endif
 }
