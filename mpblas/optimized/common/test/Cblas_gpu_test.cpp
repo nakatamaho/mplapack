@@ -39,6 +39,9 @@
 #define RBLAS_TEST_GPU 1
 
 #if defined(MPLAPACK_BUILD_WITH_MPFR)
+#ifndef MPLAPACK_MPFR_CUDA_HOST_EMULATION
+#include "../../mpfr/cuda/test/stack_policy_test.h"
+#endif
 namespace mplapack_mpfr_cuda {
 int device_count();
 }
@@ -49,7 +52,21 @@ static void rblas_test_gpu_setup()
     // signed zeros as the reference (the cu_freal engine: =0 in the environment)
     setenv("MPLAPACK_MPFR_CUDA_FORCE_RUNTIME", "1", 0);
 }
-static bool rblas_test_have_gpu() { return mplapack_mpfr_cuda::device_count() > 0; }
+static bool rblas_test_have_gpu() {
+    if(mplapack_mpfr_cuda::device_count()<=0) return false;
+#ifndef MPLAPACK_MPFR_CUDA_HOST_EMULATION
+    long p=mpfrxx::default_precision_bits();
+    size_t required=mpfr_stack_test::fixed(p)?size_t(16384)*((p+511)/512):65536;
+    mpfr_stack_test::policies("Cblas Ctrsm",required,[] {
+        mpfr_stack_test::result<mpc_class> r;
+        r.a.assign(15,mpc_class(19)); r.b.assign(5,mpc_class(23));
+        for(long j=0;j<3;++j) for(long i=0;i<3;++i) r.a[i+j*5]=i==j?mpc_class(4):mpc_class(.125,.0625);
+        r.computed=Ctrsm_mpfr_cuda("L","U","N","N",3,1,mpc_class(1),r.a.data(),5,r.b.data(),5);
+        return r;
+    });
+#endif
+    return true;
+}
 #else
 #if defined(MPLAPACK_BUILD_WITH_DD)
 #define RBLAS_TEST_PREFIX "MPLAPACK_DD"

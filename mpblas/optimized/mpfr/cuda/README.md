@@ -228,6 +228,20 @@ modes. Heap-limit guards keep their separate call-scoped policy.
 
 ## Tests (CMake)
 
+Stack-policy probes in the solver, real/complex factor, inverse, runtime
+GEMM, complex BLAS and real TRSM device tests set the limit to 1024 bytes
+and read it back before each call. Unset/`0`/other values must really raise
+it to at least the engine budget; exact `1` must restore the read-back
+value. The same process switches policies and compares all padded outputs,
+workspace, pivots and info limb-for-limb (including zero signs).
+Each family also has a `*_restore` CTest with the environment preset to `1`;
+probes preserve that environment for the remaining numerical sweep.
+Autotools runs seven `test/stack_restore_*.sh` device counterparts, plus
+its host-emulation suites. `mpfr_cuda_stack_guard_host` (autotools:
+`stack_guard_host_test_mpfr`) uses an isolated CUDA stub to check nesting,
+no-change and early-return paths, exact parsing and restoration-error
+cleanup without altering calculation status.
+
 `mpfr_cuda_Rgemm_{host,device}[_runtime]` compare the GPU `Rgemm` bit for bit
 with the CPU `Rgemm` at 256, 512, 768, 1024, 2048 (fixed) and 64, 200, 333,
 4096 (runtime) bits, for all

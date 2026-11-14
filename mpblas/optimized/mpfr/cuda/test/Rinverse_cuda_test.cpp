@@ -10,6 +10,7 @@
 #include <type_traits>
 #ifndef MPLAPACK_MPFR_CUDA_HOST_EMULATION
 #include <cuda_runtime_api.h>
+#include "stack_policy_test.h"
 #endif
 #define Rtrtri oracle_Rtrtri
 #define Ctrtri oracle_Ctrtri
@@ -92,6 +93,17 @@ template<class T> void trial(long n,int kind,bool upper,bool unit,int pattern,lo
     check(ok,"accepted",n,kind);check(info==expected,"info",n,kind);
     check(same(a,r),"matrix/signs/padding",n,kind);check(same(w,wr),"whole workspace",n,kind);check(piv==p0,"input pivots",n,kind);
 }
+#ifndef MPLAPACK_MPFR_CUDA_HOST_EMULATION
+template<class T> void stack_policies(long p) {
+    for(int kind=0;kind<4;++kind) mpfr_stack_test::policies("inverse",mpfr_stack_test::inverse_bytes(p),[&] {
+        mpfr_stack_test::result<T> r;
+        r.a.assign(15,T(19)); r.work.assign(200,T(17)); r.piv={1,2,3};
+        for(long j=0;j<3;++j) for(long i=0;i<3;++i) r.a[i+j*5]=input((T*)nullptr,i,j)/T(i==j?1:3);
+        r.computed=api<T>::run(kind,"U","N",3,r.a.data(),5,r.piv.data(),r.work.data(),200,r.info);
+        return r;
+    });
+}
+#endif
 template<class T> void contracts() {
     const long n=3,ld=6;std::vector<T> a(ld*n,T(2)),w(200,T(17));std::vector<INTEGER> p={1,2,3};
     for(int kind=0;kind<4;++kind) for(int test=0;test<16;++test) {
@@ -124,7 +136,6 @@ template<class T> void contracts() {
 int main(int argc,char **argv) {
 #ifndef MPLAPACK_MPFR_CUDA_HOST_EMULATION
     int devices=0;if(cudaGetDeviceCount(&devices) || !devices) return 77;
-    size_t old_stack=0;cudaDeviceGetLimit(&old_stack,cudaLimitStackSize);
 #endif
     setenv("MPLAPACK_MPFR_LAPACK_INVERSE_CUDA_MIN","0",1);
     // Each process gets its precision through MPFRXX_DEFAULT_PRECISION_BITS,
@@ -134,7 +145,12 @@ int main(int argc,char **argv) {
     dispatch=mode=="--fallback";
     bool real_only=mode=="--real-small" || mode=="--real-blocked";
     if(dispatch) setenv("MPLAPACK_MPFR_CUDA","0",1);
-    else { contracts<REAL>();if(!real_only) contracts<COMPLEX>(); }
+    else {
+        contracts<REAL>();if(!real_only) contracts<COMPLEX>();
+#ifndef MPLAPACK_MPFR_CUDA_HOST_EMULATION
+        stack_policies<REAL>(p); if(!real_only) stack_policies<COMPLEX>(p);
+#endif
+    }
     bool small=mode=="--small" || mode=="--real-small";
     const auto sizes=mode=="--real-blocked"?std::vector<long>{65}:small?std::vector<long>{1,3}:std::vector<long>{1,2,3,63,64,65,131};
     for(long n:sizes) {
@@ -152,7 +168,6 @@ int main(int argc,char **argv) {
         }
     }
 #ifndef MPLAPACK_MPFR_CUDA_HOST_EMULATION
-    size_t now=0;check(!cudaDeviceGetLimit(&now,cudaLimitStackSize) && now>=old_stack,"stack raised only");
     check(cudaDeviceSynchronize()==cudaSuccess,"device sync");
 #endif
     std::printf("MPFR inverse p=%ld: %ld %s calls, %ld checks, %ld component comparisons, %ld failures\n",p,calls,dispatch?"fallback":"direct",checks,elements,errors);

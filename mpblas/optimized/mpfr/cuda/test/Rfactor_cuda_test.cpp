@@ -9,6 +9,7 @@
 #include <vector>
 #ifndef MPLAPACK_MPFR_CUDA_HOST_EMULATION
 #include <cuda_runtime_api.h>
+#include "stack_policy_test.h"
 #endif
 #define Rgetrf2 factor_oracle_getrf2
 #include "../../../../../mplapack/reference/Rgetrf2.cpp"
@@ -97,15 +98,8 @@ void trial(bool chol,bool upper,long m,long n,int kind,long failure=0) {
     }
     if(chol && failure) a[(failure-1)*(lda+1)]=-1;
     b=a; auto original=a; INTEGER info=-99,ref=-98; bool ran;
-#ifndef MPLAPACK_MPFR_CUDA_HOST_EMULATION
-    size_t stack_before=0,stack_after=0; cudaDeviceGetLimit(&stack_before,cudaLimitStackSize);
-#endif
     if(chol) { factor_oracle_potrf(upper?"U":"L",n,b.data(),lda,ref); ran=Rpotrf_mpfr_cuda(upper?"U":"L",n,a.data(),lda,info); }
     else { factor_oracle_getrf(m,n,b.data(),lda,q.data(),ref); ran=Rgetrf_mpfr_cuda(m,n,a.data(),lda,p.data(),info); }
-#ifndef MPLAPACK_MPFR_CUDA_HOST_EMULATION
-    cudaDeviceGetLimit(&stack_after,cudaLimitStackSize);
-    check(stack_after>=stack_before,"stack raised only",m,n,kind);
-#endif
     check(ran && info==ref && p==q,chol?"potrf status":"getrf status",m,n,kind);
     long bad=0; for(size_t i=0;i<a.size();++i) if(!same(a[i],b[i])) {
         if(!bad && errors<10) { std::fprintf(stderr,"first diff idx=%zu ",i); mpfr_out_str(stderr,16,0,a[i].get_mpfr_t(),MPFR_RNDN); std::fputs(" vs ",stderr); mpfr_out_str(stderr,16,0,b[i].get_mpfr_t(),MPFR_RNDN); std::fputc('\n',stderr); } ++bad;
@@ -116,6 +110,17 @@ void trial(bool chol,bool upper,long m,long n,int kind,long failure=0) {
     routine_elements[chol?1:0]+=elements-previous_elements;
     routine_zeros[chol?1:0]+=zero_differences-previous_zeros;
 }
+#ifndef MPLAPACK_MPFR_CUDA_HOST_EMULATION
+void stack_policies(long prec) {
+    for(bool chol:{false,true}) mpfr_stack_test::policies("Rfactor",mpfr_stack_test::factor_bytes(prec,false),[&] {
+        mpfr_stack_test::result<REAL> r;
+        r.a.assign(15,REAL(731)); r.piv.assign(3,-71);
+        for(long j=0;j<3;++j) for(long i=0;i<3;++i) r.a[i+j*5]=i==j?REAL(8):REAL(1)/REAL(16);
+        r.computed=chol?Rpotrf_mpfr_cuda("L",3,r.a.data(),5,r.info):Rgetrf_mpfr_cuda(3,3,r.a.data(),5,r.piv.data(),r.info);
+        return r;
+    });
+}
+#endif
 void rejected() {
     std::vector<REAL> a(12,REAL(3)),b=a; INTEGER p[2]={-7,-8},info=-9;
     auto untouched=[&] { bool result=info==-9 && p[0]==-7 && p[1]==-8; for(size_t i=0;i<a.size();++i) result=same(a[i],b[i])&&result; return result; };
@@ -195,6 +200,9 @@ int main(int argc,char **argv) {
         if(argc==1 && (prec==64 || prec==333 || prec==4096)) continue;
         selected=true;
         mpfrxx::set_default_precision_bits(prec);
+#ifndef MPLAPACK_MPFR_CUDA_HOST_EMULATION
+        stack_policies(prec);
+#endif
         if(std::getenv("MPLAPACK_FACTOR_LARGE_CHECK")) {
             trial(false,false,1000,1000,0); trial(true,false,1000,1000,0); trial(true,true,1000,1000,0);
             std::printf("p=%ld n=1000 checks=%ld errors=%ld signed_zero_diffs=%ld\n",prec,checks,errors,zero_differences);

@@ -153,7 +153,7 @@ EXTRA_libmplapack_mpfr_opt_cuda_la_DEPENDENCIES = Rgemm_dlink_cuda.lo
 CLEANFILES = Rgemm_dlink_cuda.lo .libs/Rgemm_dlink_cuda.o Rgemm_dlink_cuda.o
 
 check_PROGRAMS = Rtrisolve_gpu_host_test_mpfr Rtrisolve_wave_order_host_test_mpfr Rfactor_gpu_host_test_mpfr Cfactor_gpu_host_test_mpfr solver_gpu_host_test_mpfr inverse_gpu_host_test_mpfr Rblas1_gpu_host_test_mpfr
-TESTS = Rfactor_gpu_host_test_mpfr Cfactor_gpu_host_test_mpfr test/solver_host_sweep.sh test/inverse_host_sweep.sh cu_fzero_host_test_mpfr cu_fzero_device_test_mpfr cu_farith_host_test_mpfr cu_farith_device_test_mpfr
+TESTS = Rtrisolve_gpu_host_test_mpfr Rtrisolve_wave_order_host_test_mpfr Rblas1_gpu_host_test_mpfr Rfactor_gpu_host_test_mpfr Cfactor_gpu_host_test_mpfr test/solver_host_sweep.sh test/inverse_host_sweep.sh cu_fzero_host_test_mpfr cu_fzero_device_test_mpfr cu_farith_host_test_mpfr cu_farith_device_test_mpfr
 check_PROGRAMS += cu_fzero_host_test_mpfr cu_farith_host_test_mpfr
 cu_fzero_host_test_mpfr_SOURCES = test/cu_fzero_test.cpp test/cu_freal_before_zero.cuh
 cu_fzero_host_test_mpfr_CXXFLAGS = $(AM_CXXFLAGS) -std=c++17
@@ -211,6 +211,19 @@ solver_gpu_host_test_mpfr_SOURCES = ../../../../mplapack/optimized/common/test/R
 solver_gpu_host_test_mpfr_CPPFLAGS = $(MPLAPACK_MPFR_CUDA_CPPFLAGS) -DMPLAPACK_MPFR_CUDA_HOST_EMULATION
 solver_gpu_host_test_mpfr_LDADD = ../libmplapack_mpfr_opt.la $(MPLAPACK_MPFR_LIBS) $(OPENMP_LIBS)
 solver_gpu_host_test_mpfr_LDFLAGS = -static -Wl,--disable-new-dtags -Wl,-rpath,$(MPC_LIBDIR):$(MPFR_LIBDIR):$(GMP_LIBDIR)
+# Device restore variants: each probes unset/1/0/other in one process, then
+# verifies exact cross-policy results. These are serialized when run below.
+check_PROGRAMS += stack_policy_device_test_mpfr stack_guard_host_test_mpfr
+stack_guard_host_test_mpfr_SOURCES = test/stack_guard_test.cpp test/stack_guard_stub/cuda_runtime.h
+stack_guard_host_test_mpfr_CPPFLAGS = -I$(srcdir)/test/stack_guard_stub
+stack_guard_host_test_mpfr_CXXFLAGS = $(AM_CXXFLAGS) -std=c++17
+TESTS += stack_guard_host_test_mpfr
+stack_policy_device_test_mpfr_SOURCES = test/stack_policy_device_test.cpp test/stack_policy_test.h
+stack_policy_device_test_mpfr_CXXFLAGS = $(AM_CXXFLAGS) -std=c++17
+stack_policy_device_test_mpfr_LDADD = libmplapack_mpfr_opt_cuda.la $(MPLAPACK_MPFR_LIBS) $(CUDA_LIBS) -lcudart $(OPENMP_LIBS)
+stack_policy_device_test_mpfr_LDFLAGS = -Wl,--disable-new-dtags -Wl,-rpath,$(MPC_LIBDIR):$(MPFR_LIBDIR):$(GMP_LIBDIR)
+TESTS += test/stack_restore_solver.sh test/stack_restore_Rfactor.sh test/stack_restore_Cfactor.sh \
+ test/stack_restore_inverse.sh test/stack_restore_Rgemm.sh test/stack_restore_Cblas.sh test/stack_restore_blas3.sh
 TESTS_ENVIRONMENT = OMP_NUM_THREADS=1
 
 clean-local:
@@ -222,5 +235,7 @@ if IS_MINGW
 libmplapack_mpfr_opt_cuda_la_LDFLAGS += -fopenmp -no-undefined
 endif
 
-EXTRA_DIST = test/cu_fzero_device_test.cu test/cu_farith_device_test.cu test/inverse_host_sweep.sh test/solver_host_sweep.sh test/solver_pivot_publication.cpp test/Cfactor_device_globals.cu README.md Rgemm_host_cuda.cpp test/Rgemm_cuda_test.cpp test/Rgemm_winograd_cuda_test.cpp test/blas3_cuda_test.cpp \
+EXTRA_DIST = test/stack_restore_solver.sh test/stack_restore_Rfactor.sh test/stack_restore_Cfactor.sh \
+    test/stack_restore_inverse.sh test/stack_restore_Rgemm.sh test/stack_restore_Cblas.sh test/stack_restore_blas3.sh \
+    test/cu_fzero_device_test.cu test/cu_farith_device_test.cu test/inverse_host_sweep.sh test/solver_host_sweep.sh test/solver_pivot_publication.cpp test/Cfactor_device_globals.cu README.md Rgemm_host_cuda.cpp test/Rgemm_cuda_test.cpp test/Rgemm_winograd_cuda_test.cpp test/blas3_cuda_test.cpp \
     test/Rfactor_cuda_test.cpp test/Rfactor_bench.cpp test/Cfactor_bench.cpp test/Rfactor_panel_bench.cpp test/Cfactor_panel_bench.cpp test/run_factor_bench.py test/cu_fround_test.cpp test/cu_fround_device_test.cu test/cu_fround_bench.cu test/Rtrsm_round_bench.cpp test/run_round_bench.py

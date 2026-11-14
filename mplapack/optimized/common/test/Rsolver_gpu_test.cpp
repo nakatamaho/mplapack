@@ -32,6 +32,9 @@
 #endif
 #if defined(MPLAPACK_SOLVER_DEVICE_TEST)
 #include <cuda_runtime_api.h>
+#if defined(MPLAPACK_BUILD_WITH_MPFR)
+#include "../../../../mpblas/optimized/mpfr/cuda/test/stack_policy_test.h"
+#endif
 #endif
 namespace {
 long checks=0,comparisons=0,zero_sign_errors=0;
@@ -95,8 +98,7 @@ template<class H> void test(INTEGER n,INTEGER rhs,bool driver,bool chol,const ch
     }
     auto ga=a,gb=b; auto q=p;
 #if defined(MPLAPACK_SOLVER_DEVICE_TEST) && defined(MPLAPACK_BUILD_WITH_MPFR)
-    size_t stack=0,after=0,free_before=0,total_before=0;
-    check(cudaDeviceGetLimit(&stack,cudaLimitStackSize)==cudaSuccess,"stack before");
+    size_t free_before=0,total_before=0;
 #endif
     cpu_solve(driver,chol,flag,n,rhs,a.data(),lda,p.data(),b.data(),ldb,ir);
 #if defined(MPLAPACK_SOLVER_DEVICE_TEST) && defined(MPLAPACK_BUILD_WITH_MPFR)
@@ -118,13 +120,24 @@ template<class H> void test(INTEGER n,INTEGER rhs,bool driver,bool chol,const ch
         check(false,"A/B/ipiv/info bit identity");
     }
     check(true,"A/B/ipiv/info bit identity");
-#if defined(MPLAPACK_SOLVER_DEVICE_TEST) && defined(MPLAPACK_BUILD_WITH_MPFR)
-    // the goal 13 stack guard raises the device stack limit for the process
-    // lifetime and never restores it (the per-call set/restore pair cost
-    // 100-200 ms per call); only the "raised, never lowered" contract holds
-    check(cudaDeviceGetLimit(&after,cudaLimitStackSize)==cudaSuccess && after>=stack,"scoped stack raised only");
-#endif
+
 }
+#if defined(MPLAPACK_SOLVER_DEVICE_TEST) && defined(MPLAPACK_BUILD_WITH_MPFR)
+template<class H> void stack_policies(long p) {
+    for(bool driver:{false,true}) for(bool chol:{false,true}) {
+        mpfr_stack_test::policies("solver",mpfr_stack_test::factor_bytes(p,std::is_same<H,COMPLEX>::value),[&] {
+            mpfr_stack_test::result<H> r;
+            r.a.assign(15,H(19)); r.b.assign(5,H(23)); r.piv.assign(3,-7);
+            for(long j=0;j<3;++j) for(long i=0;i<3;++i) r.a[i+j*5]=i==j?H(8):H(REAL(1)/REAL(16));
+            for(long i=0;i<3;++i) r.b[i]=value(i,7,(H*)nullptr);
+            INTEGER info=-77;
+            if(!driver) { cpu_factor(chol,"L",3,r.a.data(),5,r.piv.data(),info); check(info==0,"stack probe factors"); }
+            r.computed=gpu_solve(driver,chol,chol?"L":"N",3,1,r.a.data(),5,r.piv.data(),r.b.data(),5,r.info);
+            return r;
+        });
+    }
+}
+#endif
 template<class H> void reject() {
     std::vector<H> a(16,H(7)),b(16,H(11)),aa=a,bb=b;
     INTEGER p[4]={1,2,3,4},info=123;
@@ -219,6 +232,9 @@ int main(int argc,char **argv) {
     bool quick=argc>2 && !std::strcmp(argv[2],"--quick");
     for(long p:precisions) {
         precision(p);
+#if defined(MPLAPACK_SOLVER_DEVICE_TEST) && defined(MPLAPACK_BUILD_WITH_MPFR)
+        stack_policies<REAL>(p); stack_policies<COMPLEX>(p);
+#endif
         std::vector<INTEGER> sizes=quick?std::vector<INTEGER>{1,3,17,65}:std::vector<INTEGER>{1,2,3,63,64,65,131,257,599};
         for(INTEGER n:sizes) for(bool driver:{false,true}) for(bool chol:{false,true}) {
             for(INTEGER rhs:{INTEGER(1),n}) {

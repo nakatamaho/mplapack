@@ -46,6 +46,9 @@
 #include <cstring>
 #include <string>
 #include <vector>
+#ifndef MPLAPACK_MPFR_CUDA_HOST_EMULATION
+#include "stack_policy_test.h"
+#endif
 
 namespace mplapack_mpfr_cuda {
 int device_count();
@@ -310,6 +313,16 @@ int main(int argc, char **argv)
         if (fixed_only && (prec == 64 || prec == 200 || prec == 333))
             continue;
         mpfrxx::set_default_precision_bits(prec);
+#ifndef MPLAPACK_MPFR_CUDA_HOST_EMULATION
+        size_t required=mpfr_stack_test::fixed(prec)?mplapack_mpfr_cuda::fixed_stack_bytes(prec):65536;
+        mpfr_stack_test::policies("blas3 Rtrsm",required,[] {
+            mpfr_stack_test::result<mpfr_class> r;
+            r.a.assign(15,mpfr_class(19)); r.b.assign(5,mpfr_class(.25));
+            for(long j=0;j<3;++j) for(long i=0;i<3;++i) r.a[i+j*5]=i==j?mpfr_class(4):mpfr_class(.125);
+            r.computed=Rtrsm_mpfr_cuda("L","U","N","N",3,1,mpfr_class(1),r.a.data(),5,r.b.data(),5);
+            return r;
+        });
+#endif
         check_trsm_edges(prec);
         for (auto &z : sizes)
             for (int ak = 0; ak < 3; ak++) {

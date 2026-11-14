@@ -46,6 +46,9 @@
 #include <cstdlib>
 #include <cstring>
 #include <vector>
+#ifndef MPLAPACK_MPFR_CUDA_HOST_EMULATION
+#include "stack_policy_test.h"
+#endif
 
 namespace mplapack_mpfr_cuda {
 int device_count();
@@ -226,6 +229,14 @@ int main(int argc,char **argv)
         if(selected && prec!=selected) continue;
         found=true;
         mpfrxx::set_default_precision_bits(prec);
+#ifndef MPLAPACK_MPFR_CUDA_HOST_EMULATION
+        if(!mpfr_stack_test::fixed(prec)) mpfr_stack_test::policies("Rgemm runtime",65536,[] {
+            mpfr_stack_test::result<mpfr_class> r;
+            r.a.assign(15,mpfr_class(.25)); r.b.assign(15,mpfr_class(.5)); r.work.assign(15,mpfr_class(.125));
+            r.computed=Rgemm_mpfr_cuda("N","N",3,3,3,mpfr_class(1),r.a.data(),5,r.b.data(),5,mpfr_class(.25),r.work.data(),5);
+            return r;
+        });
+#endif
         for (const char *ta : trans)
             for (const char *tb : trans)
                 for (double beta : betas)
