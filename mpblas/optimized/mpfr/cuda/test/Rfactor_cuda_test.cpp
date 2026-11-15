@@ -98,8 +98,22 @@ void trial(bool chol,bool upper,long m,long n,int kind,long failure=0) {
     }
     if(chol && failure) a[(failure-1)*(lda+1)]=-1;
     b=a; auto original=a; INTEGER info=-99,ref=-98; bool ran;
-    if(chol) { factor_oracle_potrf(upper?"U":"L",n,b.data(),lda,ref); ran=Rpotrf_mpfr_cuda(upper?"U":"L",n,a.data(),lda,info); }
-    else { factor_oracle_getrf(m,n,b.data(),lda,q.data(),ref); ran=Rgetrf_mpfr_cuda(m,n,a.data(),lda,p.data(),info); }
+    if(chol) factor_oracle_potrf(upper?"U":"L",n,b.data(),lda,ref);
+    else factor_oracle_getrf(m,n,b.data(),lda,q.data(),ref);
+#ifndef MPLAPACK_MPFR_CUDA_HOST_EMULATION
+    // A zero column beyond min(m,n) in a wide matrix need not make a
+    // diagonal pivot singular. Select actual numerical failures by the oracle.
+    if(!chol && kind==1 && ref>0) {
+        auto r=mpfr_stack_test::numerical_policies("Rgetrf singular trial",mpfr_stack_test::factor_bytes(mpfrxx::default_precision_bits(),false),[&] {
+            mpfr_stack_test::result<REAL> r;r.a=original;r.piv=p;
+            r.computed=Rgetrf_mpfr_cuda(m,n,r.a.data(),lda,r.piv.data(),r.info);return r;
+        });
+        ran=r.computed;a=r.a;p=r.piv;info=r.info;
+        mpfr_stack_test::require(info>0,"singular trial reports positive info");
+    } else
+#endif
+    if(chol) ran=Rpotrf_mpfr_cuda(upper?"U":"L",n,a.data(),lda,info);
+    else ran=Rgetrf_mpfr_cuda(m,n,a.data(),lda,p.data(),info);
     check(ran && info==ref && p==q,chol?"potrf status":"getrf status",m,n,kind);
     long bad=0; for(size_t i=0;i<a.size();++i) if(!same(a[i],b[i])) {
         if(!bad && errors<10) { std::fprintf(stderr,"first diff idx=%zu ",i); mpfr_out_str(stderr,16,0,a[i].get_mpfr_t(),MPFR_RNDN); std::fputs(" vs ",stderr); mpfr_out_str(stderr,16,0,b[i].get_mpfr_t(),MPFR_RNDN); std::fputc('\n',stderr); } ++bad;
@@ -111,6 +125,14 @@ void trial(bool chol,bool upper,long m,long n,int kind,long failure=0) {
     routine_zeros[chol?1:0]+=zero_differences-previous_zeros;
 }
 #ifndef MPLAPACK_MPFR_CUDA_HOST_EMULATION
+void memory_refusal(long prec) {
+    mpfr_stack_test::numerical_policies("Rgetrf memory refusal",mpfr_stack_test::factor_bytes(prec,false),[] {
+        mpfr_stack_test::result<REAL> r;r.a.assign(12,REAL(3));r.piv={-7,-8};
+        auto before=r;
+        r.computed=Rgetrf_mpfr_cuda(1048576,1048576,r.a.data(),1048576,r.piv.data(),r.info);
+        mpfr_stack_test::require(r==before,"memory refusal leaves A/ipiv/info untouched");return r;
+    },false);
+}
 void stack_policies(long prec) {
     for(bool chol:{false,true}) mpfr_stack_test::policies("Rfactor",mpfr_stack_test::factor_bytes(prec,false),[&] {
         mpfr_stack_test::result<REAL> r;
@@ -192,6 +214,7 @@ int main(int argc,char **argv) {
 #endif
     if(argc>1 && !std::strcmp(argv[1],"--defaults")) { natural_defaults(); return errors?1:0; }
     bool quick=argc>2 && !std::strcmp(argv[2],"--quick");
+    bool stack_errors=argc>2 && !std::strcmp(argv[2],"--stack-errors");
     setenv("MPLAPACK_MPFR_LAPACK_CUDA_MIN","0",1);
     gmp_randinit_default(rng); gmp_randseed_ui(rng,7);
     bool selected=false;
@@ -201,7 +224,12 @@ int main(int argc,char **argv) {
         selected=true;
         mpfrxx::set_default_precision_bits(prec);
 #ifndef MPLAPACK_MPFR_CUDA_HOST_EMULATION
-        stack_policies(prec);
+        if(stack_errors) {
+            trial(false,false,7,7,1);trial(false,false,10,7,1);memory_refusal(prec);
+            std::printf("Rfactor numerical error trials p=%ld errors=%ld\n",prec,errors);continue;
+        }
+        bool restore=mpfr_stack_test::restore_mode();
+        stack_policies(prec);mpfr_stack_test::begin_sweep("Rfactor",restore);
 #endif
         if(std::getenv("MPLAPACK_FACTOR_LARGE_CHECK")) {
             trial(false,false,1000,1000,0); trial(true,false,1000,1000,0); trial(true,true,1000,1000,0);

@@ -121,8 +121,20 @@ void trial(bool chol,bool upper,long m,long n,int kind,long failure=0) {
     }
     if(chol && failure) a[(failure-1)*(lda+1)]=-1;
     b=a; auto original=a; INTEGER info=-99,ref=-98; bool ran;
-    if(chol) { complex_oracle_potrf(upper?"U":"L",n,b.data(),lda,ref); ran=Cpotrf_mpfr_cuda(upper?"U":"L",n,a.data(),lda,info); }
-    else { complex_oracle_getrf(m,n,b.data(),lda,q.data(),ref); ran=Cgetrf_mpfr_cuda(m,n,a.data(),lda,p.data(),info); }
+    if(chol) complex_oracle_potrf(upper?"U":"L",n,b.data(),lda,ref);
+    else complex_oracle_getrf(m,n,b.data(),lda,q.data(),ref);
+#ifndef MPLAPACK_MPFR_CUDA_HOST_EMULATION
+    if(chol && (kind==1 || kind==2 || kind==4 || failure)) {
+        auto r=mpfr_stack_test::numerical_policies("Cpotrf non-positive trial",mpfr_stack_test::factor_bytes(mpfrxx::default_precision_bits(),true),[&] {
+            mpfr_stack_test::result<COMPLEX> r;r.a=original;r.piv=p;
+            r.computed=Cpotrf_mpfr_cuda(upper?"U":"L",n,r.a.data(),lda,r.info);return r;
+        });
+        ran=r.computed;a=r.a;info=r.info;
+        mpfr_stack_test::require(info>0,"non-positive trial reports positive info");
+    } else
+#endif
+    if(chol) ran=Cpotrf_mpfr_cuda(upper?"U":"L",n,a.data(),lda,info);
+    else ran=Cgetrf_mpfr_cuda(m,n,a.data(),lda,p.data(),info);
     check(ran && info==ref && p==q,chol?"potrf status":"getrf status",m,n,kind);
     long bad=0;
     for(size_t i=0;i<a.size();++i) if(!same(a[i],b[i])) {
@@ -181,6 +193,7 @@ int main(int argc,char **argv) {
     int devices=0; if(cudaGetDeviceCount(&devices)!=cudaSuccess || !devices) return 77;
 #endif
     bool quick=argc>2 && !std::strcmp(argv[2],"--quick");
+    bool stack_errors=argc>2 && !std::strcmp(argv[2],"--stack-errors");
     bool frames=argc>2 && !std::strcmp(argv[2],"--stack-frames");
     bool probe=frames || (argc>2 && !std::strcmp(argv[2],"--stack-probe"));
     setenv("MPLAPACK_MPFR_LAPACK_CUDA_MIN","0",1);
@@ -189,7 +202,12 @@ int main(int argc,char **argv) {
         if(argc>1 && std::atol(argv[1])!=prec) continue; selected=true;
         mpfrxx::set_default_precision_bits(prec); mpfrxx::set_default_mpc_precision_bits(prec);
 #ifndef MPLAPACK_MPFR_CUDA_HOST_EMULATION
-        stack_policies(prec);
+        if(stack_errors) {
+            trial(true,false,1,1,1);trial(true,true,7,7,2);trial(true,false,7,7,0,3);
+            std::printf("Cfactor numerical error trials p=%ld errors=%ld\n",prec,errors);continue;
+        }
+        bool restore=mpfr_stack_test::restore_mode();
+        stack_policies(prec);mpfr_stack_test::begin_sweep("Cfactor",restore);
 #endif
         if(std::getenv("MPLAPACK_FACTOR_LARGE_CHECK")) {
             trial(false,false,1000,1000,0); trial(true,false,1000,1000,0); trial(true,true,1000,1000,0);

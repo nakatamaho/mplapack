@@ -50,6 +50,8 @@
 // Device stack: raise only by default. MPLAPACK_MPFR_CUDA_STACK_RESTORE=1
 // restores the original limit per call (exact 1; read at every call).
 // Unset, 0 or other values keep the raised limit. Arithmetic is unchanged.
+// Runtime GEMM/Cblas can retain 64 KiB/thread (~13.5 GiB on an A100).
+// Restore mode avoids retaining that increase after the call.
 
 bool Rgemm_mpfr_cuda(const char *transa, const char *transb, mplapackint const m, mplapackint const n, mplapackint const k, mpfr_class const alpha, mpfr_class *a, mplapackint const lda, mpfr_class *b, mplapackint const ldb, mpfr_class const beta, mpfr_class *c, mplapackint const ldc);
 bool Rpotrf_mpfr_cuda(const char *uplo, mplapackint const n, mpfr_class *a, mplapackint const lda, mplapackint &info);

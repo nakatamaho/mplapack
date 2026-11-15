@@ -174,8 +174,13 @@ std::string tag(const char *r, std::initializer_list<const char *> opts, std::in
 
 } // namespace
 
-int main()
+int main(int argc,char **argv)
 {
+    bool restore_sweep=false;
+#if defined(RBLAS_TEST_GPU) && defined(MPLAPACK_BUILD_WITH_MPFR)
+    restore_sweep=argc==2 && !std::strcmp(argv[1],"--stack-restore-sweep");
+#endif
+    if(argc>1 && !restore_sweep) { std::fprintf(stderr,"unknown test option\n"); return 2; }
     setenv("MPLAPACK_BLAS_OMP_MIN", "1", 1);
     // the small-block engine (Rblas_block_common.h) for every type and size
     setenv("MPLAPACK_BLAS_BLOCK_MIN", "1", 1);
@@ -187,6 +192,9 @@ int main()
         std::printf("no CUDA device: skipped\n");
         return 77;
     }
+#endif
+#if defined(RBLAS_TEST_GPU) && defined(MPLAPACK_BUILD_WITH_MPFR)
+    if(restore_sweep) return rblas_test_restore_sweep();
 #endif
     const char *ul[] = {"U", "L"}, *tr[] = {"N", "T", "C"}, *sd[] = {"L", "R"}, *dg[] = {"N", "U"};
     // {150, 70, 40}: several blocks of the engine (alpha, beta general only)

@@ -148,7 +148,9 @@ int main(int argc,char **argv) {
     else {
         contracts<REAL>();if(!real_only) contracts<COMPLEX>();
 #ifndef MPLAPACK_MPFR_CUDA_HOST_EMULATION
+        bool restore=mpfr_stack_test::restore_mode();
         stack_policies<REAL>(p); if(!real_only) stack_policies<COMPLEX>(p);
+        mpfr_stack_test::begin_sweep("inverse",restore);
 #endif
     }
     bool small=mode=="--small" || mode=="--real-small";

@@ -314,6 +314,7 @@ int main(int argc, char **argv)
             continue;
         mpfrxx::set_default_precision_bits(prec);
 #ifndef MPLAPACK_MPFR_CUDA_HOST_EMULATION
+        bool restore=mpfr_stack_test::restore_mode();
         size_t required=mpfr_stack_test::fixed(prec)?mplapack_mpfr_cuda::fixed_stack_bytes(prec):65536;
         mpfr_stack_test::policies("blas3 Rtrsm",required,[] {
             mpfr_stack_test::result<mpfr_class> r;
@@ -322,6 +323,7 @@ int main(int argc, char **argv)
             r.computed=Rtrsm_mpfr_cuda("L","U","N","N",3,1,mpfr_class(1),r.a.data(),5,r.b.data(),5);
             return r;
         });
+        mpfr_stack_test::begin_sweep("blas3",restore);
 #endif
         check_trsm_edges(prec);
         for (auto &z : sizes)

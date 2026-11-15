@@ -226,6 +226,16 @@ raise it does nothing. Restoration is best effort: its errors are cleared
 and do not change computation results. Arithmetic is identical in both
 modes. Heap-limit guards keep their separate call-scoped policy.
 
+The default can retain a **64-KiB/thread** limit after runtime GEMM or Cblas.
+On an A100 this reserves approximately `108 * 2048 * 65536` bytes, **13.5 GiB
+(14.5 GB)**, even after the small matrix has been freed. Use
+`MPLAPACK_MPFR_CUDA_STACK_RESTORE=1` to avoid retaining that increase after
+the call. Set it before the call that would raise the limit: enabling it
+later does not undo an already inherited limit from an earlier raise-only call.
+Runtime GEMM now rejects a call if stack setup fails (the older
+best-effort guard continued); its dispatcher then uses the CPU. The direct
+GPU entry still never performs a CPU fallback itself.
+
 ## Tests (CMake)
 
 Stack-policy probes in the solver, real/complex factor, inverse, runtime
@@ -235,9 +245,22 @@ it to at least the engine budget; exact `1` must restore the read-back
 value. The same process switches policies and compares all padded outputs,
 workspace, pivots and info limb-for-limb (including zero signs).
 Each family also has a `*_restore` CTest with the environment preset to `1`;
-probes preserve that environment for the remaining numerical sweep.
-Autotools runs seven `test/stack_restore_*.sh` device counterparts, plus
-its host-emulation suites. `mpfr_cuda_stack_guard_host` (autotools:
+probes preserve that environment for the remaining numerical sweep. Cblas
+`--stack-restore-sweep` runs 18 small direct GEMMs and 48 direct TRSMs with
+CPU oracles and a stack check after every real call (300-second CTest limit).
+A test-executable-only CUDA API interposer logs the observed peak and the
+number of raises/lowers inside each Cblas call; fixture setters are excluded.
+Thus restore-mode output proves an actual raise followed by a lower, not
+merely equal endpoints. No production library hook or public API is added.
+Runtime GEMM has a corresponding bounded sweep; solver/factors use `--quick`,
+and inverse uses `--small`. Default full sweeps are unchanged.
+Singular Rgetrf and non-positive Cpotrf numerical trials check the real call's
+stack and compare all results in both modes; `256 --stack-errors` isolates
+these cases without eligibility probes, including a memory-preflight refusal.
+Autotools runs the actual family executables under `=1` through seven
+`test/stack_restore_*.sh` wrappers with the same arguments as CTest, not a
+probe-only executable. Run that GPU subset with `make check -j1`; a general
+`make -j check` is not serialized. Host-emulation suites may run in parallel. `mpfr_cuda_stack_guard_host` (autotools:
 `stack_guard_host_test_mpfr`) uses an isolated CUDA stub to check nesting,
 no-change and early-return paths, exact parsing and restoration-error
 cleanup without altering calculation status.

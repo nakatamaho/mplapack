@@ -1,2 +1,2 @@
 #!/bin/sh
-exec env MPLAPACK_MPFR_CUDA_STACK_RESTORE=1 MPLAPACK_MPFR_CUDA_FORCE_RUNTIME=0 ./stack_policy_device_test_mpfr inverse
+exec env MPLAPACK_MPFR_CUDA_STACK_RESTORE=1 MPLAPACK_MPFR_CUDA_FORCE_RUNTIME=0 MPFRXX_DEFAULT_PRECISION_BITS=512 ./inverse_gpu_device_test_mpfr --small

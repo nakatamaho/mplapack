@@ -233,7 +233,9 @@ int main(int argc,char **argv) {
     for(long p:precisions) {
         precision(p);
 #if defined(MPLAPACK_SOLVER_DEVICE_TEST) && defined(MPLAPACK_BUILD_WITH_MPFR)
+        bool restore=mpfr_stack_test::restore_mode();
         stack_policies<REAL>(p); stack_policies<COMPLEX>(p);
+        mpfr_stack_test::begin_sweep("solver",restore);
 #endif
         std::vector<INTEGER> sizes=quick?std::vector<INTEGER>{1,3,17,65}:std::vector<INTEGER>{1,2,3,63,64,65,131,257,599};
         for(INTEGER n:sizes) for(bool driver:{false,true}) for(bool chol:{false,true}) {

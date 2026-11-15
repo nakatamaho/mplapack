@@ -431,6 +431,9 @@ int gemm_rt(const gemm_shape &s, long prec, const rt_pack &alpha, const rt_pack 
     const long threads = env_long("MPLAPACK_MPFR_CUDA_RT_THREADS", 32);
     const size_t pool = (size_t)blocks * threads;
     const size_t slab = (size_t)16 * 1024 * ((prec + 1023) / 1024);
+    // If the stack cannot be raised, reject instead of continuing with an
+    // insufficient limit as the old best-effort guard did. The dispatcher
+    // then computes on the CPU; this device entry never falls back itself.
     mpfr_stack_guard stack(64 * 1024);
     if (stack.error) return stack.error;
     limit_guard heap(cudaLimitMallocHeapSize, (size_t)64 * 1024 * 1024);
@@ -505,6 +508,8 @@ int blas3_rt(const l3_shape &s, long prec, const rt_pack &alpha, const rt_pack &
     const long threads = env_long("MPLAPACK_MPFR_CUDA_RT_THREADS", 32);
     const size_t pool = (size_t)blocks * threads;
     const size_t slab = (size_t)16 * 1024 * ((prec + 1023) / 1024);
+    // Stack setup errors reject the call for the dispatcher's CPU path,
+    // just as in gemm_rt above; do not launch with an insufficient stack.
     mpfr_stack_guard stack(64 * 1024);
     if (stack.error) return stack.error;
     limit_guard heap(cudaLimitMallocHeapSize, (size_t)64 * 1024 * 1024);

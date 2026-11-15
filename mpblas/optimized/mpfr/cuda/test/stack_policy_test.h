@@ -8,6 +8,10 @@
 #include <cstring>
 #include <string>
 #include <vector>
+#include <utility>
+#ifdef MPLAPACK_MPFR_STACK_TRACE
+#include "stack_limit_trace.h"
+#endif
 namespace mpfr_stack_test {
 inline void require(bool ok,const char *what) {
     if(!ok) { std::fprintf(stderr,"FAIL stack policy: %s\n",what); std::exit(1); }
@@ -51,6 +55,68 @@ inline size_t factor_bytes(long p,bool complex) {
 inline size_t inverse_bytes(long p) {
     using namespace mplapack_mpfr_cuda;
     return 2*(fixed(p)?complex_fixed_stack_bytes(p):complex_runtime_stack_bytes(p));
+}
+inline bool restore_mode() {
+    const char *v=std::getenv("MPLAPACK_MPFR_CUDA_STACK_RESTORE");
+    return v && !std::strcmp(v,"1");
+}
+inline void begin_sweep(const char *family,bool expected) {
+    require(restore_mode()==expected,"probe preserves caller policy for numerical sweep");
+    std::printf("begin numerical family %s STACK_RESTORE=%s\n",family,expected?"1":"default");
+    std::fflush(stdout);
+}
+// Inspect a real numerical sweep call without changing its environment.
+// Only the test fixture changes the initial limit, never the entry's policy.
+struct call_limit {
+    std::string name;
+    size_t original=0,small=0,required;
+    bool restore;
+    call_limit(const std::string &label,size_t bytes):name(label),required(bytes) {
+        const char *v=std::getenv("MPLAPACK_MPFR_CUDA_STACK_RESTORE");
+        restore=v && !std::strcmp(v,"1");
+        require(!cudaDeviceGetLimit(&original,cudaLimitStackSize),"sweep read original");
+        require(!cudaDeviceSetLimit(cudaLimitStackSize,1024),"sweep set small");
+        require(!cudaDeviceGetLimit(&small,cudaLimitStackSize) && small<required,"sweep small < required");
+#ifdef MPLAPACK_MPFR_STACK_TRACE
+        mpfr_stack_trace::begin(small);
+#endif
+    }
+    void finish(bool computed,mplapackint info=0,bool should_compute=true) {
+        size_t after=0;
+        require(!cudaDeviceGetLimit(&after,cudaLimitStackSize),"sweep read after");
+        std::printf("numerical sweep %s mode=%s small=%zu required=%zu after=%zu computed=%d info=%ld\n",
+                    name.c_str(),restore?"restore":"raise-only",small,required,after,int(computed),long(info));
+#ifdef MPLAPACK_MPFR_STACK_TRACE
+        auto trace=mpfr_stack_trace::end();
+        std::printf("stack API transitions peak=%zu raises=%u lowers=%u\n",trace.peak,trace.raises,trace.lowers);
+        if(should_compute) {
+            require(trace.peak>=required && trace.raises>0,"real entry raised stack (API trace)");
+            require(restore ? trace.lowers>0 : trace.lowers==0,"real entry restore policy (API trace)");
+        } else require(!trace.raises && !trace.lowers,"refused entry does not change stack (API trace)");
+#endif
+        std::fflush(stdout);
+        const bool unchanged=restore || !should_compute;
+        require(unchanged ? after==small : after>small && after>=required,
+                unchanged ? "sweep restore/unchanged == small" : "sweep raise > small and >= required");
+        require(computed==should_compute,"sweep computation status");
+    }
+    ~call_limit() { require(!cudaDeviceSetLimit(cudaLimitStackSize,original),"sweep restore fixture"); }
+};
+// Run the SAME actual numerical trial (not the 3x3 eligibility probe) under
+// both policies. Keep all padded outputs and info for exact comparison.
+template<class Call> auto numerical_policies(const char *name,size_t required,Call run,bool computed=true) {
+    const char *key="MPLAPACK_MPFR_CUDA_STACK_RESTORE",*v=std::getenv(key);
+    bool had=v!=nullptr; std::string saved=v?v:"";
+    decltype(run()) baseline;
+    for(int mode=0;mode<2;++mode) {
+        if(mode) setenv(key,"1",1); else unsetenv(key);
+        call_limit limit(name,required);
+        auto got=run(); limit.finish(got.computed,got.info,computed);
+        if(!mode) baseline=got;
+        else require(got==baseline,"numerical sweep A/B/work/ipiv/info limb/sign identity");
+    }
+    if(had) setenv(key,saved.c_str(),1);else unsetenv(key);
+    return baseline;
 }
 // Save the caller's environment and stack: CTest's =1 variant must still run
 // its remaining numerical sweep in restore mode, not accidentally unset it.

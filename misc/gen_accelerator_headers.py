@@ -92,7 +92,9 @@ def main():
         if backend == "mpfr" and accel == "cuda":
             lines += ["// Device stack: raise only by default. MPLAPACK_MPFR_CUDA_STACK_RESTORE=1",
                       "// restores the original limit per call (exact 1; read at every call).",
-                      "// Unset, 0 or other values keep the raised limit. Arithmetic is unchanged.", ""]
+                      "// Unset, 0 or other values keep the raised limit. Arithmetic is unchanged.",
+                      "// Runtime GEMM/Cblas can retain 64 KiB/thread (~13.5 GiB on an A100).",
+                      "// Restore mode avoids retaining that increase after the call.", ""]
         for r in routines:
             if r not in decls:
                 sys.exit("%s is not declared in the BLAS/LAPACK headers for %s" % (r, backend))

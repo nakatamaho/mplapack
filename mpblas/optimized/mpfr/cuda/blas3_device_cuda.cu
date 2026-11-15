@@ -135,8 +135,9 @@ template <int PB> int blas3_fixed(const l3_shape &s, const real_t<PB> &alpha, co
     int ndev = 0;
     if (l3_failed(cudaGetDeviceCount(&ndev), "cudaGetDeviceCount") || ndev == 0)
         return 1;
-    // Only Rtrsm calls Newton. Precision-dependent, call-scoped stack storage
-    // avoids retaining a 64-KiB/thread reservation beside a resident matrix.
+    // Only Rtrsm calls Newton. Request its precision-dependent minimum,
+    // rather than 64 KiB/thread. The default retains the raised limit;
+    // MPLAPACK_MPFR_CUDA_STACK_RESTORE=1 restores the caller's limit.
     mpfr_stack_guard stack(s.op == L3_TRSM ? fixed_stack_bytes(PB) : 0);
     if (l3_failed(static_cast<cudaError_t>(stack.error), "set stack"))
         return 2;

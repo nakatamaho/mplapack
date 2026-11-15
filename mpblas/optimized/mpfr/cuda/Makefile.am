@@ -211,17 +211,47 @@ solver_gpu_host_test_mpfr_SOURCES = ../../../../mplapack/optimized/common/test/R
 solver_gpu_host_test_mpfr_CPPFLAGS = $(MPLAPACK_MPFR_CUDA_CPPFLAGS) -DMPLAPACK_MPFR_CUDA_HOST_EMULATION
 solver_gpu_host_test_mpfr_LDADD = ../libmplapack_mpfr_opt.la $(MPLAPACK_MPFR_LIBS) $(OPENMP_LIBS)
 solver_gpu_host_test_mpfr_LDFLAGS = -static -Wl,--disable-new-dtags -Wl,-rpath,$(MPC_LIBDIR):$(MPFR_LIBDIR):$(GMP_LIBDIR)
-# Device restore variants: each probes unset/1/0/other in one process, then
-# verifies exact cross-policy results. These are serialized when run below.
-check_PROGRAMS += stack_policy_device_test_mpfr stack_guard_host_test_mpfr
+# Restore variants execute the actual numerical family tests, not just probes.
+# Run the GPU subset with make check -j1; make -j check does NOT serialize it.
+# CPU-only static symbols provide the oracles; direct GPU entries come from
+# the CUDA shared library. Cblas needs CUDA public dispatchers instead.
+stack_device_ldadd = ../.libs/libmplapack_mpfr_opt.a libmplapack_mpfr_opt_cuda.la $(MPLAPACK_MPFR_LIBS) $(CUDA_LIBS) -lcudart $(OPENMP_LIBS)
+stack_device_ldflags = -Wl,--disable-new-dtags -Wl,-rpath,$(MPC_LIBDIR):$(MPFR_LIBDIR):$(GMP_LIBDIR)
+check_PROGRAMS += Rfactor_gpu_device_test_mpfr Cfactor_gpu_device_test_mpfr solver_gpu_device_test_mpfr inverse_gpu_device_test_mpfr Rgemm_gpu_device_test_mpfr Cblas_gpu_device_test_mpfr blas3_gpu_device_test_mpfr stack_guard_host_test_mpfr
 stack_guard_host_test_mpfr_SOURCES = test/stack_guard_test.cpp test/stack_guard_stub/cuda_runtime.h
 stack_guard_host_test_mpfr_CPPFLAGS = -I$(srcdir)/test/stack_guard_stub
 stack_guard_host_test_mpfr_CXXFLAGS = $(AM_CXXFLAGS) -std=c++17
 TESTS += stack_guard_host_test_mpfr
-stack_policy_device_test_mpfr_SOURCES = test/stack_policy_device_test.cpp test/stack_policy_test.h
-stack_policy_device_test_mpfr_CXXFLAGS = $(AM_CXXFLAGS) -std=c++17
-stack_policy_device_test_mpfr_LDADD = libmplapack_mpfr_opt_cuda.la $(MPLAPACK_MPFR_LIBS) $(CUDA_LIBS) -lcudart $(OPENMP_LIBS)
-stack_policy_device_test_mpfr_LDFLAGS = -Wl,--disable-new-dtags -Wl,-rpath,$(MPC_LIBDIR):$(MPFR_LIBDIR):$(GMP_LIBDIR)
+Rfactor_gpu_device_test_mpfr_SOURCES = test/Rfactor_cuda_test.cpp test/stack_policy_test.h
+Rfactor_gpu_device_test_mpfr_CXXFLAGS = $(AM_CXXFLAGS) -std=c++17
+Rfactor_gpu_device_test_mpfr_LDADD = $(stack_device_ldadd)
+Rfactor_gpu_device_test_mpfr_LDFLAGS = $(stack_device_ldflags)
+Cfactor_gpu_device_test_mpfr_SOURCES = test/Cfactor_cuda_test.cpp
+Cfactor_gpu_device_test_mpfr_CXXFLAGS = $(AM_CXXFLAGS) -std=c++17
+Cfactor_gpu_device_test_mpfr_LDADD = $(stack_device_ldadd)
+Cfactor_gpu_device_test_mpfr_LDFLAGS = $(stack_device_ldflags)
+solver_gpu_device_test_mpfr_SOURCES = ../../../../mplapack/optimized/common/test/Rsolver_gpu_test.cpp
+solver_gpu_device_test_mpfr_CPPFLAGS = $(MPLAPACK_MPFR_CUDA_CPPFLAGS) -DMPLAPACK_SOLVER_DEVICE_TEST
+solver_gpu_device_test_mpfr_CXXFLAGS = $(AM_CXXFLAGS) -std=c++17
+solver_gpu_device_test_mpfr_LDADD = $(stack_device_ldadd)
+solver_gpu_device_test_mpfr_LDFLAGS = $(stack_device_ldflags)
+inverse_gpu_device_test_mpfr_SOURCES = test/Rinverse_cuda_test.cpp
+inverse_gpu_device_test_mpfr_CXXFLAGS = $(AM_CXXFLAGS) -std=c++17
+inverse_gpu_device_test_mpfr_LDADD = $(stack_device_ldadd)
+inverse_gpu_device_test_mpfr_LDFLAGS = $(stack_device_ldflags)
+Rgemm_gpu_device_test_mpfr_SOURCES = test/Rgemm_cuda_test.cpp
+Rgemm_gpu_device_test_mpfr_CXXFLAGS = $(AM_CXXFLAGS) -std=c++17
+Rgemm_gpu_device_test_mpfr_LDADD = $(stack_device_ldadd)
+Rgemm_gpu_device_test_mpfr_LDFLAGS = $(stack_device_ldflags)
+blas3_gpu_device_test_mpfr_SOURCES = test/blas3_cuda_test.cpp
+blas3_gpu_device_test_mpfr_CXXFLAGS = $(AM_CXXFLAGS) -std=c++17
+blas3_gpu_device_test_mpfr_LDADD = $(stack_device_ldadd)
+blas3_gpu_device_test_mpfr_LDFLAGS = $(stack_device_ldflags)
+Cblas_gpu_device_test_mpfr_SOURCES = ../../common/test/Cblas_gpu_test.cpp test/stack_limit_trace.cpp test/stack_limit_trace.h
+Cblas_gpu_device_test_mpfr_CPPFLAGS = $(MPLAPACK_MPFR_CUDA_CPPFLAGS) -DMPLAPACK_MPFR_STACK_TRACE
+Cblas_gpu_device_test_mpfr_CXXFLAGS = $(AM_CXXFLAGS) -std=c++17
+Cblas_gpu_device_test_mpfr_LDADD = libmplapack_mpfr_opt_cuda.la $(MPLAPACK_MPFR_LIBS) $(CUDA_LIBS) -lcudart $(OPENMP_LIBS) -ldl
+Cblas_gpu_device_test_mpfr_LDFLAGS = $(stack_device_ldflags) -Wl,--export-dynamic-symbol=cudaDeviceSetLimit
 TESTS += test/stack_restore_solver.sh test/stack_restore_Rfactor.sh test/stack_restore_Cfactor.sh \
  test/stack_restore_inverse.sh test/stack_restore_Rgemm.sh test/stack_restore_Cblas.sh test/stack_restore_blas3.sh
 TESTS_ENVIRONMENT = OMP_NUM_THREADS=1

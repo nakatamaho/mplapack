@@ -84,6 +84,7 @@ void random_value(mpfr_class &x)
 }
 
 bool force_runtime = false;
+bool restore_sweep = false;
 
 // The fixed-precision kernels have no signed zero.
 bool signed_zero_may_differ(int prec) { return !force_runtime && (prec == 256 || prec == 512 || prec == 768 || prec == 1024 || prec == 2048); }
@@ -137,7 +138,15 @@ void check_eligible(int prec, const char *ta, const char *tb, mplapackint m, mpl
 
     std::vector<mpfr_class> Cref(C0), Cgpu(C0);
     Rgemm(ta, tb, m, n, k, alpha, A.data(), lda, B.data(), ldb, beta, Cref.data(), ldc);
-    bool used = Rgemm_mpfr_cuda(ta, tb, m, n, k, alpha, A.data(), lda, B.data(), ldb, beta, Cgpu.data(), ldc);
+    auto compute=[&] { return Rgemm_mpfr_cuda(ta, tb, m, n, k, alpha, A.data(), lda, B.data(), ldb, beta, Cgpu.data(), ldc); };
+    bool used;
+#ifndef MPLAPACK_MPFR_CUDA_HOST_EMULATION
+    if(restore_sweep && !mpfr_stack_test::fixed(prec)) {
+        mpfr_stack_test::call_limit limit("Rgemm runtime numerical",65536);
+        used=compute();limit.finish(used);
+    } else
+#endif
+        used=compute();
     if (!used) {
         std::printf("FAIL prec=%d %s%s m=%ld n=%ld k=%ld beta=%g alpha_kind=%d: GPU path not taken\n", prec, ta, tb, (long)m, (long)n, (long)k, beta_d, alpha_kind);
         failures++;
@@ -204,8 +213,9 @@ void check_ineligible(int prec)
 int main(int argc,char **argv)
 {
     char *end=nullptr;
-    long selected=argc==2?std::strtol(argv[1],&end,10):0;
-    if(argc>2 || (argc==2 && (selected<=0 || *end))) return 2;
+    long selected=argc>=2?std::strtol(argv[1],&end,10):0;
+    restore_sweep=argc==3 && !std::strcmp(argv[2],"--stack-restore-sweep");
+    if(argc>3 || (argc==3 && !restore_sweep) || (argc>=2 && (selected<=0 || *end))) return 2;
     if (mplapack_mpfr_cuda::device_count() == 0) {
         std::printf("SKIPPED: no CUDA device\n");
         return 77;
@@ -230,19 +240,23 @@ int main(int argc,char **argv)
         found=true;
         mpfrxx::set_default_precision_bits(prec);
 #ifndef MPLAPACK_MPFR_CUDA_HOST_EMULATION
-        if(!mpfr_stack_test::fixed(prec)) mpfr_stack_test::policies("Rgemm runtime",65536,[] {
+        bool restore=mpfr_stack_test::restore_mode();
+        if(!restore_sweep && !mpfr_stack_test::fixed(prec)) mpfr_stack_test::policies("Rgemm runtime",65536,[] {
             mpfr_stack_test::result<mpfr_class> r;
             r.a.assign(15,mpfr_class(.25)); r.b.assign(15,mpfr_class(.5)); r.work.assign(15,mpfr_class(.125));
             r.computed=Rgemm_mpfr_cuda("N","N",3,3,3,mpfr_class(1),r.a.data(),5,r.b.data(),5,mpfr_class(.25),r.work.data(),5);
             return r;
         });
+        mpfr_stack_test::begin_sweep("Rgemm",restore);
 #endif
         for (const char *ta : trans)
             for (const char *tb : trans)
                 for (double beta : betas)
                     for (int alpha_kind = 0; alpha_kind < 3; alpha_kind++)
-                        for (auto &sh : shapes)
+                        for (auto &sh : shapes) {
+                            if(restore_sweep && (beta!=0.75 || alpha_kind!=2 || sh[0]>7)) continue;
                             check_eligible(prec, ta, tb, sh[0], sh[1], sh[2], beta, alpha_kind);
+                        }
         check_ineligible(prec);
     }
 

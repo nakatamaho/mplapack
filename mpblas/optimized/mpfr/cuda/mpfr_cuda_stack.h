@@ -1,6 +1,9 @@
 // MPFR-only CUDA stack policy; no change to dd/td/qd or mpc_cuda.
 // Default: raise only. MPLAPACK_MPFR_CUDA_STACK_RESTORE=1 restores the
 // original limit per call (read on every guard construction; only exact "1").
+// Runtime GEMM/Cblas request 64 KiB/thread: retaining this can reserve about
+// 13.5 GiB (14.5 GB) on an A100 (108 SMs * 2048 threads * 64 KiB). Restore
+// mode avoids retaining that increase after the call.
 #ifndef MPLAPACK_MPFR_CUDA_STACK_H
 #define MPLAPACK_MPFR_CUDA_STACK_H
 #include <cstddef>
