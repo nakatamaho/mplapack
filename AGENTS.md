@@ -124,3 +124,15 @@ CMake:
   symbols inside one library. Run it on every archive you produce.
 - Test suites live in mpblas/test and mplapack/test; they compare against
   reference results and are the ground truth for numerical correctness.
+- Build everything before you trust a test run: `cmake --build <dir> -j`
+  (the whole tree, no `--target`), then `ctest`; autotools: `make` at the top
+  (or `make check`, which builds its check_PROGRAMS).  ctest never builds, and
+  many CMake test executables compile the library sources themselves, so
+  rebuilding only the library or one test leaves the other test binaries
+  stale: ctest then reports results of old code, and sources that no longer
+  compile go unnoticed.  CMake's header dependency tracking itself works
+  (checked Nov 2026 with CMake 4.2 Unix Makefiles: touching a shared .h/.cuh
+  recompiles every object that includes it); the stale results seen during
+  factorization goal 13 all came from partial builds before ctest.  A
+  `--target` build is fine for iterating on one test; rebuild the whole tree
+  before any run you report.

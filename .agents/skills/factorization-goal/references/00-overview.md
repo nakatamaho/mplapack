@@ -238,6 +238,13 @@ A100: 336 GFLOPS).
   (`--with-mpfr-cuda-arch=80,90`). The CUDA device tests are defined only in
   CMake (`ctest -R cuda`); autotools `make check` runs the host emulation
   tests.
+- Before any test run that a commit message, WORKLOG or report cites, build
+  the whole CMake tree (`cmake --build <dir> -j`, no `--target`); ctest does
+  not build, and the CUDA test executables compile the bridge/kernel sources
+  themselves, so a library-only or single-target build leaves the other test
+  binaries running old code (see AGENTS.md "Verification assets").  The
+  "CMake does not rebuild on shared-header changes" note of goal 13 was a
+  misdiagnosis of such partial builds.
 - nvcc with glibc 2.42 needs `-U_GNU_SOURCE -D_XOPEN_SOURCE=700` (already in
   the Makefile.am / CMake flags; keep it on new .cu files).
 - dd needs -ffp-contract=off on every TU and `-fmad=false` on every .cu.
