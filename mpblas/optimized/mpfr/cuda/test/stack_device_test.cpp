@@ -105,6 +105,11 @@ CPU_ORACLE(Rposv)
 CPU_ORACLE(Cposv)
 #undef CPU_ORACLE
 }
+// The solver's main comes from Rsolver_gpu_test.cpp, so select the CPU BLAS
+// gates before main runs: the gates are cached on their first read, and a
+// public BLAS call ahead of the first oracle would otherwise cache the GPU
+// defaults and silently move the oracles' BLAS onto the GPU.
+const bool solver_cpu_blas_selected = (initialize_cpu_blas(), true);
 }
 // Keep the solver's real main: unlike an ordinary renamed function, main is
 // allowed to reach its closing brace without an explicit return statement.
