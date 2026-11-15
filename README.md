@@ -8,6 +8,14 @@ BSD-style license, supplemental to the original LAPACK license.
 
 # News
 
+* 2026-10-27  MPLAPACK 2.4.0 (2.x maintenance release) has been released.
+  Available from <https://github.com/nakatamaho/mplapack/releases/tag/v2.4.0>.
+  This small maintenance release of the 2.x series changes only one
+  user-visible behavior: MPLAPACK no longer sets the MPFR exponent range;
+  unless specified with `MPLAPACK_MPFR_EMIN` / `MPLAPACK_MPFR_EMAX`, the MPFR
+  default is used. Other changes are QA and release-engineering matters.
+  See [CHANGES.2.4.0.md](CHANGES.2.4.0.md).
+
 * 2026-09-15  MPLAPACK 3.0.1 has been released. Available from
   <https://github.com/nakatamaho/mplapack/releases/tag/v3.0.1>. This patch
   release fixes shared and static dependency metadata for the MPFR, GMP, QD,
