@@ -259,7 +259,13 @@ stack and compare all results in both modes; `256 --stack-errors` isolates
 these cases without eligibility probes, including a memory-preflight refusal.
 Autotools runs the actual family executables under `=1` through seven
 `test/stack_restore_*.sh` wrappers with the same arguments as CTest, not a
-probe-only executable. Run that GPU subset with `make check -j1`; a general
+probe-only executable. They link only `libmplapack_mpfr_opt_cuda.la`, also
+with `--disable-static`; no CPU archive can export BLAS symbols from the
+executable and interpose on the CUDA library. The autotools-only adapter uses
+private unchanged BLAS reference bodies, or the CUDA library's CPU paths
+(public BLAS gates set before their cached reads; LAPACK disabled only during
+solver oracle calls). Direct GPU entries must still compute every eligible
+trial. Run that GPU subset with `make check -j1`; a general
 `make -j check` is not serialized. Host-emulation suites may run in parallel. `mpfr_cuda_stack_guard_host` (autotools:
 `stack_guard_host_test_mpfr`) uses an isolated CUDA stub to check nesting,
 no-change and early-return paths, exact parsing and restoration-error
