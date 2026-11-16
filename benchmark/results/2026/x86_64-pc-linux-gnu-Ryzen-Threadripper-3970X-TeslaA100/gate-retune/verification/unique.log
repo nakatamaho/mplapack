@@ -1,0 +1,8 @@
+PASS /tmp/factor04-cmake/libmplapack_dd_opt_cuda.a
+PASS /tmp/factor04-cmake/libmplapack_td_opt_cuda.a
+PASS /tmp/factor04-cmake/libmplapack_qd_opt_cuda.a
+PASS /tmp/factor01-cmake/libmplapack_mpfr_opt_cuda.a
+PASS mpblas/optimized/.libs/libmplapack_dd_opt_cuda.a
+PASS mpblas/optimized/.libs/libmplapack_td_opt_cuda.a
+PASS mpblas/optimized/.libs/libmplapack_qd_opt_cuda.a
+PASS mpblas/optimized/.libs/libmplapack_mpfr_opt_cuda.a

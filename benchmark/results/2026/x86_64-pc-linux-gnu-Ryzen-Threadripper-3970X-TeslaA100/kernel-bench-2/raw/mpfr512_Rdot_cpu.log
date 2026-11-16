@@ -1,0 +1,531 @@
+
+### mpfr512_Rdot_cpu_1024_pilot
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rdot fast 1024 --reps 1 --warmup 1
+OMP_NUM_THREADS=32
+mpfr512,Rdot,inc1,1024,cpu,0.000606355,0.00337755935,1
+
+exit=0, elapsed=0.009676
+
+exit receipt: 0
+
+### mpfr512_Rdot_cpu_32768_pilot
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rdot fast 32768 --reps 1 --warmup 1
+OMP_NUM_THREADS=32
+mpfr512,Rdot,inc1,32768,cpu,0.012799748,0.0051201008,1
+
+exit=0, elapsed=0.070227
+
+exit receipt: 0
+
+### mpfr512_Rdot_cpu_1024_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rdot fast 1024
+OMP_NUM_THREADS=32
+mpfr512,Rdot,inc1,1024,cpu,0.000607683,0.0033701782,3
+
+exit=0, elapsed=0.012631
+
+exit receipt: 0
+
+### mpfr512_Rdot_cpu_1280_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rdot fast 1280
+OMP_NUM_THREADS=32
+mpfr512,Rdot,inc1,1280,cpu,0.000706661,0.00362267056,3
+
+exit=0, elapsed=0.012633
+
+exit receipt: 0
+
+### mpfr512_Rdot_cpu_1536_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rdot fast 1536
+OMP_NUM_THREADS=32
+mpfr512,Rdot,inc1,1536,cpu,0.00083265,0.00368942533,3
+
+exit=0, elapsed=0.013433
+
+exit receipt: 0
+
+### mpfr512_Rdot_cpu_1792_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rdot fast 1792
+OMP_NUM_THREADS=32
+mpfr512,Rdot,inc1,1792,cpu,0.000960744,0.00373044224,3
+
+exit=0, elapsed=0.015166
+
+exit receipt: 0
+
+### mpfr512_Rdot_cpu_2048_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rdot fast 2048
+OMP_NUM_THREADS=32
+mpfr512,Rdot,inc1,2048,cpu,0.000976613,0.00419408712,3
+
+exit=0, elapsed=0.012228
+
+exit receipt: 0
+
+### mpfr512_Rdot_cpu_2560_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rdot fast 2560
+OMP_NUM_THREADS=32
+mpfr512,Rdot,inc1,2560,cpu,0.00117535,0.00435614923,3
+
+exit=0, elapsed=0.016011
+
+exit receipt: 0
+
+### mpfr512_Rdot_cpu_3072_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rdot fast 3072
+OMP_NUM_THREADS=32
+mpfr512,Rdot,inc1,3072,cpu,0.00138632,0.0044318772,3
+
+exit=0, elapsed=0.015677
+
+exit receipt: 0
+
+### mpfr512_Rdot_cpu_3584_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rdot fast 3584
+OMP_NUM_THREADS=32
+mpfr512,Rdot,inc1,3584,cpu,0.001606418,0.0044621014,3
+
+exit=0, elapsed=0.019768
+
+exit receipt: 0
+
+### mpfr512_Rdot_cpu_4096_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rdot fast 4096
+OMP_NUM_THREADS=32
+mpfr512,Rdot,inc1,4096,cpu,0.001727277,0.00474272511,3
+
+exit=0, elapsed=0.018659
+
+exit receipt: 0
+
+### mpfr512_Rdot_cpu_5120_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rdot fast 5120
+OMP_NUM_THREADS=32
+mpfr512,Rdot,inc1,5120,cpu,0.002128389,0.00481115059,3
+
+exit=0, elapsed=0.021630
+
+exit receipt: 0
+
+### mpfr512_Rdot_cpu_6144_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rdot fast 6144
+OMP_NUM_THREADS=32
+mpfr512,Rdot,inc1,6144,cpu,0.001875338,0.00655241882,3
+
+exit=0, elapsed=0.021320
+
+exit receipt: 0
+
+### mpfr512_Rdot_cpu_7168_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rdot fast 7168
+OMP_NUM_THREADS=32
+mpfr512,Rdot,inc1,7168,cpu,0.002780436,0.00515602589,3
+
+exit=0, elapsed=0.028394
+
+exit receipt: 0
+
+### mpfr512_Rdot_cpu_8192_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rdot fast 8192
+OMP_NUM_THREADS=32
+mpfr512,Rdot,inc1,8192,cpu,0.00307246,0.00533253484,3
+
+exit=0, elapsed=0.030894
+
+exit receipt: 0
+
+### mpfr512_Rdot_cpu_10240_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rdot fast 10240
+OMP_NUM_THREADS=32
+mpfr512,Rdot,inc1,10240,cpu,0.003788449,0.00540590622,3
+
+exit=0, elapsed=0.035593
+
+exit receipt: 0
+
+### mpfr512_Rdot_cpu_12288_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rdot fast 12288
+OMP_NUM_THREADS=32
+mpfr512,Rdot,inc1,12288,cpu,0.004591883,0.00535205274,3
+
+exit=0, elapsed=0.042357
+
+exit receipt: 0
+
+### mpfr512_Rdot_cpu_14336_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rdot fast 14336
+OMP_NUM_THREADS=32
+mpfr512,Rdot,inc1,14336,cpu,0.005355211,0.0053540374,3
+
+exit=0, elapsed=0.046901
+
+exit receipt: 0
+
+### mpfr512_Rdot_cpu_16384_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rdot fast 16384
+OMP_NUM_THREADS=32
+mpfr512,Rdot,inc1,16384,cpu,0.004420478,0.00741277301,3
+
+exit=0, elapsed=0.047181
+
+exit receipt: 0
+
+### mpfr512_Rdot_cpu_20480_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rdot fast 20480
+OMP_NUM_THREADS=32
+mpfr512,Rdot,inc1,20480,cpu,0.007192898,0.00569450589,3
+
+exit=0, elapsed=0.063297
+
+exit receipt: 0
+
+### mpfr512_Rdot_cpu_24576_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rdot fast 24576
+OMP_NUM_THREADS=32
+mpfr512,Rdot,inc1,24576,cpu,0.008781182,0.00559742413,3
+
+exit=0, elapsed=0.074630
+
+exit receipt: 0
+
+### mpfr512_Rdot_cpu_28672_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rdot fast 28672
+OMP_NUM_THREADS=32
+mpfr512,Rdot,inc1,28672,cpu,0.010604201,0.00540766815,3
+
+exit=0, elapsed=0.087498
+
+exit receipt: 0
+
+### mpfr512_Rdot_cpu_32768_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rdot fast 32768
+OMP_NUM_THREADS=32
+mpfr512,Rdot,inc1,32768,cpu,0.010173053,0.00644211723,3
+
+exit=0, elapsed=0.090661
+
+exit receipt: 0
+
+### mpfr512_Rdot_cpu_40960_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rdot fast 40960
+OMP_NUM_THREADS=32
+mpfr512,Rdot,inc1,40960,cpu,0.014605985,0.00560865974,3
+
+exit=0, elapsed=0.117552
+
+exit receipt: 0
+
+### mpfr512_Rdot_cpu_49152_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rdot fast 49152
+OMP_NUM_THREADS=32
+mpfr512,Rdot,inc1,49152,cpu,0.017484797,0.00562225572,3
+
+exit=0, elapsed=0.139979
+
+exit receipt: 0
+
+### mpfr512_Rdot_cpu_57344_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rdot fast 57344
+OMP_NUM_THREADS=32
+mpfr512,Rdot,inc1,57344,cpu,0.020762026,0.00552393105,3
+
+exit=0, elapsed=0.162802
+
+exit receipt: 0
+
+### mpfr512_Rdot_cpu_65536_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rdot fast 65536
+OMP_NUM_THREADS=32
+mpfr512,Rdot,inc1,65536,cpu,0.023874462,0.00549005041,3
+
+exit=0, elapsed=0.185473
+
+exit receipt: 0
+
+### mpfr512_Rdot_cpu_81920_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rdot fast 81920
+OMP_NUM_THREADS=32
+mpfr512,Rdot,inc1,81920,cpu,0.029088235,0.00563251775,3
+
+exit=0, elapsed=0.225956
+
+exit receipt: 0
+
+### mpfr512_Rdot_cpu_98304_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rdot fast 98304
+OMP_NUM_THREADS=32
+mpfr512,Rdot,inc1,98304,cpu,0.034277111,0.00573583929,3
+
+exit=0, elapsed=0.268476
+
+exit receipt: 0
+
+### mpfr512_Rdot_cpu_114688_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rdot fast 114688
+OMP_NUM_THREADS=32
+mpfr512,Rdot,inc1,114688,cpu,0.040212634,0.00570407798,3
+
+exit=0, elapsed=0.312721
+
+exit receipt: 0
+
+### mpfr512_Rdot_cpu_131072_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rdot fast 131072
+OMP_NUM_THREADS=32
+mpfr512,Rdot,inc1,131072,cpu,0.044836007,0.00584672939,3
+
+exit=0, elapsed=0.351145
+
+exit receipt: 0
+
+### mpfr512_Rdot_cpu_163840_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rdot fast 163840
+OMP_NUM_THREADS=32
+mpfr512,Rdot,inc1,163840,cpu,0.057187383,0.00572993522,3
+
+exit=0, elapsed=0.441448
+
+exit receipt: 0
+
+### mpfr512_Rdot_cpu_196608_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rdot fast 196608
+OMP_NUM_THREADS=32
+mpfr512,Rdot,inc1,196608,cpu,0.065547938,0.00599890724,3
+
+exit=0, elapsed=0.513369
+
+exit receipt: 0
+
+### mpfr512_Rdot_cpu_229376_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rdot fast 229376
+OMP_NUM_THREADS=32
+mpfr512,Rdot,inc1,229376,cpu,0.078852413,0.0058178562,3
+
+exit=0, elapsed=0.607351
+
+exit receipt: 0
+
+### mpfr512_Rdot_cpu_262144_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rdot fast 262144
+OMP_NUM_THREADS=32
+mpfr512,Rdot,inc1,262144,cpu,0.089330946,0.00586905237,3
+
+exit=0, elapsed=0.679288
+
+exit receipt: 0
+
+### mpfr512_Rdot_cpu_327680_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rdot fast 327680
+OMP_NUM_THREADS=32
+mpfr512,Rdot,inc1,327680,cpu,0.12555907,0.00521953532,3
+
+exit=0, elapsed=0.863396
+
+exit receipt: 0
+
+### mpfr512_Rdot_cpu_393216_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rdot fast 393216
+OMP_NUM_THREADS=32
+mpfr512,Rdot,inc1,393216,cpu,0.149572155,0.00525787704,3
+
+exit=0, elapsed=1.021102
+
+exit receipt: 0
+
+### mpfr512_Rdot_cpu_458752_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rdot fast 458752
+OMP_NUM_THREADS=32
+mpfr512,Rdot,inc1,458752,cpu,0.168722313,0.00543795295,3
+
+exit=0, elapsed=1.168641
+
+exit receipt: 0
+
+### mpfr512_Rdot_cpu_524288_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rdot fast 524288
+OMP_NUM_THREADS=32
+mpfr512,Rdot,inc1,524288,cpu,0.196653993,0.00533208599,3
+
+exit=0, elapsed=1.322537
+
+exit receipt: 0
+
+### mpfr512_Rdot_cpu_655360_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rdot fast 655360
+OMP_NUM_THREADS=32
+mpfr512,Rdot,inc1,655360,cpu,0.245809647,0.00533225614,3
+
+exit=0, elapsed=1.698469
+
+exit receipt: 0
+
+### mpfr512_Rdot_cpu_786432_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rdot fast 786432
+OMP_NUM_THREADS=32
+mpfr512,Rdot,inc1,786432,cpu,0.275290619,0.00571346748,3
+
+exit=0, elapsed=1.917882
+
+exit receipt: 0
+
+### mpfr512_Rdot_cpu_917504_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rdot fast 917504
+OMP_NUM_THREADS=32
+mpfr512,Rdot,inc1,917504,cpu,0.306169302,0.00599344215,3
+
+exit=0, elapsed=2.197579
+
+exit receipt: 0
+
+### mpfr512_Rdot_cpu_1048576_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rdot fast 1048576
+OMP_NUM_THREADS=32
+mpfr512,Rdot,inc1,1048576,cpu,0.36140778,0.00580273064,3
+
+exit=0, elapsed=2.537801
+
+exit receipt: 0
+
+### mpfr512_Rdot_cpu_1310720_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rdot fast 1310720
+OMP_NUM_THREADS=32
+mpfr512,Rdot,inc1,1310720,cpu,0.420653711,0.00623182426,3
+
+exit=0, elapsed=3.092865
+
+exit receipt: 0
+
+### mpfr512_Rdot_cpu_1572864_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rdot fast 1572864
+OMP_NUM_THREADS=32
+mpfr512,Rdot,inc1,1572864,cpu,0.496247665,0.00633902832,3
+
+exit=0, elapsed=3.647013
+
+exit receipt: 0
+
+### mpfr512_Rdot_cpu_1835008_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rdot fast 1835008
+OMP_NUM_THREADS=32
+mpfr512,Rdot,inc1,1835008,cpu,0.584361246,0.0062803891,3
+
+exit=0, elapsed=4.307607
+
+exit receipt: 0
+
+### mpfr512_Rdot_cpu_2097152_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rdot fast 2097152
+OMP_NUM_THREADS=32
+mpfr512,Rdot,inc1,2097152,cpu,0.611536054,0.00685863732,3
+
+exit=0, elapsed=4.718198
+
+exit receipt: 0
+
+### mpfr512_Rdot_cpu_2621440_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rdot fast 2621440
+OMP_NUM_THREADS=32
+mpfr512,Rdot,inc1,2621440,cpu,1.07488291,0.00487762895,1
+
+exit=0, elapsed=3.569281
+
+exit receipt: 0
+
+### mpfr512_Rdot_cpu_3145728_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rdot fast 3145728
+OMP_NUM_THREADS=32
+mpfr512,Rdot,inc1,3145728,cpu,1.19393282,0.00526952262,1
+
+exit=0, elapsed=4.110824
+
+exit receipt: 0
+
+### mpfr512_Rdot_cpu_3670016_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rdot fast 3670016
+OMP_NUM_THREADS=32
+mpfr512,Rdot,inc1,3670016,cpu,1.48494796,0.0049429557,1
+
+exit=0, elapsed=5.090583
+
+exit receipt: 0
+
+### mpfr512_Rdot_cpu_4194304_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rdot fast 4194304
+OMP_NUM_THREADS=32
+mpfr512,Rdot,inc1,4194304,cpu,1.56281215,0.00536763678,1
+
+exit=0, elapsed=5.527607
+
+exit receipt: 0
+
+### mpfr512_Rdot_cpu_5242880_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rdot fast 5242880
+OMP_NUM_THREADS=32
+mpfr512,Rdot,inc1,5242880,cpu,2.03057344,0.0051639403,1
+
+exit=0, elapsed=7.028265
+
+exit receipt: 0
+
+### mpfr512_Rdot_cpu_6291456_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rdot fast 6291456
+OMP_NUM_THREADS=32
+mpfr512,Rdot,inc1,6291456,cpu,2.45663554,0.00512201008,1
+
+exit=0, elapsed=8.463035
+
+exit receipt: 0
+
+### mpfr512_Rdot_cpu_7340032_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rdot fast 7340032
+OMP_NUM_THREADS=32
+mpfr512,Rdot,inc1,7340032,cpu,2.74842799,0.00534125837,1
+
+exit=0, elapsed=9.587150
+
+exit receipt: 0
+
+### mpfr512_Rdot_cpu_8388608_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rdot fast 8388608
+OMP_NUM_THREADS=32
+mpfr512,Rdot,inc1,8388608,cpu,3.07833485,0.00545009455,1
+
+exit=0, elapsed=10.866630
+
+exit receipt: 0
+
+### mpfr512_Rdot_cpu_10485760_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rdot fast 10485760
+OMP_NUM_THREADS=32
+mpfr512,Rdot,inc1,10485760,cpu,3.83746354,0.00546494313,1
+
+exit=0, elapsed=13.424109
+
+exit receipt: 0
+
+### mpfr512_Rdot_cpu_12582912_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rdot fast 12582912
+OMP_NUM_THREADS=32
+mpfr512,Rdot,inc1,12582912,cpu,4.56040338,0.00551833289,1
+
+exit=0, elapsed=16.108595
+
+exit receipt: 0
+
+### mpfr512_Rdot_cpu_14680064_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rdot fast 14680064
+OMP_NUM_THREADS=32
+mpfr512,Rdot,inc1,14680064,cpu,5.32615659,0.00551244176,1
+
+exit=0, elapsed=18.911806
+
+exit receipt: 0
+
+### mpfr512_Rdot_cpu_16777216_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rdot fast 16777216
+OMP_NUM_THREADS=32
+mpfr512,Rdot,inc1,16777216,cpu,6.05884756,0.00553808817,1
+
+exit=0, elapsed=21.521046
+
+exit receipt: 0

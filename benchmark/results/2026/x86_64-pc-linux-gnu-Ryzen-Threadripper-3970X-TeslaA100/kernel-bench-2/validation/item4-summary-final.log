@@ -1,0 +1,4 @@
+  File "/home/docker/mplapack-acceralation/benchmark/results/2026/x86_64-pc-linux-gnu-Ryzen-Threadripper-3970X-TeslaA100/kernel-bench-2/validation/derive_tables.py", line 57
+    graph=f'{typ}/{k}.png')))
+                            ^
+SyntaxError: unmatched ')'

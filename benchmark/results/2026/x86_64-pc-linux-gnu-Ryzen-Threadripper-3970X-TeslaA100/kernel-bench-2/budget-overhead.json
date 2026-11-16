@@ -1,0 +1,34 @@
+{
+  "seconds": 4172.708954565227,
+  "reason": "Final conservative accounting charges the entire first-pilot to final benchmark-validation wall window, including build/check/wait pauses, post-sweep operand comparisons, and any planning/probe gaps. Window timestamp allowance +2s. No kernel times changed. The earlier accounting is retained below.",
+  "final_window_start": "2026-11-04T22:02:39+09:00",
+  "final_window_end": "2026-11-05T03:06:41+09:00",
+  "final_window_wall_upper_seconds": 18244.0,
+  "last_performance_point": "2026-11-05T02:51:11+09:00",
+  "performance_window_wall_upper_seconds": 17314.0,
+  "final_csv_elapsed_seconds": 14071.291045434773,
+  "previous_extra_seconds": 69.71874688798562,
+  "previous_reason": "Conservative charge of pre-correction monitoring/planning/interrupted-point time not present in old subprocess-only elapsed values. Timestamp resolution allowance +2s per span. Future rows include probes directly. Kernel times unchanged.",
+  "spans": [
+    {
+      "name": "initial CPU pilots",
+      "start": "2026-11-04T22:02:39",
+      "end": "2026-11-04T22:02:45",
+      "wall_upper_seconds": 8.0
+    },
+    {
+      "name": "CPU sweep before gate",
+      "start": "2026-11-04T22:09:58",
+      "end": "2026-11-04T22:50:48",
+      "wall_upper_seconds": 2452.0
+    },
+    {
+      "name": "first GPU/resume sweep",
+      "start": "2026-11-04T23:16:05",
+      "end": "2026-11-04T23:22:03",
+      "wall_upper_seconds": 360.0
+    }
+  ],
+  "old_csv_elapsed_seconds": 2750.2812531120144,
+  "active_wall_upper_seconds": 2820.0
+}

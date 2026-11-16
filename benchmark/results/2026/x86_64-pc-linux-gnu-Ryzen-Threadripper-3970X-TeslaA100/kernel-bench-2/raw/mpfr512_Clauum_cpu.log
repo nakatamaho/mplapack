@@ -1,0 +1,186 @@
+
+### mpfr512_Clauum_cpu_64_pilot-invalid-fast
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Clauum fast 64 --reps 1 --warmup 1
+OMP_NUM_THREADS=32
+mpfr512,Clauum,UN,64,cpu,0.030678807,0.0116614704,1
+
+exit=0, elapsed=0.075726
+
+exit receipt: 0
+
+### mpfr512_Clauum_cpu_128_pilot-invalid-fast
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Clauum fast 128 --reps 1 --warmup 1
+OMP_NUM_THREADS=32
+mpfr512,Clauum,UN,128,cpu,0.077704123,0.0364080552,1
+
+exit=0, elapsed=0.206992
+
+exit receipt: 0
+
+### mpfr512_Clauum_cpu_64_pilot
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Clauum fast 64 --reps 1 --warmup 1
+OMP_NUM_THREADS=32
+mpfr512,Clauum,UN,64,cpu,0.027927575,0.012810278,1
+
+exit=0, elapsed=0.071653
+
+exit receipt: 0
+
+### mpfr512_Clauum_cpu_128_pilot
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Clauum fast 128 --reps 1 --warmup 1
+OMP_NUM_THREADS=32
+mpfr512,Clauum,UN,128,cpu,0.072940776,0.0387856581,1
+
+exit=0, elapsed=0.195677
+
+exit receipt: 0
+
+### mpfr512_Clauum_cpu_7_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Clauum fast 7
+OMP_NUM_THREADS=32
+mpfr512,Clauum,UN,7,cpu,7.8058e-05,0.00717415255,3
+
+exit=0, process_elapsed=0.005215
+charged_point_wall=0.010362
+
+exit receipt: 0
+
+### mpfr512_Clauum_cpu_31_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Clauum fast 31
+OMP_NUM_THREADS=32
+mpfr512,Clauum,UN,31,cpu,0.003644387,0.0114323753,3
+
+exit=0, process_elapsed=0.022381
+charged_point_wall=0.027627
+
+exit receipt: 0
+
+### mpfr512_Clauum_cpu_62_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Clauum fast 62
+OMP_NUM_THREADS=32
+mpfr512,Clauum,UN,62,cpu,0.025716048,0.0126574659,3
+
+exit=0, process_elapsed=0.117196
+charged_point_wall=0.121807
+
+exit receipt: 0
+
+### mpfr512_Clauum_cpu_63_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Clauum fast 63
+OMP_NUM_THREADS=32
+mpfr512,Clauum,UN,63,cpu,0.027660093,0.012341824,3
+
+exit=0, process_elapsed=0.125565
+charged_point_wall=0.130355
+
+exit receipt: 0
+
+### mpfr512_Clauum_cpu_64_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Clauum fast 64
+OMP_NUM_THREADS=32
+mpfr512,Clauum,UN,64,cpu,0.028156303,0.0127062136,3
+
+exit=0, process_elapsed=0.127789
+charged_point_wall=0.132918
+
+exit receipt: 0
+
+### mpfr512_Clauum_cpu_124_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Clauum fast 124
+OMP_NUM_THREADS=32
+mpfr512,Clauum,UN,124,cpu,0.067613675,0.038054432,3
+
+exit=0, process_elapsed=0.320205
+charged_point_wall=0.324886
+
+exit receipt: 0
+
+### mpfr512_Clauum_cpu_126_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Clauum fast 126
+OMP_NUM_THREADS=32
+mpfr512,Clauum,UN,126,cpu,0.070610114,0.0382240425,3
+
+exit=0, process_elapsed=0.331317
+charged_point_wall=0.335136
+
+exit receipt: 0
+
+### mpfr512_Clauum_cpu_128_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Clauum fast 128
+OMP_NUM_THREADS=32
+mpfr512,Clauum,UN,128,cpu,0.071141781,0.0397664489,3
+
+exit=0, process_elapsed=0.340589
+charged_point_wall=0.345036
+
+exit receipt: 0
+
+### mpfr512_Clauum_cpu_248_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Clauum fast 248
+OMP_NUM_THREADS=32
+mpfr512,Clauum,UN,248,cpu,0.204496734,0.100052923,3
+
+exit=0, process_elapsed=0.982026
+charged_point_wall=0.987246
+
+exit receipt: 0
+
+### mpfr512_Clauum_cpu_252_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Clauum fast 252
+OMP_NUM_THREADS=32
+mpfr512,Clauum,UN,252,cpu,0.227554875,0.094326786,3
+
+exit=0, process_elapsed=1.083648
+charged_point_wall=1.088727
+
+exit receipt: 0
+
+### mpfr512_Clauum_cpu_256_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Clauum fast 256
+OMP_NUM_THREADS=32
+mpfr512,Clauum,UN,256,cpu,0.219106794,0.102693593,3
+
+exit=0, process_elapsed=1.082631
+charged_point_wall=1.087746
+
+exit receipt: 0
+
+### mpfr512_Clauum_cpu_496_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Clauum fast 496
+OMP_NUM_THREADS=32
+mpfr512,Clauum,UN,496,cpu,1.00616664,0.162190773,3
+
+exit=0, process_elapsed=4.660995
+charged_point_wall=4.666173
+
+exit receipt: 0
+
+### mpfr512_Clauum_cpu_511_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Clauum fast 511
+OMP_NUM_THREADS=32
+mpfr512,Clauum,UN,511,cpu,1.08758438,0.164063614,3
+
+exit=0, process_elapsed=5.005262
+charged_point_wall=5.009909
+
+exit receipt: 0
+
+### mpfr512_Clauum_cpu_512_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Clauum fast 512
+OMP_NUM_THREADS=32
+mpfr512,Clauum,UN,512,cpu,1.10168367,0.162915731,3
+
+exit=0, process_elapsed=5.145778
+charged_point_wall=5.151294
+
+exit receipt: 0
+
+### mpfr512_Clauum_cpu_1022_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Clauum fast 1022
+OMP_NUM_THREADS=32
+mpfr512,Clauum,UN,1022,cpu,20.1353859,0.0707894641,1
+
+exit=0, process_elapsed=42.503761
+charged_point_wall=42.508928
+
+exit receipt: 0

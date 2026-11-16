@@ -90,6 +90,18 @@ dd_real randomnumber(dd_real dummy) {
 }
 #define MPLAPACK_INITIALIZE
 #endif
+#if defined MPLAPACK_BUILD_WITH_TD
+#include <mplapack_benchmark_td.h>
+#define MPLAPACK_REF_LIB "libmplapack_td"
+#define MPBLAS_REF_LIB "libmplapack_td"
+td_real randomnumber(td_real dummy) {
+    td_real mtmp;
+    mtmp = tdrand();
+    mtmp = 2.0 * mtmp - 1.0;
+    return mtmp;
+}
+#define MPLAPACK_INITIALIZE
+#endif
 
 #if defined MPLAPACK_BUILD_WITH_QD
 #include <mplapack_benchmark_qd.h>

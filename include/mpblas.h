@@ -72,6 +72,16 @@ typedef dd_complex COMPLEX;
 #define castINTEGER castINTEGER_dd
 #define castREAL castREAL_dd
 #endif
+#if defined MPLAPACK_BUILD_WITH_TD
+#include <mpblas_td.h>
+typedef mplapackint INTEGER;
+typedef td_real REAL;
+typedef td_complex COMPLEX;
+#define Mlsame Mlsame_td
+#define Mxerbla Mxerbla_td
+#define castINTEGER castINTEGER_td
+#define castREAL castREAL_td
+#endif
 
 #if defined MPLAPACK_BUILD_WITH_DOUBLE
 #include <mpblas_double.h>

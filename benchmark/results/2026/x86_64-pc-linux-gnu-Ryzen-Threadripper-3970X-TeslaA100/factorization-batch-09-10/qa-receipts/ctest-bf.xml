@@ -1,0 +1,525 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="(empty)"
+	tests="82"
+	failures="0"
+	disabled="0"
+	skipped="0"
+	hostname=""
+	time="5298"
+	timestamp="2026-11-01T09:55:26"
+	>
+	<testcase name="dd_cuda_solver_fallback" classname="dd_cuda_solver_fallback" time="4.31691" status="run">
+		<properties/>
+		<system-out>fallback p=0 cases=352 elements=14149260 errors=0 zero-sign-errors=0
+</system-out>
+	</testcase>
+	<testcase name="dd_cuda_solver_host" classname="dd_cuda_solver_host" time="20.1643" status="run">
+		<properties/>
+		<system-out>PASS p=0 cumulative checks=2488 elements=15683910 zero-sign-errors=0
+</system-out>
+	</testcase>
+	<testcase name="dd_cuda_solver_device" classname="dd_cuda_solver_device" time="17.2032" status="run">
+		<properties/>
+		<system-out>PASS p=0 cumulative checks=2488 elements=15683910 zero-sign-errors=0
+</system-out>
+	</testcase>
+	<testcase name="td_cuda_solver_fallback" classname="td_cuda_solver_fallback" time="8.70732" status="run">
+		<properties/>
+		<system-out>fallback p=0 cases=352 elements=14149260 errors=0 zero-sign-errors=0
+</system-out>
+	</testcase>
+	<testcase name="td_cuda_solver_host" classname="td_cuda_solver_host" time="67.9277" status="run">
+		<properties/>
+		<system-out>PASS p=0 cumulative checks=2488 elements=15683910 zero-sign-errors=0
+</system-out>
+	</testcase>
+	<testcase name="td_cuda_solver_device" classname="td_cuda_solver_device" time="49.9484" status="run">
+		<properties/>
+		<system-out>PASS p=0 cumulative checks=2488 elements=15683910 zero-sign-errors=0
+</system-out>
+	</testcase>
+	<testcase name="qd_cuda_solver_fallback" classname="qd_cuda_solver_fallback" time="16.1464" status="run">
+		<properties/>
+		<system-out>fallback p=0 cases=352 elements=14149260 errors=0 zero-sign-errors=0
+</system-out>
+	</testcase>
+	<testcase name="qd_cuda_solver_host" classname="qd_cuda_solver_host" time="148.229" status="run">
+		<properties/>
+		<system-out>PASS p=0 cumulative checks=2488 elements=15683910 zero-sign-errors=0
+</system-out>
+	</testcase>
+	<testcase name="qd_cuda_solver_device" classname="qd_cuda_solver_device" time="87.0835" status="run">
+		<properties/>
+		<system-out>PASS p=0 cumulative checks=2488 elements=15683910 zero-sign-errors=0
+</system-out>
+	</testcase>
+	<testcase name="dd_cuda_solver_constants_0" classname="dd_cuda_solver_constants_0" time="1.27609" status="run">
+		<properties/>
+		<system-out>MPLAPACK_DD computed=1 info=0 errors=0 copies=1 fences=1 skipped=0 control=0
+</system-out>
+	</testcase>
+	<testcase name="dd_cuda_solver_constants_1" classname="dd_cuda_solver_constants_1" time="1.25501" status="run">
+		<properties/>
+		<system-out>MPLAPACK_DD computed=1 info=0 errors=6 copies=1 fences=0 skipped=1 control=1
+</system-out>
+	</testcase>
+	<testcase name="td_cuda_solver_constants_0" classname="td_cuda_solver_constants_0" time="1.27749" status="run">
+		<properties/>
+		<system-out>MPLAPACK_TD computed=1 info=0 errors=0 copies=1 fences=1 skipped=0 control=0
+</system-out>
+	</testcase>
+	<testcase name="td_cuda_solver_constants_1" classname="td_cuda_solver_constants_1" time="1.24131" status="run">
+		<properties/>
+		<system-out>MPLAPACK_TD computed=1 info=0 errors=6 copies=1 fences=0 skipped=1 control=1
+</system-out>
+	</testcase>
+	<testcase name="qd_cuda_solver_constants_0" classname="qd_cuda_solver_constants_0" time="1.25549" status="run">
+		<properties/>
+		<system-out>MPLAPACK_QD computed=1 info=0 errors=0 copies=1 fences=1 skipped=0 control=0
+</system-out>
+	</testcase>
+	<testcase name="qd_cuda_solver_constants_1" classname="qd_cuda_solver_constants_1" time="1.2546" status="run">
+		<properties/>
+		<system-out>MPLAPACK_QD computed=1 info=0 errors=6 copies=1 fences=0 skipped=1 control=1
+</system-out>
+	</testcase>
+	<testcase name="dd_cuda_inverse_host" classname="dd_cuda_inverse_host" time="138.186" status="run">
+		<properties/>
+		<system-out>inverse rejection contracts: 31 cases, 0 failures
+inverse rejection contracts: 31 cases, 0 failures
+Rfactor: 2332 checks, 0 failures, mode=default, max backward error &lt;= 30
+inverse direct calls: 672, unexpected rejections: 0
+</system-out>
+	</testcase>
+	<testcase name="dd_cuda_inverse_host_quick" classname="dd_cuda_inverse_host_quick" time="1.78556" status="run">
+		<properties/>
+		<system-out>inverse rejection contracts: 31 cases, 0 failures
+inverse rejection contracts: 31 cases, 0 failures
+Rfactor: 694 checks, 0 failures, mode=default, max backward error &lt;= 30
+inverse direct calls: 168, unexpected rejections: 0
+</system-out>
+	</testcase>
+	<testcase name="dd_cuda_inverse_host_fast_quick" classname="dd_cuda_inverse_host_fast_quick" time="1.89549" status="run">
+		<properties/>
+		<system-out>inverse rejection contracts: 31 cases, 0 failures
+inverse rejection contracts: 31 cases, 0 failures
+Rfactor: 462 checks, 0 failures, mode=fast, max backward error &lt;= 30
+inverse direct calls: 168, unexpected rejections: 0
+</system-out>
+	</testcase>
+	<testcase name="dd_cuda_inverse_device" classname="dd_cuda_inverse_device" time="102.874" status="run">
+		<properties/>
+		<system-out>inverse rejection contracts: 31 cases, 0 failures
+inverse rejection contracts: 31 cases, 0 failures
+Rfactor: 2332 checks, 0 failures, mode=default, max backward error &lt;= 30
+inverse direct calls: 672, unexpected rejections: 0
+</system-out>
+	</testcase>
+	<testcase name="dd_cuda_inverse_device_quick" classname="dd_cuda_inverse_device_quick" time="4.28875" status="run">
+		<properties/>
+		<system-out>inverse rejection contracts: 31 cases, 0 failures
+inverse rejection contracts: 31 cases, 0 failures
+Rfactor: 694 checks, 0 failures, mode=default, max backward error &lt;= 30
+inverse direct calls: 168, unexpected rejections: 0
+</system-out>
+	</testcase>
+	<testcase name="dd_cuda_inverse_device_fast_quick" classname="dd_cuda_inverse_device_fast_quick" time="4.44486" status="run">
+		<properties/>
+		<system-out>inverse rejection contracts: 31 cases, 0 failures
+inverse rejection contracts: 31 cases, 0 failures
+Rfactor: 462 checks, 0 failures, mode=fast, max backward error &lt;= 30
+inverse direct calls: 168, unexpected rejections: 0
+</system-out>
+	</testcase>
+	<testcase name="td_cuda_inverse_host" classname="td_cuda_inverse_host" time="459.521" status="run">
+		<properties/>
+		<system-out>inverse rejection contracts: 31 cases, 0 failures
+inverse rejection contracts: 31 cases, 0 failures
+Rfactor: 2332 checks, 0 failures, mode=default, max backward error &lt;= 30
+inverse direct calls: 672, unexpected rejections: 0
+</system-out>
+	</testcase>
+	<testcase name="td_cuda_inverse_host_quick" classname="td_cuda_inverse_host_quick" time="5.92384" status="run">
+		<properties/>
+		<system-out>inverse rejection contracts: 31 cases, 0 failures
+inverse rejection contracts: 31 cases, 0 failures
+Rfactor: 694 checks, 0 failures, mode=default, max backward error &lt;= 30
+inverse direct calls: 168, unexpected rejections: 0
+</system-out>
+	</testcase>
+	<testcase name="td_cuda_inverse_host_fast_quick" classname="td_cuda_inverse_host_fast_quick" time="6.2504" status="run">
+		<properties/>
+		<system-out>inverse rejection contracts: 31 cases, 0 failures
+inverse rejection contracts: 31 cases, 0 failures
+Rfactor: 462 checks, 0 failures, mode=fast, max backward error &lt;= 30
+inverse direct calls: 168, unexpected rejections: 0
+</system-out>
+	</testcase>
+	<testcase name="td_cuda_inverse_device" classname="td_cuda_inverse_device" time="349.287" status="run">
+		<properties/>
+		<system-out>inverse rejection contracts: 31 cases, 0 failures
+inverse rejection contracts: 31 cases, 0 failures
+Rfactor: 2332 checks, 0 failures, mode=default, max backward error &lt;= 30
+inverse direct calls: 672, unexpected rejections: 0
+</system-out>
+	</testcase>
+	<testcase name="td_cuda_inverse_device_quick" classname="td_cuda_inverse_device_quick" time="13.646" status="run">
+		<properties/>
+		<system-out>inverse rejection contracts: 31 cases, 0 failures
+inverse rejection contracts: 31 cases, 0 failures
+Rfactor: 694 checks, 0 failures, mode=default, max backward error &lt;= 30
+inverse direct calls: 168, unexpected rejections: 0
+</system-out>
+	</testcase>
+	<testcase name="td_cuda_inverse_device_fast_quick" classname="td_cuda_inverse_device_fast_quick" time="14.3553" status="run">
+		<properties/>
+		<system-out>inverse rejection contracts: 31 cases, 0 failures
+inverse rejection contracts: 31 cases, 0 failures
+Rfactor: 462 checks, 0 failures, mode=fast, max backward error &lt;= 30
+inverse direct calls: 168, unexpected rejections: 0
+</system-out>
+	</testcase>
+	<testcase name="qd_cuda_inverse_host" classname="qd_cuda_inverse_host" time="900.929" status="run">
+		<properties/>
+		<system-out>inverse rejection contracts: 31 cases, 0 failures
+inverse rejection contracts: 31 cases, 0 failures
+Rfactor: 2332 checks, 0 failures, mode=default, max backward error &lt;= 30
+inverse direct calls: 672, unexpected rejections: 0
+</system-out>
+	</testcase>
+	<testcase name="qd_cuda_inverse_host_quick" classname="qd_cuda_inverse_host_quick" time="11.3088" status="run">
+		<properties/>
+		<system-out>inverse rejection contracts: 31 cases, 0 failures
+inverse rejection contracts: 31 cases, 0 failures
+Rfactor: 694 checks, 0 failures, mode=default, max backward error &lt;= 30
+inverse direct calls: 168, unexpected rejections: 0
+</system-out>
+	</testcase>
+	<testcase name="qd_cuda_inverse_host_fast_quick" classname="qd_cuda_inverse_host_fast_quick" time="11.592" status="run">
+		<properties/>
+		<system-out>inverse rejection contracts: 31 cases, 0 failures
+inverse rejection contracts: 31 cases, 0 failures
+Rfactor: 462 checks, 0 failures, mode=fast, max backward error &lt;= 30
+inverse direct calls: 168, unexpected rejections: 0
+</system-out>
+	</testcase>
+	<testcase name="qd_cuda_inverse_device" classname="qd_cuda_inverse_device" time="656.534" status="run">
+		<properties/>
+		<system-out>inverse rejection contracts: 31 cases, 0 failures
+inverse rejection contracts: 31 cases, 0 failures
+Rfactor: 2332 checks, 0 failures, mode=default, max backward error &lt;= 30
+inverse direct calls: 672, unexpected rejections: 0
+</system-out>
+	</testcase>
+	<testcase name="qd_cuda_inverse_device_quick" classname="qd_cuda_inverse_device_quick" time="24.8124" status="run">
+		<properties/>
+		<system-out>inverse rejection contracts: 31 cases, 0 failures
+inverse rejection contracts: 31 cases, 0 failures
+Rfactor: 694 checks, 0 failures, mode=default, max backward error &lt;= 30
+inverse direct calls: 168, unexpected rejections: 0
+</system-out>
+	</testcase>
+	<testcase name="qd_cuda_inverse_device_fast_quick" classname="qd_cuda_inverse_device_fast_quick" time="25.7469" status="run">
+		<properties/>
+		<system-out>inverse rejection contracts: 31 cases, 0 failures
+inverse rejection contracts: 31 cases, 0 failures
+Rfactor: 462 checks, 0 failures, mode=fast, max backward error &lt;= 30
+inverse direct calls: 168, unexpected rejections: 0
+</system-out>
+	</testcase>
+	<testcase name="unique_symbols_dd_opt_cuda" classname="unique_symbols_dd_opt_cuda" time="0.530796" status="run">
+		<properties/>
+		<system-out></system-out>
+	</testcase>
+	<testcase name="unique_symbols_qd_opt_cuda" classname="unique_symbols_qd_opt_cuda" time="0.501025" status="run">
+		<properties/>
+		<system-out></system-out>
+	</testcase>
+	<testcase name="unique_symbols_td_opt_cuda" classname="unique_symbols_td_opt_cuda" time="0.543067" status="run">
+		<properties/>
+		<system-out></system-out>
+	</testcase>
+	<testcase name="qd_opt_cuda_Rfactor_default" classname="qd_opt_cuda_Rfactor_default" time="50.1694" status="run">
+		<properties/>
+		<system-out>Rfactor: 2995 checks, 0 failures, mode=default, max backward error &lt;= 30
+</system-out>
+	</testcase>
+	<testcase name="qd_opt_cuda_Rfactor_fast" classname="qd_opt_cuda_Rfactor_fast" time="48.6281" status="run">
+		<properties/>
+		<system-out>Rfactor: 1767 checks, 0 failures, mode=fast, max backward error &lt;= 30
+</system-out>
+	</testcase>
+	<testcase name="dd_opt_cuda_Rfactor_default" classname="dd_opt_cuda_Rfactor_default" time="11.1102" status="run">
+		<properties/>
+		<system-out>Rfactor: 2995 checks, 0 failures, mode=default, max backward error &lt;= 30
+</system-out>
+	</testcase>
+	<testcase name="dd_opt_cuda_Rfactor_fast" classname="dd_opt_cuda_Rfactor_fast" time="10.2146" status="run">
+		<properties/>
+		<system-out>Rfactor: 1767 checks, 0 failures, mode=fast, max backward error &lt;= 30
+</system-out>
+	</testcase>
+	<testcase name="td_opt_cuda_Rfactor_default" classname="td_opt_cuda_Rfactor_default" time="27.8913" status="run">
+		<properties/>
+		<system-out>Rfactor: 2995 checks, 0 failures, mode=default, max backward error &lt;= 30
+</system-out>
+	</testcase>
+	<testcase name="td_opt_cuda_Rfactor_fast" classname="td_opt_cuda_Rfactor_fast" time="27.3436" status="run">
+		<properties/>
+		<system-out>Rfactor: 1767 checks, 0 failures, mode=fast, max backward error &lt;= 30
+</system-out>
+	</testcase>
+	<testcase name="dd_cuda_Rgetrf_host" classname="dd_cuda_Rgetrf_host" time="99.7635" status="run">
+		<properties/>
+		<system-out>PASS 890 LU entry checks
+</system-out>
+	</testcase>
+	<testcase name="dd_cuda_Rpotrf_host" classname="dd_cuda_Rpotrf_host" time="15.9471" status="run">
+		<properties/>
+		<system-out>PASS 398 Cholesky entry checks
+</system-out>
+	</testcase>
+	<testcase name="dd_cuda_Rlapack_host" classname="dd_cuda_Rlapack_host" time="2.08476" status="run">
+		<properties/>
+		<system-out>sqrt
+ERROR (dd_real::sqrt): Negative argument.
+pivots
+scaling
+swaps
+herk
+panels
+PASS: device LAPACK blocks, 9887 checks
+</system-out>
+	</testcase>
+	<testcase name="dd_cuda_Rgemm_host" classname="dd_cuda_Rgemm_host" time="0.331807" status="run">
+		<properties/>
+		<system-out>MPLAPACK_DD CUDA Rgemm: 1849 checks, 0 failures
+</system-out>
+	</testcase>
+	<testcase name="dd_cuda_Rblas_host" classname="dd_cuda_Rblas_host" time="5.26173" status="run">
+		<properties/>
+		<system-out>lane BLAS (GPU): 41505 checks, 0 failures
+</system-out>
+	</testcase>
+	<testcase name="dd_cuda_Cblas_host" classname="dd_cuda_Cblas_host" time="7.3873" status="run">
+		<properties/>
+		<system-out>complex BLAS (GPU): 45996 checks, 0 failures, 0 zeros differing only in sign
+</system-out>
+	</testcase>
+	<testcase name="dd_cuda_Rgetrf_device" classname="dd_cuda_Rgetrf_device" time="35.0065" status="run">
+		<properties/>
+		<system-out>PASS 892 LU entry checks
+</system-out>
+	</testcase>
+	<testcase name="dd_cuda_Rpotrf_device" classname="dd_cuda_Rpotrf_device" time="11.6535" status="run">
+		<properties/>
+		<system-out>PASS 398 Cholesky entry checks
+</system-out>
+	</testcase>
+	<testcase name="dd_cuda_Rlapack_device" classname="dd_cuda_Rlapack_device" time="2.82833" status="run">
+		<properties/>
+		<system-out>sqrt
+ERROR (dd_real::sqrt): Negative argument.
+pivots
+scaling
+swaps
+herk
+panels
+PASS: device LAPACK blocks, 9887 checks
+</system-out>
+	</testcase>
+	<testcase name="dd_cuda_Rgemm_device" classname="dd_cuda_Rgemm_device" time="2.69563" status="run">
+		<properties/>
+		<system-out>MPLAPACK_DD CUDA Rgemm: 1849 checks, 0 failures
+</system-out>
+	</testcase>
+	<testcase name="dd_cuda_Rblas_device" classname="dd_cuda_Rblas_device" time="6.64706" status="run">
+		<properties/>
+		<system-out>lane BLAS (GPU): 41505 checks, 0 failures
+</system-out>
+	</testcase>
+	<testcase name="dd_cuda_Cblas_device" classname="dd_cuda_Cblas_device" time="7.66402" status="run">
+		<properties/>
+		<system-out>complex BLAS (GPU): 45996 checks, 0 failures, 0 zeros differing only in sign
+</system-out>
+	</testcase>
+	<testcase name="td_cuda_Rgetrf_host" classname="td_cuda_Rgetrf_host" time="348.948" status="run">
+		<properties/>
+		<system-out>PASS 890 LU entry checks
+</system-out>
+	</testcase>
+	<testcase name="td_cuda_Rpotrf_host" classname="td_cuda_Rpotrf_host" time="51.5254" status="run">
+		<properties/>
+		<system-out>PASS 398 Cholesky entry checks
+</system-out>
+	</testcase>
+	<testcase name="td_cuda_Rlapack_host" classname="td_cuda_Rlapack_host" time="5.97275" status="run">
+		<properties/>
+		<system-out>sqrt
+ERROR (td_real::sqrt): Negative argument.
+pivots
+scaling
+swaps
+herk
+panels
+PASS: device LAPACK blocks, 9887 checks
+</system-out>
+	</testcase>
+	<testcase name="td_cuda_Rgemm_host" classname="td_cuda_Rgemm_host" time="0.853237" status="run">
+		<properties/>
+		<system-out>MPLAPACK_TD CUDA Rgemm: 1849 checks, 0 failures
+</system-out>
+	</testcase>
+	<testcase name="td_cuda_Rblas_host" classname="td_cuda_Rblas_host" time="13.371" status="run">
+		<properties/>
+		<system-out>lane BLAS (GPU): 41505 checks, 0 failures
+</system-out>
+	</testcase>
+	<testcase name="td_cuda_Cblas_host" classname="td_cuda_Cblas_host" time="22.3091" status="run">
+		<properties/>
+		<system-out>complex BLAS (GPU): 45996 checks, 0 failures, 0 zeros differing only in sign
+</system-out>
+	</testcase>
+	<testcase name="td_cuda_Rgetrf_device" classname="td_cuda_Rgetrf_device" time="106.294" status="run">
+		<properties/>
+		<system-out>PASS 892 LU entry checks
+</system-out>
+	</testcase>
+	<testcase name="td_cuda_Rpotrf_device" classname="td_cuda_Rpotrf_device" time="33.3035" status="run">
+		<properties/>
+		<system-out>PASS 398 Cholesky entry checks
+</system-out>
+	</testcase>
+	<testcase name="td_cuda_Rlapack_device" classname="td_cuda_Rlapack_device" time="6.72221" status="run">
+		<properties/>
+		<system-out>sqrt
+ERROR (td_real::sqrt): Negative argument.
+pivots
+scaling
+swaps
+herk
+panels
+PASS: device LAPACK blocks, 9887 checks
+</system-out>
+	</testcase>
+	<testcase name="td_cuda_Rgemm_device" classname="td_cuda_Rgemm_device" time="3.01885" status="run">
+		<properties/>
+		<system-out>MPLAPACK_TD CUDA Rgemm: 1849 checks, 0 failures
+</system-out>
+	</testcase>
+	<testcase name="td_cuda_Rblas_device" classname="td_cuda_Rblas_device" time="11.867" status="run">
+		<properties/>
+		<system-out>lane BLAS (GPU): 41505 checks, 0 failures
+</system-out>
+	</testcase>
+	<testcase name="td_cuda_Cblas_device" classname="td_cuda_Cblas_device" time="15.8838" status="run">
+		<properties/>
+		<system-out>complex BLAS (GPU): 45996 checks, 0 failures, 0 zeros differing only in sign
+</system-out>
+	</testcase>
+	<testcase name="qd_cuda_Rgetrf_host" classname="qd_cuda_Rgetrf_host" time="676.414" status="run">
+		<properties/>
+		<system-out>PASS 890 LU entry checks
+</system-out>
+	</testcase>
+	<testcase name="qd_cuda_Rpotrf_host" classname="qd_cuda_Rpotrf_host" time="96.9554" status="run">
+		<properties/>
+		<system-out>PASS 398 Cholesky entry checks
+</system-out>
+	</testcase>
+	<testcase name="qd_cuda_Rlapack_host" classname="qd_cuda_Rlapack_host" time="10.6161" status="run">
+		<properties/>
+		<system-out>sqrt
+ERROR (qd_real::sqrt): Negative argument.
+pivots
+scaling
+swaps
+herk
+panels
+PASS: device LAPACK blocks, 9887 checks
+</system-out>
+	</testcase>
+	<testcase name="qd_cuda_Rgemm_host" classname="qd_cuda_Rgemm_host" time="1.33812" status="run">
+		<properties/>
+		<system-out>MPLAPACK_QD CUDA Rgemm: 1849 checks, 0 failures
+</system-out>
+	</testcase>
+	<testcase name="qd_cuda_Rblas_host" classname="qd_cuda_Rblas_host" time="23.7441" status="run">
+		<properties/>
+		<system-out>lane BLAS (GPU): 41505 checks, 0 failures
+</system-out>
+	</testcase>
+	<testcase name="qd_cuda_Cblas_host" classname="qd_cuda_Cblas_host" time="42.1238" status="run">
+		<properties/>
+		<system-out>complex BLAS (GPU): 45996 checks, 0 failures, 0 zeros differing only in sign
+</system-out>
+	</testcase>
+	<testcase name="qd_cuda_Rgetrf_device" classname="qd_cuda_Rgetrf_device" time="182.255" status="run">
+		<properties/>
+		<system-out>PASS 892 LU entry checks
+</system-out>
+	</testcase>
+	<testcase name="qd_cuda_Rpotrf_device" classname="qd_cuda_Rpotrf_device" time="50.0837" status="run">
+		<properties/>
+		<system-out>PASS 398 Cholesky entry checks
+</system-out>
+	</testcase>
+	<testcase name="qd_cuda_Rlapack_device" classname="qd_cuda_Rlapack_device" time="9.34617" status="run">
+		<properties/>
+		<system-out>sqrt
+ERROR (qd_real::sqrt): Negative argument.
+pivots
+scaling
+swaps
+herk
+panels
+PASS: device LAPACK blocks, 9887 checks
+</system-out>
+	</testcase>
+	<testcase name="qd_cuda_Rgemm_device" classname="qd_cuda_Rgemm_device" time="3.51091" status="run">
+		<properties/>
+		<system-out>MPLAPACK_QD CUDA Rgemm: 1849 checks, 0 failures
+</system-out>
+	</testcase>
+	<testcase name="qd_cuda_Rblas_device" classname="qd_cuda_Rblas_device" time="17.8896" status="run">
+		<properties/>
+		<system-out>lane BLAS (GPU): 41505 checks, 0 failures
+</system-out>
+	</testcase>
+	<testcase name="qd_cuda_Cblas_device" classname="qd_cuda_Cblas_device" time="27.1814" status="run">
+		<properties/>
+		<system-out>complex BLAS (GPU): 45996 checks, 0 failures, 0 zeros differing only in sign
+</system-out>
+	</testcase>
+	<testcase name="consume_install_tree" classname="consume_install_tree" time="0.493881" status="run">
+		<properties/>
+		<system-out>-- Up-to-date: /tmp/factor04-cmake/cmake/tests/consume/install/lib/libmplapack_qd.a
+-- Installing: /tmp/factor04-cmake/cmake/tests/consume/install/lib/libmplapack_qd_opt.a
+-- Up-to-date: /tmp/factor04-cmake/cmake/tests/consume/install/lib/libmplapack_dd.a
+-- Installing: /tmp/factor04-cmake/cmake/tests/consume/install/lib/libmplapack_dd_opt.a
+-- Up-to-date: /tmp/factor04-cmake/cmake/tests/consume/install/lib/libmplapack_td.a
+-- Installing: /tmp/factor04-cmake/cmake/tests/consume/install/lib/libmplapack_td_opt.a
+-- Installing: /tmp/factor04-cmake/cmake/tests/consume/install/lib/libmplapack_dd_opt_cuda.a
+-- Installing: /tmp/factor04-cmake/cmake/tests/consume/install/lib/libmplapack_qd_opt_cuda.a
+-- Installing: /tmp/factor04-cmake/cmake/tests/consume/install/lib/libmplapack_td_opt_cuda.a
+-- Up-to-date: /tmp/factor04-cmake/cmake/tests/consume/install/include/mplapack
+-- Up-to-date: /tmp/factor04-cmake/cmake/tests/consume/install/include/mplapack/mplapack_benchmark_mpfr.h
+-- Up-to-date: /tmp/factor04-cmake/cmake/te...
+[This part of the test output was removed since it exceeds the threshold of 1024 bytes.]
+</system-out>
+	</testcase>
+	<testcase name="pkgconfig_relocate_installed" classname="pkgconfig_relocate_installed" time="0.0196054" status="run">
+		<properties/>
+		<system-out></system-out>
+	</testcase>
+	<testcase name="pkgconfig_mplapack_dd_opt_cuda_shared_consumer" classname="pkgconfig_mplapack_dd_opt_cuda_shared_consumer" time="0.682834" status="run">
+		<properties/>
+		<system-out>PASS: shared pkg-config consumer for mplapack_dd_opt_cuda
+</system-out>
+	</testcase>
+	<testcase name="pkgconfig_mplapack_dd_opt_cuda_static_consumer" classname="pkgconfig_mplapack_dd_opt_cuda_static_consumer" time="0.701027" status="run">
+		<properties/>
+		<system-out>PASS: static pkg-config consumer for mplapack_dd_opt_cuda
+</system-out>
+	</testcase>
+</testsuite>

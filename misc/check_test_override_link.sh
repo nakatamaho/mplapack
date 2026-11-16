@@ -16,6 +16,12 @@ tmpdir=$(mktemp -d "${TMPDIR:-/tmp}/mplapack-test-overrides.XXXXXX")
 trap 'rm -rf "$tmpdir"' EXIT HUP INT TERM
 export PKG_CONFIG_PATH="$builddir${PKG_CONFIG_PATH:+:$PKG_CONFIG_PATH}"
 
+if test -f "$srcdir/backends.txt"; then
+    backends=$(awk '!/^#/ && NF { print $1 }' "$srcdir/backends.txt")
+else
+    backends="gmp mpfr qd dd double binary80 binary128"
+fi
+
 # Executable-owned overrides must never also be linked from a library.
 # The duplicated MPFR common arrays can otherwise be finalized twice.
 for family in lin eig; do
@@ -23,7 +29,7 @@ for family in lin eig; do
         echo "FAIL: unused override library is still generated for $family" >&2
         exit 1
     fi
-    for backend in gmp mpfr qd dd double binary80 binary128; do
+    for backend in $backends; do
         makefile="$srcdir/mplapack/test/$family/$backend/Makefile.am"
         if grep -Eq 'override_.*[.](la|a)|-l(lin|eig)_override_' "$makefile"; then
             echo "FAIL: duplicate override dependency in $makefile" >&2
@@ -43,7 +49,7 @@ for family in lin eig; do
     done
 done
 checked=0
-for backend in gmp mpfr qd dd; do
+for backend in gmp mpfr qd dd td; do
     test -f "$builddir/mplapack_$backend.pc" || continue
     checked=$((checked + 1))
     macro=$(printf '%s' "$backend" | tr '[:lower:]' '[:upper:]')

@@ -9,6 +9,7 @@ MPFRLIBS= -lmplapack_mpfr -lmpfr -lmpc -lgmp
 GMPLIBS=-lmplapack_gmp -lgmp
 QDLIBS=-lmplapack_qd -lqd
 DDLIBS=-lmplapack_dd -lqd
+TDLIBS=-lmplapack_td -lqd
 BINARY80LIBS=-lmplapack_binary80
 BINARY128LIBS=-lmplapack_binary128%%LIBQUADMATH%%
 DOUBLELIBS=-lmplapack_double
@@ -16,7 +17,7 @@ BLAS=
 LAPACK=
 FLIBS=
 
-programs=Cheev_test_mpfr.exe Cheev_test_gmp.exe Cheev_test_qd.exe Cheev_test_dd.exe Cheev_test_binary80.exe Cheev_test_binary128.exe Cheev_test_double.exe Rsyev_Frank_mpfr.exe Rsyev_Frank_gmp.exe Rsyev_Frank_qd.exe Rsyev_Frank_dd.exe Rsyev_Frank_binary80.exe Rsyev_Frank_binary128.exe Rsyev_Frank_double.exe Rsyev_test_mpfr.exe Rsyev_test_gmp.exe Rsyev_test_qd.exe Rsyev_test_dd.exe Rsyev_test_binary80.exe Rsyev_test_binary128.exe Rsyev_test_double.exe Rsyevd_DingDong_mpfr.exe Rsyevd_DingDong_gmp.exe Rsyevd_DingDong_qd.exe Rsyevd_DingDong_dd.exe Rsyevd_DingDong_binary80.exe Rsyevd_DingDong_binary128.exe Rsyevd_DingDong_double.exe Rsyevd_Frank_mpfr.exe Rsyevd_Frank_gmp.exe Rsyevd_Frank_qd.exe Rsyevd_Frank_dd.exe Rsyevd_Frank_binary80.exe Rsyevd_Frank_binary128.exe Rsyevd_Frank_double.exe Rsyevr_Frank_mpfr.exe Rsyevr_Frank_gmp.exe Rsyevr_Frank_qd.exe Rsyevr_Frank_dd.exe Rsyevr_Frank_binary80.exe Rsyevr_Frank_binary128.exe Rsyevr_Frank_double.exe
+programs=Cheev_test_mpfr.exe Cheev_test_gmp.exe Cheev_test_qd.exe Cheev_test_dd.exe Cheev_test_td.exe Cheev_test_binary80.exe Cheev_test_binary128.exe Cheev_test_double.exe Rsyev_Frank_mpfr.exe Rsyev_Frank_gmp.exe Rsyev_Frank_qd.exe Rsyev_Frank_dd.exe Rsyev_Frank_td.exe Rsyev_Frank_binary80.exe Rsyev_Frank_binary128.exe Rsyev_Frank_double.exe Rsyev_test_mpfr.exe Rsyev_test_gmp.exe Rsyev_test_qd.exe Rsyev_test_dd.exe Rsyev_test_td.exe Rsyev_test_binary80.exe Rsyev_test_binary128.exe Rsyev_test_double.exe Rsyevd_DingDong_mpfr.exe Rsyevd_DingDong_gmp.exe Rsyevd_DingDong_qd.exe Rsyevd_DingDong_dd.exe Rsyevd_DingDong_td.exe Rsyevd_DingDong_binary80.exe Rsyevd_DingDong_binary128.exe Rsyevd_DingDong_double.exe Rsyevd_Frank_mpfr.exe Rsyevd_Frank_gmp.exe Rsyevd_Frank_qd.exe Rsyevd_Frank_dd.exe Rsyevd_Frank_td.exe Rsyevd_Frank_binary80.exe Rsyevd_Frank_binary128.exe Rsyevd_Frank_double.exe Rsyevr_Frank_mpfr.exe Rsyevr_Frank_gmp.exe Rsyevr_Frank_qd.exe Rsyevr_Frank_dd.exe Rsyevr_Frank_td.exe Rsyevr_Frank_binary80.exe Rsyevr_Frank_binary128.exe Rsyevr_Frank_double.exe
 
 all: $(programs)
 
@@ -34,6 +35,9 @@ Rsyev_Frank_qd.exe: Rsyev_Frank_qd.o
 
 Rsyev_Frank_dd.exe: Rsyev_Frank_dd.o
 	$(CXX) -o Rsyev_Frank_dd.exe Rsyev_Frank_dd.o $(LIBFLAGS) $(DDLIBS)
+
+Rsyev_Frank_td.exe: Rsyev_Frank_td.o
+	$(CXX) -o Rsyev_Frank_td.exe Rsyev_Frank_td.o $(LIBFLAGS) $(TDLIBS)
 
 Rsyev_Frank_binary80.exe: Rsyev_Frank_binary80.o
 	$(CXX) -o Rsyev_Frank_binary80 Rsyev_Frank_binary80.o $(LIBFLAGS) $(BINARY80LIBS)
@@ -59,6 +63,9 @@ Cheev_test_qd.exe: Cheev_test_qd.o
 Cheev_test_dd.exe: Cheev_test_dd.o
 	$(CXX) -o Cheev_test_dd.exe Cheev_test_dd.o $(LIBFLAGS) $(DDLIBS)
 
+Cheev_test_td.exe: Cheev_test_td.o
+	$(CXX) -o Cheev_test_td.exe Cheev_test_td.o $(LIBFLAGS) $(TDLIBS)
+
 Cheev_test_binary80.exe: Cheev_test_binary80.o
 	$(CXX) -o Cheev_test_binary80.exe Cheev_test_binary80.o $(LIBFLAGS) $(BINARY80LIBS)
 
@@ -79,6 +86,9 @@ Rsyev_test_qd.exe: Rsyev_test_qd.o
 
 Rsyev_test_dd.exe: Rsyev_test_dd.o
 	$(CXX) -o Rsyev_test_dd.exe Rsyev_test_dd.o $(LIBFLAGS) $(DDLIBS)
+
+Rsyev_test_td.exe: Rsyev_test_td.o
+	$(CXX) -o Rsyev_test_td.exe Rsyev_test_td.o $(LIBFLAGS) $(TDLIBS)
 
 Rsyev_test_binary80.exe: Rsyev_test_binary80.o
 	$(CXX) -o Rsyev_test_binary80.exe Rsyev_test_binary80.o $(LIBFLAGS) $(BINARY80LIBS)
@@ -101,6 +111,9 @@ Rsyevd_DingDong_qd.exe: Rsyevd_DingDong_qd.o
 Rsyevd_DingDong_dd.exe: Rsyevd_DingDong_dd.o
 	$(CXX) -o Rsyevd_DingDong_dd.exe Rsyevd_DingDong_dd.o $(LIBFLAGS) $(DDLIBS)
 
+Rsyevd_DingDong_td.exe: Rsyevd_DingDong_td.o
+	$(CXX) -o Rsyevd_DingDong_td.exe Rsyevd_DingDong_td.o $(LIBFLAGS) $(TDLIBS)
+
 Rsyevd_DingDong_binary80.exe: Rsyevd_DingDong_binary80.o
 	$(CXX) -o Rsyevd_DingDong_binary80.exe Rsyevd_DingDong_binary80.o $(LIBFLAGS) $(BINARY80LIBS)
 
@@ -122,6 +135,9 @@ Rsyevd_Frank_qd.exe: Rsyevd_Frank_qd.o
 Rsyevd_Frank_dd.exe: Rsyevd_Frank_dd.o
 	$(CXX) -o Rsyevd_Frank_dd.exe Rsyevd_Frank_dd.o $(LIBFLAGS) $(DDLIBS)
 
+Rsyevd_Frank_td.exe: Rsyevd_Frank_td.o
+	$(CXX) -o Rsyevd_Frank_td.exe Rsyevd_Frank_td.o $(LIBFLAGS) $(TDLIBS)
+
 Rsyevd_Frank_binary80.exe: Rsyevd_Frank_binary80.o
 	$(CXX) -o Rsyevd_Frank_binary80.exe Rsyevd_Frank_binary80.o $(LIBFLAGS) $(BINARY80LIBS)
 
@@ -142,6 +158,9 @@ Rsyevr_Frank_qd.exe: Rsyevr_Frank_qd.o
 
 Rsyevr_Frank_dd.exe: Rsyevr_Frank_dd.o
 	$(CXX) -o Rsyevr_Frank_dd.exe Rsyevr_Frank_dd.o $(LIBFLAGS) $(DDLIBS)
+
+Rsyevr_Frank_td.exe: Rsyevr_Frank_td.o
+	$(CXX) -o Rsyevr_Frank_td.exe Rsyevr_Frank_td.o $(LIBFLAGS) $(TDLIBS)
 
 Rsyevr_Frank_binary80.exe: Rsyevr_Frank_binary80.o
 	$(CXX) -o Rsyevr_Frank_binary80.exe Rsyevr_Frank_binary80.o $(LIBFLAGS) $(BINARY80LIBS)

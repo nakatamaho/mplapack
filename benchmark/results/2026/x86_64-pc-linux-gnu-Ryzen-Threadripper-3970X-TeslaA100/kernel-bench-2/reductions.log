@@ -1,0 +1,74 @@
+mpfr512 Rtrtri cpu stop after n=1022: seconds=12.3666787 exit=0
+actual MPFR extension mpfr512 RCnrm2 cpu: previous n=10485760 seconds=8.052469; next=12582912; reserve=80.174s; remaining=8457.197s
+actual MPFR extension mpfr512 RCnrm2 cpu: previous n=12582912 seconds=9.38603588; next=14680064; reserve=94.841s; remaining=8420.727s
+extension actual10s/error stop mpfr512 RCnrm2 cpu n=14680064: seconds=10.9494975 exit=0
+actual MPFR extension mpfr512 Rtrsv gpu: previous n=2048 seconds=0.173894653; next=4092; reserve=60.000s; remaining=8379.059s
+actual MPFR extension mpfr512 Rtrsv gpu: previous n=4092 seconds=0.34786203; next=4095; reserve=60.000s; remaining=8370.198s
+actual MPFR extension mpfr512 Rtrsv gpu: previous n=4095 seconds=0.348795898; next=4096; reserve=60.000s; remaining=8361.215s
+actual MPFR extension mpfr512 Rtbsv gpu: previous n=2048 seconds=0.174091263; next=4092; reserve=60.000s; remaining=8350.802s
+actual MPFR extension mpfr512 Rtbsv gpu: previous n=4092 seconds=0.34893927; next=4095; reserve=60.000s; remaining=8349.574s
+actual MPFR extension mpfr512 Rtbsv gpu: previous n=4095 seconds=0.349230072; next=4096; reserve=60.000s; remaining=8348.348s
+actual MPFR extension mpfr512 Rtpsv gpu: previous n=2048 seconds=0.173973511; next=4092; reserve=60.000s; remaining=8347.073s
+actual MPFR extension mpfr512 Rtpsv gpu: previous n=4092 seconds=0.348126221; next=4095; reserve=60.000s; remaining=8339.802s
+actual MPFR extension mpfr512 Rtpsv gpu: previous n=4095 seconds=0.348575745; next=4096; reserve=60.000s; remaining=8332.334s
+actual MPFR extension mpfr512 Ctrsv gpu: previous n=2048 seconds=0.31046759; next=4092; reserve=60.000s; remaining=8323.457s
+actual MPFR extension mpfr512 Ctrsv gpu: previous n=4092 seconds=0.619304932; next=4095; reserve=60.000s; remaining=8303.575s
+actual MPFR extension mpfr512 Ctrsv gpu: previous n=4095 seconds=0.619400208; next=4096; reserve=60.000s; remaining=8283.336s
+actual MPFR extension mpfr512 Ctbsv gpu: previous n=2048 seconds=0.308391937; next=4092; reserve=60.000s; remaining=8260.575s
+actual MPFR extension mpfr512 Ctbsv gpu: previous n=4092 seconds=0.617397278; next=4095; reserve=60.000s; remaining=8258.541s
+actual MPFR extension mpfr512 Ctbsv gpu: previous n=4095 seconds=0.617295898; next=4096; reserve=60.000s; remaining=8256.507s
+actual MPFR extension mpfr512 Ctpsv gpu: previous n=2048 seconds=0.310128632; next=4092; reserve=60.000s; remaining=8254.395s
+actual MPFR extension mpfr512 Ctpsv gpu: previous n=4092 seconds=0.619374573; next=4095; reserve=60.000s; remaining=8238.275s
+actual MPFR extension mpfr512 Ctpsv gpu: previous n=4095 seconds=0.619297791; next=4096; reserve=60.000s; remaining=8222.108s
+actual MPFR extension mpfr512 Rtrtri gpu: previous n=256 seconds=1.79174805; next=496; reserve=119.387s; remaining=8203.439s
+actual MPFR extension mpfr512 Rtrtri gpu: previous n=496 seconds=5.85152393; next=511; reserve=99.129s; remaining=8179.469s
+actual MPFR extension mpfr512 Rtrtri gpu: previous n=511 seconds=6.01862256; next=512; reserve=97.738s; remaining=8154.816s
+actual MPFR extension mpfr512 Rtrtri gpu: previous n=512 seconds=6.12458887; next=1022; reserve=439.904s; remaining=8129.704s
+extension actual10s/error stop mpfr512 Rtrtri gpu n=1022: seconds=33.4849805 exit=0
+actual MPFR extension mpfr512 Rlauum gpu: previous n=256 seconds=1.76316309; next=496; reserve=117.522s; remaining=8061.401s
+actual MPFR extension mpfr512 Rlauum gpu: previous n=496 seconds=3.97813867; next=511; reserve=67.762s; remaining=8044.921s
+actual MPFR extension mpfr512 Rlauum gpu: previous n=511 seconds=4.24410742; next=512; reserve=69.308s; remaining=8027.343s
+actual MPFR extension mpfr512 Rlauum gpu: previous n=512 seconds=4.28082373; next=1022; reserve=307.860s; remaining=8009.598s
+extension actual10s/error stop mpfr512 Rlauum gpu n=1022: seconds=11.495042 exit=0
+actual MPFR extension mpfr512 Rlauum cpu: previous n=1024 seconds=6.1916598; next=2044; reserve=150.909s; remaining=7985.253s
+extension actual10s/error stop mpfr512 Rlauum cpu n=2044: seconds=29.1886661 exit=0
+actual MPFR extension mpfr512 Rpotri gpu: previous n=128 seconds=1.52661304; next=248; reserve=101.731s; remaining=7952.079s
+actual MPFR extension mpfr512 Rpotri gpu: previous n=248 seconds=3.27960059; next=252; reserve=60.000s; remaining=7938.546s
+actual MPFR extension mpfr512 Rpotri gpu: previous n=252 seconds=3.4011145; next=256; reserve=60.000s; remaining=7924.544s
+actual MPFR extension mpfr512 Rpotri gpu: previous n=256 seconds=3.55364453; next=496; reserve=236.015s; remaining=7909.923s
+actual MPFR extension mpfr512 Rpotri gpu: previous n=496 seconds=9.84147168; next=511; reserve=165.912s; remaining=7870.013s
+extension actual10s/error stop mpfr512 Rpotri gpu n=511: seconds=10.2756602 exit=0
+actual MPFR extension mpfr512 Rpotri cpu: previous n=512 seconds=0.41269902; next=1022; reserve=60.000s; remaining=7848.882s
+extension actual10s/error stop mpfr512 Rpotri cpu n=1022: seconds=18.3393052 exit=0
+actual MPFR extension mpfr512 Rgetri gpu: previous n=256 seconds=1.90148608; next=496; reserve=126.652s; remaining=7811.179s
+actual MPFR extension mpfr512 Rgetri gpu: previous n=496 seconds=6.15917871; next=511; reserve=104.326s; remaining=7785.956s
+actual MPFR extension mpfr512 Rgetri gpu: previous n=511 seconds=6.35087988; next=512; reserve=103.067s; remaining=7759.976s
+actual MPFR extension mpfr512 Rgetri gpu: previous n=512 seconds=6.45583545; next=1022; reserve=463.642s; remaining=7733.533s
+extension actual10s/error stop mpfr512 Rgetri gpu n=1022: seconds=35.1083828 exit=0
+actual MPFR extension mpfr512 Rgetri cpu: previous n=512 seconds=0.542070739; next=1022; reserve=60.000s; remaining=7662.002s
+extension actual10s/error stop mpfr512 Rgetri cpu n=1022: seconds=15.585119 exit=0
+actual MPFR extension mpfr512 Ctrtri gpu: previous n=128 seconds=3.48223486; next=248; reserve=231.221s; remaining=7629.835s
+actual MPFR extension mpfr512 Ctrtri gpu: previous n=248 seconds=7.68163037; next=252; reserve=126.901s; remaining=7598.622s
+actual MPFR extension mpfr512 Ctrtri gpu: previous n=252 seconds=7.94091309; next=256; reserve=131.087s; remaining=7566.379s
+actual MPFR extension mpfr512 Ctrtri gpu: previous n=256 seconds=8.25867578; next=496; reserve=547.590s; remaining=7532.852s
+extension actual10s/error stop mpfr512 Ctrtri gpu n=496: seconds=26.6552852 exit=0
+actual MPFR extension mpfr512 Ctrtri cpu: previous n=512 seconds=0.81560184; next=1022; reserve=60.000s; remaining=7478.644s
+extension actual10s/error stop mpfr512 Ctrtri cpu n=1022: seconds=48.9296057 exit=0
+actual MPFR extension mpfr512 Clauum gpu: previous n=128 seconds=3.72425122; next=248; reserve=247.230s; remaining=7378.541s
+actual MPFR extension mpfr512 Clauum gpu: previous n=248 seconds=7.69099268; next=252; reserve=127.047s; remaining=7347.294s
+actual MPFR extension mpfr512 Clauum gpu: previous n=252 seconds=7.99801123; next=256; reserve=132.006s; remaining=7314.830s
+actual MPFR extension mpfr512 Clauum gpu: previous n=256 seconds=8.35184473; next=496; reserve=553.779s; remaining=7280.919s
+extension actual10s/error stop mpfr512 Clauum gpu n=496: seconds=18.6403965 exit=0
+actual MPFR extension mpfr512 Clauum cpu: previous n=512 seconds=1.10168367; next=1022; reserve=80.398s; remaining=7242.735s
+extension actual10s/error stop mpfr512 Clauum cpu n=1022: seconds=20.1353859 exit=0
+actual MPFR extension mpfr512 Cpotri gpu: previous n=128 seconds=7.20350391; next=248; reserve=477.524s; remaining=7200.226s
+extension actual10s/error stop mpfr512 Cpotri gpu n=248: seconds=15.374627 exit=0
+actual MPFR extension mpfr512 Cpotri cpu: previous n=512 seconds=1.84128709; next=1022; reserve=134.076s; remaining=7168.998s
+extension actual10s/error stop mpfr512 Cpotri cpu n=1022: seconds=69.3144106 exit=0
+actual MPFR extension mpfr512 Cgetri gpu: previous n=128 seconds=3.69507324; next=248; reserve=245.296s; remaining=7028.001s
+actual MPFR extension mpfr512 Cgetri gpu: previous n=248 seconds=8.14282568; next=252; reserve=134.473s; remaining=6994.937s
+actual MPFR extension mpfr512 Cgetri gpu: previous n=252 seconds=8.41897363; next=256; reserve=138.892s; remaining=6960.796s
+actual MPFR extension mpfr512 Cgetri gpu: previous n=256 seconds=8.75340918; next=496; reserve=580.357s; remaining=6925.278s
+extension actual10s/error stop mpfr512 Cgetri gpu n=496: seconds=28.0395156 exit=0
+actual MPFR extension mpfr512 Cgetri cpu: previous n=512 seconds=2.52142397; next=1022; reserve=182.753s; remaining=6868.292s
+extension actual10s/error stop mpfr512 Cgetri cpu n=1022: seconds=62.9627159 exit=0

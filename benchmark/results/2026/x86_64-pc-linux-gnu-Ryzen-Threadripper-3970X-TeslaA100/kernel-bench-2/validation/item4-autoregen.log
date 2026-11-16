@@ -1,0 +1,531 @@
+automake: thread 0: running WARNINGS=none autoconf --trace=AC_CANONICAL_BUILD:\$f:\$l::\$d::\$n::\${::}% --trace=AC_CANONICAL_HOST:\$f:\$l::\$d::\$n::\${::}% --trace=AC_CANONICAL_TARGET:\$f:\$l::\$d::\$n::\${::}% --trace=AC_CONFIG_AUX_DIR:\$f:\$l::\$d::\$n::\${::}% --trace=AC_CONFIG_FILES:\$f:\$l::\$d::\$n::\${::}% --trace=AC_CONFIG_HEADERS:\$f:\$l::\$d::\$n::\${::}% --trace=AC_CONFIG_LIBOBJ_DIR:\$f:\$l::\$d::\$n::\${::}% --trace=AC_CONFIG_LINKS:\$f:\$l::\$d::\$n::\${::}% --trace=AC_FC_SRCEXT:\$f:\$l::\$d::\$n::\${::}% --trace=AC_INIT:\$f:\$l::\$d::\$n::\${::}% --trace=AC_LIBSOURCE:\$f:\$l::\$d::\$n::\${::}% --trace=AC_REQUIRE_AUX_FILE:\$f:\$l::\$d::\$n::\${::}% --trace=AC_SUBST_TRACE:\$f:\$l::\$d::\$n::\${::}% --trace=AM_AUTOMAKE_VERSION:\$f:\$l::\$d::\$n::\${::}% --trace=AM_CONDITIONAL:\$f:\$l::\$d::\$n::\${::}% --trace=AM_EXTRA_RECURSIVE_TARGETS:\$f:\$l::\$d::\$n::\${::}% --trace=AM_GNU_GETTEXT:\$f:\$l::\$d::\$n::\${::}% --trace=AM_GNU_GETTEXT_INTL_SUBDIR:\$f:\$l::\$d::\$n::\${::}% --trace=AM_INIT_AUTOMAKE:\$f:\$l::\$d::\$n::\${::}% --trace=AM_MAINTAINER_MODE:\$f:\$l::\$d::\$n::\${::}% --trace=AM_PROG_AR:\$f:\$l::\$d::\$n::\${::}% --trace=AM_PROG_MKDIR_P:\$f:\$l::\$d::\$n::\${::}% --trace=LT_SUPPORTED_TAG:\$f:\$l::\$d::\$n::\${::}% --trace=_AM_COND_ELSE:\$f:\$l::\$d::\$n::\${::}% --trace=_AM_COND_ENDIF:\$f:\$l::\$d::\$n::\${::}% --trace=_AM_COND_IF:\$f:\$l::\$d::\$n::\${::}% --trace=_AM_SUBST_NOTMAKE:\$f:\$l::\$d::\$n::\${::}% --trace=_LT_AC_TAGCONFIG:\$f:\$l::\$d::\$n::\${::}% --trace=m4_include:\$f:\$l::\$d::\$n::\${::}% --trace=m4_sinclude:\$f:\$l::\$d::\$n::\${::}% --trace=sinclude:\$f:\$l::\$d::\$n::\${::}%
+automake: thread 0: reading /usr/share/automake-1.18/am/header-vars.am
+automake: thread 0: reading Makefile.am
+automake: thread 0: reading /usr/share/automake-1.18/am/configure.am
+automake: thread 0: reading /usr/share/automake-1.18/am/remake-hdr.am
+automake: thread 0: reading /usr/share/automake-1.18/am/clean-hdr.am
+automake: thread 0: reading /usr/share/automake-1.18/am/scripts.am
+automake: thread 0: reading /usr/share/automake-1.18/am/inst-vars.am
+automake: thread 0: reading /usr/share/automake-1.18/am/libtool.am
+automake: thread 0: reading /usr/share/automake-1.18/am/texinfos.am
+automake: thread 0: reading /usr/share/automake-1.18/am/data.am
+automake: thread 0: reading /usr/share/automake-1.18/am/header.am
+automake: thread 0: reading /usr/share/automake-1.18/am/subdirs.am
+automake: thread 0: reading /usr/share/automake-1.18/am/tags.am
+automake: thread 0: reading /usr/share/automake-1.18/am/distdir.am
+automake: thread 0: reading /usr/share/automake-1.18/am/footer.am
+automake: thread 0: reading /usr/share/automake-1.18/am/install.am
+automake: thread 0: reading /usr/share/automake-1.18/am/clean.am
+automake: thread 0: creating Makefile.in
+automake: thread 0: reading benchmark/Makefile.am
+automake: thread 0: Sources ending in .cu become .o
+automake: thread 0: reading benchmark/Makefile.mpfr.am
+automake: thread 0: reading benchmark/Makefile.gmp.am
+automake: thread 0: reading benchmark/Makefile.qd.am
+automake: thread 0: reading benchmark/Makefile.dd.am
+automake: thread 0: reading benchmark/Makefile.td.am
+automake: thread 0: reading benchmark/Makefile.dd_cuda.am
+automake: thread 0: reading benchmark/Makefile.qd_cuda.am
+automake: thread 0: reading benchmark/Makefile.td_cuda.am
+automake: thread 0: reading benchmark/Makefile.mpfr_cuda.am
+automake: thread 0: reading benchmark/Makefile.double.am
+automake: thread 0: reading benchmark/Makefile.binary128.am
+automake: thread 0: reading benchmark/Makefile.binary128_opencl.am
+automake: thread 0: reading benchmark/Makefile.binary80.am
+automake: thread 0: reading benchmark/Makefile.blas.am
+automake: thread 0: reading /usr/share/automake-1.18/am/progs.am
+automake: thread 0: reading /usr/share/automake-1.18/am/program.am
+automake: thread 0: reading /usr/share/automake-1.18/am/compile.am
+automake: thread 0: reading /usr/share/automake-1.18/am/depend.am
+automake: thread 0: reading /usr/share/automake-1.18/am/depend2.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: reading /usr/share/automake-1.18/am/lang-compile.am
+automake: thread 0: creating benchmark/Makefile.in
+automake: thread 0: reading examples/Makefile.am
+automake: thread 0: creating examples/Makefile.in
+automake: thread 0: reading examples/mpblas/Makefile.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: creating examples/mpblas/Makefile.in
+automake: thread 0: reading examples/mplapack/00_GeneralLinearEquations/Makefile.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: creating examples/mplapack/00_GeneralLinearEquations/Makefile.in
+automake: thread 0: reading examples/mplapack/01_PositiveDefiniteLinearEquations/Makefile.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: creating examples/mplapack/01_PositiveDefiniteLinearEquations/Makefile.in
+automake: thread 0: reading examples/mplapack/02_LeastSquares/Makefile.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: creating examples/mplapack/02_LeastSquares/Makefile.in
+automake: thread 0: reading examples/mplapack/03_SymmetricEigenproblems/Makefile.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: creating examples/mplapack/03_SymmetricEigenproblems/Makefile.in
+automake: thread 0: reading examples/mplapack/04_NonsymmetricEigenproblems/Makefile.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: creating examples/mplapack/04_NonsymmetricEigenproblems/Makefile.in
+automake: thread 0: reading examples/mplapack/05_SingularValueDecomposition/Makefile.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: creating examples/mplapack/05_SingularValueDecomposition/Makefile.in
+automake: thread 0: reading examples/mplapack/06_SymmetricIndefiniteLinearEquations/Makefile.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: creating examples/mplapack/06_SymmetricIndefiniteLinearEquations/Makefile.in
+automake: thread 0: reading examples/mplapack/07_GeneralizedSymmetricDefiniteEigenproblems/Makefile.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: creating examples/mplapack/07_GeneralizedSymmetricDefiniteEigenproblems/Makefile.in
+automake: thread 0: reading examples/mplapack/08_GeneralizedNonsymmetricEigenproblems/Makefile.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: creating examples/mplapack/08_GeneralizedNonsymmetricEigenproblems/Makefile.in
+automake: thread 0: reading examples/mplapack/09_GeneralizedSingularValueDecomposition/Makefile.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: creating examples/mplapack/09_GeneralizedSingularValueDecomposition/Makefile.in
+automake: thread 0: reading examples/mplapack/90_PrecisionComparison/Makefile.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: creating examples/mplapack/90_PrecisionComparison/Makefile.in
+automake: thread 0: reading examples/mplapack/Makefile.am
+automake: thread 0: creating examples/mplapack/Makefile.in
+automake: thread 0: reading external/Makefile.am
+automake: thread 0: creating external/Makefile.in
+automake: thread 0: reading external/dlfcn-win32/Makefile.am
+automake: thread 0: creating external/dlfcn-win32/Makefile.in
+automake: thread 0: reading external/gmp/Makefile.am
+automake: thread 0: creating external/gmp/Makefile.in
+automake: thread 0: reading external/gmpfrxx_mkII/Makefile.am
+automake: thread 0: creating external/gmpfrxx_mkII/Makefile.in
+automake: thread 0: reading external/lapack/Makefile.am
+automake: thread 0: creating external/lapack/Makefile.in
+automake: thread 0: reading external/mpc/Makefile.am
+automake: thread 0: creating external/mpc/Makefile.in
+automake: thread 0: reading external/mpc_cuda/Makefile.am
+automake: thread 0: creating external/mpc_cuda/Makefile.in
+automake: thread 0: reading external/mpfr/Makefile.am
+automake: thread 0: creating external/mpfr/Makefile.in
+automake: thread 0: reading external/openblas/Makefile.am
+automake: thread 0: creating external/openblas/Makefile.in
+automake: thread 0: reading external/qd/Makefile.am
+automake: thread 0: creating external/qd/Makefile.in
+automake: thread 0: reading mpblas/Makefile.am
+automake: thread 0: creating mpblas/Makefile.in
+automake: thread 0: reading mpblas/optimized/Makefile.am
+automake: thread 0: creating mpblas/optimized/Makefile.in
+automake: thread 0: reading mpblas/optimized/binary128/Makefile.am
+automake: thread 0: reading mplapack/reference/sources.am
+automake: thread 0: reading /usr/share/automake-1.18/am/ltlib.am
+automake: thread 0: reading /usr/share/automake-1.18/am/ltlibrary.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: reading /usr/share/automake-1.18/am/check.am
+automake: thread 0: Sources ending in .log become .trs
+automake: thread 0: reading /usr/share/automake-1.18/am/check2.am
+automake: thread 0: Sources ending in .test become .log
+automake: thread 0: Sources ending in .test$(EXEEXT) become .log
+automake: thread 0: creating mpblas/optimized/binary128/Makefile.in
+automake: thread 0: reading mpblas/optimized/binary128/opencl/Makefile.am
+automake: thread 0: reading mplapack/reference/accelerator-sources.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: creating mpblas/optimized/binary128/opencl/Makefile.in
+automake: thread 0: reading mpblas/optimized/binary80/Makefile.am
+automake: thread 0: reading mplapack/reference/sources.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: Sources ending in .log become .trs
+automake: thread 0: Sources ending in .test become .log
+automake: thread 0: Sources ending in .test$(EXEEXT) become .log
+automake: thread 0: creating mpblas/optimized/binary80/Makefile.in
+automake: thread 0: reading mpblas/optimized/dd/Makefile.am
+automake: thread 0: reading mplapack/reference/sources.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: Sources ending in .log become .trs
+automake: thread 0: Sources ending in .test become .log
+automake: thread 0: Sources ending in .test$(EXEEXT) become .log
+automake: thread 0: creating mpblas/optimized/dd/Makefile.in
+automake: thread 0: reading mpblas/optimized/dd/cuda/Makefile.am
+automake: thread 0: reading mplapack/reference/accelerator-sources.am
+automake: thread 0: Sources ending in .cu become .o
+automake: thread 0: Sources ending in .cu become .lo
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: Sources ending in .log become .trs
+automake: thread 0: Sources ending in .test become .log
+automake: thread 0: Sources ending in .test$(EXEEXT) become .log
+automake: thread 0: creating mpblas/optimized/dd/cuda/Makefile.in
+automake: thread 0: reading mpblas/optimized/double/Makefile.am
+automake: thread 0: reading mplapack/reference/sources.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: Sources ending in .log become .trs
+automake: thread 0: Sources ending in .test become .log
+automake: thread 0: Sources ending in .test$(EXEEXT) become .log
+automake: thread 0: creating mpblas/optimized/double/Makefile.in
+automake: thread 0: reading mpblas/optimized/gmp/Makefile.am
+automake: thread 0: reading mplapack/reference/sources.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: Sources ending in .log become .trs
+automake: thread 0: Sources ending in .test become .log
+automake: thread 0: Sources ending in .test$(EXEEXT) become .log
+automake: thread 0: creating mpblas/optimized/gmp/Makefile.in
+automake: thread 0: reading mpblas/optimized/mpfr/Makefile.am
+automake: thread 0: reading mplapack/reference/sources.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: Sources ending in .log become .trs
+automake: thread 0: Sources ending in .test become .log
+automake: thread 0: Sources ending in .test$(EXEEXT) become .log
+automake: thread 0: creating mpblas/optimized/mpfr/Makefile.in
+automake: thread 0: reading mpblas/optimized/mpfr/cuda/Makefile.am
+automake: thread 0: reading mplapack/reference/accelerator-sources.am
+automake: thread 0: Sources ending in .cu become .o
+automake: thread 0: Sources ending in .cu become .lo
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: Sources ending in .log become .trs
+automake: thread 0: Sources ending in .test become .log
+automake: thread 0: Sources ending in .test$(EXEEXT) become .log
+automake: thread 0: creating mpblas/optimized/mpfr/cuda/Makefile.in
+automake: thread 0: reading mpblas/optimized/qd/Makefile.am
+automake: thread 0: reading mplapack/reference/sources.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: Sources ending in .log become .trs
+automake: thread 0: Sources ending in .test become .log
+automake: thread 0: Sources ending in .test$(EXEEXT) become .log
+automake: thread 0: creating mpblas/optimized/qd/Makefile.in
+automake: thread 0: reading mpblas/optimized/qd/cuda/Makefile.am
+automake: thread 0: reading mplapack/reference/accelerator-sources.am
+automake: thread 0: Sources ending in .cu become .o
+automake: thread 0: Sources ending in .cu become .lo
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: Sources ending in .log become .trs
+automake: thread 0: Sources ending in .test become .log
+automake: thread 0: Sources ending in .test$(EXEEXT) become .log
+automake: thread 0: creating mpblas/optimized/qd/cuda/Makefile.in
+automake: thread 0: reading mpblas/optimized/td/Makefile.am
+automake: thread 0: reading mplapack/reference/sources.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: Sources ending in .log become .trs
+automake: thread 0: Sources ending in .test become .log
+automake: thread 0: Sources ending in .test$(EXEEXT) become .log
+automake: thread 0: creating mpblas/optimized/td/Makefile.in
+automake: thread 0: reading mpblas/optimized/td/cuda/Makefile.am
+automake: thread 0: reading mplapack/reference/accelerator-sources.am
+automake: thread 0: Sources ending in .cu become .o
+automake: thread 0: Sources ending in .cu become .lo
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: Sources ending in .log become .trs
+automake: thread 0: Sources ending in .test become .log
+automake: thread 0: Sources ending in .test$(EXEEXT) become .log
+automake: thread 0: creating mpblas/optimized/td/cuda/Makefile.in
+automake: thread 0: reading mpblas/reference/Makefile.am
+automake: thread 0: creating mpblas/reference/Makefile.in
+automake: thread 0: reading mpblas/test/Makefile.am
+automake: thread 0: creating mpblas/test/Makefile.in
+automake: thread 0: reading mpblas/test/binary128/Makefile.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: Sources ending in .log become .trs
+automake: thread 0: Sources ending in .sh become .log
+automake: thread 0: Sources ending in .sh$(EXEEXT) become .log
+automake: thread 0: creating mpblas/test/binary128/Makefile.in
+automake: thread 0: reading mpblas/test/binary80/Makefile.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: Sources ending in .log become .trs
+automake: thread 0: Sources ending in .sh become .log
+automake: thread 0: Sources ending in .sh$(EXEEXT) become .log
+automake: thread 0: creating mpblas/test/binary80/Makefile.in
+automake: thread 0: reading mpblas/test/dd/Makefile.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: Sources ending in .log become .trs
+automake: thread 0: Sources ending in .sh become .log
+automake: thread 0: Sources ending in .sh$(EXEEXT) become .log
+automake: thread 0: creating mpblas/test/dd/Makefile.in
+automake: thread 0: reading mpblas/test/double/Makefile.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: Sources ending in .log become .trs
+automake: thread 0: Sources ending in .sh become .log
+automake: thread 0: Sources ending in .sh$(EXEEXT) become .log
+automake: thread 0: creating mpblas/test/double/Makefile.in
+automake: thread 0: reading mpblas/test/gmp/Makefile.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: Sources ending in .log become .trs
+automake: thread 0: Sources ending in .sh become .log
+automake: thread 0: Sources ending in .sh$(EXEEXT) become .log
+automake: thread 0: creating mpblas/test/gmp/Makefile.in
+automake: thread 0: reading mpblas/test/mpfr/Makefile.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: Sources ending in .log become .trs
+automake: thread 0: Sources ending in .sh become .log
+automake: thread 0: Sources ending in .sh$(EXEEXT) become .log
+automake: thread 0: creating mpblas/test/mpfr/Makefile.in
+automake: thread 0: reading mpblas/test/qd/Makefile.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: Sources ending in .log become .trs
+automake: thread 0: Sources ending in .sh become .log
+automake: thread 0: Sources ending in .sh$(EXEEXT) become .log
+automake: thread 0: creating mpblas/test/qd/Makefile.in
+automake: thread 0: reading mpblas/test/td/Makefile.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: Sources ending in .log become .trs
+automake: thread 0: Sources ending in .sh become .log
+automake: thread 0: Sources ending in .sh$(EXEEXT) become .log
+automake: thread 0: creating mpblas/test/td/Makefile.in
+automake: thread 0: reading mplapack/Makefile.am
+automake: thread 0: creating mplapack/Makefile.in
+automake: thread 0: reading mplapack/optimized/Makefile.am
+automake: thread 0: creating mplapack/optimized/Makefile.in
+automake: thread 0: reading mplapack/optimized/binary128/Makefile.am
+automake: thread 0: creating mplapack/optimized/binary128/Makefile.in
+automake: thread 0: reading mplapack/optimized/binary80/Makefile.am
+automake: thread 0: creating mplapack/optimized/binary80/Makefile.in
+automake: thread 0: reading mplapack/optimized/dd/Makefile.am
+automake: thread 0: creating mplapack/optimized/dd/Makefile.in
+automake: thread 0: reading mplapack/optimized/double/Makefile.am
+automake: thread 0: creating mplapack/optimized/double/Makefile.in
+automake: thread 0: reading mplapack/optimized/gmp/Makefile.am
+automake: thread 0: creating mplapack/optimized/gmp/Makefile.in
+automake: thread 0: reading mplapack/optimized/mpfr/Makefile.am
+automake: thread 0: creating mplapack/optimized/mpfr/Makefile.in
+automake: thread 0: reading mplapack/optimized/qd/Makefile.am
+automake: thread 0: creating mplapack/optimized/qd/Makefile.in
+automake: thread 0: reading mplapack/optimized/td/Makefile.am
+automake: thread 0: creating mplapack/optimized/td/Makefile.in
+automake: thread 0: reading mplapack/reference/Makefile.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: creating mplapack/reference/Makefile.in
+automake: thread 0: reading mplapack/test/Makefile.am
+automake: thread 0: creating mplapack/test/Makefile.in
+automake: thread 0: reading mplapack/test/compare/Makefile.am
+automake: thread 0: creating mplapack/test/compare/Makefile.in
+automake: thread 0: reading mplapack/test/compare/binary128/Makefile.am
+automake: thread 0: reading mplapack/test/compare/Makefile.backend.am
+automake: thread 0: reading mplapack/test/compare/Makefile.tests.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: Sources ending in .log become .trs
+automake: thread 0: Sources ending in .sh become .log
+automake: thread 0: Sources ending in .sh$(EXEEXT) become .log
+automake: thread 0: creating mplapack/test/compare/binary128/Makefile.in
+automake: thread 0: reading mplapack/test/compare/binary80/Makefile.am
+automake: thread 0: reading mplapack/test/compare/Makefile.backend.am
+automake: thread 0: reading mplapack/test/compare/Makefile.tests.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: Sources ending in .log become .trs
+automake: thread 0: Sources ending in .sh become .log
+automake: thread 0: Sources ending in .sh$(EXEEXT) become .log
+automake: thread 0: creating mplapack/test/compare/binary80/Makefile.in
+automake: thread 0: reading mplapack/test/compare/dd/Makefile.am
+automake: thread 0: reading mplapack/test/compare/Makefile.backend.am
+automake: thread 0: reading mplapack/test/compare/Makefile.tests.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: Sources ending in .log become .trs
+automake: thread 0: Sources ending in .sh become .log
+automake: thread 0: Sources ending in .sh$(EXEEXT) become .log
+automake: thread 0: creating mplapack/test/compare/dd/Makefile.in
+automake: thread 0: reading mplapack/test/compare/double/Makefile.am
+automake: thread 0: reading mplapack/test/compare/Makefile.backend.am
+automake: thread 0: reading mplapack/test/compare/Makefile.tests.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: Sources ending in .log become .trs
+automake: thread 0: Sources ending in .sh become .log
+automake: thread 0: Sources ending in .sh$(EXEEXT) become .log
+automake: thread 0: creating mplapack/test/compare/double/Makefile.in
+automake: thread 0: reading mplapack/test/compare/gmp/Makefile.am
+automake: thread 0: reading mplapack/test/compare/Makefile.backend.am
+automake: thread 0: reading mplapack/test/compare/Makefile.tests.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: Sources ending in .log become .trs
+automake: thread 0: Sources ending in .sh become .log
+automake: thread 0: Sources ending in .sh$(EXEEXT) become .log
+automake: thread 0: creating mplapack/test/compare/gmp/Makefile.in
+automake: thread 0: reading mplapack/test/compare/mpfr/Makefile.am
+automake: thread 0: reading mplapack/test/compare/Makefile.backend.am
+automake: thread 0: reading mplapack/test/compare/Makefile.tests.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: Sources ending in .log become .trs
+automake: thread 0: Sources ending in .sh become .log
+automake: thread 0: Sources ending in .sh$(EXEEXT) become .log
+automake: thread 0: creating mplapack/test/compare/mpfr/Makefile.in
+automake: thread 0: reading mplapack/test/compare/qd/Makefile.am
+automake: thread 0: reading mplapack/test/compare/Makefile.backend.am
+automake: thread 0: reading mplapack/test/compare/Makefile.tests.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: Sources ending in .log become .trs
+automake: thread 0: Sources ending in .sh become .log
+automake: thread 0: Sources ending in .sh$(EXEEXT) become .log
+automake: thread 0: creating mplapack/test/compare/qd/Makefile.in
+automake: thread 0: reading mplapack/test/compare/td/Makefile.am
+automake: thread 0: reading mplapack/test/compare/Makefile.backend.am
+automake: thread 0: reading mplapack/test/compare/Makefile.tests.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: Sources ending in .log become .trs
+automake: thread 0: Sources ending in .sh become .log
+automake: thread 0: Sources ending in .sh$(EXEEXT) become .log
+automake: thread 0: creating mplapack/test/compare/td/Makefile.in
+automake: thread 0: reading mplapack/test/eig/Makefile.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: creating mplapack/test/eig/Makefile.in
+automake: thread 0: reading mplapack/test/eig/binary128/Makefile.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: creating mplapack/test/eig/binary128/Makefile.in
+automake: thread 0: reading mplapack/test/eig/binary80/Makefile.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: creating mplapack/test/eig/binary80/Makefile.in
+automake: thread 0: reading mplapack/test/eig/dd/Makefile.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: creating mplapack/test/eig/dd/Makefile.in
+automake: thread 0: reading mplapack/test/eig/double/Makefile.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: creating mplapack/test/eig/double/Makefile.in
+automake: thread 0: reading mplapack/test/eig/gmp/Makefile.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: creating mplapack/test/eig/gmp/Makefile.in
+automake: thread 0: reading mplapack/test/eig/mpfr/Makefile.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: creating mplapack/test/eig/mpfr/Makefile.in
+automake: thread 0: reading mplapack/test/eig/qd/Makefile.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: creating mplapack/test/eig/qd/Makefile.in
+automake: thread 0: reading mplapack/test/eig/td/Makefile.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: creating mplapack/test/eig/td/Makefile.in
+automake: thread 0: reading mplapack/test/lin/Makefile.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: creating mplapack/test/lin/Makefile.in
+automake: thread 0: reading mplapack/test/lin/binary128/Makefile.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: creating mplapack/test/lin/binary128/Makefile.in
+automake: thread 0: reading mplapack/test/lin/binary80/Makefile.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: creating mplapack/test/lin/binary80/Makefile.in
+automake: thread 0: reading mplapack/test/lin/dd/Makefile.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: creating mplapack/test/lin/dd/Makefile.in
+automake: thread 0: reading mplapack/test/lin/double/Makefile.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: creating mplapack/test/lin/double/Makefile.in
+automake: thread 0: reading mplapack/test/lin/gmp/Makefile.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: creating mplapack/test/lin/gmp/Makefile.in
+automake: thread 0: reading mplapack/test/lin/mpfr/Makefile.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: creating mplapack/test/lin/mpfr/Makefile.in
+automake: thread 0: reading mplapack/test/lin/qd/Makefile.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: creating mplapack/test/lin/qd/Makefile.in
+automake: thread 0: reading mplapack/test/lin/td/Makefile.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: creating mplapack/test/lin/td/Makefile.in
+automake: thread 0: reading mplapack/test/matgen/Makefile.am
+automake: thread 0: Sources ending in .cpp become .o
+automake: thread 0: Sources ending in .cpp become .obj
+automake: thread 0: Sources ending in .cpp become .lo
+automake: thread 0: creating mplapack/test/matgen/Makefile.in

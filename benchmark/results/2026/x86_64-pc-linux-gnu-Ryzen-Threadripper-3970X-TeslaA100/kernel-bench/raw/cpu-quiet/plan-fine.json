@@ -1,0 +1,730 @@
+{
+ "series": [
+  {
+   "type": "dd",
+   "method": "cpu",
+   "kernel": "gemm",
+   "form": "NN",
+   "sizes": [
+    128,
+    256,
+    512,
+    1024,
+    2048,
+    4096
+   ],
+   "estimate": 58.61755568
+  },
+  {
+   "type": "dd",
+   "method": "cpu",
+   "kernel": "gemm_update",
+   "form": "NN",
+   "sizes": [
+    128,
+    256,
+    512,
+    1024,
+    2048,
+    4096
+   ],
+   "estimate": 37.53785004
+  },
+  {
+   "type": "dd",
+   "method": "cpu",
+   "kernel": "syrk",
+   "form": "LN",
+   "sizes": [
+    128,
+    256,
+    512,
+    1024,
+    2048,
+    4096
+   ],
+   "estimate": 24.2304612225
+  },
+  {
+   "type": "dd",
+   "method": "cpu",
+   "kernel": "syrk",
+   "form": "LN_k64",
+   "sizes": [
+    128,
+    256,
+    512,
+    1024,
+    2048,
+    4096
+   ],
+   "estimate": 19.280287972500002
+  },
+  {
+   "type": "dd",
+   "method": "cpu",
+   "kernel": "trsm",
+   "form": "LLNU",
+   "sizes": [
+    128,
+    256,
+    512,
+    1024,
+    2048,
+    4096
+   ],
+   "estimate": 17.27219855
+  },
+  {
+   "type": "dd",
+   "method": "cpu",
+   "kernel": "trsm",
+   "form": "RLTN_p64",
+   "sizes": [
+    128,
+    256,
+    512,
+    1024,
+    2048,
+    4096
+   ],
+   "estimate": 14.3720075625
+  },
+  {
+   "type": "dd",
+   "method": "cpu",
+   "kernel": "getrf2",
+   "form": "P64",
+   "sizes": [
+    128,
+    256,
+    512,
+    1024,
+    2048,
+    4096
+   ],
+   "estimate": 212.963038575
+  },
+  {
+   "type": "td",
+   "method": "cpu",
+   "kernel": "gemm",
+   "form": "NN",
+   "sizes": [
+    128,
+    256,
+    512,
+    1024,
+    2048,
+    4096
+   ],
+   "estimate": 97.534110175
+  },
+  {
+   "type": "td",
+   "method": "cpu",
+   "kernel": "gemm_update",
+   "form": "NN",
+   "sizes": [
+    128,
+    256,
+    512,
+    1024,
+    2048,
+    4096
+   ],
+   "estimate": 36.808772232500004
+  },
+  {
+   "type": "td",
+   "method": "cpu",
+   "kernel": "syrk",
+   "form": "LN",
+   "sizes": [
+    128,
+    256,
+    512,
+    1024,
+    2048,
+    4096
+   ],
+   "estimate": 24.25097875
+  },
+  {
+   "type": "td",
+   "method": "cpu",
+   "kernel": "syrk",
+   "form": "LN_k64",
+   "sizes": [
+    128,
+    256,
+    512,
+    1024,
+    2048,
+    4096
+   ],
+   "estimate": 25.919283907500002
+  },
+  {
+   "type": "td",
+   "method": "cpu",
+   "kernel": "trsm",
+   "form": "LLNU",
+   "sizes": [
+    128,
+    256,
+    512,
+    1024,
+    2048,
+    4096
+   ],
+   "estimate": 27.722374895
+  },
+  {
+   "type": "td",
+   "method": "cpu",
+   "kernel": "trsm",
+   "form": "RLTN_p64",
+   "sizes": [
+    128,
+    256,
+    512,
+    1024,
+    2048,
+    4096
+   ],
+   "estimate": 12.503175702
+  },
+  {
+   "type": "td",
+   "method": "cpu",
+   "kernel": "getrf2",
+   "form": "P64",
+   "sizes": [
+    128,
+    256,
+    512,
+    1024,
+    2048,
+    4096
+   ],
+   "estimate": 254.0431113
+  },
+  {
+   "type": "qd",
+   "method": "cpu",
+   "kernel": "gemm",
+   "form": "NN",
+   "sizes": [
+    128,
+    256,
+    512,
+    1024,
+    2048,
+    4096
+   ],
+   "estimate": 178.3534515
+  },
+  {
+   "type": "qd",
+   "method": "cpu",
+   "kernel": "gemm_update",
+   "form": "NN",
+   "sizes": [
+    128,
+    256,
+    512,
+    1024,
+    2048,
+    4096
+   ],
+   "estimate": 106.7798794
+  },
+  {
+   "type": "qd",
+   "method": "cpu",
+   "kernel": "syrk",
+   "form": "LN",
+   "sizes": [
+    128,
+    256,
+    512,
+    1024,
+    2048,
+    4096
+   ],
+   "estimate": 83.640195875
+  },
+  {
+   "type": "qd",
+   "method": "cpu",
+   "kernel": "syrk",
+   "form": "LN_k64",
+   "sizes": [
+    128,
+    256,
+    512,
+    1024,
+    2048,
+    4096
+   ],
+   "estimate": 27.5117781625
+  },
+  {
+   "type": "qd",
+   "method": "cpu",
+   "kernel": "trsm",
+   "form": "LLNU",
+   "sizes": [
+    128,
+    256,
+    512,
+    1024,
+    2048,
+    4096
+   ],
+   "estimate": 98.2967635
+  },
+  {
+   "type": "qd",
+   "method": "cpu",
+   "kernel": "trsm",
+   "form": "RLTN_p64",
+   "sizes": [
+    128,
+    256,
+    512,
+    1024,
+    2048,
+    4096
+   ],
+   "estimate": 21.4174202775
+  },
+  {
+   "type": "qd",
+   "method": "cpu",
+   "kernel": "getrf2",
+   "form": "P64",
+   "sizes": [
+    128,
+    256,
+    512,
+    1024,
+    2048,
+    4096
+   ],
+   "estimate": 231.02339594999998
+  },
+  {
+   "type": "mpfr256",
+   "method": "cpu",
+   "kernel": "gemm",
+   "form": "NN",
+   "sizes": [
+    128,
+    256,
+    512,
+    1024,
+    2048
+   ],
+   "estimate": 113.82208069999999
+  },
+  {
+   "type": "mpfr256",
+   "method": "cpu",
+   "kernel": "gemm_update",
+   "form": "NN",
+   "sizes": [
+    128,
+    256,
+    512,
+    1024,
+    2048
+   ],
+   "estimate": 37.41734746
+  },
+  {
+   "type": "mpfr256",
+   "method": "cpu",
+   "kernel": "syrk",
+   "form": "LN",
+   "sizes": [
+    128,
+    256,
+    512,
+    1024,
+    2048
+   ],
+   "estimate": 437.11829129326213
+  },
+  {
+   "type": "mpfr256",
+   "method": "cpu",
+   "kernel": "syrk",
+   "form": "LN_k64",
+   "sizes": [
+    128,
+    256,
+    512,
+    1024,
+    2048
+   ],
+   "estimate": 26.313504485000003
+  },
+  {
+   "type": "mpfr256",
+   "method": "cpu",
+   "kernel": "trsm",
+   "form": "LLNU",
+   "sizes": [
+    128,
+    256,
+    512,
+    1024,
+    2048
+   ],
+   "estimate": 51.22166675
+  },
+  {
+   "type": "mpfr256",
+   "method": "cpu",
+   "kernel": "trsm",
+   "form": "RLTN_p64",
+   "sizes": [
+    128,
+    256,
+    512,
+    1024,
+    2048
+   ],
+   "estimate": 16.157831485
+  },
+  {
+   "type": "mpfr256",
+   "method": "cpu",
+   "kernel": "getrf2",
+   "form": "P64",
+   "sizes": [
+    128,
+    256,
+    512,
+    1024,
+    2048
+   ],
+   "estimate": 268.03782908
+  },
+  {
+   "type": "mpfr512",
+   "method": "cpu",
+   "kernel": "gemm",
+   "form": "NN",
+   "sizes": [
+    128,
+    256,
+    512,
+    1024,
+    2048
+   ],
+   "estimate": 114.71757271999999
+  },
+  {
+   "type": "mpfr512",
+   "method": "cpu",
+   "kernel": "gemm_update",
+   "form": "NN",
+   "sizes": [
+    128,
+    256,
+    512,
+    1024,
+    2048
+   ],
+   "estimate": 43.628991205000005
+  },
+  {
+   "type": "mpfr512",
+   "method": "cpu",
+   "kernel": "syrk",
+   "form": "LN",
+   "sizes": [
+    128,
+    256,
+    512,
+    1024,
+    2048
+   ],
+   "estimate": 538.2427031883723
+  },
+  {
+   "type": "mpfr512",
+   "method": "cpu",
+   "kernel": "syrk",
+   "form": "LN_k64",
+   "sizes": [
+    128,
+    256,
+    512,
+    1024,
+    2048
+   ],
+   "estimate": 28.575486254999998
+  },
+  {
+   "type": "mpfr512",
+   "method": "cpu",
+   "kernel": "trsm",
+   "form": "LLNU",
+   "sizes": [
+    128,
+    256,
+    512,
+    1024,
+    2048
+   ],
+   "estimate": 60.905545755
+  },
+  {
+   "type": "mpfr512",
+   "method": "cpu",
+   "kernel": "trsm",
+   "form": "RLTN_p64",
+   "sizes": [
+    128,
+    256,
+    512,
+    1024,
+    2048
+   ],
+   "estimate": 18.34687823
+  },
+  {
+   "type": "mpfr512",
+   "method": "cpu",
+   "kernel": "getrf2",
+   "form": "P64",
+   "sizes": [
+    128,
+    256,
+    512,
+    1024,
+    2048
+   ],
+   "estimate": 230.32858589
+  },
+  {
+   "type": "mpfr1024",
+   "method": "cpu",
+   "kernel": "gemm",
+   "form": "NN",
+   "sizes": [
+    128,
+    256,
+    512,
+    1024,
+    2048
+   ],
+   "estimate": 190.50775025
+  },
+  {
+   "type": "mpfr1024",
+   "method": "cpu",
+   "kernel": "gemm_update",
+   "form": "NN",
+   "sizes": [
+    128,
+    256,
+    512,
+    1024,
+    2048
+   ],
+   "estimate": 62.89745216000001
+  },
+  {
+   "type": "mpfr1024",
+   "method": "cpu",
+   "kernel": "syrk",
+   "form": "LN",
+   "sizes": [
+    128,
+    256,
+    512,
+    1024,
+    2048
+   ],
+   "estimate": 942.5873063634994
+  },
+  {
+   "type": "mpfr1024",
+   "method": "cpu",
+   "kernel": "syrk",
+   "form": "LN_k64",
+   "sizes": [
+    128,
+    256,
+    512,
+    1024,
+    2048
+   ],
+   "estimate": 41.681229345
+  },
+  {
+   "type": "mpfr1024",
+   "method": "cpu",
+   "kernel": "trsm",
+   "form": "LLNU",
+   "sizes": [
+    128,
+    256,
+    512,
+    1024,
+    2048
+   ],
+   "estimate": 94.13534060999999
+  },
+  {
+   "type": "mpfr1024",
+   "method": "cpu",
+   "kernel": "trsm",
+   "form": "RLTN_p64",
+   "sizes": [
+    128,
+    256,
+    512,
+    1024,
+    2048
+   ],
+   "estimate": 20.379938895
+  },
+  {
+   "type": "mpfr1024",
+   "method": "cpu",
+   "kernel": "getrf2",
+   "form": "P64",
+   "sizes": [
+    128,
+    256,
+    512,
+    1024,
+    2048
+   ],
+   "estimate": 229.46229866000002
+  },
+  {
+   "type": "mpfr200rt",
+   "method": "cpu",
+   "kernel": "gemm",
+   "form": "NN",
+   "sizes": [
+    128,
+    256,
+    512,
+    1024,
+    2048
+   ],
+   "estimate": 152.20473436999998
+  },
+  {
+   "type": "mpfr200rt",
+   "method": "cpu",
+   "kernel": "gemm_update",
+   "form": "NN",
+   "sizes": [
+    128,
+    256,
+    512,
+    1024,
+    2048
+   ],
+   "estimate": 65.34076964
+  },
+  {
+   "type": "mpfr200rt",
+   "method": "cpu",
+   "kernel": "syrk",
+   "form": "LN",
+   "sizes": [
+    128,
+    256,
+    512,
+    1024,
+    2048
+   ],
+   "estimate": 435.0157866200001
+  },
+  {
+   "type": "mpfr200rt",
+   "method": "cpu",
+   "kernel": "syrk",
+   "form": "LN_k64",
+   "sizes": [
+    128,
+    256,
+    512,
+    1024,
+    2048
+   ],
+   "estimate": 59.17487031500001
+  },
+  {
+   "type": "mpfr200rt",
+   "method": "cpu",
+   "kernel": "trsm",
+   "form": "LLNU",
+   "sizes": [
+    128,
+    256,
+    512,
+    1024,
+    2048
+   ],
+   "estimate": 113.39821943999999
+  },
+  {
+   "type": "mpfr200rt",
+   "method": "cpu",
+   "kernel": "trsm",
+   "form": "RLTN_p64",
+   "sizes": [
+    128,
+    256,
+    512,
+    1024,
+    2048
+   ],
+   "estimate": 38.94094224
+  },
+  {
+   "type": "mpfr200rt",
+   "method": "cpu",
+   "kernel": "getrf2",
+   "form": "P64",
+   "sizes": [
+    128,
+    256,
+    512,
+    1024,
+    2048
+   ],
+   "estimate": 777.36904904
+  }
+ ],
+ "note": "CPU FINE series again on the quiet host (load ~1) after the main run",
+ "totals": {
+  "dd gpu": 1286.594784734804,
+  "dd cpu": 1133.4780032775698,
+  "td gpu": 1728.355781980263,
+  "td cpu": 1712.1970521441458,
+  "qd gpu": 2142.783022704067,
+  "qd cpu": 3314.573767271115,
+  "mpfr256 gpu": 3103.7364002406016,
+  "mpfr256 cpu": 2666.6288324342618,
+  "mpfr512 gpu": 3845.5963427639153,
+  "mpfr512 cpu": 2975.451294026873,
+  "mpfr1024 gpu": 2169.5092637611756,
+  "mpfr1024 cpu": 4728.763951911,
+  "mpfr200rt gpu": 2084.232715687681,
+  "mpfr200rt cpu": 9391.005929772
+ },
+ "gpu_hours": 4.544668975520141,
+ "cpu_hours": 7.200583008565824
+}

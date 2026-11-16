@@ -1,0 +1,108 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="667" viewBox="0 0 1080 667">
+<title>Complex Upper / Lower (lower is better; dashed target1.5×)</title>
+<rect width="100%" height="100%" fill="white"/>
+<g font-family="sans-serif" font-size="12" fill="#172b4d">
+<text x="20" y="27" font-size="18">Complex Upper / Lower (lower is better; dashed target1.5×)</text>
+<text x="20" y="48">Explicit GPU entry; one warmup, best of three. Ratios are not hardware occupancy.</text>
+<rect x="220" y="58" width="12" height="10" fill="#94a3b8"/>
+<text x="238" y="68">Before4b</text>
+<rect x="420" y="58" width="12" height="10" fill="#2563eb"/>
+<text x="438" y="68">After4b</text>
+<line x1="220.0" x2="220.0" y1="80" y2="627" stroke="#e2e8f0"/>
+<text x="220.0" y="647" text-anchor="middle">0</text>
+<line x1="284.5833333333333" x2="284.5833333333333" y1="80" y2="627" stroke="#e2e8f0"/>
+<text x="284.5833333333333" y="647" text-anchor="middle">1</text>
+<line x1="349.16666666666663" x2="349.16666666666663" y1="80" y2="627" stroke="#e2e8f0"/>
+<text x="349.16666666666663" y="647" text-anchor="middle">2</text>
+<line x1="413.75" x2="413.75" y1="80" y2="627" stroke="#e2e8f0"/>
+<text x="413.75" y="647" text-anchor="middle">3</text>
+<line x1="478.3333333333333" x2="478.3333333333333" y1="80" y2="627" stroke="#e2e8f0"/>
+<text x="478.3333333333333" y="647" text-anchor="middle">4</text>
+<line x1="542.9166666666666" x2="542.9166666666666" y1="80" y2="627" stroke="#e2e8f0"/>
+<text x="542.9166666666666" y="647" text-anchor="middle">5</text>
+<line x1="607.5" x2="607.5" y1="80" y2="627" stroke="#e2e8f0"/>
+<text x="607.5" y="647" text-anchor="middle">6</text>
+<line x1="672.0833333333333" x2="672.0833333333333" y1="80" y2="627" stroke="#e2e8f0"/>
+<text x="672.0833333333333" y="647" text-anchor="middle">7</text>
+<line x1="736.6666666666666" x2="736.6666666666666" y1="80" y2="627" stroke="#e2e8f0"/>
+<text x="736.6666666666666" y="647" text-anchor="middle">8</text>
+<line x1="801.25" x2="801.25" y1="80" y2="627" stroke="#e2e8f0"/>
+<text x="801.25" y="647" text-anchor="middle">9</text>
+<line x1="865.8333333333333" x2="865.8333333333333" y1="80" y2="627" stroke="#e2e8f0"/>
+<text x="865.8333333333333" y="647" text-anchor="middle">10</text>
+<line x1="930.4166666666666" x2="930.4166666666666" y1="80" y2="627" stroke="#e2e8f0"/>
+<text x="930.4166666666666" y="647" text-anchor="middle">11</text>
+<line x1="995.0" x2="995.0" y1="80" y2="627" stroke="#e2e8f0"/>
+<text x="995.0" y="647" text-anchor="middle">12</text>
+<text x="208" y="100" text-anchor="end">dd  n=1024</text>
+<rect x="220" y="88" width="384.154" height="10" fill="#94a3b8"/>
+<text x="609.154" y="98">5.948×</text>
+<rect x="220" y="100" width="73.583" height="10" fill="#2563eb"/>
+<text x="298.583" y="110">1.139×</text>
+<text x="208" y="138" text-anchor="end">dd  n=2048</text>
+<rect x="220" y="126" width="467.470" height="10" fill="#94a3b8"/>
+<text x="692.470" y="136">7.238×</text>
+<rect x="220" y="138" width="72.684" height="10" fill="#2563eb"/>
+<text x="297.684" y="148">1.125×</text>
+<text x="208" y="176" text-anchor="end">dd  n=4096</text>
+<rect x="220" y="164" width="430.725" height="10" fill="#94a3b8"/>
+<text x="655.725" y="174">6.669×</text>
+<rect x="220" y="176" width="73.441" height="10" fill="#2563eb"/>
+<text x="298.441" y="186">1.137×</text>
+<text x="208" y="214" text-anchor="end">td  n=1024</text>
+<rect x="220" y="202" width="552.752" height="10" fill="#94a3b8"/>
+<text x="777.752" y="212">8.559×</text>
+<rect x="220" y="214" width="74.403" height="10" fill="#2563eb"/>
+<text x="299.403" y="224">1.152×</text>
+<text x="208" y="252" text-anchor="end">td  n=2048</text>
+<rect x="220" y="240" width="565.430" height="10" fill="#94a3b8"/>
+<text x="790.430" y="250">8.755×</text>
+<rect x="220" y="252" width="72.469" height="10" fill="#2563eb"/>
+<text x="297.469" y="262">1.122×</text>
+<text x="208" y="290" text-anchor="end">td  n=4096</text>
+<rect x="220" y="278" width="478.541" height="10" fill="#94a3b8"/>
+<text x="703.541" y="288">7.410×</text>
+<rect x="220" y="290" width="74.080" height="10" fill="#2563eb"/>
+<text x="299.080" y="300">1.147×</text>
+<text x="208" y="328" text-anchor="end">qd  n=1024</text>
+<rect x="220" y="316" width="566.167" height="10" fill="#94a3b8"/>
+<text x="791.167" y="326">8.766×</text>
+<rect x="220" y="328" width="89.421" height="10" fill="#2563eb"/>
+<text x="314.421" y="338">1.385×</text>
+<text x="208" y="366" text-anchor="end">qd  n=2048</text>
+<rect x="220" y="354" width="652.998" height="10" fill="#94a3b8"/>
+<text x="877.998" y="364">10.111×</text>
+<rect x="220" y="366" width="86.080" height="10" fill="#2563eb"/>
+<text x="311.080" y="376">1.333×</text>
+<text x="208" y="404" text-anchor="end">qd  n=4096</text>
+<rect x="220" y="392" width="525.775" height="10" fill="#94a3b8"/>
+<text x="750.775" y="402">8.141×</text>
+<rect x="220" y="404" width="82.175" height="10" fill="#2563eb"/>
+<text x="307.175" y="414">1.272×</text>
+<text x="208" y="442" text-anchor="end">mpfr512  n=1024</text>
+<rect x="220" y="430" width="195.019" height="10" fill="#94a3b8"/>
+<text x="420.019" y="440">3.020×</text>
+<rect x="220" y="442" width="103.737" height="10" fill="#2563eb"/>
+<text x="328.737" y="452">1.606×</text>
+<text x="208" y="480" text-anchor="end">mpfr512  n=2048</text>
+<rect x="220" y="468" width="193.335" height="10" fill="#94a3b8"/>
+<text x="418.335" y="478">2.994×</text>
+<rect x="220" y="480" width="107.362" height="10" fill="#2563eb"/>
+<text x="332.362" y="490">1.662×</text>
+<text x="208" y="518" text-anchor="end">mpfr512  n=4096</text>
+<rect x="220" y="506" width="188.055" height="10" fill="#94a3b8"/>
+<text x="413.055" y="516">2.912×</text>
+<rect x="220" y="518" width="99.116" height="10" fill="#2563eb"/>
+<text x="324.116" y="528">1.535×</text>
+<text x="208" y="556" text-anchor="end">mpfr256  n=1024</text>
+<rect x="220" y="544" width="152.428" height="10" fill="#94a3b8"/>
+<text x="377.428" y="554">2.360×</text>
+<rect x="220" y="556" width="109.384" height="10" fill="#2563eb"/>
+<text x="334.384" y="566">1.694×</text>
+<text x="208" y="594" text-anchor="end">mpfr1024  n=1024</text>
+<rect x="220" y="582" width="137.546" height="10" fill="#94a3b8"/>
+<text x="362.546" y="592">2.130×</text>
+<rect x="220" y="594" width="67.481" height="10" fill="#2563eb"/>
+<text x="292.481" y="604">1.045×</text>
+<line x1="316.875" x2="316.875" y1="80" y2="627" stroke="#b45309" stroke-dasharray="4,3"/>
+</g></svg>

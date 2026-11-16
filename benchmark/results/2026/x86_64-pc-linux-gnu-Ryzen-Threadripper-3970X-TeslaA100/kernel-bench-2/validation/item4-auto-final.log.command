@@ -1,0 +1,1 @@
+make -C benchmark -j8 Rkernel_bench.dd_opt Rkernel_bench.td_opt Rkernel_bench.qd_opt Rkernel_bench.mpfr_opt Rkernel_bench.dd_cuda_kernel Rkernel_bench.td_cuda_kernel Rkernel_bench.qd_cuda_kernel Rkernel_bench.mpfr_cuda_resident 

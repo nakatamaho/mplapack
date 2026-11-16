@@ -153,6 +153,12 @@ int main(int argc, char *argv[]) {
         } else if (strcmp("-PRINTLIB", argv[i]) == 0) {
             printlib_flag = true;
         }
+#if defined MPLAPACK_BUILD_WITH_MPFR
+        else if (strcmp("-PREC", argv[i]) == 0) {
+            // MPFR precision in bits (default: the library's default)
+            mpfrxx::set_default_precision_bits(atoi(argv[++i]));
+        }
+#endif
     }
 
     // Load reference library and resolve symbols dynamically

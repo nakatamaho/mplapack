@@ -68,8 +68,6 @@ MPLAPACK_OPT_REFERENCE_SOURCES = \
 ../../../mplapack/reference/Cgesvx.cpp \
 ../../../mplapack/reference/Cgetc2.cpp \
 ../../../mplapack/reference/Cgetf2.cpp \
-../../../mplapack/reference/Cgetrf.cpp \
-../../../mplapack/reference/Cgetrf2.cpp \
 ../../../mplapack/reference/Cgetri.cpp \
 ../../../mplapack/reference/Cgetrs.cpp \
 ../../../mplapack/reference/Cgetsls.cpp \
@@ -277,7 +275,6 @@ MPLAPACK_OPT_REFERENCE_SOURCES = \
 ../../../mplapack/reference/Clasr.cpp \
 ../../../mplapack/reference/Classq.cpp \
 ../../../mplapack/reference/Claswlq.cpp \
-../../../mplapack/reference/Claswp.cpp \
 ../../../mplapack/reference/Clasyf.cpp \
 ../../../mplapack/reference/Clasyf_aa.cpp \
 ../../../mplapack/reference/Clasyf_rk.cpp \
@@ -293,7 +290,6 @@ MPLAPACK_OPT_REFERENCE_SOURCES = \
 ../../../mplapack/reference/Claunhr_col_getrfnp.cpp \
 ../../../mplapack/reference/Claunhr_col_getrfnp2.cpp \
 ../../../mplapack/reference/Clauu2.cpp \
-../../../mplapack/reference/Clauum.cpp \
 ../../../mplapack/reference/Cpbcon.cpp \
 ../../../mplapack/reference/Cpbequ.cpp \
 ../../../mplapack/reference/Cpbrfs.cpp \
@@ -313,7 +309,6 @@ MPLAPACK_OPT_REFERENCE_SOURCES = \
 ../../../mplapack/reference/Cposv.cpp \
 ../../../mplapack/reference/Cposvx.cpp \
 ../../../mplapack/reference/Cpotf2.cpp \
-../../../mplapack/reference/Cpotrf.cpp \
 ../../../mplapack/reference/Cpotrf2.cpp \
 ../../../mplapack/reference/Cpotri.cpp \
 ../../../mplapack/reference/Cpotrs.cpp \
@@ -426,7 +421,6 @@ MPLAPACK_OPT_REFERENCE_SOURCES = \
 ../../../mplapack/reference/Ctrsyl.cpp \
 ../../../mplapack/reference/Ctrsyl3.cpp \
 ../../../mplapack/reference/Ctrti2.cpp \
-../../../mplapack/reference/Ctrtri.cpp \
 ../../../mplapack/reference/Ctrtrs.cpp \
 ../../../mplapack/reference/Ctrttf.cpp \
 ../../../mplapack/reference/Ctrttp.cpp \
@@ -546,8 +540,6 @@ MPLAPACK_OPT_REFERENCE_SOURCES = \
 ../../../mplapack/reference/Rgesvx.cpp \
 ../../../mplapack/reference/Rgetc2.cpp \
 ../../../mplapack/reference/Rgetf2.cpp \
-../../../mplapack/reference/Rgetrf.cpp \
-../../../mplapack/reference/Rgetrf2.cpp \
 ../../../mplapack/reference/Rgetri.cpp \
 ../../../mplapack/reference/Rgetrs.cpp \
 ../../../mplapack/reference/Rgetsls.cpp \
@@ -723,7 +715,6 @@ MPLAPACK_OPT_REFERENCE_SOURCES = \
 ../../../mplapack/reference/Rlassq.cpp \
 ../../../mplapack/reference/Rlasv2.cpp \
 ../../../mplapack/reference/Rlaswlq.cpp \
-../../../mplapack/reference/Rlaswp.cpp \
 ../../../mplapack/reference/Rlasy2.cpp \
 ../../../mplapack/reference/Rlasyf.cpp \
 ../../../mplapack/reference/Rlasyf_aa.cpp \
@@ -738,7 +729,6 @@ MPLAPACK_OPT_REFERENCE_SOURCES = \
 ../../../mplapack/reference/Rlatrz.cpp \
 ../../../mplapack/reference/Rlatsqr.cpp \
 ../../../mplapack/reference/Rlauu2.cpp \
-../../../mplapack/reference/Rlauum.cpp \
 ../../../mplapack/reference/Ropgtr.cpp \
 ../../../mplapack/reference/Ropmtr.cpp \
 ../../../mplapack/reference/Rorbdb.cpp \
@@ -797,7 +787,6 @@ MPLAPACK_OPT_REFERENCE_SOURCES = \
 ../../../mplapack/reference/Rposv.cpp \
 ../../../mplapack/reference/Rposvx.cpp \
 ../../../mplapack/reference/Rpotf2.cpp \
-../../../mplapack/reference/Rpotrf.cpp \
 ../../../mplapack/reference/Rpotrf2.cpp \
 ../../../mplapack/reference/Rpotri.cpp \
 ../../../mplapack/reference/Rpotrs.cpp \
@@ -952,7 +941,6 @@ MPLAPACK_OPT_REFERENCE_SOURCES = \
 ../../../mplapack/reference/Rtrsyl.cpp \
 ../../../mplapack/reference/Rtrsyl3.cpp \
 ../../../mplapack/reference/Rtrti2.cpp \
-../../../mplapack/reference/Rtrtri.cpp \
 ../../../mplapack/reference/Rtrtrs.cpp \
 ../../../mplapack/reference/Rtrttf.cpp \
 ../../../mplapack/reference/Rtrttp.cpp \
@@ -972,3 +960,19 @@ MPLAPACK_OPT_REFERENCE_SOURCES = \
 ../../../mplapack/reference/iMlazlr.cpp \
 ../../../mplapack/reference/iMparam2stage.cpp \
 ../../../mplapack/reference/iMparmq.cpp
+
+# Replaced in the optimized libraries by mplapack/optimized/common (same
+# basenames); listed here so that the manifest names every reference file.
+MPLAPACK_OPT_REFERENCE_SOURCES_SHADOWED = \
+../../../mplapack/reference/Rtrtri.cpp \
+../../../mplapack/reference/Ctrtri.cpp \
+../../../mplapack/reference/Rlauum.cpp \
+../../../mplapack/reference/Clauum.cpp \
+../../../mplapack/reference/Cgetrf2.cpp \
+../../../mplapack/reference/Rgetrf2.cpp \
+../../../mplapack/reference/Cgetrf.cpp \
+../../../mplapack/reference/Claswp.cpp \
+../../../mplapack/reference/Cpotrf.cpp \
+../../../mplapack/reference/Rgetrf.cpp \
+../../../mplapack/reference/Rlaswp.cpp \
+../../../mplapack/reference/Rpotrf.cpp

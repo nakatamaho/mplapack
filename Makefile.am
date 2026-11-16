@@ -16,6 +16,15 @@ dist_misc_SCRIPTS = \
 misc/cpu_os_detection.sh \
 misc/check_unique_symbols.sh \
 misc/check_source_manifests.sh \
+misc/gen_blas_column_variants.py \
+misc/gen_blas_l2_ranges.py \
+misc/gen_blas_l2_gpu.py \
+misc/gen_blas_l1_reductions.py \
+misc/gen_blas1_cuda_dispatchers.py \
+misc/gen_blas_tri_solves.py \
+misc/gen_blas_tri_cuda.py \
+misc/gen_blas_device_reference.py \
+misc/gen_inverse_device_reference.py \
 misc/check_mpfr_shared_load.py \
 misc/check_mpfr_elf_dependencies.sh \
 misc/check_mpfr_pkgconfig.sh \
@@ -32,6 +41,9 @@ endif
 if ENABLE_MPFR
 MPLAPACK_UNIQUE_SYMBOL_ARCHIVES += $(top_builddir)/mplapack/reference/.libs/libmplapack_mpfr.a
 MPLAPACK_UNIQUE_SYMBOL_ARCHIVES += $(top_builddir)/mpblas/optimized/mpfr/.libs/libmplapack_mpfr_opt.a
+if ENABLE_MPFR_CUDA
+MPLAPACK_UNIQUE_SYMBOL_ARCHIVES += $(top_builddir)/mpblas/optimized/mpfr/cuda/.libs/libmplapack_mpfr_opt_cuda.a
+endif
 endif
 if ENABLE_QD
 MPLAPACK_UNIQUE_SYMBOL_ARCHIVES += $(top_builddir)/mplapack/reference/.libs/libmplapack_qd.a
@@ -43,6 +55,10 @@ MPLAPACK_UNIQUE_SYMBOL_ARCHIVES += $(top_builddir)/mpblas/optimized/dd/.libs/lib
 if ENABLE_CUDA
 MPLAPACK_UNIQUE_SYMBOL_ARCHIVES += $(top_builddir)/mpblas/optimized/dd/cuda/.libs/libmplapack_dd_opt_cuda.a
 endif
+endif
+if ENABLE_TD
+MPLAPACK_UNIQUE_SYMBOL_ARCHIVES += $(top_builddir)/mplapack/reference/.libs/libmplapack_td.a
+MPLAPACK_UNIQUE_SYMBOL_ARCHIVES += $(top_builddir)/mpblas/optimized/td/.libs/libmplapack_td_opt.a
 endif
 
 if ENABLE_DOUBLE
@@ -144,6 +160,21 @@ if ENABLE_DD
 			fi; \
 		done
 endif
+if ENABLE_TD
+	@for backend_lib in \
+		$(top_builddir)/mplapack/reference/.libs/libmplapack_td.so* \
+		$(top_builddir)/mplapack/reference/.libs/libmplapack_td.dylib \
+		$(top_builddir)/mpblas/optimized/td/.libs/libmplapack_td_opt.so* \
+		$(top_builddir)/mpblas/optimized/td/.libs/libmplapack_td_opt.dylib; do \
+			if test -f "$$backend_lib"; then \
+				runtime_dirs="$(top_builddir)/mplapack/reference/.libs:$(top_builddir)/mpblas/optimized/td/.libs:$(QD_LIBDIR)"; \
+				LD_LIBRARY_PATH="$$runtime_dirs$${LD_LIBRARY_PATH:+:$$LD_LIBRARY_PATH}" \
+				DYLD_LIBRARY_PATH="$$runtime_dirs$${DYLD_LIBRARY_PATH:+:$$DYLD_LIBRARY_PATH}" \
+				$(QD_SHARED_LOAD) "$$backend_lib" || exit $$?; \
+				$(SHELL) $(top_srcdir)/misc/check_backend_elf_dependencies.sh "$$backend_lib" qd || test $$? -eq 77; \
+			fi; \
+		done
+endif
 endif
 
 if ENABLE_TEST
@@ -154,7 +185,7 @@ endif
 # distcheck runs this after install. The installed probe has no build RPATH.
 if IS_MACOS
 installcheck-local:
-	@set -e; for flavor in qd dd; do \
+	@set -e; for flavor in qd dd td; do \
 		for build_lib in \
 		  "$(top_builddir)/mplapack/reference/.libs/libmplapack_$$flavor.dylib" \
 		  "$(top_builddir)/mpblas/optimized/$$flavor/.libs/libmplapack_$${flavor}_opt.dylib"; do \
@@ -180,6 +211,14 @@ mplapack_include_HEADERS += \
     include/mplapack_arithmetic_params_dd.h \
     include/mplapack_dd.h \
     include/mplapack_utils_dd.h
+endif
+
+if ENABLE_TD
+mplapack_include_HEADERS += \
+    include/mpblas_td.h \
+    include/mplapack_arithmetic_params_td.h \
+    include/mplapack_td.h \
+    include/mplapack_utils_td.h
 endif
 
 if ENABLE_GMP
@@ -231,6 +270,23 @@ mplapack_include_HEADERS += \
     include/mplapack_utils_binary128.h
 endif
 
+# Accelerator entry points (misc/gen_accelerator_headers.py)
+if ENABLE_CUDA
+mplapack_include_HEADERS += include/mpblas_dd_cuda.h
+endif
+if ENABLE_TD_CUDA
+mplapack_include_HEADERS += include/mpblas_td_cuda.h
+endif
+if ENABLE_QD_CUDA
+mplapack_include_HEADERS += include/mpblas_qd_cuda.h
+endif
+if ENABLE_MPFR_CUDA
+mplapack_include_HEADERS += include/mpblas_mpfr_cuda.h
+endif
+if ENABLE_OPENCL_BINARY128
+mplapack_include_HEADERS += include/mpblas_binary128_opencl.h
+endif
+
 nodist_mplapack_include_HEADERS = include/mplapack_config.h
 
 # Internal headers used by tests/benchmarks; keep them in dist tarballs.
@@ -256,6 +312,7 @@ noinst_HEADERS = \
     include/mplapack_benchmark_gmp.h \
     include/mplapack_benchmark_mpfr.h \
     include/mplapack_benchmark_qd.h \
+    include/mplapack_benchmark_td.h \
     include/mplapack_matgen.h \
     include/mplapack_matgen_binary128.h \
     include/mplapack_matgen_binary80.h \
@@ -264,6 +321,7 @@ noinst_HEADERS = \
     include/mplapack_matgen_gmp.h \
     include/mplapack_matgen_mpfr.h \
     include/mplapack_matgen_qd.h \
+    include/mplapack_matgen_td.h \
     include/mplapack_lin.h \
     include/mplapack_lin_binary128.h \
     include/mplapack_lin_binary80.h \
@@ -272,6 +330,7 @@ noinst_HEADERS = \
     include/mplapack_lin_gmp.h \
     include/mplapack_lin_mpfr.h \
     include/mplapack_lin_qd.h \
+    include/mplapack_lin_td.h \
     include/mplapack_eig.h \
     include/mplapack_eig_binary128.h \
     include/mplapack_eig_binary80.h \
@@ -279,7 +338,8 @@ noinst_HEADERS = \
     include/mplapack_eig_double.h \
     include/mplapack_eig_gmp.h \
     include/mplapack_eig_mpfr.h \
-    include/mplapack_eig_qd.h
+    include/mplapack_eig_qd.h \
+    include/mplapack_eig_td.h
 
 MPLAPACK_PKGCONFIG_FILES =
 if ENABLE_GMP
@@ -287,6 +347,9 @@ MPLAPACK_PKGCONFIG_FILES += mplapack_gmp.pc mplapack_gmp_opt.pc
 endif
 if ENABLE_MPFR
 MPLAPACK_PKGCONFIG_FILES += mplapack_mpfr.pc mplapack_mpfr_opt.pc
+if ENABLE_MPFR_CUDA
+MPLAPACK_PKGCONFIG_FILES += mplapack_mpfr_opt_cuda.pc
+endif
 endif
 if ENABLE_QD
 MPLAPACK_PKGCONFIG_FILES += mplapack_qd.pc mplapack_qd_opt.pc
@@ -296,6 +359,9 @@ MPLAPACK_PKGCONFIG_FILES += mplapack_dd.pc mplapack_dd_opt.pc
 if ENABLE_CUDA
 MPLAPACK_PKGCONFIG_FILES += mplapack_dd_opt_cuda.pc
 endif
+endif
+if ENABLE_TD
+MPLAPACK_PKGCONFIG_FILES += mplapack_td.pc mplapack_td_opt.pc
 endif
 if ENABLE_DOUBLE
 MPLAPACK_PKGCONFIG_FILES += mplapack_double.pc mplapack_double_opt.pc
@@ -324,20 +390,22 @@ $(MPLAPACK_PKGCONFIG_FILES): cmake/mplapack.pc.cmake.in
 	pc_libs_extra=; \
 	pc_libs_private=; \
 	case "$$pc_name" in \
-	    mplapack_mpfr|mplapack_mpfr_opt) \
+	    mplapack_mpfr|mplapack_mpfr_opt|mplapack_mpfr_opt_cuda) \
 	        pc_requires='mpc mpfr gmp'; \
 	        pc_cflags_extra='$(GMP_PC_CFLAGS)'; \
-	        ;; \
+	        case "$$pc_name" in \
+	            mplapack_mpfr_opt_cuda) pc_libs_private='$(CUDA_LIBS) -lcudart';; \
+	        esac;; \
 	    mplapack_gmp|mplapack_gmp_opt) \
 	        pc_requires='$(GMP_PC_REQUIRES)'; \
 	        pc_cflags_extra='$(GMP_PC_CFLAGS)'; \
 	        pc_libs_extra='$(GMP_PC_LIBS)';; \
-	    mplapack_qd|mplapack_qd_opt|mplapack_dd|mplapack_dd_opt|mplapack_dd_opt_cuda) \
+	    mplapack_qd|mplapack_qd_opt|mplapack_dd|mplapack_dd_opt|mplapack_dd_opt_cuda|mplapack_td|mplapack_td_opt) \
 	        pc_requires='$(QD_PC_REQUIRES)'; \
 	        pc_cflags_extra='$(QD_PC_CFLAGS)'; \
 	        pc_libs_extra='$(QD_PC_LIBS)'; \
 	        case "$$pc_name" in \
-	            mplapack_qd|mplapack_qd_opt|mplapack_dd|mplapack_dd_opt) \
+	            mplapack_qd|mplapack_qd_opt|mplapack_dd|mplapack_dd_opt|mplapack_td|mplapack_td_opt) \
 	                pc_libs_private='$(QD_PC_LIBS_PRIVATE)';; \
 	            mplapack_dd_opt_cuda) \
 	                pc_libs_private='$(QD_PC_LIBS_PRIVATE) $(CUDA_LIBS) -lcudart';; \
@@ -360,7 +428,10 @@ $(MPLAPACK_PKGCONFIG_FILES): cmake/mplapack.pc.cmake.in
 	    -e "s|@PC_LIBS_PRIVATE@|$$pc_libs_private|g" \
 	    $(srcdir)/cmake/mplapack.pc.cmake.in > '$@'
 
-EXTRA_DIST = \
+EXTRA_DIST = cmake/MplapackSolverTests.cmake cmake/MplapackInverseTests.cmake cmake/MplapackMpfrStackTests.cmake \
+benchmark/README.Rfactor.md \
+mplapack/optimized/common/test/README.md \
+backends.txt \
 misc/check_shared_load.c \
 misc/check_macos_shared_load.sh \
 cmake/mplapack.pc.cmake.in \
@@ -391,6 +462,7 @@ misc/README.test-override-qa.md \
 misc/backend_gmp_pkgconfig_consumer.cpp \
 misc/backend_qd_pkgconfig_consumer.cpp \
 misc/backend_dd_pkgconfig_consumer.cpp \
+misc/backend_td_pkgconfig_consumer.cpp \
 benchmark/Rgetrf1.plt.in \
 benchmark/Rgetrf2.plt.in \
 benchmark/Rgetrf3.plt.in \
@@ -473,6 +545,11 @@ external/lapack/patches/print.c \
 external/mpc/Makefile.am \
 external/mpc/Makefile.in \
 external/mpc/download/mpc-1.4.1.tar.xz \
+external/mpc_cuda/Makefile.am \
+external/mpc_cuda/Makefile.in \
+external/mpc_cuda/download/mpc_cuda-0.0.1-abd9407.tar.xz \
+external/mpc_cuda/patches/patch-cu_freal-correctly-rounded-div-sqrt \
+external/mpc_cuda/patches/README.md \
 external/mpfr/Makefile.am \
 external/mpfr/Makefile.in \
 external/mpfr/download/allpatches \
@@ -485,7 +562,7 @@ external/openblas/patches/patch-mingw \
     external/gmpfrxx_mkII/download/gmpfrxx_mkII.1.4.3.tar.xz \
     external/qd/Makefile.am \
 external/qd/Makefile.in \
-external/qd/download/libQD3-1.4.0.tar.gz \
+external/qd/download/libQD3-1.6.0.tar.gz \
 fable/fem.hpp \
 fable/noexcept_false.hpp \
 fable/fem/do.hpp \

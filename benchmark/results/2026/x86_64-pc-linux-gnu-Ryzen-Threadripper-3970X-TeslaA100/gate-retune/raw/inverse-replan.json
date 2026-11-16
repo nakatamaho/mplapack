@@ -1,0 +1,13 @@
+{
+  "unix": 1793734464.2902887,
+  "reason": "Preserve required sizes and multiple alternating medians; inverse n>=2048 uses two rounds due multi-minute calls. Completed three-round points retained. Optional inverse Upper timing omitted, remains unverified; no gate may be enabled for unmeasured Upper.",
+  "completed_td_Cgetri_4096_rounds": [
+    0,
+    1
+  ],
+  "terminated_tree": [
+    738847,
+    962197,
+    1007567
+  ]
+}

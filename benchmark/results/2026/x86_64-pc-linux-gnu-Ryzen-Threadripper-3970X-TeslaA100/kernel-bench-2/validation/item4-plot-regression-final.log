@@ -1,0 +1,3 @@
+style=light byte_identical=True sha256=ff6e4217eae70e215a9771609e43dceae66bef13f4a7ebf97007e90b255d2c8d
+style=dark byte_identical=True sha256=af6d2f8cbd2054fe1f4eae7b01e996980acb9c9082872ae38b140630af292396
+PASS: actual historical MPFR512 CSV, both styles, legacy defaults unchanged

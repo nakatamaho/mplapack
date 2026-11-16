@@ -59,6 +59,8 @@ Group:    Development/Libraries
 
 Provides: libmplapack_dd.so = %{version}-%{release}
 Provides: libmplapack_dd_opt.so = %{version}-%{release}
+Provides: libmplapack_td.so = %{version}-%{release}
+Provides: libmplapack_td_opt.so = %{version}-%{release}
 Provides: libmplapack_double.so = %{version}-%{release}
 Provides: libmplapack_double_opt.so = %{version}-%{release}
 Provides: libmplapack_binary128.so = %{version}-%{release}
@@ -111,7 +113,7 @@ original license by LAPACK)
 %setup -n mplapack-%{version} -q
 
 %build
-%configure --docdir=%{_pkgdocdir} --enable-gmp --enable-mpfr --enable-qd --enable-dd --enable-double --enable-binary128 --enable-binary80 --enable-optimization --with-system-gmp --with-system-mpfr --with-system-mpc --with-system-qd --disable-benchmark --disable-examples --disable-reference
+%configure --docdir=%{_pkgdocdir} --enable-gmp --enable-mpfr --enable-qd --enable-dd --enable-td --enable-double --enable-binary128 --enable-binary80 --enable-optimization --with-system-gmp --with-system-mpfr --with-system-mpc --with-system-qd --disable-benchmark --disable-examples --disable-reference
 make %{?_smp_mflags}
 
 

@@ -108,6 +108,16 @@ INTEGER Mexponent(REAL const &x) {
 #endif // MPLAPACK_BUILD_WITH_DD
 
 // -----------------------------------------------------------------------
+// TD (triple-double)
+// -----------------------------------------------------------------------
+#if defined MPLAPACK_BUILD_WITH_TD
+INTEGER Mexponent(REAL const &x) {
+    // Same reasoning as DD.
+    return std::ilogb(x.x[0]) + 1;
+}
+#endif // MPLAPACK_BUILD_WITH_TD
+
+// -----------------------------------------------------------------------
 // QD (quad-double)
 // -----------------------------------------------------------------------
 #if defined MPLAPACK_BUILD_WITH_QD

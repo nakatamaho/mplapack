@@ -9,7 +9,7 @@ dist_bench_DATA = \
     Rcopy1.plt.in  Rcopy2.plt.in  Rcopy3.plt.in  \
     Rdot1.plt.in   Rdot2.plt.in   Rdot3.plt.in   \
     Rgemm1.plt.in  Rgemm2.plt.in  Rgemm3.plt.in  \
-    Rgemm_cuda.plt.in  Rgemm_opencl.plt.in \
+    Rgemm_cuda.plt.in  Rgemm_opencl.plt.in Rgemm_algo.plt.in \
     Rgemv1.plt.in  Rgemv2.plt.in  Rgemv3.plt.in  \
     Rsyrk1.plt.in  Rsyrk2.plt.in  Rsyrk3.plt.in  \
     Rsyrk_cuda.plt.in              \
@@ -21,12 +21,25 @@ dist_bench_DATA = \
 # -----------------------------------------------------------------------------
 # Source templates for go.*.sh (included in "make dist").
 # -----------------------------------------------------------------------------
-EXTRA_DIST = \
+EXTRA_DIST = run_solver_bench.py run_factor_dispatch_bench.py test_factor_dispatch_bench.py test_factor_gate_smoke.py Rsolver_legacy_bench.h \
+    kernel_bench.py kernel_bench_compare.py plot_kernel_bench.py plot_sweep.py README.kernel_bench.md Rkernel_new.h kernel_new.py test_kernel_new.py \
+    results/2026/x86_64-pc-linux-gnu-Ryzen-Threadripper-3970X-TeslaA100/factorization-goal08/solvers.csv \
+    results/2026/x86_64-pc-linux-gnu-Ryzen-Threadripper-3970X-TeslaA100/factorization-goal08/mpfr-factor-regression.csv \
+    results/2026/x86_64-pc-linux-gnu-Ryzen-Threadripper-3970X-TeslaA100/factorization-goal08b/README.md \
+    results/2026/x86_64-pc-linux-gnu-Ryzen-Threadripper-3970X-TeslaA100/factorization-goal08b/factors.csv results/2026/x86_64-pc-linux-gnu-Ryzen-Threadripper-3970X-TeslaA100/factorization-goal08b/factors-samples.csv \
+    results/2026/x86_64-pc-linux-gnu-Ryzen-Threadripper-3970X-TeslaA100/factorization-goal08b/factors-before-gates.csv results/2026/x86_64-pc-linux-gnu-Ryzen-Threadripper-3970X-TeslaA100/factorization-goal08b/factors-before-gates-samples.csv \
+    results/2026/x86_64-pc-linux-gnu-Ryzen-Threadripper-3970X-TeslaA100/factorization-goal08b/drivers.csv results/2026/x86_64-pc-linux-gnu-Ryzen-Threadripper-3970X-TeslaA100/factorization-goal08b/drivers-samples.csv \
+    results/2026/x86_64-pc-linux-gnu-Ryzen-Threadripper-3970X-TeslaA100/factorization-goal08b/cpu-fallback-stability.csv results/2026/x86_64-pc-linux-gnu-Ryzen-Threadripper-3970X-TeslaA100/factorization-goal08b/cpu-fallback-stability-samples.csv \
+    results/2026/x86_64-pc-linux-gnu-Ryzen-Threadripper-3970X-TeslaA100/factorization-goal08b/upper-crossover.csv results/2026/x86_64-pc-linux-gnu-Ryzen-Threadripper-3970X-TeslaA100/factorization-goal08b/upper-crossover-samples.csv \
+    results/2026/x86_64-pc-linux-gnu-Ryzen-Threadripper-3970X-TeslaA100/factorization-goal08b/retuned-factors.csv results/2026/x86_64-pc-linux-gnu-Ryzen-Threadripper-3970X-TeslaA100/factorization-goal08b/retuned-factors-samples.csv \
+    results/2026/x86_64-pc-linux-gnu-Ryzen-Threadripper-3970X-TeslaA100/factorization-goal08b/driver-gates.csv results/2026/x86_64-pc-linux-gnu-Ryzen-Threadripper-3970X-TeslaA100/factorization-goal08b/driver-gates-samples.csv \
+    results/2026/x86_64-pc-linux-gnu-Ryzen-Threadripper-3970X-TeslaA100/factorization-goal08b/gpu-phase-samples.csv \
     go.Raxpy.sh.in       \
     go.Rcopy.sh.in       \
     go.Rdot.sh.in        \
     go.Rgemm.sh.in       \
     go.Rgemm_cuda.sh.in  \
+    go.Rgemm_algo.sh.in  \
     go.Rgemm_opencl.sh.in \
     go.Rgemv.sh.in       \
     go.Rsyrk.sh.in       \
@@ -55,6 +68,7 @@ GO_SH_FILES = \
     go.Rdot.sh        \
     go.Rgemm.sh       \
     go.Rgemm_cuda.sh  \
+    go.Rgemm_algo.sh  \
     go.Rgemm_opencl.sh \
     go.Rgemv.sh       \
     go.Rsyrk.sh       \
@@ -80,6 +94,25 @@ go.%.sh: $(srcdir)/go.%.sh.in
 	chmod +x $@
 
 # -----------------------------------------------------------------------------
+# CUDA sources of the kernel benchmark (Rkernel_bench_<b>_cuda.cu): nvcc with
+# the flags of the dd/td/qd CUDA libraries (no contraction, sm_80 and sm_90).
+# -----------------------------------------------------------------------------
+SUFFIXES = .cu
+KERNEL_BENCH_CUDA_ARCH_FLAGS = -gencode arch=compute_80,code=sm_80 -gencode arch=compute_90,code=sm_90
+KERNEL_BENCH_NVCC_FLAGS = -U_GNU_SOURCE -D_XOPEN_SOURCE=700 -std=c++17 -fmad=false -Xcompiler=-ffp-contract=off -O3 -m64 \
+    $(KERNEL_BENCH_CUDA_ARCH_FLAGS) -MMD -MP -MF $(DEPDIR)/$(@F).Po -MT $@ \
+    -I$(top_builddir)/include -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) $(CUDA_CFLAGS)
+# Track the shared production schedules and arithmetic headers too; otherwise
+# an updated library could silently be compared with an old benchmark kernel.
+KERNEL_BENCH_CUDA_DEPS = $(addprefix $(DEPDIR)/,Rkernel_bench_dd_cuda.o.Po Rkernel_bench_td_cuda.o.Po Rkernel_bench_qd_cuda.o.Po Rkernel_bench_mpfr_resident.o.Po)
+-include $(KERNEL_BENCH_CUDA_DEPS)
+CLEANFILES += $(KERNEL_BENCH_CUDA_DEPS)
+Rkernel_bench_dd_cuda.o Rkernel_bench_td_cuda.o Rkernel_bench_qd_cuda.o: Makefile $(srcdir)/Rkernel_bench.cpp $(srcdir)/Rkernel_new.h
+.cu.o:
+	$(MKDIR_P) $(DEPDIR)
+	$(NVCC) $(KERNEL_BENCH_NVCC_FLAGS) -o $@ -c $<
+
+# -----------------------------------------------------------------------------
 # Install destination
 # -----------------------------------------------------------------------------
 benchdir = $(prefix)/lib/$(target)/mplapack/benchmark
@@ -100,8 +133,20 @@ endif
 if ENABLE_DD
 include Makefile.dd.am
 endif
+if ENABLE_TD
+include Makefile.td.am
+endif
 if ENABLE_CUDA
 include Makefile.dd_cuda.am
+endif
+if ENABLE_QD_CUDA
+include Makefile.qd_cuda.am
+endif
+if ENABLE_TD_CUDA
+include Makefile.td_cuda.am
+endif
+if ENABLE_MPFR_CUDA
+include Makefile.mpfr_cuda.am
 endif
 if ENABLE_DOUBLE
 include Makefile.double.am

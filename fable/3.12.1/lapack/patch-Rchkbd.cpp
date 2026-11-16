@@ -13,7 +13,7 @@
                  //
                  // Bidiagonal, random entries
                  //
-+#if defined MPLAPACK_BUILD_WITH_DD || defined MPLAPACK_BUILD_WITH_QD
++#if defined MPLAPACK_BUILD_WITH_DD || defined MPLAPACK_BUILD_WITH_TD || defined MPLAPACK_BUILD_WITH_QD
 +                temp1 = -half * log(ulp);
 +#else
                  temp1 = -two * log(ulp);

@@ -1,0 +1,66 @@
+{"name": "auto-build-td", "command": ["make", "-C", "mpblas/optimized/td", "-j6", "libmplapack_td_opt.la", "Rfactor_test_td"], "extra_env": {}, "returncode": 0, "seconds": 4.573826551437378}
+{"name": "auto-build-dd", "command": ["make", "-C", "mpblas/optimized/dd", "-j6", "libmplapack_dd_opt.la", "Rfactor_test_dd"], "extra_env": {}, "returncode": 0, "seconds": 16.600844860076904}
+{"name": "cpu-dd-0-factors", "command": ["mpblas/optimized/dd/Rfactor_test_dd"], "extra_env": {"MPLAPACK_LAPACK_FAST": "0"}, "returncode": 0, "seconds": 15.47834038734436}
+{"name": "cpu-td-0-factors", "command": ["mpblas/optimized/td/Rfactor_test_td"], "extra_env": {"MPLAPACK_LAPACK_FAST": "0"}, "returncode": 0, "seconds": 40.781548500061035}
+{"name": "cpu-dd-0-inverses", "command": ["mpblas/optimized/dd/Rfactor_test_dd", "--inverses"], "extra_env": {"MPLAPACK_LAPACK_FAST": "0"}, "returncode": 0, "seconds": 32.008257150650024}
+{"name": "cpu-dd-1-factors", "command": ["mpblas/optimized/dd/Rfactor_test_dd"], "extra_env": {"MPLAPACK_LAPACK_FAST": "1"}, "returncode": 0, "seconds": 13.005109310150146}
+{"name": "cpu-dd-1-inverses", "command": ["mpblas/optimized/dd/Rfactor_test_dd", "--inverses"], "extra_env": {"MPLAPACK_LAPACK_FAST": "1"}, "returncode": 0, "seconds": 32.26590418815613}
+{"name": "linbuild-dd", "command": ["make", "-C", "mplapack/test/lin/dd", "-j6", "xlintstR_dd_opt", "xlintstC_dd_opt"], "extra_env": {}, "returncode": 0, "seconds": 0.1647779941558838}
+{"name": "lin-dd-cpu-R", "command": ["mplapack/test/lin/dd/xlintstR_dd_opt"], "extra_env": {}, "returncode": 0, "seconds": 6.303296804428101}
+{"name": "lin-dd-cpu-C", "command": ["mplapack/test/lin/dd/xlintstC_dd_opt"], "extra_env": {}, "returncode": 0, "seconds": 6.498149156570435}
+{"name": "auto-build-qd", "command": ["make", "-C", "mpblas/optimized/qd", "-j6", "libmplapack_qd_opt.la", "Rfactor_test_qd"], "extra_env": {}, "returncode": 0, "seconds": 4.076206922531128}
+{"name": "cpu-td-0-inverses", "command": ["mpblas/optimized/td/Rfactor_test_td", "--inverses"], "extra_env": {"MPLAPACK_LAPACK_FAST": "0"}, "returncode": 0, "seconds": 90.03808808326721}
+{"name": "cpu-td-1-factors", "command": ["mpblas/optimized/td/Rfactor_test_td"], "extra_env": {"MPLAPACK_LAPACK_FAST": "1"}, "returncode": 0, "seconds": 36.099841833114624}
+{"name": "cpu-qd-0-factors", "command": ["mpblas/optimized/qd/Rfactor_test_qd"], "extra_env": {"MPLAPACK_LAPACK_FAST": "0"}, "returncode": 0, "seconds": 69.9716911315918}
+{"name": "cpu-td-1-inverses", "command": ["mpblas/optimized/td/Rfactor_test_td", "--inverses"], "extra_env": {"MPLAPACK_LAPACK_FAST": "1"}, "returncode": 0, "seconds": 106.87479019165039}
+{"name": "linbuild-td", "command": ["make", "-C", "mplapack/test/lin/td", "-j6", "xlintstR_td_opt", "xlintstC_td_opt"], "extra_env": {}, "returncode": 0, "seconds": 0.16461753845214844}
+{"name": "lin-td-cpu-R", "command": ["mplapack/test/lin/td/xlintstR_td_opt"], "extra_env": {}, "returncode": 0, "seconds": 8.490781784057617}
+{"name": "lin-td-cpu-C", "command": ["mplapack/test/lin/td/xlintstC_td_opt"], "extra_env": {}, "returncode": 0, "seconds": 17.759005308151245}
+{"name": "auto-build-double", "command": ["make", "-C", "mpblas/optimized/double", "-j6", "libmplapack_double_opt.la", "Rfactor_test_double"], "extra_env": {}, "returncode": 0, "seconds": 21.388899326324463}
+{"name": "cpu-double-0-factors", "command": ["mpblas/optimized/double/Rfactor_test_double"], "extra_env": {"MPLAPACK_LAPACK_FAST": "0"}, "returncode": 0, "seconds": 5.554431200027466}
+{"name": "cpu-double-0-inverses", "command": ["mpblas/optimized/double/Rfactor_test_double", "--inverses"], "extra_env": {"MPLAPACK_LAPACK_FAST": "0"}, "returncode": 0, "seconds": 9.993200063705444}
+{"name": "cpu-double-1-factors", "command": ["mpblas/optimized/double/Rfactor_test_double"], "extra_env": {"MPLAPACK_LAPACK_FAST": "1"}, "returncode": 0, "seconds": 7.044092178344727}
+{"name": "cpu-double-1-inverses", "command": ["mpblas/optimized/double/Rfactor_test_double", "--inverses"], "extra_env": {"MPLAPACK_LAPACK_FAST": "1"}, "returncode": 0, "seconds": 11.080918073654175}
+{"name": "linbuild-double", "command": ["make", "-C", "mplapack/test/lin/double", "-j6", "xlintstR_double_opt", "xlintstC_double_opt"], "extra_env": {}, "returncode": 0, "seconds": 0.16516518592834473}
+{"name": "lin-double-cpu-R", "command": ["mplapack/test/lin/double/xlintstR_double_opt"], "extra_env": {}, "returncode": 0, "seconds": 2.3202404975891113}
+{"name": "lin-double-cpu-C", "command": ["mplapack/test/lin/double/xlintstC_double_opt"], "extra_env": {}, "returncode": 0, "seconds": 1.5688247680664062}
+{"name": "cpu-qd-0-inverses", "command": ["mpblas/optimized/qd/Rfactor_test_qd", "--inverses"], "extra_env": {"MPLAPACK_LAPACK_FAST": "0"}, "returncode": 0, "seconds": 173.99317955970764}
+{"name": "auto-build-binary80", "command": ["make", "-C", "mpblas/optimized/binary80", "-j6", "libmplapack_binary80_opt.la", "Rfactor_test_binary80"], "extra_env": {}, "returncode": 0, "seconds": 23.52415943145752}
+{"name": "cpu-binary80-0-factors", "command": ["mpblas/optimized/binary80/Rfactor_test_binary80"], "extra_env": {"MPLAPACK_LAPACK_FAST": "0"}, "returncode": 0, "seconds": 18.681024074554443}
+{"name": "cpu-qd-1-factors", "command": ["mpblas/optimized/qd/Rfactor_test_qd"], "extra_env": {"MPLAPACK_LAPACK_FAST": "1"}, "returncode": 0, "seconds": 60.85662794113159}
+{"name": "cpu-binary80-0-inverses", "command": ["mpblas/optimized/binary80/Rfactor_test_binary80", "--inverses"], "extra_env": {"MPLAPACK_LAPACK_FAST": "0"}, "returncode": 0, "seconds": 31.67316770553589}
+{"name": "cpu-binary80-1-factors", "command": ["mpblas/optimized/binary80/Rfactor_test_binary80"], "extra_env": {"MPLAPACK_LAPACK_FAST": "1"}, "returncode": 0, "seconds": 15.51836109161377}
+{"name": "cpu-binary80-1-inverses", "command": ["mpblas/optimized/binary80/Rfactor_test_binary80", "--inverses"], "extra_env": {"MPLAPACK_LAPACK_FAST": "1"}, "returncode": 0, "seconds": 32.624868392944336}
+{"name": "linbuild-binary80", "command": ["make", "-C", "mplapack/test/lin/binary80", "-j6", "xlintstR_binary80_opt", "xlintstC_binary80_opt"], "extra_env": {}, "returncode": 0, "seconds": 0.16451811790466309}
+{"name": "lin-binary80-cpu-R", "command": ["mplapack/test/lin/binary80/xlintstR_binary80_opt"], "extra_env": {}, "returncode": 0, "seconds": 3.521547317504883}
+{"name": "lin-binary80-cpu-C", "command": ["mplapack/test/lin/binary80/xlintstC_binary80_opt"], "extra_env": {}, "returncode": 0, "seconds": 2.3728647232055664}
+{"name": "auto-build-binary128", "command": ["make", "-C", "mpblas/optimized/binary128", "-j6", "libmplapack_binary128_opt.la", "Rfactor_test_binary128"], "extra_env": {}, "returncode": 0, "seconds": 24.558871746063232}
+{"name": "cpu-qd-1-inverses", "command": ["mpblas/optimized/qd/Rfactor_test_qd", "--inverses"], "extra_env": {"MPLAPACK_LAPACK_FAST": "1"}, "returncode": 0, "seconds": 159.0400881767273}
+{"name": "linbuild-qd", "command": ["make", "-C", "mplapack/test/lin/qd", "-j6", "xlintstR_qd_opt", "xlintstC_qd_opt"], "extra_env": {}, "returncode": 0, "seconds": 0.16986680030822754}
+{"name": "lin-qd-cpu-R", "command": ["mplapack/test/lin/qd/xlintstR_qd_opt"], "extra_env": {}, "returncode": 0, "seconds": 35.04449224472046}
+{"name": "lin-qd-cpu-C", "command": ["mplapack/test/lin/qd/xlintstC_qd_opt"], "extra_env": {}, "returncode": 0, "seconds": 36.73633432388306}
+{"name": "auto-build-gmp", "command": ["make", "-C", "mpblas/optimized/gmp", "-j6", "libmplapack_gmp_opt.la", "Rfactor_test_gmp"], "extra_env": {}, "returncode": 0, "seconds": 25.90729546546936}
+{"name": "cpu-binary128-0-factors", "command": ["mpblas/optimized/binary128/Rfactor_test_binary128"], "extra_env": {"MPLAPACK_LAPACK_FAST": "0"}, "returncode": 0, "seconds": 179.42646026611328}
+{"name": "cpu-binary128-0-inverses", "command": ["mpblas/optimized/binary128/Rfactor_test_binary128", "--inverses"], "extra_env": {"MPLAPACK_LAPACK_FAST": "0"}, "returncode": 0, "seconds": 322.4211196899414}
+{"name": "cpu-gmp-0-factors", "command": ["mpblas/optimized/gmp/Rfactor_test_gmp"], "extra_env": {"MPLAPACK_LAPACK_FAST": "0"}, "returncode": 0, "seconds": 361.31294417381287}
+{"name": "cpu-binary128-1-factors", "command": ["mpblas/optimized/binary128/Rfactor_test_binary128"], "extra_env": {"MPLAPACK_LAPACK_FAST": "1"}, "returncode": 0, "seconds": 128.42983675003052}
+{"name": "cpu-binary128-1-inverses", "command": ["mpblas/optimized/binary128/Rfactor_test_binary128", "--inverses"], "extra_env": {"MPLAPACK_LAPACK_FAST": "1"}, "returncode": 0, "seconds": 319.63712978363037}
+{"name": "linbuild-binary128", "command": ["make", "-C", "mplapack/test/lin/binary128", "-j6", "xlintstR_binary128_opt", "xlintstC_binary128_opt"], "extra_env": {}, "returncode": 0, "seconds": 0.21676349639892578}
+{"name": "lin-binary128-cpu-R", "command": ["mplapack/test/lin/binary128/xlintstR_binary128_opt"], "extra_env": {}, "returncode": 0, "seconds": 11.696098566055298}
+{"name": "lin-binary128-cpu-C", "command": ["mplapack/test/lin/binary128/xlintstC_binary128_opt"], "extra_env": {}, "returncode": 0, "seconds": 22.62582778930664}
+{"name": "auto-build-mpfr", "command": ["make", "-C", "mpblas/optimized/mpfr", "-j6", "libmplapack_mpfr_opt.la", "Rfactor_test_mpfr"], "extra_env": {}, "returncode": 0, "seconds": 31.581875801086426}
+{"name": "cpu-gmp-0-inverses", "command": ["mpblas/optimized/gmp/Rfactor_test_gmp", "--inverses"], "extra_env": {"MPLAPACK_LAPACK_FAST": "0"}, "returncode": 0, "seconds": 816.2459564208984}
+{"name": "cpu-mpfr-0-factors", "command": ["mpblas/optimized/mpfr/Rfactor_test_mpfr"], "extra_env": {"MPLAPACK_LAPACK_FAST": "0"}, "returncode": 0, "seconds": 588.6155524253845}
+{"name": "cpu-gmp-1-factors", "command": ["mpblas/optimized/gmp/Rfactor_test_gmp"], "extra_env": {"MPLAPACK_LAPACK_FAST": "1"}, "returncode": 0, "seconds": 305.76447796821594}
+{"name": "cpu-gmp-1-inverses", "command": ["mpblas/optimized/gmp/Rfactor_test_gmp", "--inverses"], "extra_env": {"MPLAPACK_LAPACK_FAST": "1"}, "returncode": 0, "seconds": 664.9996237754822}
+{"name": "linbuild-gmp", "command": ["make", "-C", "mplapack/test/lin/gmp", "-j6", "xlintstR_gmp_opt", "xlintstC_gmp_opt"], "extra_env": {}, "returncode": 0, "seconds": 0.9695920944213867}
+{"name": "lin-gmp-cpu-R", "command": ["mplapack/test/lin/gmp/xlintstR_gmp_opt"], "extra_env": {}, "returncode": 0, "seconds": 38.97309422492981}
+{"name": "lin-gmp-cpu-C", "command": ["mplapack/test/lin/gmp/xlintstC_gmp_opt"], "extra_env": {}, "returncode": 0, "seconds": 94.44115090370178}
+{"name": "cpu-mpfr-0-inverses", "command": ["mpblas/optimized/mpfr/Rfactor_test_mpfr", "--inverses"], "extra_env": {"MPLAPACK_LAPACK_FAST": "0"}, "returncode": 0, "seconds": 1197.4220366477966}
+{"name": "cpu-mpfr-1-factors", "command": ["mpblas/optimized/mpfr/Rfactor_test_mpfr"], "extra_env": {"MPLAPACK_LAPACK_FAST": "1"}, "returncode": 0, "seconds": 501.45033025741577}
+{"name": "cpu-mpfr-1-inverses", "command": ["mpblas/optimized/mpfr/Rfactor_test_mpfr", "--inverses"], "extra_env": {"MPLAPACK_LAPACK_FAST": "1"}, "returncode": 0, "seconds": 975.3026297092438}
+{"name": "linbuild-mpfr", "command": ["make", "-C", "mplapack/test/lin/mpfr", "-j6", "xlintstR_mpfr_opt", "xlintstC_mpfr_opt"], "extra_env": {}, "returncode": 0, "seconds": 1.0179226398468018}
+{"name": "lin-mpfr-cpu-R", "command": ["mplapack/test/lin/mpfr/xlintstR_mpfr_opt"], "extra_env": {}, "returncode": 90, "seconds": 41.739585399627686}
+{"name": "lin-mpfr-cpu-C", "command": ["mplapack/test/lin/mpfr/xlintstC_mpfr_opt"], "extra_env": {}, "returncode": 90, "seconds": 123.58753037452698}
+{"name": "lin-mpfr-cpu-R", "returncode": 0, "seconds": 40.744497776031494, "fix": "MPFR LATB4 Rlabad generator scaling", "command": ["/home/docker/mplapack-acceralation/mplapack/test/lin/mpfr/xlintstR_mpfr_opt"]}
+{"name": "lin-mpfr-cpu-C", "returncode": 0, "seconds": 129.72559571266174, "fix": "MPFR LATB4 Rlabad generator scaling", "command": ["/home/docker/mplapack-acceralation/mplapack/test/lin/mpfr/xlintstC_mpfr_opt"]}

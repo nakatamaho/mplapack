@@ -1,0 +1,4 @@
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_cuda_kernel Cdotc fast 6291456
+OMP_NUM_THREADS=1
+
+Controlled stop for GPU launch-priming correction; runner exit143, no point accepted.

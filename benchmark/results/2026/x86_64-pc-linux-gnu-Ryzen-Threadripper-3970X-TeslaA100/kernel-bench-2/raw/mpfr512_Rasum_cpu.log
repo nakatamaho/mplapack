@@ -1,0 +1,588 @@
+
+### mpfr512_Rasum_cpu_1024_pilot
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rasum fast 1024 --reps 1 --warmup 1
+OMP_NUM_THREADS=32
+mpfr512,Rasum,inc1,1024,cpu,0.000608599,0.00168255288,1
+
+exit=0, elapsed=0.010863
+
+exit receipt: 0
+
+### mpfr512_Rasum_cpu_32768_pilot
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rasum fast 32768 --reps 1 --warmup 1
+OMP_NUM_THREADS=32
+mpfr512,Rasum,inc1,32768,cpu,0.012943562,0.00253160606,1
+
+exit=0, elapsed=0.067662
+
+exit receipt: 0
+
+### mpfr512_Rasum_cpu_1024_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rasum fast 1024
+OMP_NUM_THREADS=32
+mpfr512,Rasum,inc1,1024,cpu,0.000574784,0.0017815388,3
+
+exit=0, process_elapsed=0.010927
+charged_point_wall=0.015070
+
+exit receipt: 0
+
+### mpfr512_Rasum_cpu_1280_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rasum fast 1280
+OMP_NUM_THREADS=32
+mpfr512,Rasum,inc1,1280,cpu,0.000707687,0.00180870922,3
+
+exit=0, process_elapsed=0.010547
+charged_point_wall=0.013708
+
+exit receipt: 0
+
+### mpfr512_Rasum_cpu_1536_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rasum fast 1536
+OMP_NUM_THREADS=32
+mpfr512,Rasum,inc1,1536,cpu,0.000821864,0.00186892235,3
+
+exit=0, process_elapsed=0.011333
+charged_point_wall=0.014850
+
+exit receipt: 0
+
+### mpfr512_Rasum_cpu_1792_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rasum fast 1792
+OMP_NUM_THREADS=32
+mpfr512,Rasum,inc1,1792,cpu,0.00096163,0.00186350259,3
+
+exit=0, process_elapsed=0.012022
+charged_point_wall=0.015499
+
+exit receipt: 0
+
+### mpfr512_Rasum_cpu_2048_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rasum fast 2048
+OMP_NUM_THREADS=32
+mpfr512,Rasum,inc1,2048,cpu,0.000994102,0.00206015077,3
+
+exit=0, process_elapsed=0.013690
+charged_point_wall=0.016477
+
+exit receipt: 0
+
+### mpfr512_Rasum_cpu_2560_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rasum fast 2560
+OMP_NUM_THREADS=32
+mpfr512,Rasum,inc1,2560,cpu,0.001232897,0.00207641028,3
+
+exit=0, process_elapsed=0.015582
+charged_point_wall=0.018761
+
+exit receipt: 0
+
+### mpfr512_Rasum_cpu_3072_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rasum fast 3072
+OMP_NUM_THREADS=32
+mpfr512,Rasum,inc1,3072,cpu,0.001424521,0.00215651437,3
+
+exit=0, process_elapsed=0.016868
+charged_point_wall=0.020407
+
+exit receipt: 0
+
+### mpfr512_Rasum_cpu_3584_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rasum fast 3584
+OMP_NUM_THREADS=32
+mpfr512,Rasum,inc1,3584,cpu,0.001229089,0.00291598086,3
+
+exit=0, process_elapsed=0.019417
+charged_point_wall=0.023289
+
+exit receipt: 0
+
+### mpfr512_Rasum_cpu_4096_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rasum fast 4096
+OMP_NUM_THREADS=32
+mpfr512,Rasum,inc1,4096,cpu,0.001732648,0.00236401162,3
+
+exit=0, process_elapsed=0.019803
+charged_point_wall=0.023342
+
+exit receipt: 0
+
+### mpfr512_Rasum_cpu_5120_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rasum fast 5120
+OMP_NUM_THREADS=32
+mpfr512,Rasum,inc1,5120,cpu,0.001651813,0.00309962447,3
+
+exit=0, process_elapsed=0.018483
+charged_point_wall=0.021655
+
+exit receipt: 0
+
+### mpfr512_Rasum_cpu_6144_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rasum fast 6144
+OMP_NUM_THREADS=32
+mpfr512,Rasum,inc1,6144,cpu,0.001930875,0.00318197708,3
+
+exit=0, process_elapsed=0.022526
+charged_point_wall=0.025892
+
+exit receipt: 0
+
+### mpfr512_Rasum_cpu_7168_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rasum fast 7168
+OMP_NUM_THREADS=32
+mpfr512,Rasum,inc1,7168,cpu,0.002130394,0.00336463584,3
+
+exit=0, process_elapsed=0.023690
+charged_point_wall=0.026805
+
+exit receipt: 0
+
+### mpfr512_Rasum_cpu_8192_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rasum fast 8192
+OMP_NUM_THREADS=32
+mpfr512,Rasum,inc1,8192,cpu,0.003176464,0.00257896831,3
+
+exit=0, process_elapsed=0.030995
+charged_point_wall=0.034294
+
+exit receipt: 0
+
+### mpfr512_Rasum_cpu_10240_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rasum fast 10240
+OMP_NUM_THREADS=32
+mpfr512,Rasum,inc1,10240,cpu,0.002961335,0.0034578999,3
+
+exit=0, process_elapsed=0.032294
+charged_point_wall=0.035776
+
+exit receipt: 0
+
+### mpfr512_Rasum_cpu_12288_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rasum fast 12288
+OMP_NUM_THREADS=32
+mpfr512,Rasum,inc1,12288,cpu,0.003669984,0.00334824348,3
+
+exit=0, process_elapsed=0.036463
+charged_point_wall=0.040158
+
+exit receipt: 0
+
+### mpfr512_Rasum_cpu_14336_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rasum fast 14336
+OMP_NUM_THREADS=32
+mpfr512,Rasum,inc1,14336,cpu,0.004170566,0.00343742312,3
+
+exit=0, process_elapsed=0.042226
+charged_point_wall=0.046008
+
+exit receipt: 0
+
+### mpfr512_Rasum_cpu_16384_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rasum fast 16384
+OMP_NUM_THREADS=32
+mpfr512,Rasum,inc1,16384,cpu,0.00458222,0.00357555944,3
+
+exit=0, process_elapsed=0.044936
+charged_point_wall=0.049247
+
+exit receipt: 0
+
+### mpfr512_Rasum_cpu_20480_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rasum fast 20480
+OMP_NUM_THREADS=32
+mpfr512,Rasum,inc1,20480,cpu,0.005962908,0.00343456582,3
+
+exit=0, process_elapsed=0.058264
+charged_point_wall=0.062874
+
+exit receipt: 0
+
+### mpfr512_Rasum_cpu_24576_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rasum fast 24576
+OMP_NUM_THREADS=32
+mpfr512,Rasum,inc1,24576,cpu,0.006964664,0.00352866987,3
+
+exit=0, process_elapsed=0.064170
+charged_point_wall=0.068352
+
+exit receipt: 0
+
+### mpfr512_Rasum_cpu_28672_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rasum fast 28672
+OMP_NUM_THREADS=32
+mpfr512,Rasum,inc1,28672,cpu,0.00981629,0.0029208591,3
+
+exit=0, process_elapsed=0.082581
+charged_point_wall=0.086158
+
+exit receipt: 0
+
+### mpfr512_Rasum_cpu_32768_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rasum fast 32768
+OMP_NUM_THREADS=32
+mpfr512,Rasum,inc1,32768,cpu,0.009632049,0.00340197605,3
+
+exit=0, process_elapsed=0.085960
+charged_point_wall=0.090213
+
+exit receipt: 0
+
+### mpfr512_Rasum_cpu_40960_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rasum fast 40960
+OMP_NUM_THREADS=32
+mpfr512,Rasum,inc1,40960,cpu,0.012190177,0.00336008247,3
+
+exit=0, process_elapsed=0.108498
+charged_point_wall=0.112494
+
+exit receipt: 0
+
+### mpfr512_Rasum_cpu_49152_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rasum fast 49152
+OMP_NUM_THREADS=32
+mpfr512,Rasum,inc1,49152,cpu,0.015512019,0.00316863975,3
+
+exit=0, process_elapsed=0.129666
+charged_point_wall=0.133889
+
+exit receipt: 0
+
+### mpfr512_Rasum_cpu_57344_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rasum fast 57344
+OMP_NUM_THREADS=32
+mpfr512,Rasum,inc1,57344,cpu,0.017890787,0.00320522513,3
+
+exit=0, process_elapsed=0.151320
+charged_point_wall=0.156332
+
+exit receipt: 0
+
+### mpfr512_Rasum_cpu_65536_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rasum fast 65536
+OMP_NUM_THREADS=32
+mpfr512,Rasum,inc1,65536,cpu,0.021199203,0.00309143698,3
+
+exit=0, process_elapsed=0.172740
+charged_point_wall=0.177882
+
+exit receipt: 0
+
+### mpfr512_Rasum_cpu_81920_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rasum fast 81920
+OMP_NUM_THREADS=32
+mpfr512,Rasum,inc1,81920,cpu,0.027203498,0.00301137743,3
+
+exit=0, process_elapsed=0.216757
+charged_point_wall=0.221480
+
+exit receipt: 0
+
+### mpfr512_Rasum_cpu_98304_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rasum fast 98304
+OMP_NUM_THREADS=32
+mpfr512,Rasum,inc1,98304,cpu,0.035079567,0.00280231509,3
+
+exit=0, process_elapsed=0.265728
+charged_point_wall=0.270653
+
+exit receipt: 0
+
+### mpfr512_Rasum_cpu_114688_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rasum fast 114688
+OMP_NUM_THREADS=32
+mpfr512,Rasum,inc1,114688,cpu,0.040506544,0.00283134498,3
+
+exit=0, process_elapsed=0.317070
+charged_point_wall=0.322290
+
+exit receipt: 0
+
+### mpfr512_Rasum_cpu_131072_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rasum fast 131072
+OMP_NUM_THREADS=32
+mpfr512,Rasum,inc1,131072,cpu,0.044959538,0.00291533245,3
+
+exit=0, process_elapsed=0.345691
+charged_point_wall=0.350990
+
+exit receipt: 0
+
+### mpfr512_Rasum_cpu_163840_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rasum fast 163840
+OMP_NUM_THREADS=32
+mpfr512,Rasum,inc1,163840,cpu,0.060776697,0.00269577006,3
+
+exit=0, process_elapsed=0.449893
+charged_point_wall=0.455085
+
+exit receipt: 0
+
+### mpfr512_Rasum_cpu_196608_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rasum fast 196608
+OMP_NUM_THREADS=32
+mpfr512,Rasum,inc1,196608,cpu,0.068379055,0.00287526641,3
+
+exit=0, process_elapsed=0.521424
+charged_point_wall=0.526427
+
+exit receipt: 0
+
+### mpfr512_Rasum_cpu_229376_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rasum fast 229376
+OMP_NUM_THREADS=32
+mpfr512,Rasum,inc1,229376,cpu,0.080729968,0.00284127451,3
+
+exit=0, process_elapsed=0.603828
+charged_point_wall=0.608444
+
+exit receipt: 0
+
+### mpfr512_Rasum_cpu_262144_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rasum fast 262144
+OMP_NUM_THREADS=32
+mpfr512,Rasum,inc1,262144,cpu,0.09111042,0.00287721207,3
+
+exit=0, process_elapsed=0.690579
+charged_point_wall=0.695783
+
+exit receipt: 0
+
+### mpfr512_Rasum_cpu_327680_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rasum fast 327680
+OMP_NUM_THREADS=32
+mpfr512,Rasum,inc1,327680,cpu,0.132461681,0.00247377202,3
+
+exit=0, process_elapsed=0.904740
+charged_point_wall=0.910123
+
+exit receipt: 0
+
+### mpfr512_Rasum_cpu_393216_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rasum fast 393216
+OMP_NUM_THREADS=32
+mpfr512,Rasum,inc1,393216,cpu,0.158355044,0.00248312899,3
+
+exit=0, process_elapsed=1.075248
+charged_point_wall=1.080424
+
+exit receipt: 0
+
+### mpfr512_Rasum_cpu_458752_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rasum fast 458752
+OMP_NUM_THREADS=32
+mpfr512,Rasum,inc1,458752,cpu,0.178763027,0.00256625773,3
+
+exit=0, process_elapsed=1.218773
+charged_point_wall=1.224106
+
+exit receipt: 0
+
+### mpfr512_Rasum_cpu_524288_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rasum fast 524288
+OMP_NUM_THREADS=32
+mpfr512,Rasum,inc1,524288,cpu,0.19499257,0.00268875886,3
+
+exit=0, process_elapsed=1.342167
+charged_point_wall=1.346942
+
+exit receipt: 0
+
+### mpfr512_Rasum_cpu_655360_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rasum fast 655360
+OMP_NUM_THREADS=32
+mpfr512,Rasum,inc1,655360,cpu,0.231744604,0.00282794071,3
+
+exit=0, process_elapsed=1.656104
+charged_point_wall=1.661301
+
+exit receipt: 0
+
+### mpfr512_Rasum_cpu_786432_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rasum fast 786432
+OMP_NUM_THREADS=32
+mpfr512,Rasum,inc1,786432,cpu,0.27099508,0.00290201579,3
+
+exit=0, process_elapsed=1.947778
+charged_point_wall=1.952698
+
+exit receipt: 0
+
+### mpfr512_Rasum_cpu_917504_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rasum fast 917504
+OMP_NUM_THREADS=32
+mpfr512,Rasum,inc1,917504,cpu,0.318572238,0.00288005008,3
+
+exit=0, process_elapsed=2.302457
+charged_point_wall=2.312762
+
+exit receipt: 0
+
+### mpfr512_Rasum_cpu_1048576_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rasum fast 1048576
+OMP_NUM_THREADS=32
+mpfr512,Rasum,inc1,1048576,cpu,0.353147735,0.0029692276,3
+
+exit=0, process_elapsed=2.553032
+charged_point_wall=2.557415
+
+exit receipt: 0
+
+### mpfr512_Rasum_cpu_1310720_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rasum fast 1310720
+OMP_NUM_THREADS=32
+mpfr512,Rasum,inc1,1310720,cpu,0.427401389,0.00306671909,3
+
+exit=0, process_elapsed=3.106872
+charged_point_wall=3.111800
+
+exit receipt: 0
+
+### mpfr512_Rasum_cpu_1572864_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rasum fast 1572864
+OMP_NUM_THREADS=32
+mpfr512,Rasum,inc1,1572864,cpu,0.502391051,0.0031307564,3
+
+exit=0, process_elapsed=3.680569
+charged_point_wall=3.685469
+
+exit receipt: 0
+
+### mpfr512_Rasum_cpu_1835008_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rasum fast 1835008
+OMP_NUM_THREADS=32
+mpfr512,Rasum,inc1,1835008,cpu,0.606946507,0.00302334387,3
+
+exit=0, process_elapsed=4.368742
+charged_point_wall=4.374161
+
+exit receipt: 0
+
+### mpfr512_Rasum_cpu_2097152_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rasum fast 2097152
+OMP_NUM_THREADS=32
+mpfr512,Rasum,inc1,2097152,cpu,0.628206639,0.00333831556,3
+
+exit=0, process_elapsed=4.801599
+charged_point_wall=4.807086
+
+exit receipt: 0
+
+### mpfr512_Rasum_cpu_2621440_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rasum fast 2621440
+OMP_NUM_THREADS=32
+mpfr512,Rasum,inc1,2621440,cpu,1.11370606,0.00235379881,1
+
+exit=0, process_elapsed=3.613463
+charged_point_wall=3.618387
+
+exit receipt: 0
+
+### mpfr512_Rasum_cpu_3145728_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rasum fast 3145728
+OMP_NUM_THREADS=32
+mpfr512,Rasum,inc1,3145728,cpu,1.29361594,0.00243173257,1
+
+exit=0, process_elapsed=4.266882
+charged_point_wall=4.270862
+
+exit receipt: 0
+
+### mpfr512_Rasum_cpu_3670016_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rasum fast 3670016
+OMP_NUM_THREADS=32
+mpfr512,Rasum,inc1,3670016,cpu,1.51282478,0.00242593594,1
+
+exit=0, process_elapsed=4.954536
+charged_point_wall=4.959958
+
+exit receipt: 0
+
+### mpfr512_Rasum_cpu_4194304_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rasum fast 4194304
+OMP_NUM_THREADS=32
+mpfr512,Rasum,inc1,4194304,cpu,1.59439634,0.00263065331,1
+
+exit=0, process_elapsed=5.495697
+charged_point_wall=5.500583
+
+exit receipt: 0
+
+### mpfr512_Rasum_cpu_5242880_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rasum fast 5242880
+OMP_NUM_THREADS=32
+mpfr512,Rasum,inc1,5242880,cpu,1.95959525,0.00267549128,1
+
+exit=0, process_elapsed=6.835045
+charged_point_wall=6.840329
+
+exit receipt: 0
+
+### mpfr512_Rasum_cpu_6291456_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rasum fast 6291456
+OMP_NUM_THREADS=32
+mpfr512,Rasum,inc1,6291456,cpu,2.41904347,0.00260080321,1
+
+exit=0, process_elapsed=8.426982
+charged_point_wall=8.431769
+
+exit receipt: 0
+
+### mpfr512_Rasum_cpu_7340032_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rasum fast 7340032
+OMP_NUM_THREADS=32
+mpfr512,Rasum,inc1,7340032,cpu,2.74574952,0.00267323438,1
+
+exit=0, process_elapsed=9.522758
+charged_point_wall=9.526810
+
+exit receipt: 0
+
+### mpfr512_Rasum_cpu_8388608_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rasum fast 8388608
+OMP_NUM_THREADS=32
+mpfr512,Rasum,inc1,8388608,cpu,3.0839074,0.00272012318,1
+
+exit=0, process_elapsed=10.940664
+charged_point_wall=10.945612
+
+exit receipt: 0
+
+### mpfr512_Rasum_cpu_10485760_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rasum fast 10485760
+OMP_NUM_THREADS=32
+mpfr512,Rasum,inc1,10485760,cpu,3.80432682,0.00275627214,1
+
+exit=0, process_elapsed=13.480090
+charged_point_wall=13.485425
+
+exit receipt: 0
+
+### mpfr512_Rasum_cpu_12582912_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rasum fast 12582912
+OMP_NUM_THREADS=32
+mpfr512,Rasum,inc1,12582912,cpu,4.71205404,0.00267036666,1
+
+exit=0, process_elapsed=16.534015
+charged_point_wall=16.538247
+
+exit receipt: 0
+
+### mpfr512_Rasum_cpu_14680064_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rasum fast 14680064
+OMP_NUM_THREADS=32
+mpfr512,Rasum,inc1,14680064,cpu,5.17974163,0.00283413055,1
+
+exit=0, process_elapsed=18.659899
+charged_point_wall=18.665255
+
+exit receipt: 0
+
+### mpfr512_Rasum_cpu_16777216_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rasum fast 16777216
+OMP_NUM_THREADS=32
+mpfr512,Rasum,inc1,16777216,cpu,6.00582276,0.00279349169,1
+
+exit=0, process_elapsed=21.651117
+charged_point_wall=21.656380
+
+exit receipt: 0

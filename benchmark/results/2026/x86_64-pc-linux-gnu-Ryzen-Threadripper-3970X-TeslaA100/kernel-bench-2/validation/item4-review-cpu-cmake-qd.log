@@ -1,0 +1,51 @@
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt Raxpy fast 7 --reps 1 --warmup 0 --dump /tmp/tmpyixwlx7a/result exit= 0 qd,Raxpy,inc1,7,cpu,0.001628615,8.59626124e-06,1
+ 
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt Rcopy fast 7 --reps 1 --warmup 0 --dump /tmp/tmpyixwlx7a/result exit= 0 qd,Rcopy,inc1,7,cpu,0.001035124,0,1
+ 
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt iRamax fast 7 --reps 1 --warmup 0 --dump /tmp/tmpyixwlx7a/result exit= 0 qd,iRamax,inc1,7,cpu,1.974e-06,0,1
+ 
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt iCamax fast 7 --reps 1 --warmup 0 --dump /tmp/tmpyixwlx7a/result exit= 0 qd,iCamax,inc1,7,cpu,1.2404e-05,0,1
+ 
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt Rdot fast 7 --reps 1 --warmup 0 --dump /tmp/tmpyixwlx7a/result exit= 0 qd,Rdot,inc1,7,cpu,3.7111e-05,0.000377246638,1
+ 
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt Rdot default 7 --reps 1 --warmup 0 --dump /tmp/tmpyixwlx7a/result exit= 0 qd,Rdot,inc1,7,cpu-default,1.9497e-05,0.000718059189,1
+ 
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt Cdotc fast 7 --reps 1 --warmup 0 --dump /tmp/tmpyixwlx7a/result exit= 0 qd,Cdotc,inc1,7,cpu,2.3846e-05,0.00234840225,1
+ 
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt Cdotc default 7 --reps 1 --warmup 0 --dump /tmp/tmpyixwlx7a/result exit= 0 qd,Cdotc,inc1,7,cpu-default,5.28e-06,0.0106060606,1
+ 
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt Cdotu fast 7 --reps 1 --warmup 0 --dump /tmp/tmpyixwlx7a/result exit= 0 qd,Cdotu,inc1,7,cpu,2.601e-05,0.00215301807,1
+ 
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt Cdotu default 7 --reps 1 --warmup 0 --dump /tmp/tmpyixwlx7a/result exit= 0 qd,Cdotu,inc1,7,cpu-default,1.2845e-05,0.00435967302,1
+ 
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt Rasum fast 7 --reps 1 --warmup 0 --dump /tmp/tmpyixwlx7a/result exit= 0 qd,Rasum,inc1,7,cpu,2.635e-05,0.000265654649,1
+ 
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt Rasum default 7 --reps 1 --warmup 0 --dump /tmp/tmpyixwlx7a/result exit= 0 qd,Rasum,inc1,7,cpu-default,1.7744e-05,0.000394499549,1
+ 
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt RCasum fast 7 --reps 1 --warmup 0 --dump /tmp/tmpyixwlx7a/result exit= 0 qd,RCasum,inc1,7,cpu,2.3224e-05,0.000602824664,1
+ 
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt RCasum default 7 --reps 1 --warmup 0 --dump /tmp/tmpyixwlx7a/result exit= 0 qd,RCasum,inc1,7,cpu-default,9.127e-06,0.00153391038,1
+ 
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt Rnrm2 fast 7 --reps 1 --warmup 0 --dump /tmp/tmpyixwlx7a/result exit= 0 qd,Rnrm2,inc1,7,cpu,4.9073e-05,0.000285289263,1
+ 
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt Rnrm2 default 7 --reps 1 --warmup 0 --dump /tmp/tmpyixwlx7a/result exit= 0 qd,Rnrm2,inc1,7,cpu-default,2.8154e-05,0.000497265042,1
+ 
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt RCnrm2 fast 7 --reps 1 --warmup 0 --dump /tmp/tmpyixwlx7a/result exit= 0 qd,RCnrm2,inc1,7,cpu,2.8224e-05,0.000992063492,1
+ 
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt RCnrm2 default 7 --reps 1 --warmup 0 --dump /tmp/tmpyixwlx7a/result exit= 0 qd,RCnrm2,inc1,7,cpu-default,3.8684e-05,0.000723813463,1
+ 
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt Rtrsv fast 7 --reps 1 --warmup 0 --dump /tmp/tmpyixwlx7a/result exit= 0 qd,Rtrsv,UNN_k64,7,cpu,1.1763e-05,0.00416560401,1
+ 
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt Rtbsv fast 7 --reps 1 --warmup 0 --dump /tmp/tmpyixwlx7a/result exit= 0 qd,Rtbsv,UNN_k64,7,cpu,2.604e-05,0.00188172043,1
+ 
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt Rtpsv fast 7 --reps 1 --warmup 0 --dump /tmp/tmpyixwlx7a/result exit= 0 qd,Rtpsv,UNN_k64,7,cpu,7.855e-06,0.00623806493,1
+ 
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt Ctrsv fast 7 --reps 1 --warmup 0 --dump /tmp/tmpyixwlx7a/result exit= 0 qd,Ctrsv,UNN_k64,7,cpu,6.0305e-05,0.0032501451,1
+ 
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt Ctbsv fast 7 --reps 1 --warmup 0 --dump /tmp/tmpyixwlx7a/result exit= 0 qd,Ctbsv,UNN_k64,7,cpu,4.2651e-05,0.00459543739,1
+ 
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt Ctpsv fast 7 --reps 1 --warmup 0 --dump /tmp/tmpyixwlx7a/result exit= 0 qd,Ctpsv,UNN_k64,7,cpu,4.4645e-05,0.00439018927,1
+ 
+reject ['Rdot', 'invalid', '7'] exit= 1
+reject ['Rdot', 'fast', '0'] exit= 1
+reject ['Rdot', 'fast', '1024', '--reps', '0'] exit= 1

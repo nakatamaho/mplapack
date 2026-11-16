@@ -1,0 +1,1 @@
+PASS: eight exact resident boundary dumps; public HERK and TRSM checks. Full MPFR complex memcheck remains UNVERIFIED.

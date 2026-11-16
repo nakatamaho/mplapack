@@ -1,0 +1,4 @@
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rdot default 10485760
+OMP_NUM_THREADS=32
+
+Interrupted by SIGTERM at 2026-11-04T22:50:48+09:00 to run gated GPU tests without timing overlap. No timing result accepted; process was observed gone. Original shell wait receipt unavailable; not a passing run.

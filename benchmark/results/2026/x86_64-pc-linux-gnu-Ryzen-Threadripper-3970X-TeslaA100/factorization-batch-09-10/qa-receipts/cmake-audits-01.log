@@ -1,0 +1,13 @@
+Test project /tmp/factor01-cmake
+    Start  35: unique_symbols_mpfr
+1/4 Test  #35: unique_symbols_mpfr ..............   Passed    0.62 sec
+    Start  36: unique_symbols_mpfr_opt
+2/4 Test  #36: unique_symbols_mpfr_opt ..........   Passed    0.69 sec
+    Start  37: unique_symbols_mpfr_opt_cuda
+3/4 Test  #37: unique_symbols_mpfr_opt_cuda .....   Passed    0.97 sec
+    Start 490: source_manifests
+4/4 Test #490: source_manifests .................   Passed   15.64 sec
+
+100% tests passed, 0 tests failed out of 4
+
+Total Test time (real) =  17.93 sec

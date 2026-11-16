@@ -1,0 +1,608 @@
+
+### mpfr512_Rasum_gpu_1024_pilot-pre-eager
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Rasum fast 1024 --reps 1 --warmup 1
+OMP_NUM_THREADS=1
+mpfr512,Rasum,inc1,1024,gpu,0.000132095993,0.00775193842,1
+
+exit=0, elapsed=0.265030
+
+exit receipt: 0
+
+### mpfr512_Rasum_gpu_32768_pilot-pre-eager
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Rasum fast 32768 --reps 1 --warmup 1
+OMP_NUM_THREADS=1
+mpfr512,Rasum,inc1,32768,gpu,0.000286720008,0.114285711,1
+
+exit=0, elapsed=0.311165
+
+exit receipt: 0
+
+### mpfr512_Rasum_gpu_1024_pilot
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Rasum fast 1024 --reps 1 --warmup 1
+OMP_NUM_THREADS=1
+mpfr512,Rasum,inc1,1024,gpu,0.000128000006,0.00799999962,1
+
+exit=0, process_elapsed=0.270071
+charged_point_wall=0.317310
+
+exit receipt: 0
+
+### mpfr512_Rasum_gpu_32768_pilot
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Rasum fast 32768 --reps 1 --warmup 1
+OMP_NUM_THREADS=1
+mpfr512,Rasum,inc1,32768,gpu,0.000284671992,0.115107917,1
+
+exit=0, process_elapsed=0.299528
+charged_point_wall=0.348049
+
+exit receipt: 0
+
+### mpfr512_Rasum_gpu_1024_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Rasum fast 1024
+OMP_NUM_THREADS=1
+mpfr512,Rasum,inc1,1024,gpu,0.000130048007,0.00787401534,3
+
+exit=0, process_elapsed=0.276037
+charged_point_wall=0.327382
+
+exit receipt: 0
+
+### mpfr512_Rasum_gpu_1280_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Rasum fast 1280
+OMP_NUM_THREADS=1
+mpfr512,Rasum,inc1,1280,gpu,0.000137216002,0.00932835809,3
+
+exit=0, process_elapsed=0.272364
+charged_point_wall=0.321810
+
+exit receipt: 0
+
+### mpfr512_Rasum_gpu_1536_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Rasum fast 1536
+OMP_NUM_THREADS=1
+mpfr512,Rasum,inc1,1536,gpu,0.000139264002,0.0110294116,3
+
+exit=0, process_elapsed=0.267018
+charged_point_wall=0.318926
+
+exit receipt: 0
+
+### mpfr512_Rasum_gpu_1792_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Rasum fast 1792
+OMP_NUM_THREADS=1
+mpfr512,Rasum,inc1,1792,gpu,0.000141312003,0.0126811591,3
+
+exit=0, process_elapsed=0.274272
+charged_point_wall=0.324435
+
+exit receipt: 0
+
+### mpfr512_Rasum_gpu_2048_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Rasum fast 2048
+OMP_NUM_THREADS=1
+mpfr512,Rasum,inc1,2048,gpu,0.000145408005,0.0140845066,3
+
+exit=0, process_elapsed=0.271733
+charged_point_wall=0.319700
+
+exit receipt: 0
+
+### mpfr512_Rasum_gpu_2560_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Rasum fast 2560
+OMP_NUM_THREADS=1
+mpfr512,Rasum,inc1,2560,gpu,0.000153600007,0.0166666659,3
+
+exit=0, process_elapsed=0.269943
+charged_point_wall=0.318782
+
+exit receipt: 0
+
+### mpfr512_Rasum_gpu_3072_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Rasum fast 3072
+OMP_NUM_THREADS=1
+mpfr512,Rasum,inc1,3072,gpu,0.000152575999,0.0201342283,3
+
+exit=0, process_elapsed=0.267591
+charged_point_wall=0.313939
+
+exit receipt: 0
+
+### mpfr512_Rasum_gpu_3584_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Rasum fast 3584
+OMP_NUM_THREADS=1
+mpfr512,Rasum,inc1,3584,gpu,0.000156672001,0.0228758169,3
+
+exit=0, process_elapsed=0.270519
+charged_point_wall=0.317516
+
+exit receipt: 0
+
+### mpfr512_Rasum_gpu_4096_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Rasum fast 4096
+OMP_NUM_THREADS=1
+mpfr512,Rasum,inc1,4096,gpu,0.000159743994,0.0256410265,3
+
+exit=0, process_elapsed=0.267060
+charged_point_wall=0.314125
+
+exit receipt: 0
+
+### mpfr512_Rasum_gpu_5120_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Rasum fast 5120
+OMP_NUM_THREADS=1
+mpfr512,Rasum,inc1,5120,gpu,0.000172031999,0.029761905,3
+
+exit=0, process_elapsed=0.263173
+charged_point_wall=0.313690
+
+exit receipt: 0
+
+### mpfr512_Rasum_gpu_6144_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Rasum fast 6144
+OMP_NUM_THREADS=1
+mpfr512,Rasum,inc1,6144,gpu,0.000175104007,0.0350877179,3
+
+exit=0, process_elapsed=0.268206
+charged_point_wall=0.316995
+
+exit receipt: 0
+
+### mpfr512_Rasum_gpu_7168_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Rasum fast 7168
+OMP_NUM_THREADS=1
+mpfr512,Rasum,inc1,7168,gpu,0.000183295995,0.0391061463,3
+
+exit=0, process_elapsed=0.267404
+charged_point_wall=0.317726
+
+exit receipt: 0
+
+### mpfr512_Rasum_gpu_8192_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Rasum fast 8192
+OMP_NUM_THREADS=1
+mpfr512,Rasum,inc1,8192,gpu,0.000183295995,0.0446927387,3
+
+exit=0, process_elapsed=0.274739
+charged_point_wall=0.330208
+
+exit receipt: 0
+
+### mpfr512_Rasum_gpu_10240_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Rasum fast 10240
+OMP_NUM_THREADS=1
+mpfr512,Rasum,inc1,10240,gpu,0.000198655993,0.0515463936,3
+
+exit=0, process_elapsed=0.267490
+charged_point_wall=0.317638
+
+exit receipt: 0
+
+### mpfr512_Rasum_gpu_12288_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Rasum fast 12288
+OMP_NUM_THREADS=1
+mpfr512,Rasum,inc1,12288,gpu,0.000203776002,0.060301507,3
+
+exit=0, process_elapsed=0.271225
+charged_point_wall=0.319386
+
+exit receipt: 0
+
+### mpfr512_Rasum_gpu_14336_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Rasum fast 14336
+OMP_NUM_THREADS=1
+mpfr512,Rasum,inc1,14336,gpu,0.000210943997,0.067961166,3
+
+exit=0, process_elapsed=0.277292
+charged_point_wall=0.331121
+
+exit receipt: 0
+
+### mpfr512_Rasum_gpu_16384_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Rasum fast 16384
+OMP_NUM_THREADS=1
+mpfr512,Rasum,inc1,16384,gpu,0.000218112007,0.0751173686,3
+
+exit=0, process_elapsed=0.282641
+charged_point_wall=0.333055
+
+exit receipt: 0
+
+### mpfr512_Rasum_gpu_20480_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Rasum fast 20480
+OMP_NUM_THREADS=1
+mpfr512,Rasum,inc1,20480,gpu,0.000244736001,0.0836820081,3
+
+exit=0, process_elapsed=0.285207
+charged_point_wall=0.333893
+
+exit receipt: 0
+
+### mpfr512_Rasum_gpu_24576_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Rasum fast 24576
+OMP_NUM_THREADS=1
+mpfr512,Rasum,inc1,24576,gpu,0.000254976004,0.0963855405,3
+
+exit=0, process_elapsed=0.287407
+charged_point_wall=0.336308
+
+exit receipt: 0
+
+### mpfr512_Rasum_gpu_28672_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Rasum fast 28672
+OMP_NUM_THREADS=1
+mpfr512,Rasum,inc1,28672,gpu,0.000269311994,0.106463881,3
+
+exit=0, process_elapsed=0.289655
+charged_point_wall=0.339595
+
+exit receipt: 0
+
+### mpfr512_Rasum_gpu_32768_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Rasum fast 32768
+OMP_NUM_THREADS=1
+mpfr512,Rasum,inc1,32768,gpu,0.000283648014,0.11552346,3
+
+exit=0, process_elapsed=0.297123
+charged_point_wall=0.346413
+
+exit receipt: 0
+
+### mpfr512_Rasum_gpu_40960_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Rasum fast 40960
+OMP_NUM_THREADS=1
+mpfr512,Rasum,inc1,40960,gpu,0.000326656014,0.125391844,3
+
+exit=0, process_elapsed=0.302758
+charged_point_wall=0.349732
+
+exit receipt: 0
+
+### mpfr512_Rasum_gpu_49152_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Rasum fast 49152
+OMP_NUM_THREADS=1
+mpfr512,Rasum,inc1,49152,gpu,0.000351231992,0.139941694,3
+
+exit=0, process_elapsed=0.324142
+charged_point_wall=0.373962
+
+exit receipt: 0
+
+### mpfr512_Rasum_gpu_57344_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Rasum fast 57344
+OMP_NUM_THREADS=1
+mpfr512,Rasum,inc1,57344,gpu,0.000378879994,0.151351354,3
+
+exit=0, process_elapsed=0.317240
+charged_point_wall=0.364445
+
+exit receipt: 0
+
+### mpfr512_Rasum_gpu_65536_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Rasum fast 65536
+OMP_NUM_THREADS=1
+mpfr512,Rasum,inc1,65536,gpu,0.00040959999,0.160000004,3
+
+exit=0, process_elapsed=0.329531
+charged_point_wall=0.377100
+
+exit receipt: 0
+
+### mpfr512_Rasum_gpu_81920_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Rasum fast 81920
+OMP_NUM_THREADS=1
+mpfr512,Rasum,inc1,81920,gpu,0.00049049601,0.167014611,3
+
+exit=0, process_elapsed=0.336588
+charged_point_wall=0.384862
+
+exit receipt: 0
+
+### mpfr512_Rasum_gpu_98304_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Rasum fast 98304
+OMP_NUM_THREADS=1
+mpfr512,Rasum,inc1,98304,gpu,0.000548864007,0.179104475,3
+
+exit=0, process_elapsed=0.346885
+charged_point_wall=0.397048
+
+exit receipt: 0
+
+### mpfr512_Rasum_gpu_114688_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Rasum fast 114688
+OMP_NUM_THREADS=1
+mpfr512,Rasum,inc1,114688,gpu,0.000612352014,0.187290966,3
+
+exit=0, process_elapsed=0.358522
+charged_point_wall=0.410588
+
+exit receipt: 0
+
+### mpfr512_Rasum_gpu_131072_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Rasum fast 131072
+OMP_NUM_THREADS=1
+mpfr512,Rasum,inc1,131072,gpu,0.000683008015,0.191904044,3
+
+exit=0, process_elapsed=0.376163
+charged_point_wall=0.423874
+
+exit receipt: 0
+
+### mpfr512_Rasum_gpu_163840_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Rasum fast 163840
+OMP_NUM_THREADS=1
+mpfr512,Rasum,inc1,163840,gpu,0.00082841599,0.197775033,3
+
+exit=0, process_elapsed=0.401268
+charged_point_wall=0.447734
+
+exit receipt: 0
+
+### mpfr512_Rasum_gpu_196608_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Rasum fast 196608
+OMP_NUM_THREADS=1
+mpfr512,Rasum,inc1,196608,gpu,0.000949248016,0.207119738,3
+
+exit=0, process_elapsed=0.415367
+charged_point_wall=0.462330
+
+exit receipt: 0
+
+### mpfr512_Rasum_gpu_229376_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Rasum fast 229376
+OMP_NUM_THREADS=1
+mpfr512,Rasum,inc1,229376,gpu,0.00107622397,0.213130358,3
+
+exit=0, process_elapsed=0.437370
+charged_point_wall=0.484382
+
+exit receipt: 0
+
+### mpfr512_Rasum_gpu_262144_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Rasum fast 262144
+OMP_NUM_THREADS=1
+mpfr512,Rasum,inc1,262144,gpu,0.00120832002,0.216949149,3
+
+exit=0, process_elapsed=0.460128
+charged_point_wall=0.509225
+
+exit receipt: 0
+
+### mpfr512_Rasum_gpu_327680_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Rasum fast 327680
+OMP_NUM_THREADS=1
+mpfr512,Rasum,inc1,327680,gpu,0.00147558403,0.222068004,3
+
+exit=0, process_elapsed=0.516174
+charged_point_wall=0.572457
+
+exit receipt: 0
+
+### mpfr512_Rasum_gpu_393216_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Rasum fast 393216
+OMP_NUM_THREADS=1
+mpfr512,Rasum,inc1,393216,gpu,0.00172953606,0.227353456,3
+
+exit=0, process_elapsed=0.566960
+charged_point_wall=0.615594
+
+exit receipt: 0
+
+### mpfr512_Rasum_gpu_458752_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Rasum fast 458752
+OMP_NUM_THREADS=1
+mpfr512,Rasum,inc1,458752,gpu,0.00198348796,0.231285497,3
+
+exit=0, process_elapsed=0.611559
+charged_point_wall=0.659551
+
+exit receipt: 0
+
+### mpfr512_Rasum_gpu_524288_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Rasum fast 524288
+OMP_NUM_THREADS=1
+mpfr512,Rasum,inc1,524288,gpu,0.0022415359,0.233896767,3
+
+exit=0, process_elapsed=0.655434
+charged_point_wall=0.702864
+
+exit receipt: 0
+
+### mpfr512_Rasum_gpu_655360_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Rasum fast 655360
+OMP_NUM_THREADS=1
+mpfr512,Rasum,inc1,655360,gpu,0.00277094412,0.236511446,3
+
+exit=0, process_elapsed=0.762079
+charged_point_wall=0.810316
+
+exit receipt: 0
+
+### mpfr512_Rasum_gpu_786432_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Rasum fast 786432
+OMP_NUM_THREADS=1
+mpfr512,Rasum,inc1,786432,gpu,0.00327987194,0.239775215,3
+
+exit=0, process_elapsed=0.854860
+charged_point_wall=0.903376
+
+exit receipt: 0
+
+### mpfr512_Rasum_gpu_917504_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Rasum fast 917504
+OMP_NUM_THREADS=1
+mpfr512,Rasum,inc1,917504,gpu,0.00380416012,0.24118438,3
+
+exit=0, process_elapsed=0.958124
+charged_point_wall=1.010840
+
+exit receipt: 0
+
+### mpfr512_Rasum_gpu_1048576_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Rasum fast 1048576
+OMP_NUM_THREADS=1
+mpfr512,Rasum,inc1,1048576,gpu,0.0043335681,0.241965968,3
+
+exit=0, process_elapsed=1.061856
+charged_point_wall=1.107593
+
+exit receipt: 0
+
+### mpfr512_Rasum_gpu_1310720_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Rasum fast 1310720
+OMP_NUM_THREADS=1
+mpfr512,Rasum,inc1,1310720,gpu,0.00536473608,0.244321432,3
+
+exit=0, process_elapsed=1.265300
+charged_point_wall=1.311363
+
+exit receipt: 0
+
+### mpfr512_Rasum_gpu_1572864_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Rasum fast 1572864
+OMP_NUM_THREADS=1
+mpfr512,Rasum,inc1,1572864,gpu,0.00637030411,0.246905638,3
+
+exit=0, process_elapsed=1.447217
+charged_point_wall=1.496522
+
+exit receipt: 0
+
+### mpfr512_Rasum_gpu_1835008_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Rasum fast 1835008
+OMP_NUM_THREADS=1
+mpfr512,Rasum,inc1,1835008,gpu,0.00746393585,0.245849916,3
+
+exit=0, process_elapsed=1.644189
+charged_point_wall=1.693647
+
+exit receipt: 0
+
+### mpfr512_Rasum_gpu_2097152_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Rasum fast 2097152
+OMP_NUM_THREADS=1
+mpfr512,Rasum,inc1,2097152,gpu,0.00850636768,0.246539073,3
+
+exit=0, process_elapsed=1.853418
+charged_point_wall=1.903472
+
+exit receipt: 0
+
+### mpfr512_Rasum_gpu_2621440_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Rasum fast 2621440
+OMP_NUM_THREADS=1
+mpfr512,Rasum,inc1,2621440,gpu,0.0106649599,0.24579933,1
+
+exit=0, process_elapsed=2.231661
+charged_point_wall=2.281473
+
+exit receipt: 0
+
+### mpfr512_Rasum_gpu_3145728_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Rasum fast 3145728
+OMP_NUM_THREADS=1
+mpfr512,Rasum,inc1,3145728,gpu,0.012648448,0.248704663,1
+
+exit=0, process_elapsed=2.658375
+charged_point_wall=2.709232
+
+exit receipt: 0
+
+### mpfr512_Rasum_gpu_3670016_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Rasum fast 3670016
+OMP_NUM_THREADS=1
+mpfr512,Rasum,inc1,3670016,gpu,0.0147886076,0.248165081,1
+
+exit=0, process_elapsed=3.036450
+charged_point_wall=3.083040
+
+exit receipt: 0
+
+### mpfr512_Rasum_gpu_4194304_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Rasum fast 4194304
+OMP_NUM_THREADS=1
+mpfr512,Rasum,inc1,4194304,gpu,0.016777216,0.250000001,1
+
+exit=0, process_elapsed=3.408568
+charged_point_wall=3.454810
+
+exit receipt: 0
+
+### mpfr512_Rasum_gpu_5242880_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Rasum fast 5242880
+OMP_NUM_THREADS=1
+mpfr512,Rasum,inc1,5242880,gpu,0.0210329609,0.249269707,1
+
+exit=0, process_elapsed=4.157781
+charged_point_wall=4.208106
+
+exit receipt: 0
+
+### mpfr512_Rasum_gpu_6291456_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Rasum fast 6291456
+OMP_NUM_THREADS=1
+mpfr512,Rasum,inc1,6291456,gpu,0.0252159996,0.249502542,1
+
+exit=0, process_elapsed=4.926766
+charged_point_wall=4.977023
+
+exit receipt: 0
+
+### mpfr512_Rasum_gpu_7340032_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Rasum fast 7340032
+OMP_NUM_THREADS=1
+mpfr512,Rasum,inc1,7340032,gpu,0.0292044792,0.251332405,1
+
+exit=0, process_elapsed=5.729498
+charged_point_wall=5.777857
+
+exit receipt: 0
+
+### mpfr512_Rasum_gpu_8388608_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Rasum fast 8388608
+OMP_NUM_THREADS=1
+mpfr512,Rasum,inc1,8388608,gpu,0.0335441933,0.250076308,1
+
+exit=0, process_elapsed=6.446194
+charged_point_wall=6.495248
+
+exit receipt: 0
+
+### mpfr512_Rasum_gpu_10485760_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Rasum fast 10485760
+OMP_NUM_THREADS=1
+mpfr512,Rasum,inc1,10485760,gpu,0.0418611183,0.250489247,1
+
+exit=0, process_elapsed=7.964591
+charged_point_wall=8.014299
+
+exit receipt: 0
+
+### mpfr512_Rasum_gpu_12582912_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Rasum fast 12582912
+OMP_NUM_THREADS=1
+mpfr512,Rasum,inc1,12582912,gpu,0.0502722549,0.250295357,1
+
+exit=0, process_elapsed=9.392900
+charged_point_wall=9.441405
+
+exit receipt: 0
+
+### mpfr512_Rasum_gpu_14680064_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Rasum fast 14680064
+OMP_NUM_THREADS=1
+mpfr512,Rasum,inc1,14680064,gpu,0.0584632301,0.251099092,1
+
+exit=0, process_elapsed=10.959695
+charged_point_wall=11.009628
+
+exit receipt: 0
+
+### mpfr512_Rasum_gpu_16777216_sweep
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Rasum fast 16777216
+OMP_NUM_THREADS=1
+mpfr512,Rasum,inc1,16777216,gpu,0.0666961899,0.251546843,1
+
+exit=0, process_elapsed=12.453149
+charged_point_wall=12.509110
+
+exit receipt: 0

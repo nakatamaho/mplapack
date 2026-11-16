@@ -1,0 +1,51 @@
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_opt Raxpy fast 7 --reps 1 --warmup 0 --dump /tmp/tmppprn8qs_/result exit= 0 dd,Raxpy,inc1,7,cpu,0.001078446,1.29816421e-05,1
+ 
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_opt Rcopy fast 7 --reps 1 --warmup 0 --dump /tmp/tmppprn8qs_/result exit= 0 dd,Rcopy,inc1,7,cpu,0.00135299,0,1
+ 
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_opt iRamax fast 7 --reps 1 --warmup 0 --dump /tmp/tmppprn8qs_/result exit= 0 dd,iRamax,inc1,7,cpu,7.755e-06,0,1
+ 
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_opt iCamax fast 7 --reps 1 --warmup 0 --dump /tmp/tmppprn8qs_/result exit= 0 dd,iCamax,inc1,7,cpu,1.61e-05,0,1
+ 
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_opt Rdot fast 7 --reps 1 --warmup 0 --dump /tmp/tmppprn8qs_/result exit= 0 dd,Rdot,inc1,7,cpu,1.2133e-05,0.00115387785,1
+ 
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_opt Rdot default 7 --reps 1 --warmup 0 --dump /tmp/tmppprn8qs_/result exit= 0 dd,Rdot,inc1,7,cpu-default,3.005e-06,0.00465890183,1
+ 
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_opt Cdotc fast 7 --reps 1 --warmup 0 --dump /tmp/tmppprn8qs_/result exit= 0 dd,Cdotc,inc1,7,cpu,3.8022e-05,0.00147283152,1
+ 
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_opt Cdotc default 7 --reps 1 --warmup 0 --dump /tmp/tmppprn8qs_/result exit= 0 dd,Cdotc,inc1,7,cpu-default,1.3446e-05,0.00416480738,1
+ 
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_opt Cdotu fast 7 --reps 1 --warmup 0 --dump /tmp/tmppprn8qs_/result exit= 0 dd,Cdotu,inc1,7,cpu,2.2362e-05,0.00250424828,1
+ 
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_opt Cdotu default 7 --reps 1 --warmup 0 --dump /tmp/tmppprn8qs_/result exit= 0 dd,Cdotu,inc1,7,cpu-default,1.2314e-05,0.00454766932,1
+ 
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_opt Rasum fast 7 --reps 1 --warmup 0 --dump /tmp/tmppprn8qs_/result exit= 0 dd,Rasum,inc1,7,cpu,2.7202e-05,0.00025733402,1
+ 
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_opt Rasum default 7 --reps 1 --warmup 0 --dump /tmp/tmppprn8qs_/result exit= 0 dd,Rasum,inc1,7,cpu-default,4.238e-06,0.00165172251,1
+ 
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_opt RCasum fast 7 --reps 1 --warmup 0 --dump /tmp/tmppprn8qs_/result exit= 0 dd,RCasum,inc1,7,cpu,1.4788e-05,0.000946713552,1
+ 
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_opt RCasum default 7 --reps 1 --warmup 0 --dump /tmp/tmppprn8qs_/result exit= 0 dd,RCasum,inc1,7,cpu-default,9.889e-06,0.00141571443,1
+ 
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_opt Rnrm2 fast 7 --reps 1 --warmup 0 --dump /tmp/tmppprn8qs_/result exit= 0 dd,Rnrm2,inc1,7,cpu,6.0686e-05,0.000230695712,1
+ 
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_opt Rnrm2 default 7 --reps 1 --warmup 0 --dump /tmp/tmppprn8qs_/result exit= 0 dd,Rnrm2,inc1,7,cpu-default,3.8664e-05,0.000362093938,1
+ 
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_opt RCnrm2 fast 7 --reps 1 --warmup 0 --dump /tmp/tmppprn8qs_/result exit= 0 dd,RCnrm2,inc1,7,cpu,4.0657e-05,0.000688688295,1
+ 
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_opt RCnrm2 default 7 --reps 1 --warmup 0 --dump /tmp/tmppprn8qs_/result exit= 0 dd,RCnrm2,inc1,7,cpu-default,6.9923e-05,0.000400440485,1
+ 
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_opt Rtrsv fast 7 --reps 1 --warmup 0 --dump /tmp/tmppprn8qs_/result exit= 0 dd,Rtrsv,UNN_k64,7,cpu,7.625e-06,0.00642622951,1
+ 
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_opt Rtbsv fast 7 --reps 1 --warmup 0 --dump /tmp/tmppprn8qs_/result exit= 0 dd,Rtbsv,UNN_k64,7,cpu,6.111e-06,0.00801832761,1
+ 
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_opt Rtpsv fast 7 --reps 1 --warmup 0 --dump /tmp/tmppprn8qs_/result exit= 0 dd,Rtpsv,UNN_k64,7,cpu,6.933e-06,0.00706764748,1
+ 
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_opt Ctrsv fast 7 --reps 1 --warmup 0 --dump /tmp/tmppprn8qs_/result exit= 0 dd,Ctrsv,UNN_k64,7,cpu,4.2401e-05,0.00462253249,1
+ 
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_opt Ctbsv fast 7 --reps 1 --warmup 0 --dump /tmp/tmppprn8qs_/result exit= 0 dd,Ctbsv,UNN_k64,7,cpu,3.0068e-05,0.00651855794,1
+ 
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.dd_opt Ctpsv fast 7 --reps 1 --warmup 0 --dump /tmp/tmppprn8qs_/result exit= 0 dd,Ctpsv,UNN_k64,7,cpu,1.1923e-05,0.0164388157,1
+ 
+reject ['Rdot', 'invalid', '7'] exit= 1
+reject ['Rdot', 'fast', '0'] exit= 1
+reject ['Rdot', 'fast', '1024', '--reps', '0'] exit= 1

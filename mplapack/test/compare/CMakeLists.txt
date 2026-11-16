@@ -32,7 +32,7 @@ set(_support
 
 file(GLOB _compare_tests CONFIGURE_DEPENDS "${_common}/*.test.cpp")
 
-set(_backends gmp mpfr qd dd double binary80 binary128)
+set(_backends ${MPLAPACK_BACKENDS})
 foreach(_b ${_backends})
   string(TOUPPER ${_b} _B)
   if(NOT MPLAPACK_ENABLE_${_B})
@@ -65,7 +65,7 @@ foreach(_b ${_backends})
       # below so their target macros do not leak in).
       target_compile_definitions(${_exe} PRIVATE
         MPLAPACK_BUILD_WITH_${_B} MPLAPACK_INTERNAL)
-      if(_b STREQUAL "dd" AND MPLAPACK_HAS_FP_CONTRACT_OFF)
+      if("nofma" IN_LIST MPLAPACK_BACKEND_${_b}_TRAITS AND MPLAPACK_HAS_FP_CONTRACT_OFF)
         target_compile_options(${_exe} PRIVATE -ffp-contract=off)
       endif()
       target_include_directories(${_exe} PRIVATE
@@ -83,10 +83,10 @@ foreach(_b ${_backends})
         ${_backend_archives}
         MPC::MPC MPFR::MPFR         ${LAPACK_LIBRARIES} ${BLAS_LIBRARIES})
       add_dependencies(${_exe} ${_backend_dependencies})
-      if(_b STREQUAL "dd" OR _b STREQUAL "qd")
+      if("qd" IN_LIST MPLAPACK_BACKEND_${_b}_TRAITS)
         target_link_libraries(${_exe} PRIVATE QD::QD)
       endif()
-      if(_b STREQUAL "binary128" AND MPLAPACK_BINARY128_EXTRA_LIBS)
+      if("binary128libs" IN_LIST MPLAPACK_BACKEND_${_b}_TRAITS AND MPLAPACK_BINARY128_EXTRA_LIBS)
         target_link_libraries(${_exe} PRIVATE ${MPLAPACK_BINARY128_EXTRA_LIBS})
       endif()
       if(MPLAPACK_GFORTRAN_LIBRARY)

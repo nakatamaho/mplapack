@@ -11,6 +11,9 @@ endif
 if ENABLE_DD
 lib_LTLIBRARIES += libmatgen_dd.la libmatgen_dd_opt.la
 endif
+if ENABLE_TD
+lib_LTLIBRARIES += libmatgen_td.la libmatgen_td_opt.la
+endif
 
 if ENABLE_QD
 lib_LTLIBRARIES += libmatgen_qd.la libmatgen_qd_opt.la
@@ -86,6 +89,20 @@ libmatgen_dd_opt_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_
 if IS_MACOS
 libmatgen_dd_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
 libmatgen_dd_opt_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
+endif
+endif
+if ENABLE_TD
+libmatgen_td_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(QD_INCLUDEDIR) -DMPLAPACK_BUILD_WITH_TD @qd_extra_cxxflags@ -DMPLAPACK_INTERNAL
+libmatgen_td_opt_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(QD_INCLUDEDIR) -DMPLAPACK_BUILD_WITH_TD @qd_extra_cxxflags@ -DMPLAPACK_INTERNAL
+libmatgen_td_la_SOURCES = $(MATGEN_SOURCES)
+libmatgen_td_opt_la_SOURCES = $(MATGEN_SOURCES)
+libmatgen_td_la_LIBADD = $(top_builddir)/mplapack/reference/libmplapack_td.la $(QD_LIBADD)
+libmatgen_td_opt_la_LIBADD = $(top_builddir)/mpblas/optimized/td/libmplapack_td_opt.la $(QD_LIBADD)
+libmatgen_td_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
+libmatgen_td_opt_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
+if IS_MACOS
+libmatgen_td_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
+libmatgen_td_opt_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif
 endif
 

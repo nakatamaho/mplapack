@@ -13,5 +13,7 @@ plot \
 "log.Rsyrk.mpfr_opt"        using 1:3 title 'MPFR 512bit(OpenMP)'    with lines linewidth 1, \
 "log.Rsyrk.gmp"             using 1:3 title 'GMP  512bit'            with lines linewidth 1, \
 "log.Rsyrk.gmp_opt"         using 1:3 title 'GMP  512bit(OpenMP)'    with lines linewidth 1, \
+"log.Rsyrk.td"              using 1:3 title 'triple-double'            with lines linewidth 1, \
+"log.Rsyrk.td_opt"          using 1:3 title 'triple-double(OpenMP)'    with lines linewidth 1, \
 "log.Rsyrk.qd"              using 1:3 title 'quad-double'            with lines linewidth 1, \
 "log.Rsyrk.qd_opt"	    using 1:3 title 'quad-double(OpenMP)'    with lines linewidth 1

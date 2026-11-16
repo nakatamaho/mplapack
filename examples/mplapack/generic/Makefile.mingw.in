@@ -9,6 +9,7 @@ MPFRLIBS= -lmplapack_mpfr -lmpfr -lmpc -lgmp
 GMPLIBS=-lmplapack_gmp -lgmp
 QDLIBS=-lmplapack_qd -lqd
 DDLIBS=-lmplapack_dd -lqd
+TDLIBS=-lmplapack_td -lqd
 BINARY80LIBS=-lmplapack_binary80
 BINARY128LIBS=-lmplapack_binary128%%LIBQUADMATH%%
 DOUBLELIBS=-lmplapack_double
@@ -16,7 +17,7 @@ BLAS=
 LAPACK=
 FLIBS=
 
-programs=%%ROUTINE%%_mpfr.exe %%ROUTINE%%_gmp.exe %%ROUTINE%%_qd.exe %%ROUTINE%%_dd.exe %%ROUTINE%%_binary80.exe %%ROUTINE%%_binary128.exe %%ROUTINE%%_double.exe
+programs=%%ROUTINE%%_mpfr.exe %%ROUTINE%%_gmp.exe %%ROUTINE%%_qd.exe %%ROUTINE%%_dd.exe %%ROUTINE%%_td.exe %%ROUTINE%%_binary80.exe %%ROUTINE%%_binary128.exe %%ROUTINE%%_double.exe
 
 all: $(programs)
 
@@ -34,6 +35,9 @@ all: $(programs)
 
 %%ROUTINE%%_dd.exe: %%ROUTINE%%_dd.o
 	$(CXX) -o %%ROUTINE%%_dd.exe %%ROUTINE%%_dd.o $(LIBFLAGS) $(DDLIBS)
+
+%%ROUTINE%%_td.exe: %%ROUTINE%%_td.o
+	$(CXX) -o %%ROUTINE%%_td.exe %%ROUTINE%%_td.o $(LIBFLAGS) $(TDLIBS)
 
 %%ROUTINE%%_binary80.exe: %%ROUTINE%%_binary80.o
 	$(CXX) -o %%ROUTINE%%_binary80 %%ROUTINE%%_binary80.o $(LIBFLAGS) $(BINARY80LIBS)

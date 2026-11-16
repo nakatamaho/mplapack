@@ -38,145 +38,56 @@ struct dd_real {
   double x[2];
 };
 
-#define SLOPPY_MUL
-#define CRAY_ADD
-
 #define _QD_SPLITTER 134217729.0 // 2^27 + 1 
 #define _SD_SPLITTER 4096.0 // 2^12 + 1 
 
-// SLOPPY_MUL and CRAY_ADD are available
-// therefore, all possible combinations are four.
+// Branch-free dd arithmetic of libQD3 built with QD_BF: dd_add is
+// dd_real::bf_add (Kouya Algorithm 6, DWBFAdd), dd_mul dd_real::bf_mul
+// (Algorithm 8, DWBFMul), with the error-free product computed by fma.
+// Compile with -fmad=false.
 
-#ifndef SLOPPY_MUL
-inline __device__ void dd_mul(const dd_real &a, const dd_real &b, dd_real &c)
+inline __host__ __device__ double dd_two_sum(double a, double b, double &err)
 {
-    double p;
-    double t;
-    double a_hh,b_hh;
-    double a_hl,b_hl;
-    double e;
-
-    p = __dmul_rn(a.x[0], b.x[0]);
-    e = __fma_rn(a.x[0], b.x[0], -1.0 * p);
-    e = e + __fma_rn ( a.x[1], b.x[0],  __dmul_rn(a.x[0],b.x[1]));
-
-    c.x[0] = p + e;
-    c.x[1] = e - (c.x[0] - p);
+    double s = a + b;
+    double bb = s - a;
+    err = (a - (s - bb)) + (b - bb);
+    return s;
 }
 
-#else
-
-inline __device__ void dd_mul(const dd_real &a, const dd_real &b, dd_real &c)
+inline __host__ __device__ double dd_quick_two_sum(double a, double b, double &err)
 {
-    double m1,m2,t,ph,e,pl;
-
-    m1 = a.x[0] * b.x[1];
-    m2 = a.x[1] * b.x[0];
-    
-    t = m1 + m2;
-    ph = __fma_rn(a.x[0], b.x[0], t);
-    e = __fma_rn(a.x[0], b.x[0], -1.0 * ph); 
-    pl = e + t;
-    
-    c.x[0] = ph;
-    c.x[1] = pl;
+    double s = a + b;
+    err = b - (s - a);
+    return s;
 }
 
-#endif
-
-inline void dd_mul_host(const dd_real &a, const dd_real &b, dd_real &c)
+inline __host__ __device__ void dd_bf_mul(const dd_real &a, const dd_real &b, dd_real &c)
 {
-    double p;
-    double t;
-    double a_hh,b_hh;
-    double a_hl,b_hl;
-    double e;
-
-    p = a.x[0] * b.x[0];
-    t = 134217729.0 * a.x[0];
-    a_hh = t - (t - a.x[0]);
-    a_hl = a.x[0] - a_hh;
-    t = 134217729.0 * b.x[0];
-    b_hh = t - (t - b.x[0]);
-    b_hl = b.x[0] - b_hh;
-    e = ((a_hh * b_hh - p) + a_hh * b_hl + a_hl * b_hh) + a_hl * b_hl;
-    e = e + (a.x[0] * b.x[1] + a.x[1] * b.x[0]);
-    
-    c.x[0] = p + e;
-    c.x[1] = e - (c.x[0] - p);
+    double p00, pe00, p01, p10, g1, g2;
+    p00 = a.x[0] * b.x[0];
+    pe00 = fma(a.x[0], b.x[0], -p00);
+    p01 = a.x[0] * b.x[1];
+    p10 = a.x[1] * b.x[0];
+    g1 = p01 + p10;
+    g2 = pe00 + g1;
+    c.x[0] = dd_quick_two_sum(p00, g2, c.x[1]);
 }
 
-#ifndef CRAY_ADD
-
-inline __device__ void dd_add(const dd_real &a, const dd_real &b, dd_real &c)
+inline __host__ __device__ void dd_bf_add(const dd_real &a, const dd_real &b, dd_real &c)
 {
-    double s1,s2;
-    double v;
-    double t1,t2;
-
-    s1 = a.x[0] + b.x[0];
-    v = s1 - a.x[0];
-    s2 = ((b.x[0] - v) + (a.x[0] - (s1 - v)));
-    t1 = a.x[1] + b.x[1];
-    v = t1 - a.x[1];
-    t2 = ((b.x[1] - v) + (a.x[1] - (t1 - v)));
-    s2 = s2 + t1;
-    t1 = s1 + s2;
-    s2 = s2 - (t1 - s1);
-    t2 = t2 + s2;
-    
-    c.x[0] = t1 + t2;
-    c.x[1] = t2 - (c.x[0] - t1);
-        
+    double g1, g1e, g2, g2e, g3, g3e, g4, g5;
+    g1 = dd_two_sum(a.x[0], b.x[0], g1e);
+    g2 = dd_two_sum(a.x[1], b.x[1], g2e);
+    g3 = dd_quick_two_sum(g1, g2, g3e);
+    g4 = g1e + g2e;
+    g5 = g4 + g3e;
+    c.x[0] = dd_quick_two_sum(g3, g5, c.x[1]);
 }
 
-#else
-
-inline __device__ void dd_add(const dd_real &a, const dd_real &b, dd_real &c)
-{
-    double s1,s2;
-    double v;
-    double t1,t2;
-
-    //s = qd::two_sum(a.x[0], b.x[0], e);
-    s1 = a.x[0] + b.x[0];
-    v = s1 - a.x[0];
-    s2 = ((b.x[0] - v) + (a.x[0] - (s1 - v)));
-
-    //e += (a.x[1] + b.x[1]);
-    s2 = s2 + (a.x[1] + b.x[1]);
-
-    //s = qd::quick_two_sum(s, e, e);
-    //return dd_real(s, e);
-    t1 = s1 + s2;
-    t2 = s2 - (t1 - s1);
-
-    c.x[0] = t1;
-    c.x[1] = t2;
-}
-
-#endif
-
-inline void dd_add_host(const dd_real &a, const dd_real &b, dd_real &c)
-{
-    double s1,s2;
-    double v;
-    double t1,t2;
-
-    s1 = a.x[0] + b.x[0];
-    v = s1 - a.x[0];
-    s2 = ((b.x[0] - v) + (a.x[0] - (s1 - v)));
-    t1 = a.x[1] + b.x[1];
-    v = t1 - a.x[1];
-    t2 = ((b.x[1] - v) + (a.x[1] - (t1 - v)));
-    s2 = s2 + t1;
-    t1 = s1 + s2;
-    s2 = s2 - (t1 - s1);
-    t2 = t2 + s2;
-    
-    c.x[0] = t1 + t2;
-    c.x[1] = t2 - (c.x[0] - t1);
-}
+inline __device__ void dd_mul(const dd_real &a, const dd_real &b, dd_real &c) { dd_bf_mul(a, b, c); }
+inline __device__ void dd_add(const dd_real &a, const dd_real &b, dd_real &c) { dd_bf_add(a, b, c); }
+inline void dd_mul_host(const dd_real &a, const dd_real &b, dd_real &c) { dd_bf_mul(a, b, c); }
+inline void dd_add_host(const dd_real &a, const dd_real &b, dd_real &c) { dd_bf_add(a, b, c); }
 
 inline __device__ void dd_mad(dd_real &c, const dd_real &a, const dd_real &b)
 {

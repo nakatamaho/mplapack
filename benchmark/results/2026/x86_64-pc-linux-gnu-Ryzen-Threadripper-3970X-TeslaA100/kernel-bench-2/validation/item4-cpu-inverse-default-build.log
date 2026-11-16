@@ -1,0 +1,4 @@
+[100%] Built target mplapack_mpfr_opt
+[100%] Building CXX object benchmark/CMakeFiles/bench_Rkernel_bench_mpfr_opt.dir/Rkernel_bench.cpp.o
+[100%] Linking CXX executable Rkernel_bench.mpfr_opt
+[100%] Built target bench_Rkernel_bench_mpfr_opt

@@ -1,0 +1,63 @@
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.qd_opt gemm NN 128,256,512,1024,2048,4096 --label qd
+# qd gemm NN: data for n <= 4096 in 4.2 s
+# exit 0, 40.8 s
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.qd_opt gemm_update NN 128,256,512,1024,2048,4096 --label qd
+# qd gemm_update NN: data for n <= 4096 in 1.6 s
+# exit 0, 3.6 s
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.qd_opt syrk LN 128,256,512,1024,2048,4096 --label qd
+# qd syrk LN: data for n <= 4096 in 2.9 s
+# exit 0, 20.6 s
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.qd_opt syrk LN_k64 128,256,512,1024,2048,4096 --label qd
+# qd syrk LN_k64: data for n <= 4096 in 1.6 s
+# exit 0, 2.7 s
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.qd_opt trsm LLNU 128,256,512,1024,2048,4096 --label qd
+# qd trsm LLNU: data for n <= 4096 in 6.8 s
+# exit 0, 25.4 s
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.qd_opt trsm RLTN_p64 128,256,512,1024,2048,4096 --label qd
+# qd trsm RLTN_p64: data for n <= 4096 in 0.0 s
+# exit 0, 0.1 s
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.qd_opt getrf2 P64 128,256,512,1024,2048,4096 --label qd
+# qd getrf2 P64: data for n <= 4096 in 0.0 s
+# exit 0, 0.7 s
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.qd_opt gemm NT 128,256,512,1024,2048,4096 --label qd
+# qd gemm NT: data for n <= 4096 in 4.1 s
+# exit 0, 39.4 s
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.qd_opt gemm TN 128,256,512,1024,2048,4096 --label qd
+# qd gemm TN: data for n <= 4096 in 4.1 s
+# exit 0, 40.9 s
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.qd_opt syrk UT 128,256,512,1024,2048,4096 --label qd
+# qd syrk UT: data for n <= 4096 in 2.9 s
+# exit 0, 21.4 s
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.qd_opt syrk UT_k64 128,256,512,1024,2048,4096 --label qd
+# qd syrk UT_k64: data for n <= 4096 in 1.6 s
+# exit 0, 4.1 s
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.qd_opt trsm RLTN 128,256,512,1024,2048,4096 --label qd
+# qd trsm RLTN: data for n <= 4096 in 6.8 s
+# exit 0, 33.8 s
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.qd_opt trsm LUTN 128,256,512,1024,2048,4096 --label qd
+# qd trsm LUTN: data for n <= 4096 in 7.2 s
+# exit 0, 36.1 s
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.qd_opt trsm LUNN 128,256,512,1024,2048,4096 --label qd
+# qd trsm LUNN: data for n <= 4096 in 7.1 s
+# exit 0, 28.6 s
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.qd_opt trsm LLNU_p64 128,256,512,1024,2048,4096 --label qd
+# qd trsm LLNU_p64: data for n <= 4096 in 0.0 s
+# exit 0, 0.1 s
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.qd_opt trsm LUTN_p64 128,256,512,1024,2048,4096 --label qd
+# qd trsm LUTN_p64: data for n <= 4096 in 0.0 s
+# exit 0, 0.1 s
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.qd_opt trsm LUNN_p64 128,256,512,1024,2048,4096 --label qd
+# qd trsm LUNN_p64: data for n <= 4096 in 0.0 s
+# exit 0, 0.1 s
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.qd_opt potrf2 L 64,256 --label qd
+# qd potrf2 L: data for n <= 256 in 0.0 s
+# exit 0, 0.1 s
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.qd_opt laswp R64 128,256,512,1024,2048,4096 --label qd
+# qd laswp R64: data for n <= 4096 in 1.7 s
+# exit 0, 2.1 s
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.qd_opt trtri UN 128,256,512,1024,2048,4096 --label qd
+# qd trtri UN: data for n <= 4096 in 5.7 s
+# exit 0, 102.5 s
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.qd_opt lauum L 128,256,512,1024,2048,4096 --label qd
+# qd lauum L: data for n <= 4096 in 5.7 s
+# exit 0, 25.8 s

@@ -1,0 +1,846 @@
+2026-11-04T10:38:17 probe dd gemm NN start | gpu 0 %, 51 MiB | apps: none
+2026-11-04T10:38:17 probe dd gemm NT start | gpu 0 %, 51 MiB | apps: none
+2026-11-04T10:38:17 probe dd gemm TN start | gpu 0 %, 51 MiB | apps: none
+2026-11-04T10:38:17 probe dd gemm_update NN start | gpu 0 %, 51 MiB | apps: none
+2026-11-04T10:38:18 probe dd syrk LN start | gpu 0 %, 51 MiB | apps: none
+2026-11-04T10:38:18 probe dd syrk UT start | gpu 0 %, 51 MiB | apps: none
+2026-11-04T10:38:18 probe dd syrk LN_k64 start | gpu 0 %, 51 MiB | apps: none
+2026-11-04T10:38:18 probe dd syrk UT_k64 start | gpu 0 %, 51 MiB | apps: none
+2026-11-04T10:38:18 probe dd trsm LLNU start | gpu 0 %, 51 MiB | apps: none
+2026-11-04T10:38:18 probe dd trsm RLTN start | gpu 0 %, 51 MiB | apps: none
+2026-11-04T10:38:18 probe dd trsm LUTN start | gpu 0 %, 51 MiB | apps: none
+2026-11-04T10:38:18 probe dd trsm LUNN start | gpu 0 %, 51 MiB | apps: none
+2026-11-04T10:38:18 probe dd trsm LLNU_p64 start | gpu 0 %, 51 MiB | apps: none
+2026-11-04T10:38:18 probe dd trsm RLTN_p64 start | gpu 0 %, 51 MiB | apps: none
+2026-11-04T10:38:18 probe dd trsm LUTN_p64 start | gpu 0 %, 51 MiB | apps: none
+2026-11-04T10:38:18 probe dd trsm LUNN_p64 start | gpu 0 %, 51 MiB | apps: none
+2026-11-04T10:38:18 probe dd getrf2 P64 start | gpu 0 %, 51 MiB | apps: none
+2026-11-04T10:38:18 probe dd potrf2 L start | gpu 0 %, 51 MiB | apps: none
+2026-11-04T10:38:19 probe dd laswp R64 start | gpu 0 %, 51 MiB | apps: none
+2026-11-04T10:38:19 probe dd trtri UN start | gpu 0 %, 51 MiB | apps: none
+2026-11-04T10:38:19 probe dd lauum L start | gpu 0 %, 51 MiB | apps: none
+2026-11-04T10:38:19 probe dd cgemm NN start | gpu 0 %, 51 MiB | apps: none
+2026-11-04T10:38:19 probe dd cgemm NC start | gpu 0 %, 51 MiB | apps: none
+2026-11-04T10:38:19 probe dd cgemm CN start | gpu 0 %, 51 MiB | apps: none
+2026-11-04T10:38:19 probe dd cherk LN start | gpu 0 %, 51 MiB | apps: none
+2026-11-04T10:38:19 probe dd cherk UC start | gpu 0 %, 51 MiB | apps: none
+2026-11-04T10:38:19 probe dd cherk LN_k64 start | gpu 0 %, 51 MiB | apps: none
+2026-11-04T10:38:19 probe dd cherk UC_k64 start | gpu 0 %, 51 MiB | apps: none
+2026-11-04T10:38:19 probe dd ctrsm LLNU start | gpu 0 %, 51 MiB | apps: none
+2026-11-04T10:38:19 probe dd ctrsm RLCN start | gpu 0 %, 51 MiB | apps: none
+2026-11-04T10:38:19 probe dd ctrsm LUCN start | gpu 0 %, 51 MiB | apps: none
+2026-11-04T10:38:19 probe dd ctrsm LUNN start | gpu 0 %, 51 MiB | apps: none
+2026-11-04T10:38:19 probe dd ctrsm LLNU_p64 start | gpu 0 %, 51 MiB | apps: none
+2026-11-04T10:38:20 probe dd ctrsm RLCN_p64 start | gpu 0 %, 51 MiB | apps: none
+2026-11-04T10:38:20 probe dd ctrsm LUCN_p64 start | gpu 0 %, 51 MiB | apps: none
+2026-11-04T10:38:20 probe dd ctrsm LUNN_p64 start | gpu 0 %, 51 MiB | apps: none
+2026-11-04T10:38:21 probe td gemm NN start | gpu 0 %, 51 MiB | apps: none
+2026-11-04T10:38:21 probe td gemm NT start | gpu 0 %, 51 MiB | apps: none
+2026-11-04T10:38:21 probe td gemm TN start | gpu 0 %, 51 MiB | apps: none
+2026-11-04T10:38:21 probe td gemm_update NN start | gpu 0 %, 51 MiB | apps: none
+2026-11-04T10:38:21 probe td syrk LN start | gpu 0 %, 51 MiB | apps: none
+2026-11-04T10:38:21 probe td syrk UT start | gpu 0 %, 51 MiB | apps: none
+2026-11-04T10:38:21 probe td syrk LN_k64 start | gpu 0 %, 51 MiB | apps: none
+2026-11-04T10:38:21 probe td syrk UT_k64 start | gpu 0 %, 51 MiB | apps: none
+2026-11-04T10:38:21 probe td trsm LLNU start | gpu 0 %, 51 MiB | apps: none
+2026-11-04T10:38:21 probe td trsm RLTN start | gpu 0 %, 51 MiB | apps: none
+2026-11-04T10:38:21 probe td trsm LUTN start | gpu 0 %, 51 MiB | apps: none
+2026-11-04T10:38:22 probe td trsm LUNN start | gpu 0 %, 51 MiB | apps: none
+2026-11-04T10:38:22 probe td trsm LLNU_p64 start | gpu 0 %, 51 MiB | apps: none
+2026-11-04T10:38:22 probe td trsm RLTN_p64 start | gpu 0 %, 51 MiB | apps: none
+2026-11-04T10:38:22 probe td trsm LUTN_p64 start | gpu 0 %, 51 MiB | apps: none
+2026-11-04T10:38:22 probe td trsm LUNN_p64 start | gpu 0 %, 51 MiB | apps: none
+2026-11-04T10:38:22 probe td getrf2 P64 start | gpu 0 %, 51 MiB | apps: none
+2026-11-04T10:38:22 probe td potrf2 L start | gpu 0 %, 51 MiB | apps: none
+2026-11-04T10:38:22 probe td laswp R64 start | gpu 0 %, 51 MiB | apps: none
+2026-11-04T10:38:22 probe td trtri UN start | gpu 0 %, 51 MiB | apps: none
+2026-11-04T10:38:22 probe td lauum L start | gpu 0 %, 51 MiB | apps: none
+2026-11-04T10:38:22 probe td cgemm NN start | gpu 0 %, 51 MiB | apps: none
+2026-11-04T10:38:23 probe td cgemm NC start | gpu 0 %, 51 MiB | apps: none
+2026-11-04T10:38:23 probe td cgemm CN start | gpu 0 %, 51 MiB | apps: none
+2026-11-04T10:38:23 probe td cherk LN start | gpu 0 %, 51 MiB | apps: none
+2026-11-04T10:38:23 probe td cherk UC start | gpu 0 %, 51 MiB | apps: none
+2026-11-04T10:38:23 probe td cherk LN_k64 start | gpu 0 %, 51 MiB | apps: none
+2026-11-04T10:38:23 probe td cherk UC_k64 start | gpu 0 %, 51 MiB | apps: none
+2026-11-04T10:38:23 probe td ctrsm LLNU start | gpu 0 %, 51 MiB | apps: none
+2026-11-04T10:38:23 probe td ctrsm RLCN start | gpu 0 %, 51 MiB | apps: none
+2026-11-04T10:38:23 probe td ctrsm LUCN start | gpu 0 %, 51 MiB | apps: none
+2026-11-04T10:38:23 probe td ctrsm LUNN start | gpu 0 %, 51 MiB | apps: none
+2026-11-04T10:38:23 probe td ctrsm LLNU_p64 start | gpu 0 %, 51 MiB | apps: none
+2026-11-04T10:38:23 probe td ctrsm RLCN_p64 start | gpu 0 %, 51 MiB | apps: none
+2026-11-04T10:38:24 probe td ctrsm LUCN_p64 start | gpu 0 %, 51 MiB | apps: none
+2026-11-04T10:38:24 probe td ctrsm LUNN_p64 start | gpu 0 %, 51 MiB | apps: none
+2026-11-04T10:38:24 probe mpfr256 gemm NN start | gpu 0 %, 51 MiB | apps: none
+2026-11-04T10:38:26 probe mpfr256 gemm NT start | gpu 18 %, 51 MiB | apps: none
+2026-11-04T10:38:27 probe mpfr256 gemm TN start | gpu 23 %, 51 MiB | apps: none
+2026-11-04T10:38:28 probe mpfr256 gemm_update NN start | gpu 13 %, 51 MiB | apps: none
+2026-11-04T10:38:29 probe mpfr256 syrk LN start | gpu 11 %, 51 MiB | apps: none
+2026-11-04T10:38:30 probe mpfr256 syrk UT start | gpu 27 %, 51 MiB | apps: none
+2026-11-04T10:38:31 probe mpfr256 syrk LN_k64 start | gpu 7 %, 51 MiB | apps: none
+2026-11-04T10:38:32 probe mpfr256 syrk UT_k64 start | gpu 2 %, 51 MiB | apps: none
+2026-11-04T10:38:33 probe mpfr256 trsm LLNU start | gpu 11 %, 51 MiB | apps: none
+2026-11-04T10:38:35 probe mpfr256 trsm RLTN start | gpu 100 %, 51 MiB | apps: none
+2026-11-04T10:38:37 probe mpfr256 trsm LUTN start | gpu 93 %, 51 MiB | apps: none
+2026-11-04T10:38:39 probe mpfr256 trsm LUNN start | gpu 54 %, 51 MiB | apps: none
+2026-11-04T10:38:41 probe mpfr256 trsm LLNU_p64 start | gpu 56 %, 51 MiB | apps: none
+2026-11-04T10:38:41 probe mpfr256 trsm RLTN_p64 start | gpu 4 %, 51 MiB | apps: none
+2026-11-04T10:38:42 probe mpfr256 trsm LUTN_p64 start | gpu 20 %, 51 MiB | apps: none
+2026-11-04T10:38:43 probe mpfr256 trsm LUNN_p64 start | gpu 14 %, 51 MiB | apps: none
+2026-11-04T10:38:44 probe mpfr256 getrf2 P64 start | gpu 31 %, 51 MiB | apps: none
+2026-11-04T10:38:45 probe mpfr256 potrf2 L start | gpu 67 %, 51 MiB | apps: none
+2026-11-04T10:38:46 probe mpfr256 cgemm NN start | gpu 92 %, 51 MiB | apps: none
+2026-11-04T10:38:48 probe mpfr256 cgemm NC start | gpu 62 %, 51 MiB | apps: none
+2026-11-04T10:38:50 probe mpfr256 cgemm CN start | gpu 37 %, 51 MiB | apps: none
+2026-11-04T10:38:52 probe mpfr256 cherk LN start | gpu 67 %, 51 MiB | apps: none
+2026-11-04T10:39:03 probe mpfr256 cherk UC start | gpu 100 %, 51 MiB | apps: none
+2026-11-04T10:39:13 probe mpfr256 cherk LN_k64 start | gpu 93 %, 51 MiB | apps: none
+2026-11-04T10:39:27 probe mpfr256 cherk LN_k64 start | gpu 0 %, 51 MiB | apps: none
+2026-11-04T10:39:29 probe mpfr256 cherk UC_k64 start | gpu 55 %, 51 MiB | apps: none
+2026-11-04T10:39:32 probe mpfr256 ctrsm LLNU start | gpu 70 %, 51 MiB | apps: none
+2026-11-04T10:39:38 probe mpfr256 ctrsm RLCN start | gpu 65 %, 51 MiB | apps: none
+2026-11-04T10:39:46 probe mpfr256 ctrsm LUCN start | gpu 69 %, 49 MiB | apps: none
+2026-11-04T10:39:56 probe mpfr256 ctrsm LUNN start | gpu 99 %, 47 MiB | apps: none
+2026-11-04T10:40:06 probe mpfr256 ctrsm LLNU_p64 start | gpu 25 %, 45 MiB | apps: none
+2026-11-04T10:40:06 probe mpfr256 ctrsm RLCN_p64 start | gpu 68 %, 45 MiB | apps: none
+2026-11-04T10:40:08 probe mpfr256 ctrsm LUCN_p64 start | gpu 73 %, 43 MiB | apps: none
+2026-11-04T10:40:10 probe mpfr256 ctrsm LUNN_p64 start | gpu 39 %, 41 MiB | apps: none
+2026-11-04T10:40:25 probe dd gemm NN start | gpu 0 %, 39 MiB | apps: none
+2026-11-04T10:40:25 probe dd gemm NT start | gpu 2 %, 39 MiB | apps: none
+2026-11-04T10:40:26 probe dd gemm TN start | gpu 1 %, 39 MiB | apps: none
+2026-11-04T10:40:26 probe dd gemm_update NN start | gpu 3 %, 39 MiB | apps: none
+2026-11-04T10:40:27 probe dd syrk LN start | gpu 1 %, 39 MiB | apps: none
+2026-11-04T10:40:27 probe dd syrk UT start | gpu 1 %, 39 MiB | apps: none
+2026-11-04T10:40:27 probe dd syrk LN_k64 start | gpu 6 %, 39 MiB | apps: none
+2026-11-04T10:40:28 probe dd syrk UT_k64 start | gpu 6 %, 39 MiB | apps: none
+2026-11-04T10:40:28 probe dd trsm LLNU start | gpu 1 %, 39 MiB | apps: none
+2026-11-04T10:40:29 probe dd trsm RLTN start | gpu 99 %, 39 MiB | apps: none
+2026-11-04T10:40:30 probe dd trsm LUTN start | gpu 100 %, 39 MiB | apps: none
+2026-11-04T10:40:31 probe dd trsm LUNN start | gpu 75 %, 39 MiB | apps: none
+2026-11-04T10:40:32 probe dd trsm LLNU_p64 start | gpu 100 %, 39 MiB | apps: none
+2026-11-04T10:40:32 probe dd trsm RLTN_p64 start | gpu 6 %, 39 MiB | apps: none
+2026-11-04T10:40:32 probe dd trsm LUTN_p64 start | gpu 10 %, 39 MiB | apps: none
+2026-11-04T10:40:33 probe dd trsm LUNN_p64 start | gpu 6 %, 39 MiB | apps: none
+2026-11-04T10:40:33 probe dd getrf2 P64 start | gpu 9 %, 39 MiB | apps: none
+2026-11-04T10:40:33 probe dd potrf2 L start | gpu 6 %, 39 MiB | apps: none
+2026-11-04T10:40:34 probe dd laswp R64 start | gpu 6 %, 39 MiB | apps: none
+2026-11-04T10:40:34 probe dd trtri UN start | gpu 3 %, 39 MiB | apps: none
+2026-11-04T10:40:37 probe dd lauum L start | gpu 92 %, 39 MiB | apps: none
+2026-11-04T10:40:38 probe dd cgemm NN start | gpu 99 %, 39 MiB | apps: none
+2026-11-04T10:40:38 probe dd cgemm NC start | gpu 12 %, 39 MiB | apps: none
+2026-11-04T10:40:39 probe dd cgemm CN start | gpu 47 %, 39 MiB | apps: none
+2026-11-04T10:40:40 probe dd cherk LN start | gpu 37 %, 39 MiB | apps: none
+2026-11-04T10:40:42 probe dd cherk UC start | gpu 61 %, 39 MiB | apps: none
+2026-11-04T10:40:44 probe dd cherk LN_k64 start | gpu 55 %, 39 MiB | apps: none
+2026-11-04T10:40:45 probe dd cherk UC_k64 start | gpu 62 %, 39 MiB | apps: none
+2026-11-04T10:40:46 probe dd ctrsm LLNU start | gpu 40 %, 39 MiB | apps: none
+2026-11-04T10:40:47 probe dd ctrsm RLCN start | gpu 43 %, 39 MiB | apps: none
+2026-11-04T10:40:49 probe dd ctrsm LUCN start | gpu 59 %, 39 MiB | apps: none
+2026-11-04T10:40:51 probe dd ctrsm LUNN start | gpu 53 %, 39 MiB | apps: none
+2026-11-04T10:40:52 probe dd ctrsm LLNU_p64 start | gpu 100 %, 39 MiB | apps: none
+2026-11-04T10:40:53 probe dd ctrsm RLCN_p64 start | gpu 3 %, 39 MiB | apps: none
+2026-11-04T10:40:53 probe dd ctrsm LUCN_p64 start | gpu 6 %, 39 MiB | apps: none
+2026-11-04T10:40:53 probe dd ctrsm LUNN_p64 start | gpu 6 %, 39 MiB | apps: none
+2026-11-04T10:40:59 probe td gemm NN start | gpu 0 %, 39 MiB | apps: none
+2026-11-04T10:41:00 probe td gemm NT start | gpu 8 %, 39 MiB | apps: none
+2026-11-04T10:41:01 probe td gemm TN start | gpu 1 %, 39 MiB | apps: none
+2026-11-04T10:41:01 probe td gemm_update NN start | gpu 25 %, 39 MiB | apps: none
+2026-11-04T10:41:02 probe td syrk LN start | gpu 2 %, 39 MiB | apps: none
+2026-11-04T10:41:02 probe td syrk UT start | gpu 4 %, 39 MiB | apps: none
+2026-11-04T10:41:03 probe td syrk LN_k64 start | gpu 3 %, 39 MiB | apps: none
+2026-11-04T10:41:03 probe td syrk UT_k64 start | gpu 2 %, 39 MiB | apps: none
+2026-11-04T10:41:04 probe td trsm LLNU start | gpu 0 %, 39 MiB | apps: none
+2026-11-04T10:41:05 probe td trsm RLTN start | gpu 100 %, 39 MiB | apps: none
+2026-11-04T10:41:07 probe td trsm LUTN start | gpu 100 %, 39 MiB | apps: none
+2026-11-04T10:41:09 probe td trsm LUNN start | gpu 80 %, 39 MiB | apps: none
+2026-11-04T10:41:10 probe td trsm LLNU_p64 start | gpu 100 %, 39 MiB | apps: none
+2026-11-04T10:41:10 probe td trsm RLTN_p64 start | gpu 5 %, 39 MiB | apps: none
+2026-11-04T10:41:11 probe td trsm LUTN_p64 start | gpu 1 %, 39 MiB | apps: none
+2026-11-04T10:41:11 probe td trsm LUNN_p64 start | gpu 11 %, 39 MiB | apps: none
+2026-11-04T10:41:11 probe td getrf2 P64 start | gpu 6 %, 39 MiB | apps: none
+2026-11-04T10:41:12 probe td potrf2 L start | gpu 11 %, 39 MiB | apps: none
+2026-11-04T10:41:12 probe td laswp R64 start | gpu 6 %, 39 MiB | apps: none
+2026-11-04T10:41:13 probe td trtri UN start | gpu 4 %, 39 MiB | apps: none
+2026-11-04T10:41:18 probe td lauum L start | gpu 99 %, 39 MiB | apps: none
+2026-11-04T10:41:20 probe td cgemm NN start | gpu 100 %, 39 MiB | apps: none
+2026-11-04T10:41:21 probe td cgemm NC start | gpu 47 %, 39 MiB | apps: none
+2026-11-04T10:41:22 probe td cgemm CN start | gpu 87 %, 39 MiB | apps: none
+2026-11-04T10:41:23 probe td cherk LN start | gpu 88 %, 39 MiB | apps: none
+2026-11-04T10:41:28 probe td cherk UC start | gpu 25 %, 39 MiB | apps: none
+2026-11-04T10:41:32 probe td cherk LN_k64 start | gpu 84 %, 39 MiB | apps: none
+2026-11-04T10:41:33 probe td cherk UC_k64 start | gpu 99 %, 39 MiB | apps: none
+2026-11-04T10:41:34 probe td ctrsm LLNU start | gpu 95 %, 39 MiB | apps: none
+2026-11-04T10:41:37 probe td ctrsm RLCN start | gpu 11 %, 39 MiB | apps: none
+2026-11-04T10:41:40 probe td ctrsm LUCN start | gpu 100 %, 39 MiB | apps: none
+2026-11-04T10:41:44 probe td ctrsm LUNN start | gpu 100 %, 39 MiB | apps: none
+2026-11-04T10:41:47 probe td ctrsm LLNU_p64 start | gpu 100 %, 39 MiB | apps: none
+2026-11-04T10:41:47 probe td ctrsm RLCN_p64 start | gpu 6 %, 39 MiB | apps: none
+2026-11-04T10:41:48 probe td ctrsm LUCN_p64 start | gpu 6 %, 39 MiB | apps: none
+2026-11-04T10:41:48 probe td ctrsm LUNN_p64 start | gpu 16 %, 39 MiB | apps: none
+2026-11-04T10:41:58 probe mpfr512 gemm NN start | gpu 0 %, 39 MiB | apps: none
+2026-11-04T10:41:59 probe mpfr512 gemm NT start | gpu 26 %, 39 MiB | apps: none
+2026-11-04T10:42:00 probe mpfr512 gemm TN start | gpu 51 %, 39 MiB | apps: none
+2026-11-04T10:42:01 probe mpfr512 gemm_update NN start | gpu 46 %, 39 MiB | apps: none
+2026-11-04T10:42:03 probe mpfr512 syrk LN start | gpu 5 %, 39 MiB | apps: none
+2026-11-04T10:42:04 probe mpfr512 syrk UT start | gpu 35 %, 39 MiB | apps: none
+2026-11-04T10:42:05 probe mpfr512 syrk LN_k64 start | gpu 48 %, 39 MiB | apps: none
+2026-11-04T10:42:06 probe mpfr512 syrk UT_k64 start | gpu 12 %, 39 MiB | apps: none
+2026-11-04T10:42:07 probe mpfr512 trsm LLNU start | gpu 21 %, 39 MiB | apps: none
+2026-11-04T10:42:10 probe mpfr512 trsm RLTN start | gpu 50 %, 39 MiB | apps: none
+2026-11-04T10:42:13 probe mpfr512 trsm LUTN start | gpu 93 %, 39 MiB | apps: none
+2026-11-04T10:42:16 probe mpfr512 trsm LUNN start | gpu 25 %, 39 MiB | apps: none
+2026-11-04T10:42:19 probe mpfr512 trsm LLNU_p64 start | gpu 100 %, 39 MiB | apps: none
+2026-11-04T10:42:20 probe mpfr512 trsm RLTN_p64 start | gpu 1 %, 39 MiB | apps: none
+2026-11-04T10:42:21 probe mpfr512 trsm LUTN_p64 start | gpu 0 %, 39 MiB | apps: none
+2026-11-04T10:42:22 probe mpfr512 trsm LUNN_p64 start | gpu 0 %, 39 MiB | apps: none
+2026-11-04T10:42:22 probe mpfr512 getrf2 P64 start | gpu 0 %, 39 MiB | apps: none
+2026-11-04T10:42:23 probe mpfr512 potrf2 L start | gpu 1 %, 39 MiB | apps: none
+2026-11-04T10:42:24 probe mpfr512 cgemm NN start | gpu 98 %, 39 MiB | apps: none
+2026-11-04T10:42:28 probe mpfr512 cgemm NC start | gpu 100 %, 39 MiB | apps: none
+2026-11-04T10:42:31 probe mpfr512 cgemm CN start | gpu 83 %, 39 MiB | apps: none
+2026-11-04T10:42:34 probe mpfr512 cherk LN start | gpu 100 %, 39 MiB | apps: none
+2026-11-04T10:42:59 probe mpfr512 cherk UC start | gpu 100 %, 39 MiB | apps: none
+2026-11-04T10:43:22 probe mpfr512 cherk LN_k64 start | gpu 79 %, 39 MiB | apps: none
+2026-11-04T10:43:27 probe mpfr512 cherk UC_k64 start | gpu 84 %, 39 MiB | apps: none
+2026-11-04T10:43:32 probe mpfr512 ctrsm LLNU start | gpu 42 %, 39 MiB | apps: none
+2026-11-04T10:43:45 probe mpfr512 ctrsm RLCN start | gpu 100 %, 39 MiB | apps: none
+2026-11-04T10:44:00 probe mpfr512 ctrsm LUCN start | gpu 12 %, 37 MiB | apps: none
+2026-11-04T10:44:16 probe mpfr512 ctrsm LUNN start | gpu 42 %, 35 MiB | apps: none
+2026-11-04T10:44:32 probe mpfr512 ctrsm LLNU_p64 start | gpu 89 %, 33 MiB | apps: none
+2026-11-04T10:44:33 probe mpfr512 ctrsm RLCN_p64 start | gpu 72 %, 33 MiB | apps: none
+2026-11-04T10:44:35 probe mpfr512 ctrsm LUCN_p64 start | gpu 91 %, 31 MiB | apps: none
+2026-11-04T10:44:37 probe mpfr512 ctrsm LUNN_p64 start | gpu 53 %, 29 MiB | apps: none
+2026-11-04T10:44:54 probe mpfr1024 gemm NN start | gpu 0 %, 27 MiB | apps: none
+2026-11-04T10:44:56 probe mpfr1024 gemm NT start | gpu 21 %, 27 MiB | apps: none
+2026-11-04T10:44:58 probe mpfr1024 gemm TN start | gpu 80 %, 27 MiB | apps: none
+2026-11-04T10:45:00 probe mpfr1024 gemm_update NN start | gpu 100 %, 27 MiB | apps: none
+2026-11-04T10:45:01 probe mpfr1024 syrk LN start | gpu 30 %, 27 MiB | apps: none
+2026-11-04T10:45:03 probe mpfr1024 syrk UT start | gpu 100 %, 27 MiB | apps: none
+2026-11-04T10:45:05 probe mpfr1024 syrk LN_k64 start | gpu 75 %, 27 MiB | apps: none
+2026-11-04T10:45:06 probe mpfr1024 syrk UT_k64 start | gpu 33 %, 27 MiB | apps: none
+2026-11-04T10:45:07 probe mpfr1024 trsm LLNU start | gpu 33 %, 27 MiB | apps: none
+2026-11-04T10:45:13 probe mpfr1024 trsm RLTN start | gpu 3 %, 27 MiB | apps: none
+2026-11-04T10:45:20 probe mpfr1024 trsm LUTN start | gpu 100 %, 27 MiB | apps: none
+2026-11-04T10:45:26 probe mpfr1024 trsm LUNN start | gpu 84 %, 27 MiB | apps: none
+2026-11-04T10:45:33 probe mpfr1024 trsm LLNU_p64 start | gpu 18 %, 27 MiB | apps: none
+2026-11-04T10:45:34 probe mpfr1024 trsm RLTN_p64 start | gpu 85 %, 27 MiB | apps: none
+2026-11-04T10:45:35 probe mpfr1024 trsm LUTN_p64 start | gpu 80 %, 27 MiB | apps: none
+2026-11-04T10:45:36 probe mpfr1024 trsm LUNN_p64 start | gpu 62 %, 27 MiB | apps: none
+2026-11-04T10:45:37 probe mpfr1024 getrf2 P64 start | gpu 50 %, 27 MiB | apps: none
+2026-11-04T10:45:38 probe mpfr1024 potrf2 L start | gpu 73 %, 27 MiB | apps: none
+2026-11-04T10:45:40 probe mpfr1024 cgemm NN start | gpu 100 %, 27 MiB | apps: none
+2026-11-04T10:45:46 probe mpfr1024 cgemm NC start | gpu 13 %, 27 MiB | apps: none
+2026-11-04T10:45:52 probe mpfr1024 cgemm CN start | gpu 24 %, 27 MiB | apps: none
+2026-11-04T10:45:58 probe mpfr1024 cherk LN start | gpu 4 %, 27 MiB | apps: none
+2026-11-04T10:46:56 probe mpfr1024 cherk UC start | gpu 3 %, 27 MiB | apps: none
+2026-11-04T10:47:53 probe mpfr1024 cherk LN_k64 start | gpu 0 %, 27 MiB | apps: none
+2026-11-04T10:48:03 probe mpfr1024 cherk UC_k64 start | gpu 16 %, 27 MiB | apps: none
+2026-11-04T10:48:13 probe mpfr1024 ctrsm LLNU start | gpu 0 %, 27 MiB | apps: none
+2026-11-04T10:48:44 probe mpfr1024 ctrsm RLCN start | gpu 24 %, 27 MiB | apps: none
+2026-11-04T10:49:17 probe mpfr1024 ctrsm LUCN start | gpu 59 %, 25 MiB | apps: none
+2026-11-04T10:49:52 probe mpfr1024 ctrsm LUNN start | gpu 94 %, 23 MiB | apps: none
+2026-11-04T10:50:26 probe mpfr1024 ctrsm LLNU_p64 start | gpu 45 %, 21 MiB | apps: none
+2026-11-04T10:50:28 probe mpfr1024 ctrsm RLCN_p64 start | gpu 92 %, 21 MiB | apps: none
+2026-11-04T10:50:30 probe mpfr1024 ctrsm LUCN_p64 start | gpu 100 %, 19 MiB | apps: none
+2026-11-04T10:50:33 probe mpfr1024 ctrsm LUNN_p64 start | gpu 100 %, 17 MiB | apps: none
+2026-11-04T10:50:57 probe mpfr200rt gemm NN start | gpu 0 %, 143 MiB | apps: none
+2026-11-04T10:50:59 probe mpfr200rt gemm NT start | gpu 100 %, 141 MiB | apps: none
+2026-11-04T10:51:01 probe mpfr200rt gemm TN start | gpu 100 %, 139 MiB | apps: none
+2026-11-04T10:51:04 probe mpfr200rt gemm_update NN start | gpu 100 %, 137 MiB | apps: none
+2026-11-04T10:51:05 probe mpfr200rt syrk LN start | gpu 100 %, 135 MiB | apps: none
+2026-11-04T10:51:08 probe mpfr200rt syrk UT start | gpu 100 %, 133 MiB | apps: none
+2026-11-04T10:51:10 probe mpfr200rt syrk LN_k64 start | gpu 100 %, 131 MiB | apps: none
+2026-11-04T10:51:11 probe mpfr200rt syrk UT_k64 start | gpu 100 %, 129 MiB | apps: none
+2026-11-04T10:51:13 probe mpfr200rt trsm LLNU start | gpu 100 %, 127 MiB | apps: none
+2026-11-04T10:51:23 probe mpfr200rt trsm RLTN start | gpu 94 %, 125 MiB | apps: none
+2026-11-04T10:51:32 probe mpfr200rt trsm LUTN start | gpu 94 %, 123 MiB | apps: none
+2026-11-04T10:51:39 probe mpfr200rt trsm LUNN start | gpu 93 %, 121 MiB | apps: none
+2026-11-04T10:51:49 probe mpfr200rt trsm LLNU_p64 start | gpu 100 %, 119 MiB | apps: none
+2026-11-04T10:51:50 probe mpfr200rt trsm RLTN_p64 start | gpu 92 %, 117 MiB | apps: none
+2026-11-04T10:51:51 probe mpfr200rt trsm LUTN_p64 start | gpu 100 %, 115 MiB | apps: none
+2026-11-04T10:51:53 probe mpfr200rt trsm LUNN_p64 start | gpu 100 %, 113 MiB | apps: none
+2026-11-04T10:51:56 probe mpfr200rt getrf2 P64 start | gpu 100 %, 111 MiB | apps: none
+2026-11-04T10:51:57 probe mpfr200rt potrf2 L start | gpu 100 %, 109 MiB | apps: none
+2026-11-04T10:51:59 probe mpfr200rt cgemm NN start | gpu 100 %, 107 MiB | apps: none
+2026-11-04T10:57:22 probe mpfr200rt cgemm NN start | gpu 0 %, 105 MiB | apps: none
+2026-11-04T10:57:42 probe mpfr200rt cgemm NC start | gpu 40 %, 103 MiB | apps: none
+2026-11-04T10:58:01 probe mpfr200rt cgemm CN start | gpu 100 %, 101 MiB | apps: none
+2026-11-04T10:58:16 probe mpfr200rt cherk LN start | gpu 100 %, 99 MiB | apps: none
+2026-11-04T10:59:21 probe mpfr200rt cherk UC start | gpu 100 %, 97 MiB | apps: none
+2026-11-04T11:00:25 probe mpfr200rt cherk LN_k64 start | gpu 100 %, 95 MiB | apps: none
+2026-11-04T11:01:04 probe mpfr200rt cherk UC_k64 start | gpu 68 %, 93 MiB | apps: none
+2026-11-04T11:01:14 probe mpfr200rt cherk UC_k64 start | gpu 0 %, 91 MiB | apps: none
+2026-11-04T11:01:31 probe mpfr200rt ctrsm LLNU start | gpu 100 %, 89 MiB | apps: none
+2026-11-04T11:01:40 probe mpfr200rt ctrsm RLCN start | gpu 100 %, 87 MiB | apps: none
+2026-11-04T11:01:50 probe mpfr200rt ctrsm LUCN start | gpu 50 %, 85 MiB | apps: none
+2026-11-04T11:01:59 probe mpfr200rt ctrsm LUNN start | gpu 100 %, 83 MiB | apps: none
+2026-11-04T11:02:09 probe mpfr200rt ctrsm LLNU_p64 start | gpu 100 %, 81 MiB | apps: none
+2026-11-04T11:02:23 probe mpfr200rt ctrsm RLCN_p64 start | gpu 58 %, 79 MiB | apps: none
+2026-11-04T11:02:38 probe mpfr200rt ctrsm LUCN_p64 start | gpu 100 %, 77 MiB | apps: none
+2026-11-04T11:02:53 probe mpfr200rt ctrsm LUNN_p64 start | gpu 100 %, 75 MiB | apps: none
+2026-11-04T11:03:21 probe qd gemm NN start | gpu 0 %, 73 MiB | apps: none
+2026-11-04T11:03:22 probe qd gemm NT start | gpu 2 %, 73 MiB | apps: none
+2026-11-04T11:03:23 probe qd gemm TN start | gpu 3 %, 73 MiB | apps: none
+2026-11-04T11:03:24 probe qd gemm_update NN start | gpu 51 %, 73 MiB | apps: none
+2026-11-04T11:03:24 probe qd syrk LN start | gpu 2 %, 73 MiB | apps: none
+2026-11-04T11:03:25 probe qd syrk UT start | gpu 3 %, 73 MiB | apps: none
+2026-11-04T11:03:26 probe qd syrk LN_k64 start | gpu 30 %, 73 MiB | apps: none
+2026-11-04T11:03:26 probe qd syrk UT_k64 start | gpu 2 %, 73 MiB | apps: none
+2026-11-04T11:03:27 probe qd trsm LLNU start | gpu 2 %, 73 MiB | apps: none
+2026-11-04T11:03:29 probe qd trsm RLTN start | gpu 100 %, 73 MiB | apps: none
+2026-11-04T11:03:32 probe qd trsm LUTN start | gpu 99 %, 73 MiB | apps: none
+2026-11-04T11:03:34 probe qd trsm LUNN start | gpu 60 %, 73 MiB | apps: none
+2026-11-04T11:03:36 probe qd trsm LLNU_p64 start | gpu 100 %, 73 MiB | apps: none
+2026-11-04T11:03:37 probe qd trsm RLTN_p64 start | gpu 7 %, 73 MiB | apps: none
+2026-11-04T11:03:37 probe qd trsm LUTN_p64 start | gpu 6 %, 73 MiB | apps: none
+2026-11-04T11:03:37 probe qd trsm LUNN_p64 start | gpu 0 %, 73 MiB | apps: none
+2026-11-04T11:03:38 probe qd getrf2 P64 start | gpu 0 %, 73 MiB | apps: none
+2026-11-04T11:03:38 probe qd potrf2 L start | gpu 13 %, 73 MiB | apps: none
+2026-11-04T11:03:39 probe qd laswp R64 start | gpu 38 %, 73 MiB | apps: none
+2026-11-04T11:03:39 probe qd trtri UN start | gpu 3 %, 73 MiB | apps: none
+2026-11-04T11:03:48 probe qd lauum L start | gpu 49 %, 73 MiB | apps: none
+2026-11-04T11:03:51 probe qd cgemm NN start | gpu 63 %, 73 MiB | apps: none
+2026-11-04T11:03:53 probe qd cgemm NC start | gpu 98 %, 73 MiB | apps: none
+2026-11-04T11:03:55 probe qd cgemm CN start | gpu 57 %, 73 MiB | apps: none
+2026-11-04T11:03:57 probe qd cherk LN start | gpu 94 %, 73 MiB | apps: none
+2026-11-04T11:04:05 probe qd cherk UC start | gpu 78 %, 73 MiB | apps: none
+2026-11-04T11:04:13 probe qd cherk LN_k64 start | gpu 47 %, 73 MiB | apps: none
+2026-11-04T11:04:14 probe qd cherk UC_k64 start | gpu 36 %, 73 MiB | apps: none
+2026-11-04T11:04:16 probe qd ctrsm LLNU start | gpu 84 %, 73 MiB | apps: none
+2026-11-04T11:04:22 probe qd ctrsm RLCN start | gpu 90 %, 73 MiB | apps: none
+2026-11-04T11:04:28 probe qd ctrsm LUCN start | gpu 4 %, 73 MiB | apps: none
+2026-11-04T11:04:33 probe qd ctrsm LUNN start | gpu 99 %, 73 MiB | apps: none
+2026-11-04T11:04:39 probe qd ctrsm LLNU_p64 start | gpu 65 %, 73 MiB | apps: none
+2026-11-04T11:04:39 probe qd ctrsm RLCN_p64 start | gpu 6 %, 73 MiB | apps: none
+2026-11-04T11:04:40 probe qd ctrsm LUCN_p64 start | gpu 6 %, 73 MiB | apps: none
+2026-11-04T11:04:40 probe qd ctrsm LUNN_p64 start | gpu 6 %, 73 MiB | apps: none
+2026-11-04T11:06:10 before dd gemm NN | gpu 0 %, 73 MiB | apps: none
+2026-11-04T11:08:56 after dd gemm NN | gpu 0 %, 73 MiB | apps: none
+2026-11-04T11:08:56 before dd gemm_update NN | gpu 0 %, 73 MiB | apps: none
+2026-11-04T11:09:04 after dd gemm_update NN | gpu 15 %, 73 MiB | apps: none
+2026-11-04T11:09:05 before dd syrk LN | gpu 6 %, 73 MiB | apps: none
+2026-11-04T11:11:42 after dd syrk LN | gpu 0 %, 73 MiB | apps: none
+2026-11-04T11:11:42 before dd syrk LN_k64 | gpu 0 %, 73 MiB | apps: none
+2026-11-04T11:11:51 after dd syrk LN_k64 | gpu 35 %, 73 MiB | apps: none
+2026-11-04T11:11:51 before dd trsm LLNU | gpu 9 %, 73 MiB | apps: none
+2026-11-04T11:18:58 after dd trsm LLNU | gpu 7 %, 73 MiB | apps: none
+2026-11-04T11:18:58 before dd trsm RLTN_p64 | gpu 7 %, 73 MiB | apps: none
+2026-11-04T11:19:00 before dd getrf2 P64 | gpu 0 %, 73 MiB | apps: none
+2026-11-04T11:19:01 after dd getrf2 P64 | gpu 67 %, 73 MiB | apps: none
+2026-11-04T11:19:01 before td gemm NN | gpu 67 %, 73 MiB | apps: none
+2026-11-04T11:26:05 after td gemm NN | gpu 0 %, 73 MiB | apps: none
+2026-11-04T11:26:05 before td gemm_update NN | gpu 0 %, 73 MiB | apps: none
+2026-11-04T11:26:07 before td gemm_update NN | gpu 0 %, 73 MiB | apps: none
+2026-11-04T11:26:21 after td gemm_update NN | gpu 10 %, 73 MiB | apps: none
+2026-11-04T11:26:21 before td syrk LN | gpu 10 %, 73 MiB | apps: none
+2026-11-04T11:33:15 after td syrk LN | gpu 0 %, 73 MiB | apps: none
+2026-11-04T11:33:16 before td syrk LN_k64 | gpu 0 %, 73 MiB | apps: none
+2026-11-04T11:33:29 after td syrk LN_k64 | gpu 8 %, 73 MiB | apps: none
+2026-11-04T11:33:29 before td trsm LLNU | gpu 8 %, 73 MiB | apps: none
+2026-11-04T11:37:46 after td trsm LLNU | gpu 1 %, 73 MiB | apps: none
+2026-11-04T11:37:46 before td trsm RLTN_p64 | gpu 1 %, 73 MiB | apps: none
+2026-11-04T11:37:47 after td trsm RLTN_p64 | gpu 28 %, 73 MiB | apps: none
+2026-11-04T11:37:47 before td getrf2 P64 | gpu 28 %, 73 MiB | apps: none
+2026-11-04T11:37:49 after td getrf2 P64 | gpu 34 %, 73 MiB | apps: none
+2026-11-04T11:37:49 before qd gemm NN | gpu 34 %, 73 MiB | apps: none
+2026-11-04T11:48:59 after qd gemm NN | gpu 0 %, 73 MiB | apps: none
+2026-11-04T11:48:59 before qd gemm_update NN | gpu 6 %, 73 MiB | apps: none
+2026-11-04T11:49:16 after qd gemm_update NN | gpu 14 %, 73 MiB | apps: none
+2026-11-04T11:49:16 before qd syrk LN | gpu 0 %, 73 MiB | apps: none
+2026-11-04T11:59:39 after qd syrk LN | gpu 6 %, 73 MiB | apps: none
+2026-11-04T11:59:39 before qd syrk LN_k64 | gpu 6 %, 73 MiB | apps: none
+2026-11-04T12:00:00 after qd syrk LN_k64 | gpu 7 %, 73 MiB | apps: none
+2026-11-04T12:00:00 before qd trsm LLNU | gpu 0 %, 73 MiB | apps: none
+2026-11-04T12:03:24 after qd trsm LLNU | gpu 0 %, 73 MiB | apps: none
+2026-11-04T12:03:24 before qd trsm RLTN_p64 | gpu 0 %, 73 MiB | apps: none
+2026-11-04T12:03:26 after qd trsm RLTN_p64 | gpu 34 %, 73 MiB | apps: none
+2026-11-04T12:03:26 before qd getrf2 P64 | gpu 34 %, 73 MiB | apps: none
+2026-11-04T12:03:28 after qd getrf2 P64 | gpu 13 %, 73 MiB | apps: none
+2026-11-04T12:03:28 before mpfr256 gemm NN | gpu 13 %, 73 MiB | apps: none
+2026-11-04T12:11:27 after mpfr256 gemm NN | gpu 0 %, 73 MiB | apps: none
+2026-11-04T12:11:27 before mpfr256 gemm_update NN | gpu 0 %, 73 MiB | apps: none
+2026-11-04T12:13:08 after mpfr256 gemm_update NN | gpu 0 %, 73 MiB | apps: none
+2026-11-04T12:13:08 before mpfr256 syrk LN | gpu 0 %, 73 MiB | apps: none
+2026-11-04T12:19:27 after mpfr256 syrk LN | gpu 0 %, 73 MiB | apps: none
+2026-11-04T12:19:27 before mpfr256 syrk LN_k64 | gpu 0 %, 73 MiB | apps: none
+2026-11-04T12:20:49 after mpfr256 syrk LN_k64 | gpu 0 %, 73 MiB | apps: none
+2026-11-04T12:20:49 before mpfr256 trsm LLNU | gpu 8 %, 73 MiB | apps: none
+2026-11-04T12:23:24 after mpfr256 trsm LLNU | gpu 0 %, 73 MiB | apps: none
+2026-11-04T12:23:24 before mpfr256 trsm RLTN_p64 | gpu 0 %, 73 MiB | apps: none
+2026-11-04T12:23:29 after mpfr256 trsm RLTN_p64 | gpu 43 %, 73 MiB | apps: none
+2026-11-04T12:23:29 before mpfr256 getrf2 P64 | gpu 23 %, 73 MiB | apps: none
+2026-11-04T12:23:37 after mpfr256 getrf2 P64 | gpu 100 %, 73 MiB | apps: none
+2026-11-04T12:23:37 before mpfr512 gemm NN | gpu 100 %, 73 MiB | apps: none
+2026-11-04T12:35:15 after mpfr512 gemm NN | gpu 0 %, 73 MiB | apps: none
+2026-11-04T12:35:15 before mpfr512 gemm_update NN | gpu 0 %, 73 MiB | apps: none
+2026-11-04T12:37:38 after mpfr512 gemm_update NN | gpu 5 %, 73 MiB | apps: none
+2026-11-04T12:37:38 before mpfr512 syrk LN | gpu 5 %, 73 MiB | apps: none
+2026-11-04T12:43:25 after mpfr512 syrk LN | gpu 0 %, 73 MiB | apps: none
+2026-11-04T12:43:25 before mpfr512 syrk LN_k64 | gpu 0 %, 73 MiB | apps: none
+2026-11-04T12:45:43 after mpfr512 syrk LN_k64 | gpu 0 %, 73 MiB | apps: none
+2026-11-04T12:45:43 before mpfr512 trsm LLNU | gpu 8 %, 73 MiB | apps: none
+2026-11-04T12:49:26 after mpfr512 trsm LLNU | gpu 0 %, 73 MiB | apps: none
+2026-11-04T12:49:26 before mpfr512 trsm RLTN_p64 | gpu 0 %, 73 MiB | apps: none
+2026-11-04T12:49:34 after mpfr512 trsm RLTN_p64 | gpu 44 %, 73 MiB | apps: none
+2026-11-04T12:49:35 before mpfr512 getrf2 P64 | gpu 16 %, 73 MiB | apps: none
+2026-11-04T12:49:47 after mpfr512 getrf2 P64 | gpu 90 %, 73 MiB | apps: none
+2026-11-04T12:49:47 before mpfr1024 gemm NN | gpu 90 %, 73 MiB | apps: none
+2026-11-04T12:55:39 after mpfr1024 gemm NN | gpu 0 %, 73 MiB | apps: none
+2026-11-04T12:55:39 before mpfr1024 gemm_update NN | gpu 8 %, 73 MiB | apps: none
+2026-11-04T12:56:33 after mpfr1024 gemm_update NN | gpu 0 %, 73 MiB | apps: none
+2026-11-04T12:56:33 before mpfr1024 syrk LN | gpu 0 %, 73 MiB | apps: none
+2026-11-04T13:00:53 after mpfr1024 syrk LN | gpu 0 %, 73 MiB | apps: none
+2026-11-04T13:00:53 before mpfr1024 syrk LN_k64 | gpu 0 %, 73 MiB | apps: none
+2026-11-04T13:01:40 after mpfr1024 syrk LN_k64 | gpu 0 %, 73 MiB | apps: none
+2026-11-04T13:01:40 before mpfr1024 trsm LLNU | gpu 0 %, 73 MiB | apps: none
+2026-11-04T13:07:00 after mpfr1024 trsm LLNU | gpu 0 %, 73 MiB | apps: none
+2026-11-04T13:07:00 before mpfr1024 trsm RLTN_p64 | gpu 28 %, 73 MiB | apps: none
+2026-11-04T13:07:12 after mpfr1024 trsm RLTN_p64 | gpu 80 %, 73 MiB | apps: none
+2026-11-04T13:07:12 before mpfr1024 getrf2 P64 | gpu 80 %, 73 MiB | apps: none
+2026-11-04T13:07:26 after mpfr1024 getrf2 P64 | gpu 91 %, 73 MiB | apps: none
+2026-11-04T13:07:26 before mpfr200rt gemm NN | gpu 91 %, 73 MiB | apps: none
+2026-11-04T13:15:14 after mpfr200rt gemm NN | gpu 0 %, 71 MiB | apps: none
+2026-11-04T13:15:14 before mpfr200rt gemm_update NN | gpu 0 %, 71 MiB | apps: none
+2026-11-04T13:16:41 after mpfr200rt gemm_update NN | gpu 0 %, 69 MiB | apps: none
+2026-11-04T13:16:41 before mpfr200rt syrk LN | gpu 0 %, 69 MiB | apps: none
+2026-11-04T13:20:07 after mpfr200rt syrk LN | gpu 93 %, 67 MiB | apps: none
+2026-11-04T13:20:07 before mpfr200rt syrk LN_k64 | gpu 100 %, 67 MiB | apps: none
+2026-11-04T13:21:31 after mpfr200rt syrk LN_k64 | gpu 37 %, 65 MiB | apps: none
+2026-11-04T13:21:31 before mpfr200rt trsm LLNU | gpu 37 %, 65 MiB | apps: none
+2026-11-04T13:27:12 after mpfr200rt trsm LLNU | gpu 95 %, 63 MiB | apps: none
+2026-11-04T13:27:12 before mpfr200rt trsm RLTN_p64 | gpu 95 %, 63 MiB | apps: none
+2026-11-04T13:28:15 after mpfr200rt trsm RLTN_p64 | gpu 100 %, 61 MiB | apps: none
+2026-11-04T13:28:15 before mpfr200rt getrf2 P64 | gpu 100 %, 61 MiB | apps: none
+2026-11-04T13:28:33 after mpfr200rt getrf2 P64 | gpu 85 %, 59 MiB | apps: none
+2026-11-04T13:28:33 before dd gemm NT | gpu 85 %, 59 MiB | apps: none
+2026-11-04T13:29:49 after dd gemm NT | gpu 0 %, 59 MiB | apps: none
+2026-11-04T13:29:49 before dd gemm TN | gpu 0 %, 59 MiB | apps: none
+2026-11-04T13:31:07 after dd gemm TN | gpu 0 %, 59 MiB | apps: none
+2026-11-04T13:31:07 before dd syrk UT | gpu 6 %, 59 MiB | apps: none
+2026-11-04T13:32:07 after dd syrk UT | gpu 0 %, 59 MiB | apps: none
+2026-11-04T13:32:07 before dd syrk UT_k64 | gpu 0 %, 59 MiB | apps: none
+2026-11-04T13:32:12 after dd syrk UT_k64 | gpu 9 %, 59 MiB | apps: none
+2026-11-04T13:32:12 before dd trsm RLTN | gpu 6 %, 59 MiB | apps: none
+2026-11-04T13:32:44 after dd trsm RLTN | gpu 79 %, 59 MiB | apps: none
+2026-11-04T13:32:44 before dd trsm LUTN | gpu 5 %, 59 MiB | apps: none
+2026-11-04T13:33:11 after dd trsm LUTN | gpu 31 %, 59 MiB | apps: none
+2026-11-04T13:33:11 before dd trsm LUNN | gpu 31 %, 59 MiB | apps: none
+2026-11-04T13:33:52 after dd trsm LUNN | gpu 74 %, 59 MiB | apps: none
+2026-11-04T13:33:52 before dd trsm LLNU_p64 | gpu 74 %, 59 MiB | apps: none
+2026-11-04T13:33:53 after dd trsm LLNU_p64 | gpu 24 %, 59 MiB | apps: none
+2026-11-04T13:33:53 before dd trsm LUTN_p64 | gpu 38 %, 59 MiB | apps: none
+2026-11-04T13:33:54 after dd trsm LUTN_p64 | gpu 18 %, 59 MiB | apps: none
+2026-11-04T13:33:54 before dd trsm LUNN_p64 | gpu 18 %, 59 MiB | apps: none
+2026-11-04T13:33:54 after dd trsm LUNN_p64 | gpu 39 %, 59 MiB | apps: none
+2026-11-04T13:33:54 before dd potrf2 L | gpu 39 %, 59 MiB | apps: none
+2026-11-04T13:33:55 after dd potrf2 L | gpu 10 %, 59 MiB | apps: none
+2026-11-04T13:33:55 before dd laswp R64 | gpu 10 %, 59 MiB | apps: none
+2026-11-04T13:33:59 after dd laswp R64 | gpu 6 %, 59 MiB | apps: none
+2026-11-04T13:33:59 before dd trtri UN | gpu 3 %, 59 MiB | apps: none
+2026-11-04T13:34:36 after dd trtri UN | gpu 100 %, 59 MiB | apps: none
+2026-11-04T13:34:36 before dd lauum L | gpu 62 %, 59 MiB | apps: none
+2026-11-04T13:34:57 after dd lauum L | gpu 17 %, 59 MiB | apps: none
+2026-11-04T13:34:57 before td gemm NT | gpu 17 %, 59 MiB | apps: none
+2026-11-04T13:35:57 after td gemm NT | gpu 0 %, 59 MiB | apps: none
+2026-11-04T13:35:57 before td gemm TN | gpu 0 %, 59 MiB | apps: none
+2026-11-04T13:36:57 after td gemm TN | gpu 0 %, 59 MiB | apps: none
+2026-11-04T13:36:57 before td syrk UT | gpu 0 %, 59 MiB | apps: none
+2026-11-04T13:37:56 after td syrk UT | gpu 0 %, 59 MiB | apps: none
+2026-11-04T13:37:56 before td syrk UT_k64 | gpu 0 %, 59 MiB | apps: none
+2026-11-04T13:38:04 after td syrk UT_k64 | gpu 17 %, 59 MiB | apps: none
+2026-11-04T13:38:04 before td trsm RLTN | gpu 5 %, 59 MiB | apps: none
+2026-11-04T13:38:36 after td trsm RLTN | gpu 10 %, 59 MiB | apps: none
+2026-11-04T13:38:36 before td trsm LUTN | gpu 10 %, 59 MiB | apps: none
+2026-11-04T13:39:03 after td trsm LUTN | gpu 65 %, 59 MiB | apps: none
+2026-11-04T13:39:03 before td trsm LUNN | gpu 11 %, 59 MiB | apps: none
+2026-11-04T13:39:35 after td trsm LUNN | gpu 56 %, 59 MiB | apps: none
+2026-11-04T13:39:36 before td trsm LLNU_p64 | gpu 56 %, 59 MiB | apps: none
+2026-11-04T13:39:36 after td trsm LLNU_p64 | gpu 62 %, 59 MiB | apps: none
+2026-11-04T13:39:36 before td trsm LUTN_p64 | gpu 62 %, 59 MiB | apps: none
+2026-11-04T13:39:37 after td trsm LUTN_p64 | gpu 63 %, 59 MiB | apps: none
+2026-11-04T13:39:37 before td trsm LUNN_p64 | gpu 30 %, 59 MiB | apps: none
+2026-11-04T13:39:38 after td trsm LUNN_p64 | gpu 67 %, 59 MiB | apps: none
+2026-11-04T13:39:38 before td potrf2 L | gpu 67 %, 59 MiB | apps: none
+2026-11-04T13:39:38 after td potrf2 L | gpu 1 %, 59 MiB | apps: none
+2026-11-04T13:39:38 before td laswp R64 | gpu 43 %, 59 MiB | apps: none
+2026-11-04T13:39:45 after td laswp R64 | gpu 5 %, 59 MiB | apps: none
+2026-11-04T13:39:45 before td trtri UN | gpu 5 %, 59 MiB | apps: none
+2026-11-04T13:40:40 after td trtri UN | gpu 100 %, 59 MiB | apps: none
+2026-11-04T13:40:40 before td lauum L | gpu 100 %, 59 MiB | apps: none
+2026-11-04T13:41:12 after td lauum L | gpu 9 %, 59 MiB | apps: none
+2026-11-04T13:41:12 before qd gemm NT | gpu 9 %, 59 MiB | apps: none
+2026-11-04T13:42:08 after qd gemm NT | gpu 0 %, 59 MiB | apps: none
+2026-11-04T13:42:08 before qd gemm TN | gpu 0 %, 59 MiB | apps: none
+2026-11-04T13:43:07 after qd gemm TN | gpu 24 %, 59 MiB | apps: none
+2026-11-04T13:43:07 before qd syrk UT | gpu 24 %, 59 MiB | apps: none
+2026-11-04T13:43:59 after qd syrk UT | gpu 0 %, 59 MiB | apps: none
+2026-11-04T13:43:59 before qd syrk UT_k64 | gpu 0 %, 59 MiB | apps: none
+2026-11-04T13:44:09 after qd syrk UT_k64 | gpu 7 %, 59 MiB | apps: none
+2026-11-04T13:44:09 before qd trsm RLTN | gpu 6 %, 59 MiB | apps: none
+2026-11-04T13:44:43 after qd trsm RLTN | gpu 53 %, 59 MiB | apps: none
+2026-11-04T13:44:43 before qd trsm LUTN | gpu 53 %, 59 MiB | apps: none
+2026-11-04T13:45:16 after qd trsm LUTN | gpu 12 %, 59 MiB | apps: none
+2026-11-04T13:45:16 before qd trsm LUNN | gpu 12 %, 59 MiB | apps: none
+2026-11-04T13:45:45 after qd trsm LUNN | gpu 69 %, 59 MiB | apps: none
+2026-11-04T13:45:45 before qd trsm LLNU_p64 | gpu 69 %, 59 MiB | apps: none
+2026-11-04T13:45:46 after qd trsm LLNU_p64 | gpu 55 %, 59 MiB | apps: none
+2026-11-04T13:45:46 before qd trsm LUTN_p64 | gpu 55 %, 59 MiB | apps: none
+2026-11-04T13:45:47 after qd trsm LUTN_p64 | gpu 56 %, 59 MiB | apps: none
+2026-11-04T13:45:47 before qd trsm LUNN_p64 | gpu 56 %, 59 MiB | apps: none
+2026-11-04T13:45:48 after qd trsm LUNN_p64 | gpu 79 %, 59 MiB | apps: none
+2026-11-04T13:45:48 before qd potrf2 L | gpu 47 %, 59 MiB | apps: none
+2026-11-04T13:45:48 after qd potrf2 L | gpu 30 %, 59 MiB | apps: none
+2026-11-04T13:45:48 before qd laswp R64 | gpu 30 %, 59 MiB | apps: none
+2026-11-04T13:45:57 after qd laswp R64 | gpu 7 %, 59 MiB | apps: none
+2026-11-04T13:45:57 before qd trtri UN | gpu 7 %, 59 MiB | apps: none
+2026-11-04T13:46:57 after qd trtri UN | gpu 100 %, 59 MiB | apps: none
+2026-11-04T13:46:57 before qd lauum L | gpu 100 %, 59 MiB | apps: none
+2026-11-04T13:47:35 after qd lauum L | gpu 100 %, 59 MiB | apps: none
+2026-11-04T13:47:35 before mpfr256 gemm NT | gpu 100 %, 59 MiB | apps: none
+2026-11-04T13:48:17 after mpfr256 gemm NT | gpu 0 %, 59 MiB | apps: none
+2026-11-04T13:48:17 before mpfr256 gemm TN | gpu 0 %, 59 MiB | apps: none
+2026-11-04T13:48:57 after mpfr256 gemm TN | gpu 0 %, 59 MiB | apps: none
+2026-11-04T13:48:57 before mpfr256 syrk UT | gpu 0 %, 59 MiB | apps: none
+2026-11-04T13:49:27 after mpfr256 syrk UT | gpu 0 %, 59 MiB | apps: none
+2026-11-04T13:49:27 before mpfr256 syrk UT_k64 | gpu 0 %, 59 MiB | apps: none
+2026-11-04T13:50:02 after mpfr256 syrk UT_k64 | gpu 0 %, 59 MiB | apps: none
+2026-11-04T13:50:02 before mpfr256 trsm RLTN | gpu 7 %, 59 MiB | apps: none
+2026-11-04T13:50:42 after mpfr256 trsm RLTN | gpu 0 %, 59 MiB | apps: none
+2026-11-04T13:50:42 before mpfr256 trsm LUTN | gpu 0 %, 59 MiB | apps: none
+2026-11-04T13:51:25 after mpfr256 trsm LUTN | gpu 11 %, 59 MiB | apps: none
+2026-11-04T13:51:26 before mpfr256 trsm LUNN | gpu 11 %, 59 MiB | apps: none
+2026-11-04T13:52:06 after mpfr256 trsm LUNN | gpu 16 %, 59 MiB | apps: none
+2026-11-04T13:52:06 before mpfr256 trsm LLNU_p64 | gpu 16 %, 59 MiB | apps: none
+2026-11-04T13:52:09 after mpfr256 trsm LLNU_p64 | gpu 31 %, 59 MiB | apps: none
+2026-11-04T13:52:09 before mpfr256 trsm LUTN_p64 | gpu 17 %, 59 MiB | apps: none
+2026-11-04T13:52:11 after mpfr256 trsm LUTN_p64 | gpu 32 %, 59 MiB | apps: none
+2026-11-04T13:52:11 before mpfr256 trsm LUNN_p64 | gpu 32 %, 59 MiB | apps: none
+2026-11-04T13:52:14 after mpfr256 trsm LUNN_p64 | gpu 39 %, 59 MiB | apps: none
+2026-11-04T13:52:14 before mpfr256 potrf2 L | gpu 15 %, 59 MiB | apps: none
+2026-11-04T13:52:15 after mpfr256 potrf2 L | gpu 95 %, 59 MiB | apps: none
+2026-11-04T13:52:15 before mpfr512 gemm NT | gpu 35 %, 59 MiB | apps: none
+2026-11-04T13:52:47 after mpfr512 gemm NT | gpu 0 %, 59 MiB | apps: none
+2026-11-04T13:52:47 before mpfr512 gemm TN | gpu 0 %, 59 MiB | apps: none
+2026-11-04T13:53:15 after mpfr512 gemm TN | gpu 0 %, 59 MiB | apps: none
+2026-11-04T13:53:15 before mpfr512 syrk UT | gpu 7 %, 59 MiB | apps: none
+2026-11-04T13:53:49 after mpfr512 syrk UT | gpu 0 %, 59 MiB | apps: none
+2026-11-04T13:53:49 before mpfr512 syrk UT_k64 | gpu 0 %, 59 MiB | apps: none
+2026-11-04T13:54:23 after mpfr512 syrk UT_k64 | gpu 0 %, 59 MiB | apps: none
+2026-11-04T13:54:23 before mpfr512 trsm RLTN | gpu 0 %, 59 MiB | apps: none
+2026-11-04T13:55:02 after mpfr512 trsm RLTN | gpu 23 %, 59 MiB | apps: none
+2026-11-04T13:55:02 before mpfr512 trsm LUTN | gpu 23 %, 59 MiB | apps: none
+2026-11-04T13:55:39 after mpfr512 trsm LUTN | gpu 7 %, 59 MiB | apps: none
+2026-11-04T13:55:40 before mpfr512 trsm LUNN | gpu 7 %, 59 MiB | apps: none
+2026-11-04T13:56:21 after mpfr512 trsm LUNN | gpu 10 %, 59 MiB | apps: none
+2026-11-04T13:56:21 before mpfr512 trsm LLNU_p64 | gpu 10 %, 59 MiB | apps: none
+2026-11-04T13:56:24 after mpfr512 trsm LLNU_p64 | gpu 29 %, 59 MiB | apps: none
+2026-11-04T13:56:24 before mpfr512 trsm LUTN_p64 | gpu 29 %, 59 MiB | apps: none
+2026-11-04T13:56:27 after mpfr512 trsm LUTN_p64 | gpu 50 %, 59 MiB | apps: none
+2026-11-04T13:56:27 before mpfr512 trsm LUNN_p64 | gpu 50 %, 59 MiB | apps: none
+2026-11-04T13:56:30 after mpfr512 trsm LUNN_p64 | gpu 61 %, 59 MiB | apps: none
+2026-11-04T13:56:30 before mpfr512 potrf2 L | gpu 31 %, 59 MiB | apps: none
+2026-11-04T13:56:32 after mpfr512 potrf2 L | gpu 98 %, 59 MiB | apps: none
+2026-11-04T13:56:32 before mpfr1024 gemm NT | gpu 98 %, 59 MiB | apps: none
+2026-11-04T13:57:33 after mpfr1024 gemm NT | gpu 0 %, 59 MiB | apps: none
+2026-11-04T13:57:33 before mpfr1024 gemm TN | gpu 0 %, 59 MiB | apps: none
+2026-11-04T13:58:35 after mpfr1024 gemm TN | gpu 59 %, 59 MiB | apps: none
+2026-11-04T13:58:36 before mpfr1024 syrk UT | gpu 0 %, 59 MiB | apps: none
+2026-11-04T13:59:15 after mpfr1024 syrk UT | gpu 59 %, 59 MiB | apps: none
+2026-11-04T13:59:15 before mpfr1024 syrk UT_k64 | gpu 0 %, 59 MiB | apps: none
+2026-11-04T13:59:36 after mpfr1024 syrk UT_k64 | gpu 0 %, 59 MiB | apps: none
+2026-11-04T13:59:36 before mpfr1024 trsm RLTN | gpu 0 %, 59 MiB | apps: none
+2026-11-04T14:00:31 after mpfr1024 trsm RLTN | gpu 65 %, 59 MiB | apps: none
+2026-11-04T14:00:31 before mpfr1024 trsm LUTN | gpu 65 %, 59 MiB | apps: none
+2026-11-04T14:01:20 after mpfr1024 trsm LUTN | gpu 42 %, 59 MiB | apps: none
+2026-11-04T14:01:20 before mpfr1024 trsm LUNN | gpu 42 %, 59 MiB | apps: none
+2026-11-04T14:02:15 after mpfr1024 trsm LUNN | gpu 37 %, 59 MiB | apps: none
+2026-11-04T14:02:15 before mpfr1024 trsm LLNU_p64 | gpu 37 %, 59 MiB | apps: none
+2026-11-04T14:02:20 after mpfr1024 trsm LLNU_p64 | gpu 73 %, 59 MiB | apps: none
+2026-11-04T14:02:20 before mpfr1024 trsm LUTN_p64 | gpu 73 %, 59 MiB | apps: none
+2026-11-04T14:02:26 after mpfr1024 trsm LUTN_p64 | gpu 83 %, 59 MiB | apps: none
+2026-11-04T14:02:26 before mpfr1024 trsm LUNN_p64 | gpu 83 %, 59 MiB | apps: none
+2026-11-04T14:02:32 after mpfr1024 trsm LUNN_p64 | gpu 80 %, 59 MiB | apps: none
+2026-11-04T14:02:32 before mpfr1024 potrf2 L | gpu 80 %, 59 MiB | apps: none
+2026-11-04T14:02:36 after mpfr1024 potrf2 L | gpu 99 %, 59 MiB | apps: none
+2026-11-04T14:02:36 before mpfr200rt gemm NT | gpu 99 %, 59 MiB | apps: none
+2026-11-04T14:03:35 after mpfr200rt gemm NT | gpu 94 %, 57 MiB | apps: none
+2026-11-04T14:03:35 before mpfr200rt gemm TN | gpu 94 %, 57 MiB | apps: none
+2026-11-04T14:04:35 after mpfr200rt gemm TN | gpu 94 %, 55 MiB | apps: none
+2026-11-04T14:04:35 before mpfr200rt syrk UT | gpu 94 %, 55 MiB | apps: none
+2026-11-04T14:05:23 after mpfr200rt syrk UT | gpu 100 %, 53 MiB | apps: none
+2026-11-04T14:05:23 before mpfr200rt syrk UT_k64 | gpu 100 %, 53 MiB | apps: none
+2026-11-04T14:05:59 after mpfr200rt syrk UT_k64 | gpu 100 %, 51 MiB | apps: none
+2026-11-04T14:05:59 before mpfr200rt trsm RLTN | gpu 100 %, 51 MiB | apps: none
+2026-11-04T14:06:36 after mpfr200rt trsm RLTN | gpu 94 %, 49 MiB | apps: none
+2026-11-04T14:06:36 before mpfr200rt trsm LUTN | gpu 94 %, 49 MiB | apps: none
+2026-11-04T14:07:29 after mpfr200rt trsm LUTN | gpu 100 %, 47 MiB | apps: none
+2026-11-04T14:07:29 before mpfr200rt trsm LUNN | gpu 100 %, 47 MiB | apps: none
+2026-11-04T14:08:07 after mpfr200rt trsm LUNN | gpu 100 %, 45 MiB | apps: none
+2026-11-04T14:08:07 before mpfr200rt trsm LLNU_p64 | gpu 100 %, 45 MiB | apps: none
+2026-11-04T14:08:41 after mpfr200rt trsm LLNU_p64 | gpu 100 %, 43 MiB | apps: none
+2026-11-04T14:08:41 before mpfr200rt trsm LUTN_p64 | gpu 100 %, 43 MiB | apps: none
+2026-11-04T14:09:17 after mpfr200rt trsm LUTN_p64 | gpu 100 %, 41 MiB | apps: none
+2026-11-04T14:09:17 before mpfr200rt trsm LUNN_p64 | gpu 100 %, 41 MiB | apps: none
+2026-11-04T14:09:52 after mpfr200rt trsm LUNN_p64 | gpu 100 %, 39 MiB | apps: none
+2026-11-04T14:09:52 before mpfr200rt potrf2 L | gpu 100 %, 39 MiB | apps: none
+2026-11-04T14:09:55 after mpfr200rt potrf2 L | gpu 60 %, 37 MiB | apps: none
+2026-11-04T14:09:55 before dd cgemm NN | gpu 60 %, 37 MiB | apps: none
+2026-11-04T14:10:57 after dd cgemm NN | gpu 27 %, 37 MiB | apps: none
+2026-11-04T14:10:57 before dd cgemm NC | gpu 27 %, 37 MiB | apps: none
+2026-11-04T14:11:59 after dd cgemm NC | gpu 14 %, 37 MiB | apps: none
+2026-11-04T14:11:59 before dd cherk LN | gpu 14 %, 37 MiB | apps: none
+2026-11-04T14:12:32 after dd cherk LN | gpu 100 %, 37 MiB | apps: none
+2026-11-04T14:12:32 before dd cherk LN_k64 | gpu 100 %, 37 MiB | apps: none
+2026-11-04T14:12:49 after dd cherk LN_k64 | gpu 15 %, 37 MiB | apps: none
+2026-11-04T14:12:49 before dd ctrsm LLNU | gpu 6 %, 37 MiB | apps: none
+2026-11-04T14:13:15 after dd ctrsm LLNU | gpu 77 %, 37 MiB | apps: none
+2026-11-04T14:13:15 before dd ctrsm RLCN_p64 | gpu 77 %, 37 MiB | apps: none
+2026-11-04T14:13:16 after dd ctrsm RLCN_p64 | gpu 83 %, 37 MiB | apps: none
+2026-11-04T14:13:16 before td cgemm NN | gpu 52 %, 37 MiB | apps: none
+2026-11-04T14:13:51 after td cgemm NN | gpu 18 %, 37 MiB | apps: none
+2026-11-04T14:13:51 before td cgemm NC | gpu 4 %, 37 MiB | apps: none
+2026-11-04T14:14:26 after td cgemm NC | gpu 16 %, 37 MiB | apps: none
+2026-11-04T14:14:26 before td cherk LN | gpu 16 %, 37 MiB | apps: none
+2026-11-04T14:15:16 after td cherk LN | gpu 100 %, 37 MiB | apps: none
+2026-11-04T14:15:16 before td cherk LN_k64 | gpu 100 %, 37 MiB | apps: none
+2026-11-04T14:15:31 after td cherk LN_k64 | gpu 7 %, 37 MiB | apps: none
+2026-11-04T14:15:32 before td ctrsm LLNU | gpu 7 %, 37 MiB | apps: none
+2026-11-04T14:16:07 after td ctrsm LLNU | gpu 100 %, 37 MiB | apps: none
+2026-11-04T14:16:07 before td ctrsm RLCN_p64 | gpu 100 %, 37 MiB | apps: none
+2026-11-04T14:16:08 after td ctrsm RLCN_p64 | gpu 87 %, 37 MiB | apps: none
+2026-11-04T14:16:08 before qd cgemm NN | gpu 70 %, 37 MiB | apps: none
+2026-11-04T14:16:44 after qd cgemm NN | gpu 16 %, 37 MiB | apps: none
+2026-11-04T14:16:44 before qd cgemm NC | gpu 16 %, 37 MiB | apps: none
+2026-11-04T14:17:21 after qd cgemm NC | gpu 19 %, 37 MiB | apps: none
+2026-11-04T14:17:21 before qd cherk LN | gpu 19 %, 37 MiB | apps: none
+2026-11-04T14:18:23 after qd cherk LN | gpu 42 %, 37 MiB | apps: none
+2026-11-04T14:18:23 before qd cherk LN_k64 | gpu 42 %, 37 MiB | apps: none
+2026-11-04T14:18:43 after qd cherk LN_k64 | gpu 11 %, 37 MiB | apps: none
+2026-11-04T14:18:43 before qd ctrsm LLNU | gpu 11 %, 37 MiB | apps: none
+2026-11-04T14:19:34 after qd ctrsm LLNU | gpu 93 %, 37 MiB | apps: none
+2026-11-04T14:19:34 before qd ctrsm RLCN_p64 | gpu 93 %, 37 MiB | apps: none
+2026-11-04T14:19:36 after qd ctrsm RLCN_p64 | gpu 79 %, 37 MiB | apps: none
+2026-11-04T14:19:36 before mpfr256 cgemm NN | gpu 48 %, 37 MiB | apps: none
+2026-11-04T14:20:18 after mpfr256 cgemm NN | gpu 0 %, 37 MiB | apps: none
+2026-11-04T14:20:18 before mpfr256 cgemm NC | gpu 0 %, 37 MiB | apps: none
+2026-11-04T14:21:01 after mpfr256 cgemm NC | gpu 0 %, 37 MiB | apps: none
+2026-11-04T14:21:01 before mpfr256 cherk LN | gpu 0 %, 37 MiB | apps: none
+2026-11-04T14:21:29 after mpfr256 cherk LN | gpu 100 %, 37 MiB | apps: none
+2026-11-04T14:21:29 before mpfr256 cherk LN_k64 | gpu 100 %, 37 MiB | apps: none
+2026-11-04T14:22:09 after mpfr256 cherk LN_k64 | gpu 19 %, 37 MiB | apps: none
+2026-11-04T14:22:09 before mpfr256 ctrsm LLNU | gpu 19 %, 37 MiB | apps: none
+2026-11-04T14:22:56 after mpfr256 ctrsm LLNU | gpu 100 %, 37 MiB | apps: none
+2026-11-04T14:22:56 before mpfr256 ctrsm RLCN_p64 | gpu 17 %, 37 MiB | apps: none
+2026-11-04T14:23:11 after mpfr256 ctrsm RLCN_p64 | gpu 95 %, 35 MiB | apps: none
+2026-11-04T14:23:11 before mpfr512 cgemm NN | gpu 95 %, 35 MiB | apps: none
+2026-11-04T14:24:05 after mpfr512 cgemm NN | gpu 44 %, 35 MiB | apps: none
+2026-11-04T14:24:05 before mpfr512 cgemm NC | gpu 0 %, 35 MiB | apps: none
+2026-11-04T14:25:00 after mpfr512 cgemm NC | gpu 0 %, 35 MiB | apps: none
+2026-11-04T14:25:00 before mpfr512 cherk LN | gpu 0 %, 35 MiB | apps: none
+2026-11-04T14:25:30 after mpfr512 cherk LN | gpu 55 %, 35 MiB | apps: none
+2026-11-04T14:25:30 before mpfr512 cherk LN_k64 | gpu 55 %, 35 MiB | apps: none
+2026-11-04T14:26:20 after mpfr512 cherk LN_k64 | gpu 28 %, 35 MiB | apps: none
+2026-11-04T14:26:20 before mpfr512 ctrsm LLNU | gpu 28 %, 35 MiB | apps: none
+2026-11-04T14:26:53 after mpfr512 ctrsm LLNU | gpu 71 %, 35 MiB | apps: none
+2026-11-04T14:26:53 before mpfr512 ctrsm RLCN_p64 | gpu 71 %, 35 MiB | apps: none
+2026-11-04T14:27:11 after mpfr512 ctrsm RLCN_p64 | gpu 89 %, 33 MiB | apps: none
+2026-11-04T14:27:11 before mpfr1024 cgemm NN | gpu 89 %, 33 MiB | apps: none
+2026-11-04T14:27:51 after mpfr1024 cgemm NN | gpu 36 %, 33 MiB | apps: none
+2026-11-04T14:27:51 before mpfr1024 cgemm NC | gpu 36 %, 33 MiB | apps: none
+2026-11-04T14:28:45 after mpfr1024 cgemm NC | gpu 51 %, 33 MiB | apps: none
+2026-11-04T14:28:45 before mpfr1024 cherk LN | gpu 10 %, 33 MiB | apps: none
+2026-11-04T14:29:09 after mpfr1024 cherk LN | gpu 100 %, 33 MiB | apps: none
+2026-11-04T14:29:09 before mpfr1024 cherk LN_k64 | gpu 66 %, 33 MiB | apps: none
+2026-11-04T14:30:05 after mpfr1024 cherk LN_k64 | gpu 94 %, 33 MiB | apps: none
+2026-11-04T14:30:05 before mpfr1024 ctrsm LLNU | gpu 31 %, 33 MiB | apps: none
+2026-11-04T14:30:28 after mpfr1024 ctrsm LLNU | gpu 99 %, 33 MiB | apps: none
+2026-11-04T14:30:28 before mpfr1024 ctrsm RLCN_p64 | gpu 99 %, 33 MiB | apps: none
+2026-11-04T14:31:02 after mpfr1024 ctrsm RLCN_p64 | gpu 77 %, 31 MiB | apps: none
+2026-11-04T14:31:02 before mpfr200rt cgemm NN | gpu 77 %, 31 MiB | apps: none
+2026-11-04T14:31:09 after mpfr200rt cgemm NN | gpu 72 %, 29 MiB | apps: none
+2026-11-04T14:31:09 before mpfr200rt cgemm NC | gpu 72 %, 29 MiB | apps: none
+2026-11-04T14:31:17 after mpfr200rt cgemm NC | gpu 76 %, 27 MiB | apps: none
+2026-11-04T14:31:17 before mpfr200rt cherk LN | gpu 76 %, 27 MiB | apps: none
+2026-11-04T14:31:45 after mpfr200rt cherk LN | gpu 79 %, 25 MiB | apps: none
+2026-11-04T14:31:45 before mpfr200rt cherk LN_k64 | gpu 79 %, 25 MiB | apps: none
+2026-11-04T14:32:17 after mpfr200rt cherk LN_k64 | gpu 100 %, 23 MiB | apps: none
+2026-11-04T14:32:17 before mpfr200rt ctrsm LLNU | gpu 87 %, 23 MiB | apps: none
+2026-11-04T14:32:35 after mpfr200rt ctrsm LLNU | gpu 71 %, 21 MiB | apps: none
+2026-11-04T14:32:35 before mpfr200rt ctrsm RLCN_p64 | gpu 71 %, 21 MiB | apps: none
+2026-11-04T14:33:03 after mpfr200rt ctrsm RLCN_p64 | gpu 100 %, 19 MiB | apps: none
+2026-11-04T14:33:29 check dd gemm NN | gpu 0 %, 19 MiB | apps: none
+2026-11-04T14:33:30 check dd gemm NT | gpu 0 %, 19 MiB | apps: none
+2026-11-04T14:33:30 check dd gemm TN | gpu 8 %, 19 MiB | apps: none
+2026-11-04T14:33:30 check dd gemm_update NN | gpu 6 %, 19 MiB | apps: none
+2026-11-04T14:33:31 check dd syrk LN | gpu 8 %, 19 MiB | apps: none
+2026-11-04T14:33:31 check dd syrk UT | gpu 6 %, 19 MiB | apps: none
+2026-11-04T14:33:31 check dd syrk LN_k64 | gpu 8 %, 19 MiB | apps: none
+2026-11-04T14:33:31 check dd syrk UT_k64 | gpu 6 %, 19 MiB | apps: none
+2026-11-04T14:33:32 check dd trsm LLNU | gpu 8 %, 19 MiB | apps: none
+2026-11-04T14:33:32 check dd trsm RLTN | gpu 6 %, 19 MiB | apps: none
+2026-11-04T14:33:32 check dd trsm LUTN | gpu 13 %, 19 MiB | apps: none
+2026-11-04T14:33:33 check dd trsm LUNN | gpu 6 %, 19 MiB | apps: none
+2026-11-04T14:33:33 check dd trsm LLNU_p64 | gpu 10 %, 19 MiB | apps: none
+2026-11-04T14:33:33 check dd trsm RLTN_p64 | gpu 6 %, 19 MiB | apps: none
+2026-11-04T14:33:34 check dd trsm LUTN_p64 | gpu 9 %, 19 MiB | apps: none
+2026-11-04T14:33:34 check dd trsm LUNN_p64 | gpu 9 %, 19 MiB | apps: none
+2026-11-04T14:33:34 check dd getrf2 P64 | gpu 6 %, 19 MiB | apps: none
+2026-11-04T14:33:34 check dd potrf2 L | gpu 9 %, 19 MiB | apps: none
+2026-11-04T14:33:35 check dd laswp R64 | gpu 6 %, 19 MiB | apps: none
+2026-11-04T14:33:35 check dd trtri UN | gpu 12 %, 19 MiB | apps: none
+2026-11-04T14:33:35 check dd lauum L | gpu 4 %, 19 MiB | apps: none
+2026-11-04T14:33:36 check dd cgemm NN | gpu 30 %, 19 MiB | apps: none
+2026-11-04T14:33:36 check dd cgemm NC | gpu 6 %, 19 MiB | apps: none
+2026-11-04T14:33:36 check dd cherk LN | gpu 8 %, 19 MiB | apps: none
+2026-11-04T14:33:37 check dd cherk LN_k64 | gpu 6 %, 19 MiB | apps: none
+2026-11-04T14:33:37 check dd ctrsm LLNU | gpu 3 %, 19 MiB | apps: none
+2026-11-04T14:33:37 check dd ctrsm RLCN_p64 | gpu 13 %, 19 MiB | apps: none
+2026-11-04T14:33:39 check td gemm NN | gpu 0 %, 19 MiB | apps: none
+2026-11-04T14:33:39 check td gemm NT | gpu 0 %, 19 MiB | apps: none
+2026-11-04T14:33:39 check td gemm TN | gpu 2 %, 19 MiB | apps: none
+2026-11-04T14:33:40 check td gemm_update NN | gpu 6 %, 19 MiB | apps: none
+2026-11-04T14:33:40 check td syrk LN | gpu 2 %, 19 MiB | apps: none
+2026-11-04T14:33:40 check td syrk UT | gpu 6 %, 19 MiB | apps: none
+2026-11-04T14:33:41 check td syrk LN_k64 | gpu 2 %, 19 MiB | apps: none
+2026-11-04T14:33:41 check td syrk UT_k64 | gpu 6 %, 19 MiB | apps: none
+2026-11-04T14:33:41 check td trsm LLNU | gpu 2 %, 19 MiB | apps: none
+2026-11-04T14:33:41 check td trsm RLTN | gpu 6 %, 19 MiB | apps: none
+2026-11-04T14:33:42 check td trsm LUTN | gpu 3 %, 19 MiB | apps: none
+2026-11-04T14:33:42 check td trsm LUNN | gpu 15 %, 19 MiB | apps: none
+2026-11-04T14:33:42 check td trsm LLNU_p64 | gpu 6 %, 19 MiB | apps: none
+2026-11-04T14:33:43 check td trsm RLTN_p64 | gpu 14 %, 19 MiB | apps: none
+2026-11-04T14:33:43 check td trsm LUTN_p64 | gpu 7 %, 19 MiB | apps: none
+2026-11-04T14:33:43 check td trsm LUNN_p64 | gpu 9 %, 19 MiB | apps: none
+2026-11-04T14:33:44 check td getrf2 P64 | gpu 3 %, 19 MiB | apps: none
+2026-11-04T14:33:44 check td potrf2 L | gpu 7 %, 19 MiB | apps: none
+2026-11-04T14:33:44 check td laswp R64 | gpu 9 %, 19 MiB | apps: none
+2026-11-04T14:33:44 check td trtri UN | gpu 6 %, 19 MiB | apps: none
+2026-11-04T14:33:45 check td lauum L | gpu 11 %, 19 MiB | apps: none
+2026-11-04T14:33:45 check td cgemm NN | gpu 17 %, 19 MiB | apps: none
+2026-11-04T14:33:46 check td cgemm NC | gpu 3 %, 19 MiB | apps: none
+2026-11-04T14:33:46 check td cherk LN | gpu 6 %, 19 MiB | apps: none
+2026-11-04T14:33:46 check td cherk LN_k64 | gpu 7 %, 19 MiB | apps: none
+2026-11-04T14:33:47 check td ctrsm LLNU | gpu 11 %, 19 MiB | apps: none
+2026-11-04T14:33:47 check td ctrsm RLCN_p64 | gpu 22 %, 19 MiB | apps: none
+2026-11-04T14:33:49 check qd gemm NN | gpu 0 %, 19 MiB | apps: none
+2026-11-04T14:33:49 check qd gemm NT | gpu 2 %, 19 MiB | apps: none
+2026-11-04T14:33:50 check qd gemm TN | gpu 6 %, 19 MiB | apps: none
+2026-11-04T14:33:50 check qd gemm_update NN | gpu 6 %, 19 MiB | apps: none
+2026-11-04T14:33:50 check qd syrk LN | gpu 3 %, 19 MiB | apps: none
+2026-11-04T14:33:50 check qd syrk UT | gpu 6 %, 19 MiB | apps: none
+2026-11-04T14:33:51 check qd syrk LN_k64 | gpu 3 %, 19 MiB | apps: none
+2026-11-04T14:33:51 check qd syrk UT_k64 | gpu 6 %, 19 MiB | apps: none
+2026-11-04T14:33:51 check qd trsm LLNU | gpu 2 %, 19 MiB | apps: none
+2026-11-04T14:33:52 check qd trsm RLTN | gpu 15 %, 19 MiB | apps: none
+2026-11-04T14:33:52 check qd trsm LUTN | gpu 6 %, 19 MiB | apps: none
+2026-11-04T14:33:52 check qd trsm LUNN | gpu 2 %, 19 MiB | apps: none
+2026-11-04T14:33:53 check qd trsm LLNU_p64 | gpu 15 %, 19 MiB | apps: none
+2026-11-04T14:33:53 check qd trsm RLTN_p64 | gpu 6 %, 19 MiB | apps: none
+2026-11-04T14:33:53 check qd trsm LUTN_p64 | gpu 2 %, 19 MiB | apps: none
+2026-11-04T14:33:54 check qd trsm LUNN_p64 | gpu 9 %, 19 MiB | apps: none
+2026-11-04T14:33:54 check qd getrf2 P64 | gpu 2 %, 19 MiB | apps: none
+2026-11-04T14:33:54 check qd potrf2 L | gpu 9 %, 19 MiB | apps: none
+2026-11-04T14:33:55 check qd laswp R64 | gpu 4 %, 19 MiB | apps: none
+2026-11-04T14:33:55 check qd trtri UN | gpu 2 %, 19 MiB | apps: none
+2026-11-04T14:33:55 check qd lauum L | gpu 58 %, 19 MiB | apps: none
+2026-11-04T14:33:56 check qd cgemm NN | gpu 22 %, 19 MiB | apps: none
+2026-11-04T14:33:56 check qd cgemm NC | gpu 2 %, 19 MiB | apps: none
+2026-11-04T14:33:57 check qd cherk LN | gpu 4 %, 19 MiB | apps: none
+2026-11-04T14:33:57 check qd cherk LN_k64 | gpu 44 %, 19 MiB | apps: none
+2026-11-04T14:33:57 check qd ctrsm LLNU | gpu 12 %, 19 MiB | apps: none
+2026-11-04T14:33:58 check qd ctrsm RLCN_p64 | gpu 9 %, 19 MiB | apps: none
+2026-11-04T14:34:00 check mpfr256 gemm NN | gpu 0 %, 19 MiB | apps: none
+2026-11-04T14:34:01 check mpfr256 gemm NT | gpu 4 %, 19 MiB | apps: none
+2026-11-04T14:34:02 check mpfr256 gemm TN | gpu 9 %, 19 MiB | apps: none
+2026-11-04T14:34:02 check mpfr256 gemm_update NN | gpu 9 %, 19 MiB | apps: none
+2026-11-04T14:34:03 check mpfr256 syrk LN | gpu 8 %, 19 MiB | apps: none
+2026-11-04T14:34:04 check mpfr256 syrk UT | gpu 9 %, 19 MiB | apps: none
+2026-11-04T14:34:04 check mpfr256 syrk LN_k64 | gpu 2 %, 19 MiB | apps: none
+2026-11-04T14:34:05 check mpfr256 syrk UT_k64 | gpu 0 %, 19 MiB | apps: none
+2026-11-04T14:34:06 check mpfr256 trsm LLNU | gpu 0 %, 19 MiB | apps: none
+2026-11-04T14:34:07 check mpfr256 trsm RLTN | gpu 0 %, 19 MiB | apps: none
+2026-11-04T14:34:07 check mpfr256 trsm LUTN | gpu 1 %, 19 MiB | apps: none
+2026-11-04T14:34:08 check mpfr256 trsm LUNN | gpu 2 %, 19 MiB | apps: none
+2026-11-04T14:34:09 check mpfr256 trsm LLNU_p64 | gpu 13 %, 19 MiB | apps: none
+2026-11-04T14:34:09 check mpfr256 trsm RLTN_p64 | gpu 0 %, 19 MiB | apps: none
+2026-11-04T14:34:10 check mpfr256 trsm LUTN_p64 | gpu 18 %, 19 MiB | apps: none
+2026-11-04T14:34:11 check mpfr256 trsm LUNN_p64 | gpu 1 %, 19 MiB | apps: none
+2026-11-04T14:34:11 check mpfr256 getrf2 P64 | gpu 0 %, 19 MiB | apps: none
+2026-11-04T14:34:12 check mpfr256 potrf2 L | gpu 31 %, 19 MiB | apps: none
+2026-11-04T14:34:13 check mpfr256 cgemm NN | gpu 2 %, 19 MiB | apps: none
+2026-11-04T14:34:14 check mpfr256 cgemm NC | gpu 2 %, 19 MiB | apps: none
+2026-11-04T14:34:15 check mpfr256 cherk LN | gpu 2 %, 19 MiB | apps: none
+2026-11-04T14:34:16 check mpfr256 cherk LN_k64 | gpu 100 %, 19 MiB | apps: none
+2026-11-04T14:34:17 check mpfr256 ctrsm LLNU | gpu 55 %, 19 MiB | apps: none
+2026-11-04T14:34:18 check mpfr256 ctrsm RLCN_p64 | gpu 100 %, 19 MiB | apps: none
+2026-11-04T14:34:23 check mpfr512 gemm NN | gpu 0 %, 17 MiB | apps: none
+2026-11-04T14:34:23 check mpfr512 gemm NT | gpu 1 %, 17 MiB | apps: none
+2026-11-04T14:34:24 check mpfr512 gemm TN | gpu 8 %, 17 MiB | apps: none
+2026-11-04T14:34:25 check mpfr512 gemm_update NN | gpu 10 %, 17 MiB | apps: none
+2026-11-04T14:34:25 check mpfr512 syrk LN | gpu 8 %, 17 MiB | apps: none
+2026-11-04T14:34:26 check mpfr512 syrk UT | gpu 18 %, 17 MiB | apps: none
+2026-11-04T14:34:27 check mpfr512 syrk LN_k64 | gpu 8 %, 17 MiB | apps: none
+2026-11-04T14:34:28 check mpfr512 syrk UT_k64 | gpu 15 %, 17 MiB | apps: none
+2026-11-04T14:34:28 check mpfr512 trsm LLNU | gpu 8 %, 17 MiB | apps: none
+2026-11-04T14:34:29 check mpfr512 trsm RLTN | gpu 52 %, 17 MiB | apps: none
+2026-11-04T14:34:30 check mpfr512 trsm LUTN | gpu 64 %, 17 MiB | apps: none
+2026-11-04T14:34:31 check mpfr512 trsm LUNN | gpu 83 %, 17 MiB | apps: none
+2026-11-04T14:34:32 check mpfr512 trsm LLNU_p64 | gpu 71 %, 17 MiB | apps: none
+2026-11-04T14:34:32 check mpfr512 trsm RLTN_p64 | gpu 28 %, 17 MiB | apps: none
+2026-11-04T14:34:33 check mpfr512 trsm LUTN_p64 | gpu 21 %, 17 MiB | apps: none
+2026-11-04T14:34:34 check mpfr512 trsm LUNN_p64 | gpu 28 %, 17 MiB | apps: none
+2026-11-04T14:34:34 check mpfr512 getrf2 P64 | gpu 30 %, 17 MiB | apps: none
+2026-11-04T14:34:35 check mpfr512 potrf2 L | gpu 55 %, 17 MiB | apps: none
+2026-11-04T14:34:36 check mpfr512 cgemm NN | gpu 93 %, 17 MiB | apps: none
+2026-11-04T14:34:37 check mpfr512 cgemm NC | gpu 6 %, 17 MiB | apps: none
+2026-11-04T14:34:38 check mpfr512 cherk LN | gpu 50 %, 17 MiB | apps: none
+2026-11-04T14:34:41 check mpfr512 cherk LN_k64 | gpu 72 %, 17 MiB | apps: none
+2026-11-04T14:34:42 check mpfr512 ctrsm LLNU | gpu 100 %, 17 MiB | apps: none
+2026-11-04T14:34:44 check mpfr512 ctrsm RLCN_p64 | gpu 83 %, 17 MiB | apps: none
+2026-11-04T14:34:49 check mpfr1024 gemm NN | gpu 0 %, 143 MiB | apps: none
+2026-11-04T14:34:49 check mpfr1024 gemm NT | gpu 2 %, 143 MiB | apps: none
+2026-11-04T14:34:50 check mpfr1024 gemm TN | gpu 7 %, 143 MiB | apps: none
+2026-11-04T14:34:51 check mpfr1024 gemm_update NN | gpu 20 %, 143 MiB | apps: none
+2026-11-04T14:34:52 check mpfr1024 syrk LN | gpu 0 %, 143 MiB | apps: none
+2026-11-04T14:34:53 check mpfr1024 syrk UT | gpu 2 %, 143 MiB | apps: none
+2026-11-04T14:34:53 check mpfr1024 syrk LN_k64 | gpu 5 %, 143 MiB | apps: none
+2026-11-04T14:34:54 check mpfr1024 syrk UT_k64 | gpu 19 %, 143 MiB | apps: none
+2026-11-04T14:34:55 check mpfr1024 trsm LLNU | gpu 0 %, 143 MiB | apps: none
+2026-11-04T14:34:56 check mpfr1024 trsm RLTN | gpu 100 %, 143 MiB | apps: none
+2026-11-04T14:34:57 check mpfr1024 trsm LUTN | gpu 100 %, 143 MiB | apps: none
+2026-11-04T14:34:58 check mpfr1024 trsm LUNN | gpu 95 %, 143 MiB | apps: none
+2026-11-04T14:34:59 check mpfr1024 trsm LLNU_p64 | gpu 94 %, 143 MiB | apps: none
+2026-11-04T14:35:00 check mpfr1024 trsm RLTN_p64 | gpu 51 %, 143 MiB | apps: none
+2026-11-04T14:35:01 check mpfr1024 trsm LUTN_p64 | gpu 15 %, 143 MiB | apps: none
+2026-11-04T14:35:02 check mpfr1024 trsm LUNN_p64 | gpu 33 %, 143 MiB | apps: none
+2026-11-04T14:35:02 check mpfr1024 getrf2 P64 | gpu 46 %, 143 MiB | apps: none
+2026-11-04T14:35:03 check mpfr1024 potrf2 L | gpu 68 %, 143 MiB | apps: none
+2026-11-04T14:35:05 check mpfr1024 cgemm NN | gpu 99 %, 143 MiB | apps: none
+2026-11-04T14:35:06 check mpfr1024 cgemm NC | gpu 86 %, 143 MiB | apps: none
+2026-11-04T14:35:07 check mpfr1024 cherk LN | gpu 9 %, 143 MiB | apps: none
+2026-11-04T14:35:12 check mpfr1024 cherk LN_k64 | gpu 72 %, 143 MiB | apps: none
+2026-11-04T14:35:15 check mpfr1024 ctrsm LLNU | gpu 59 %, 143 MiB | apps: none
+2026-11-04T14:35:18 check mpfr1024 ctrsm RLCN_p64 | gpu 4 %, 143 MiB | apps: none
+2026-11-04T14:35:25 check mpfr200rt gemm NN | gpu 0 %, 141 MiB | apps: none
+2026-11-04T14:35:25 check mpfr200rt gemm NT | gpu 32 %, 139 MiB | apps: none
+2026-11-04T14:35:26 check mpfr200rt gemm TN | gpu 100 %, 137 MiB | apps: none
+2026-11-04T14:35:27 check mpfr200rt gemm_update NN | gpu 100 %, 135 MiB | apps: none
+2026-11-04T14:35:28 check mpfr200rt syrk LN | gpu 100 %, 133 MiB | apps: none
+2026-11-04T14:35:29 check mpfr200rt syrk UT | gpu 100 %, 131 MiB | apps: none
+2026-11-04T14:35:31 check mpfr200rt syrk LN_k64 | gpu 100 %, 129 MiB | apps: none
+2026-11-04T14:35:32 check mpfr200rt syrk UT_k64 | gpu 100 %, 127 MiB | apps: none
+2026-11-04T14:35:33 check mpfr200rt trsm LLNU | gpu 100 %, 125 MiB | apps: none
+2026-11-04T14:35:35 check mpfr200rt trsm RLTN | gpu 100 %, 123 MiB | apps: none
+2026-11-04T14:35:36 check mpfr200rt trsm LUTN | gpu 100 %, 121 MiB | apps: none
+2026-11-04T14:35:38 check mpfr200rt trsm LUNN | gpu 100 %, 119 MiB | apps: none
+2026-11-04T14:35:39 check mpfr200rt trsm LLNU_p64 | gpu 100 %, 117 MiB | apps: none
+2026-11-04T14:35:40 check mpfr200rt trsm RLTN_p64 | gpu 78 %, 115 MiB | apps: none
+2026-11-04T14:35:41 check mpfr200rt trsm LUTN_p64 | gpu 100 %, 113 MiB | apps: none
+2026-11-04T14:35:42 check mpfr200rt trsm LUNN_p64 | gpu 100 %, 111 MiB | apps: none
+2026-11-04T14:35:43 check mpfr200rt getrf2 P64 | gpu 100 %, 109 MiB | apps: none
+2026-11-04T14:35:44 check mpfr200rt potrf2 L | gpu 100 %, 107 MiB | apps: none
+2026-11-04T14:35:45 check mpfr200rt cgemm NN | gpu 100 %, 105 MiB | apps: none
+2026-11-04T14:36:16 check mpfr200rt cgemm NC | gpu 92 %, 103 MiB | apps: none
+2026-11-04T14:36:47 check mpfr200rt cherk LN | gpu 81 %, 101 MiB | apps: none
+2026-11-04T14:38:05 check mpfr200rt cherk LN_k64 | gpu 97 %, 99 MiB | apps: none
+2026-11-04T14:38:34 check mpfr200rt ctrsm LLNU | gpu 85 %, 97 MiB | apps: none
+2026-11-04T14:39:26 check mpfr200rt ctrsm RLCN_p64 | gpu 100 %, 95 MiB | apps: none

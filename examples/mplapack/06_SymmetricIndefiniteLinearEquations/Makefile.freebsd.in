@@ -8,11 +8,12 @@ MPFRLIBS=-lmplapack_mpfr -lmpfr -lmpc -lgmp
 GMPLIBS=-lmplapack_gmp -lgmp
 QDLIBS=-lmplapack_qd -lqd
 DDLIBS=-lmplapack_dd -lqd
+TDLIBS=-lmplapack_td -lqd
 BINARY80LIBS=-lmplapack_binary80
 BINARY128LIBS=-lmplapack_binary128%%LIBQUADMATH%%
 DOUBLELIBS=-lmplapack_double
 
-programs=Chesv_example_mpfr Chesv_example_gmp Chesv_example_qd Chesv_example_dd Chesv_example_binary80 Chesv_example_binary128 Chesv_example_double Csysv_example_mpfr Csysv_example_gmp Csysv_example_qd Csysv_example_dd Csysv_example_binary80 Csysv_example_binary128 Csysv_example_double Rsysv_example_mpfr Rsysv_example_gmp Rsysv_example_qd Rsysv_example_dd Rsysv_example_binary80 Rsysv_example_binary128 Rsysv_example_double
+programs=Chesv_example_mpfr Chesv_example_gmp Chesv_example_qd Chesv_example_dd Chesv_example_td Chesv_example_binary80 Chesv_example_binary128 Chesv_example_double Csysv_example_mpfr Csysv_example_gmp Csysv_example_qd Csysv_example_dd Csysv_example_td Csysv_example_binary80 Csysv_example_binary128 Csysv_example_double Rsysv_example_mpfr Rsysv_example_gmp Rsysv_example_qd Rsysv_example_dd Rsysv_example_td Rsysv_example_binary80 Rsysv_example_binary128 Rsysv_example_double
 
 all: $(programs)
 
@@ -30,6 +31,9 @@ Rsysv_example_qd: Rsysv_example_qd.o
 
 Rsysv_example_dd: Rsysv_example_dd.o
 	$(CXX) -o Rsysv_example_dd Rsysv_example_dd.o $(LIBFLAGS) $(DDLIBS)
+
+Rsysv_example_td: Rsysv_example_td.o
+	$(CXX) -o Rsysv_example_td Rsysv_example_td.o $(LIBFLAGS) $(TDLIBS)
 
 Rsysv_example_binary80: Rsysv_example_binary80.o
 	$(CXX) -o Rsysv_example_binary80 Rsysv_example_binary80.o $(LIBFLAGS) $(BINARY80LIBS)
@@ -55,6 +59,9 @@ Chesv_example_qd: Chesv_example_qd.o
 Chesv_example_dd: Chesv_example_dd.o
 	$(CXX) -o Chesv_example_dd Chesv_example_dd.o $(LIBFLAGS) $(DDLIBS)
 
+Chesv_example_td: Chesv_example_td.o
+	$(CXX) -o Chesv_example_td Chesv_example_td.o $(LIBFLAGS) $(TDLIBS)
+
 Chesv_example_binary80: Chesv_example_binary80.o
 	$(CXX) -o Chesv_example_binary80 Chesv_example_binary80.o $(LIBFLAGS) $(BINARY80LIBS)
 
@@ -75,6 +82,9 @@ Csysv_example_qd: Csysv_example_qd.o
 
 Csysv_example_dd: Csysv_example_dd.o
 	$(CXX) -o Csysv_example_dd Csysv_example_dd.o $(LIBFLAGS) $(DDLIBS)
+
+Csysv_example_td: Csysv_example_td.o
+	$(CXX) -o Csysv_example_td Csysv_example_td.o $(LIBFLAGS) $(TDLIBS)
 
 Csysv_example_binary80: Csysv_example_binary80.o
 	$(CXX) -o Csysv_example_binary80 Csysv_example_binary80.o $(LIBFLAGS) $(BINARY80LIBS)

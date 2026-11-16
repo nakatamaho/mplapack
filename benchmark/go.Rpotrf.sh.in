@@ -19,7 +19,7 @@ for _mplib in binary80 dd double binary128; do
 done
 
 # arbitrary-precision backends
-for _mplib in mpfr gmp qd; do
+for _mplib in mpfr gmp td qd; do
     env $LDPATHPREFIX timeout $TIMEOUT ./Rpotrf.${_mplib}_opt -NOCHECK -TOTALSTEPS 200 -STEP 5 >& log.Rpotrf.${_mplib}_opt
     env $LDPATHPREFIX timeout $TIMEOUT ./Rpotrf.${_mplib}     -NOCHECK -TOTALSTEPS 200 -STEP 5 >& log.Rpotrf.${_mplib}
 done

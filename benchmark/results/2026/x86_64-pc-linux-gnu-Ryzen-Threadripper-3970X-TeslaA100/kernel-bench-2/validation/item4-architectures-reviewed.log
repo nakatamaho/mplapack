@@ -1,0 +1,21 @@
+/tmp/factor04-cmake/benchmark/Rkernel_bench.dd_cuda_kernel
+ELF file    1: Rkernel_bench.1.sm_80.cubin
+benchmark/.libs/Rkernel_bench.dd_cuda_kernel
+ELF file    1: Rkernel_bench.1.sm_80.cubin
+ELF file    2: Rkernel_bench.2.sm_90.cubin
+/tmp/factor04-cmake/benchmark/Rkernel_bench.td_cuda_kernel
+ELF file    1: Rkernel_bench.1.sm_80.cubin
+benchmark/.libs/Rkernel_bench.td_cuda_kernel
+ELF file    1: Rkernel_bench.1.sm_80.cubin
+ELF file    2: Rkernel_bench.2.sm_90.cubin
+/tmp/factor04-cmake/benchmark/Rkernel_bench.qd_cuda_kernel
+ELF file    1: Rkernel_bench.1.sm_80.cubin
+benchmark/.libs/Rkernel_bench.qd_cuda_kernel
+ELF file    1: Rkernel_bench.1.sm_80.cubin
+ELF file    2: Rkernel_bench.2.sm_90.cubin
+/tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident
+ELF file    1: Rkernel_bench.1.sm_80.cubin
+ELF file    2: Rkernel_bench.2.sm_90.cubin
+benchmark/.libs/Rkernel_bench.mpfr_cuda_resident
+ELF file    1: Rkernel_bench.1.sm_80.cubin
+ELF file    2: Rkernel_bench.2.sm_90.cubin

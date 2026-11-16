@@ -1,0 +1,18 @@
+2026-11-04T22:50:48+09:00
+gate_exit=0
+    PID    PPID ELAPSED COMMAND
+1965637 1965635    2449 python3 benchmark/kernel_bench.py new --methods cpu --bindir /tmp/factor04-cmake/benchmark --mpfr-bindir /tmp/factor01-cmake/benchmark --out benchmark/results/2026/x86_64-pc-linux-gnu-Ryzen-Threadripper-3970X-TeslaA100/kernel-bench-2
+    PID    PPID ELAPSED COMMAND
+2075656 1965637       2 /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rdot default 10485760
+error: process ID list syntax error
+
+Usage:
+ ps [options]
+
+ Try 'ps --help <simple|list|output|threads|misc|all>'
+  or 'ps --help <s|l|o|t|m|a>'
+ for additional help text.
+
+For more details see ps(1).
+ 22:50:50 up 15 days,  9:16,  0 users,  load average: 2.10, 2.80, 3.31
+nvidia_exit=0

@@ -1,0 +1,531 @@
+
+### qd_iRamax_cpu_1024_pilot
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt iRamax fast 1024 --reps 1 --warmup 1
+OMP_NUM_THREADS=32
+qd,iRamax,inc1,1024,cpu,2.8054e-05,0,1
+
+exit=0, elapsed=0.002544
+
+exit receipt: 0
+
+### qd_iRamax_cpu_32768_pilot
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt iRamax fast 32768 --reps 1 --warmup 1
+OMP_NUM_THREADS=32
+qd,iRamax,inc1,32768,cpu,0.001577113,0,1
+
+exit=0, elapsed=0.015224
+
+exit receipt: 0
+
+### qd_iRamax_cpu_1024_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt iRamax fast 1024
+OMP_NUM_THREADS=32
+qd,iRamax,inc1,1024,cpu,3.0918e-05,0,3
+
+exit=0, elapsed=0.004781
+
+exit receipt: 0
+
+### qd_iRamax_cpu_1280_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt iRamax fast 1280
+OMP_NUM_THREADS=32
+qd,iRamax,inc1,1280,cpu,3.1169e-05,0,3
+
+exit=0, elapsed=0.003911
+
+exit receipt: 0
+
+### qd_iRamax_cpu_1536_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt iRamax fast 1536
+OMP_NUM_THREADS=32
+qd,iRamax,inc1,1536,cpu,3.7731e-05,0,3
+
+exit=0, elapsed=0.004161
+
+exit receipt: 0
+
+### qd_iRamax_cpu_1792_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt iRamax fast 1792
+OMP_NUM_THREADS=32
+qd,iRamax,inc1,1792,cpu,4.3772e-05,0,3
+
+exit=0, elapsed=0.003632
+
+exit receipt: 0
+
+### qd_iRamax_cpu_2048_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt iRamax fast 2048
+OMP_NUM_THREADS=32
+qd,iRamax,inc1,2048,cpu,5.0345e-05,0,3
+
+exit=0, elapsed=0.004478
+
+exit receipt: 0
+
+### qd_iRamax_cpu_2560_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt iRamax fast 2560
+OMP_NUM_THREADS=32
+qd,iRamax,inc1,2560,cpu,6.365e-05,0,3
+
+exit=0, elapsed=0.004588
+
+exit receipt: 0
+
+### qd_iRamax_cpu_3072_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt iRamax fast 3072
+OMP_NUM_THREADS=32
+qd,iRamax,inc1,3072,cpu,7.956e-05,0,3
+
+exit=0, elapsed=0.005131
+
+exit receipt: 0
+
+### qd_iRamax_cpu_3584_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt iRamax fast 3584
+OMP_NUM_THREADS=32
+qd,iRamax,inc1,3584,cpu,9.1473e-05,0,3
+
+exit=0, elapsed=0.005082
+
+exit receipt: 0
+
+### qd_iRamax_cpu_4096_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt iRamax fast 4096
+OMP_NUM_THREADS=32
+qd,iRamax,inc1,4096,cpu,0.000104958,0,3
+
+exit=0, elapsed=0.005513
+
+exit receipt: 0
+
+### qd_iRamax_cpu_5120_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt iRamax fast 5120
+OMP_NUM_THREADS=32
+qd,iRamax,inc1,5120,cpu,0.00013272,0,3
+
+exit=0, elapsed=0.005944
+
+exit receipt: 0
+
+### qd_iRamax_cpu_6144_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt iRamax fast 6144
+OMP_NUM_THREADS=32
+qd,iRamax,inc1,6144,cpu,0.000160313,0,3
+
+exit=0, elapsed=0.006464
+
+exit receipt: 0
+
+### qd_iRamax_cpu_7168_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt iRamax fast 7168
+OMP_NUM_THREADS=32
+qd,iRamax,inc1,7168,cpu,0.0002859,0,3
+
+exit=0, elapsed=0.007019
+
+exit receipt: 0
+
+### qd_iRamax_cpu_8192_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt iRamax fast 8192
+OMP_NUM_THREADS=32
+qd,iRamax,inc1,8192,cpu,0.000218192,0,3
+
+exit=0, elapsed=0.006815
+
+exit receipt: 0
+
+### qd_iRamax_cpu_10240_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt iRamax fast 10240
+OMP_NUM_THREADS=32
+qd,iRamax,inc1,10240,cpu,0.000277804,0,3
+
+exit=0, elapsed=0.007899
+
+exit receipt: 0
+
+### qd_iRamax_cpu_12288_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt iRamax fast 12288
+OMP_NUM_THREADS=32
+qd,iRamax,inc1,12288,cpu,0.000333731,0,3
+
+exit=0, elapsed=0.008426
+
+exit receipt: 0
+
+### qd_iRamax_cpu_14336_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt iRamax fast 14336
+OMP_NUM_THREADS=32
+qd,iRamax,inc1,14336,cpu,0.000391579,0,3
+
+exit=0, elapsed=0.008018
+
+exit receipt: 0
+
+### qd_iRamax_cpu_16384_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt iRamax fast 16384
+OMP_NUM_THREADS=32
+qd,iRamax,inc1,16384,cpu,0.000621393,0,3
+
+exit=0, elapsed=0.011643
+
+exit receipt: 0
+
+### qd_iRamax_cpu_20480_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt iRamax fast 20480
+OMP_NUM_THREADS=32
+qd,iRamax,inc1,20480,cpu,0.000772298,0,3
+
+exit=0, elapsed=0.014283
+
+exit receipt: 0
+
+### qd_iRamax_cpu_24576_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt iRamax fast 24576
+OMP_NUM_THREADS=32
+qd,iRamax,inc1,24576,cpu,0.00092667,0,3
+
+exit=0, elapsed=0.013018
+
+exit receipt: 0
+
+### qd_iRamax_cpu_28672_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt iRamax fast 28672
+OMP_NUM_THREADS=32
+qd,iRamax,inc1,28672,cpu,0.001049932,0,3
+
+exit=0, elapsed=0.014682
+
+exit receipt: 0
+
+### qd_iRamax_cpu_32768_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt iRamax fast 32768
+OMP_NUM_THREADS=32
+qd,iRamax,inc1,32768,cpu,0.001184556,0,3
+
+exit=0, elapsed=0.016748
+
+exit receipt: 0
+
+### qd_iRamax_cpu_40960_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt iRamax fast 40960
+OMP_NUM_THREADS=32
+qd,iRamax,inc1,40960,cpu,0.001471388,0,3
+
+exit=0, elapsed=0.020013
+
+exit receipt: 0
+
+### qd_iRamax_cpu_49152_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt iRamax fast 49152
+OMP_NUM_THREADS=32
+qd,iRamax,inc1,49152,cpu,0.001728314,0,3
+
+exit=0, elapsed=0.022599
+
+exit receipt: 0
+
+### qd_iRamax_cpu_57344_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt iRamax fast 57344
+OMP_NUM_THREADS=32
+qd,iRamax,inc1,57344,cpu,0.002010035,0,3
+
+exit=0, elapsed=0.026010
+
+exit receipt: 0
+
+### qd_iRamax_cpu_65536_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt iRamax fast 65536
+OMP_NUM_THREADS=32
+qd,iRamax,inc1,65536,cpu,0.002281718,0,3
+
+exit=0, elapsed=0.029412
+
+exit receipt: 0
+
+### qd_iRamax_cpu_81920_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt iRamax fast 81920
+OMP_NUM_THREADS=32
+qd,iRamax,inc1,81920,cpu,0.002858016,0,3
+
+exit=0, elapsed=0.036462
+
+exit receipt: 0
+
+### qd_iRamax_cpu_98304_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt iRamax fast 98304
+OMP_NUM_THREADS=32
+qd,iRamax,inc1,98304,cpu,0.003439934,0,3
+
+exit=0, elapsed=0.043367
+
+exit receipt: 0
+
+### qd_iRamax_cpu_114688_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt iRamax fast 114688
+OMP_NUM_THREADS=32
+qd,iRamax,inc1,114688,cpu,0.003948374,0,3
+
+exit=0, elapsed=0.047537
+
+exit receipt: 0
+
+### qd_iRamax_cpu_131072_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt iRamax fast 131072
+OMP_NUM_THREADS=32
+qd,iRamax,inc1,131072,cpu,0.004560481,0,3
+
+exit=0, elapsed=0.053062
+
+exit receipt: 0
+
+### qd_iRamax_cpu_163840_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt iRamax fast 163840
+OMP_NUM_THREADS=32
+qd,iRamax,inc1,163840,cpu,0.005542854,0,3
+
+exit=0, elapsed=0.066457
+
+exit receipt: 0
+
+### qd_iRamax_cpu_196608_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt iRamax fast 196608
+OMP_NUM_THREADS=32
+qd,iRamax,inc1,196608,cpu,0.006378072,0,3
+
+exit=0, elapsed=0.077325
+
+exit receipt: 0
+
+### qd_iRamax_cpu_229376_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt iRamax fast 229376
+OMP_NUM_THREADS=32
+qd,iRamax,inc1,229376,cpu,0.007210152,0,3
+
+exit=0, elapsed=0.086244
+
+exit receipt: 0
+
+### qd_iRamax_cpu_262144_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt iRamax fast 262144
+OMP_NUM_THREADS=32
+qd,iRamax,inc1,262144,cpu,0.008143215,0,3
+
+exit=0, elapsed=0.095340
+
+exit receipt: 0
+
+### qd_iRamax_cpu_327680_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt iRamax fast 327680
+OMP_NUM_THREADS=32
+qd,iRamax,inc1,327680,cpu,0.009774694,0,3
+
+exit=0, elapsed=0.121617
+
+exit receipt: 0
+
+### qd_iRamax_cpu_393216_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt iRamax fast 393216
+OMP_NUM_THREADS=32
+qd,iRamax,inc1,393216,cpu,0.011539327,0,3
+
+exit=0, elapsed=0.143391
+
+exit receipt: 0
+
+### qd_iRamax_cpu_458752_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt iRamax fast 458752
+OMP_NUM_THREADS=32
+qd,iRamax,inc1,458752,cpu,0.013364792,0,3
+
+exit=0, elapsed=0.166115
+
+exit receipt: 0
+
+### qd_iRamax_cpu_524288_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt iRamax fast 524288
+OMP_NUM_THREADS=32
+qd,iRamax,inc1,524288,cpu,0.015339721,0,3
+
+exit=0, elapsed=0.188819
+
+exit receipt: 0
+
+### qd_iRamax_cpu_655360_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt iRamax fast 655360
+OMP_NUM_THREADS=32
+qd,iRamax,inc1,655360,cpu,0.018765849,0,3
+
+exit=0, elapsed=0.232436
+
+exit receipt: 0
+
+### qd_iRamax_cpu_786432_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt iRamax fast 786432
+OMP_NUM_THREADS=32
+qd,iRamax,inc1,786432,cpu,0.022157453,0,3
+
+exit=0, elapsed=0.273108
+
+exit receipt: 0
+
+### qd_iRamax_cpu_917504_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt iRamax fast 917504
+OMP_NUM_THREADS=32
+qd,iRamax,inc1,917504,cpu,0.025773671,0,3
+
+exit=0, elapsed=0.319688
+
+exit receipt: 0
+
+### qd_iRamax_cpu_1048576_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt iRamax fast 1048576
+OMP_NUM_THREADS=32
+qd,iRamax,inc1,1048576,cpu,0.045588932,0,3
+
+exit=0, elapsed=0.421271
+
+exit receipt: 0
+
+### qd_iRamax_cpu_1310720_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt iRamax fast 1310720
+OMP_NUM_THREADS=32
+qd,iRamax,inc1,1310720,cpu,0.056480356,0,3
+
+exit=0, elapsed=0.521172
+
+exit receipt: 0
+
+### qd_iRamax_cpu_1572864_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt iRamax fast 1572864
+OMP_NUM_THREADS=32
+qd,iRamax,inc1,1572864,cpu,0.067116387,0,3
+
+exit=0, elapsed=0.615389
+
+exit receipt: 0
+
+### qd_iRamax_cpu_1835008_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt iRamax fast 1835008
+OMP_NUM_THREADS=32
+qd,iRamax,inc1,1835008,cpu,0.077283435,0,3
+
+exit=0, elapsed=0.710334
+
+exit receipt: 0
+
+### qd_iRamax_cpu_2097152_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt iRamax fast 2097152
+OMP_NUM_THREADS=32
+qd,iRamax,inc1,2097152,cpu,0.086826845,0,3
+
+exit=0, elapsed=0.805001
+
+exit receipt: 0
+
+### qd_iRamax_cpu_2621440_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt iRamax fast 2621440
+OMP_NUM_THREADS=32
+qd,iRamax,inc1,2621440,cpu,0.112174755,0,1
+
+exit=0, elapsed=0.679092
+
+exit receipt: 0
+
+### qd_iRamax_cpu_3145728_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt iRamax fast 3145728
+OMP_NUM_THREADS=32
+qd,iRamax,inc1,3145728,cpu,0.134903328,0,1
+
+exit=0, elapsed=0.812363
+
+exit receipt: 0
+
+### qd_iRamax_cpu_3670016_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt iRamax fast 3670016
+OMP_NUM_THREADS=32
+qd,iRamax,inc1,3670016,cpu,0.154860833,0,1
+
+exit=0, elapsed=0.927189
+
+exit receipt: 0
+
+### qd_iRamax_cpu_4194304_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt iRamax fast 4194304
+OMP_NUM_THREADS=32
+qd,iRamax,inc1,4194304,cpu,0.179049397,0,1
+
+exit=0, elapsed=1.068411
+
+exit receipt: 0
+
+### qd_iRamax_cpu_5242880_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt iRamax fast 5242880
+OMP_NUM_THREADS=32
+qd,iRamax,inc1,5242880,cpu,0.215762504,0,1
+
+exit=0, elapsed=1.318265
+
+exit receipt: 0
+
+### qd_iRamax_cpu_6291456_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt iRamax fast 6291456
+OMP_NUM_THREADS=32
+qd,iRamax,inc1,6291456,cpu,0.260729874,0,1
+
+exit=0, elapsed=1.588560
+
+exit receipt: 0
+
+### qd_iRamax_cpu_7340032_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt iRamax fast 7340032
+OMP_NUM_THREADS=32
+qd,iRamax,inc1,7340032,cpu,0.306618993,0,1
+
+exit=0, elapsed=1.858858
+
+exit receipt: 0
+
+### qd_iRamax_cpu_8388608_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt iRamax fast 8388608
+OMP_NUM_THREADS=32
+qd,iRamax,inc1,8388608,cpu,0.343374179,0,1
+
+exit=0, elapsed=2.106835
+
+exit receipt: 0
+
+### qd_iRamax_cpu_10485760_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt iRamax fast 10485760
+OMP_NUM_THREADS=32
+qd,iRamax,inc1,10485760,cpu,0.435555533,0,1
+
+exit=0, elapsed=2.656823
+
+exit receipt: 0
+
+### qd_iRamax_cpu_12582912_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt iRamax fast 12582912
+OMP_NUM_THREADS=32
+qd,iRamax,inc1,12582912,cpu,0.51868056,0,1
+
+exit=0, elapsed=3.209846
+
+exit receipt: 0
+
+### qd_iRamax_cpu_14680064_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt iRamax fast 14680064
+OMP_NUM_THREADS=32
+qd,iRamax,inc1,14680064,cpu,0.602754191,0,1
+
+exit=0, elapsed=3.756081
+
+exit receipt: 0
+
+### qd_iRamax_cpu_16777216_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt iRamax fast 16777216
+OMP_NUM_THREADS=32
+qd,iRamax,inc1,16777216,cpu,0.690762795,0,1
+
+exit=0, elapsed=4.316438
+
+exit receipt: 0

@@ -1,5 +1,5 @@
 #!/bin/sh
-# go.Rgemm_cuda.sh — CUDA benchmark runner for Rgemm
+# go.Rgemm_cuda.sh — CUDA benchmark runner for Rgemm (dd, td, qd, MPFR)
 # %%CPU_OS_DETECTION_SH%% and %%CC_TAG%% are replaced:
 #   - at "make" time   : builddir paths
 #   - at "make install": installed paths
@@ -54,16 +54,63 @@ run_bench() {
     env ${LDPATHPREFIX} timeout ${TIMEOUT} "${_bin}" "$@" > "${_log}" 2>&1
 }
 
-# ---------------------------------------------------------------------------
-# DD CUDA benchmarks
-# ---------------------------------------------------------------------------
-run_bench Rgemm.dd_cuda_total  -NOCHECK -LOOPS 3
-run_bench Rgemm.dd_cuda_kernel -NOCHECK -LOOPS 3
 
 # ---------------------------------------------------------------------------
-# Generate gnuplot script, render PDF
+# Helper: run one binary with extra environment variables (algorithm
+# selection), save log under OUTPATH as log.<binary>.<tag>
 # ---------------------------------------------------------------------------
-$SED -e "s/%%MODELNAME%%/${MODELNAME}/g" \
+run_variant() {
+    _tag="$1"; _vars="$2"; _bin="${SCRIPT_DIR}/$3"; shift 3
+    _log="${OUTPATH}/log.$(basename "${_bin}").${_tag}"
+    if [ ! -x "${_bin}" ]; then
+        echo "SKIP (not found): ${_bin}" >&2
+        return 0
+    fi
+    echo "RUN: ${_vars} ${_bin} $*"
+    env ${LDPATHPREFIX} ${_vars} timeout ${TIMEOUT} "${_bin}" "$@" > "${_log}" 2>&1
+}
+
+GPUNAME=$(nvidia-smi --query-gpu=name --format=csv,noheader 2>/dev/null | head -n 1 | tr -d '/')
+
+# ---------------------------------------------------------------------------
+# Rgemm of the CUDA libraries.  "total" includes the transfers between host
+# and device.  Algorithms (mpblas/optimized/common/README.md):
+#   tiled    : default, shared-memory tiles, bit-identical to the CPU
+#   naive    : <P>_CUDA_KERNEL=naive
+#   winograd : <P>_CUDA_WINOGRAD_CUTOFF=N
+#   ozaki    : <P>_CUDA_OZAKI=1 (cuBLAS DGEMM)
+#   legacy   : MPLAPACK_DD_CUDA_LEGACY=1 (dd, the 2010-2011 kernels)
+# ---------------------------------------------------------------------------
+SIZES="-M 16 -N 16 -K 16 -STEPM 16 -STEPN 16 -STEPK 16 -TOTALSTEPS 128 -NOCHECK -LOOPS 3"
+QDSIZES="-M 16 -N 16 -K 16 -STEPM 16 -STEPN 16 -STEPK 16 -TOTALSTEPS 64 -NOCHECK -LOOPS 3"
+
+run_variant tiled    ""                                     Rgemm.dd_cuda_total ${SIZES}
+run_variant naive    "MPLAPACK_DD_CUDA_KERNEL=naive"         Rgemm.dd_cuda_total ${SIZES}
+run_variant winograd "MPLAPACK_DD_CUDA_WINOGRAD_CUTOFF=256"  Rgemm.dd_cuda_total ${SIZES}
+run_variant ozaki    "MPLAPACK_DD_CUDA_OZAKI=1"              Rgemm.dd_cuda_total ${SIZES}
+run_variant legacy   "MPLAPACK_DD_CUDA_LEGACY=1"             Rgemm.dd_cuda_total ${SIZES}
+run_bench Rgemm.dd_cuda_kernel -NOCHECK -LOOPS 3
+
+run_variant tiled    ""                                     Rgemm.td_cuda_total ${QDSIZES}
+run_variant naive    "MPLAPACK_TD_CUDA_KERNEL=naive"         Rgemm.td_cuda_total ${QDSIZES}
+run_variant winograd "MPLAPACK_TD_CUDA_WINOGRAD_CUTOFF=128"  Rgemm.td_cuda_total ${QDSIZES}
+run_variant ozaki    "MPLAPACK_TD_CUDA_OZAKI=1"              Rgemm.td_cuda_total ${QDSIZES}
+
+run_variant tiled    ""                                     Rgemm.qd_cuda_total ${QDSIZES}
+run_variant naive    "MPLAPACK_QD_CUDA_KERNEL=naive"         Rgemm.qd_cuda_total ${QDSIZES}
+run_variant winograd "MPLAPACK_QD_CUDA_WINOGRAD_CUTOFF=128"  Rgemm.qd_cuda_total ${QDSIZES}
+run_variant ozaki    "MPLAPACK_QD_CUDA_OZAKI=1"              Rgemm.qd_cuda_total ${QDSIZES}
+
+# MPFR: fixed-precision kernels at 512 and 1024 bits, cu_mpfr kernels at 1024
+for _prec in 512 1024; do
+    run_variant prec${_prec} "" Rgemm.mpfr_cuda_total ${QDSIZES} -PREC ${_prec}
+done
+run_variant prec1024_runtime "MPLAPACK_MPFR_CUDA_FORCE_RUNTIME=1" Rgemm.mpfr_cuda_total ${QDSIZES} -PREC 1024
+
+# ---------------------------------------------------------------------------
+# Generate gnuplot script, render PDF (one page per type)
+# ---------------------------------------------------------------------------
+$SED -e "s/%%MODELNAME%%/${MODELNAME}/g" -e "s/%%GPU%%/${GPUNAME:-GPU}/g" \
     "${SCRIPT_DIR}/Rgemm_cuda.plt.in" > "${OUTPATH}/Rgemm_cuda.plt"
 (cd "${OUTPATH}" && gnuplot "Rgemm_cuda.plt" > "Rgemm_cuda.pdf")
 

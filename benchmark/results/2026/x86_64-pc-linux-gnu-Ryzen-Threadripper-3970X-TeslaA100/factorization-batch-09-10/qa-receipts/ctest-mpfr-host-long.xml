@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="(empty)"
+	tests="2"
+	failures="0"
+	disabled="0"
+	skipped="0"
+	hostname=""
+	time="9998"
+	timestamp="2026-11-01T12:14:26"
+	>
+	<testcase name="mpfr_cuda_Cfactor_host" classname="mpfr_cuda_Cfactor_host" time="9998.99" status="run">
+		<properties/>
+		<system-out>p=256 LU=241 Cholesky=136 checks=813 components=9062456 errors=0 signed_zero_diffs=0
+p=512 LU=241 Cholesky=136 checks=813 components=9062456 errors=0 signed_zero_diffs=0
+p=768 LU=241 Cholesky=136 checks=813 components=9062456 errors=0 signed_zero_diffs=0
+p=1024 LU=241 Cholesky=136 checks=813 components=9062456 errors=0 signed_zero_diffs=0
+p=2048 LU=241 Cholesky=136 checks=813 components=9062456 errors=0 signed_zero_diffs=0
+p=200 LU=241 Cholesky=136 checks=813 components=9062456 errors=0 signed_zero_diffs=0
+</system-out>
+	</testcase>
+	<testcase name="mpfr_cuda_Cfactor_host_runtime" classname="mpfr_cuda_Cfactor_host_runtime" time="7532.52" status="run">
+		<properties/>
+		<system-out>p=256 LU=241 Cholesky=136 checks=813 components=9062456 errors=0 signed_zero_diffs=0
+p=512 LU=241 Cholesky=136 checks=813 components=9062456 errors=0 signed_zero_diffs=0
+p=768 LU=241 Cholesky=136 checks=813 components=9062456 errors=0 signed_zero_diffs=0
+p=1024 LU=241 Cholesky=136 checks=813 components=9062456 errors=0 signed_zero_diffs=0
+p=2048 LU=241 Cholesky=136 checks=813 components=9062456 errors=0 signed_zero_diffs=0
+p=200 LU=241 Cholesky=136 checks=813 components=9062456 errors=0 signed_zero_diffs=0
+</system-out>
+	</testcase>
+</testsuite>

@@ -1,0 +1,26 @@
+td R n=1024 cpu : Rgemm n=1024 best=0.3345 s 6.420 GFLOPS
+td R n=1024 default : Rgemm n=1024 best=0.0333 s 64.449 GFLOPS
+td R n=1024 naive : Rgemm n=1024 best=0.0331 s 64.913 GFLOPS
+td R n=1024 wino256 : Rgemm n=1024 best=0.0957 s 22.449 GFLOPS
+td R n=1024 wino512 : Rgemm n=1024 best=0.0748 s 28.716 GFLOPS
+td R n=1024 ozaki : Rgemm n=1024 best=0.1461 s 14.694 GFLOPS
+td C n=1024 cpu : Cgemm n=1024 best=1.0184 s 8.435 GFLOPS
+td C n=1024 default : Cgemm n=1024 best=0.1679 s 51.165 GFLOPS
+td C n=1024 naive : Cgemm n=1024 best=0.1655 s 51.917 GFLOPS
+td C n=1024 wino256 : Cgemm n=1024 best=0.1670 s 51.428 GFLOPS
+td C n=1024 wino512 : Cgemm n=1024 best=0.1678 s 51.181 GFLOPS
+td C n=1024 ozaki : Cgemm n=1024 best=0.1646 s 52.171 GFLOPS
+== accuracy (n=1024, vs cpu)
+td R n=1024 default : max|diff|=0.000e+00 max|ref|=5.137e+01 rel=0.000e+00
+td R n=1024 naive : max|diff|=0.000e+00 max|ref|=5.137e+01 rel=0.000e+00
+td R n=1024 wino256 : max|diff|=1.360e-45 max|ref|=5.137e+01 rel=2.648e-47
+td R n=1024 wino512 : max|diff|=1.007e-45 max|ref|=5.137e+01 rel=1.961e-47
+td R n=1024 ozaki : max|diff|=8.047e-46 max|ref|=5.137e+01 rel=1.566e-47
+td C n=1024 default : max|diff|=0.000e+00 max|ref|=8.152e+01 rel=0.000e+00
+td C n=1024 naive : max|diff|=0.000e+00 max|ref|=8.152e+01 rel=0.000e+00
+td C n=1024 wino256 : max|diff|=0.000e+00 max|ref|=8.152e+01 rel=0.000e+00
+td C n=1024 wino512 : max|diff|=0.000e+00 max|ref|=8.152e+01 rel=0.000e+00
+td C n=1024 ozaki : max|diff|=0.000e+00 max|ref|=8.152e+01 rel=0.000e+00
+== verbose (default, n=1024)
+td R verbose: Rgemm n=1024 best=0.1822 s 11.789 GFLOPS
+td C verbose: Cgemm n=1024 best=0.3103 s 27.682 GFLOPS

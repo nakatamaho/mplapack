@@ -38,7 +38,7 @@
 
 #include <mplapack_matgen.h>
 
-#if defined MPLAPACK_BUILD_WITH_DD
+#if defined MPLAPACK_BUILD_WITH_DD || defined MPLAPACK_BUILD_WITH_TD
 #pragma GCC push_options
 #pragma GCC optimize("O0")
 #endif
@@ -204,6 +204,6 @@ void Claror(fem::str_cref side, fem::str_cref init, INTEGER const m, INTEGER con
     //
 }
 
-#if defined MPLAPACK_BUILD_WITH_DD
+#if defined MPLAPACK_BUILD_WITH_DD || defined MPLAPACK_BUILD_WITH_TD
 #pragma GCC pop_options
 #endif

@@ -57,7 +57,7 @@ CMD ["/bin/bash", "-lc", "\
     \
     ARCH=$(dpkg --print-architecture); \
     echo \"Detected architecture: $ARCH\"; \
-    COMMON_OPTS=\"--enable-gmp=yes --enable-mpfr=yes --enable-binary128=yes --enable-qd=yes --enable-dd=yes --enable-double=yes --enable-test=yes\"; \
+    COMMON_OPTS=\"--enable-gmp=yes --enable-mpfr=yes --enable-binary128=yes --enable-qd=yes --enable-dd=yes --enable-td=yes --enable-double=yes --enable-test=yes\"; \
     if [ \"$ARCH\" = \"amd64\" ] || [ \"$ARCH\" = \"i386\" ]; then \
         CONFIGURE_OPTS=\"$COMMON_OPTS --enable-benchmark=yes --enable-binary80=yes --with-openblas=system\"; \
     else \

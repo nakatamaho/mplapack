@@ -479,6 +479,51 @@ AC_ARG_ENABLE(cuda,
 [  --enable-cuda    Enable compiler level cuda])
 AM_CONDITIONAL(ENABLE_CUDA, test x$enable_cuda = xyes)
 
+AC_ARG_ENABLE(qd-cuda,
+AS_HELP_STRING([--enable-qd-cuda], [Build libmplapack_qd_opt_cuda: QD Rgemm on CUDA]))
+AC_ARG_ENABLE(td-cuda,
+AS_HELP_STRING([--enable-td-cuda], [Build libmplapack_td_opt_cuda: TD Rgemm on CUDA]))
+
+AC_ARG_ENABLE(mpfr-cuda,
+AS_HELP_STRING([--enable-mpfr-cuda], [Build libmplapack_mpfr_opt_cuda: MPFR Rgemm on CUDA (needs mpc_cuda)]))
+AC_ARG_WITH(mpc-cuda-includedir,
+AS_HELP_STRING([--with-mpc-cuda-includedir=DIR], [mpc_cuda include directory, containing mpc_cuda.cuh]),
+[MPC_CUDA_INCLUDEDIR="$withval"], [MPC_CUDA_INCLUDEDIR=""])
+AC_ARG_WITH(mpc-cuda-library,
+AS_HELP_STRING([--with-mpc-cuda-library=FILE], [mpc_cuda static library (default: DIR/../lib/libmpc_cuda.a for --with-mpc-cuda-includedir=DIR)]),
+[MPC_CUDA_LIBRARY="$withval"], [MPC_CUDA_LIBRARY=""])
+AC_ARG_WITH(mpfr-cuda-arch,
+AS_HELP_STRING([--with-mpfr-cuda-arch=N[,N...]], [CUDA compute capabilities for libmplapack_mpfr_opt_cuda, those libmpc_cuda.a was built for (e.g. 90, 121, or 80,90 for A100 and H100; default 90)]),
+[MPFR_CUDA_ARCHS="$withval"], [MPFR_CUDA_ARCHS=90])
+dnl MPFR_CUDA_ARCH is the first capability (mpc_cuda --with-cuda-arch);
+dnl MPC_CUDA_EXTRA_GENCODE adds the others to the bundled mpc_cuda, and
+dnl MPFR_CUDA_GENCODES lists them all for libmplapack_mpfr_opt_cuda.
+MPFR_CUDA_ARCH=
+MPFR_CUDA_GENCODES=
+MPC_CUDA_EXTRA_GENCODE=
+for _mpfr_cuda_arch in `echo "$MPFR_CUDA_ARCHS" | tr ',;' '  '`; do
+  case $_mpfr_cuda_arch in
+    *[[!0-9a-z]]*) AC_MSG_ERROR([--with-mpfr-cuda-arch: invalid compute capability $_mpfr_cuda_arch]) ;;
+  esac
+  _mpfr_cuda_gencode="-gencode arch=compute_$_mpfr_cuda_arch,code=sm_$_mpfr_cuda_arch"
+  if test -z "$MPFR_CUDA_ARCH"; then
+    MPFR_CUDA_ARCH=$_mpfr_cuda_arch
+  else
+    MPC_CUDA_EXTRA_GENCODE="$MPC_CUDA_EXTRA_GENCODE $_mpfr_cuda_gencode"
+  fi
+  MPFR_CUDA_GENCODES="$MPFR_CUDA_GENCODES $_mpfr_cuda_gencode"
+done
+if test -z "$MPFR_CUDA_ARCH"; then
+  AC_MSG_ERROR([--with-mpfr-cuda-arch needs at least one compute capability])
+fi
+MPC_CUDA_DIR=
+AC_SUBST(MPC_CUDA_DIR)
+AC_SUBST(MPC_CUDA_INCLUDEDIR)
+AC_SUBST(MPC_CUDA_LIBRARY)
+AC_SUBST(MPFR_CUDA_ARCH)
+AC_SUBST(MPFR_CUDA_GENCODES)
+AC_SUBST(MPC_CUDA_EXTRA_GENCODE)
+
 AC_ARG_WITH(cudatoolkithome,
 AS_HELP_STRING([--with-cudatoolkithome], [Specify path to CUDA Toolkit (default: /usr/local/cuda)]),
 [ CUDATOOLKITHOME="$withval"],
@@ -500,7 +545,7 @@ NVCC="$CUDATOOLKITHOME/bin/nvcc"
 
 IS_CUDA_VERSION_MAJOR_3="FALSE"
 dnl we should write check part for CUDA toolkit
-if test x$enable_cuda = x"yes"; then
+if test x$enable_cuda = x"yes" || test x$enable_qd_cuda = x"yes" || test x$enable_td_cuda = x"yes"; then
 CUDA_VERSION=`"$NVCC" --version | grep "Cuda compilation tools"  | awk '{print $5}' | sed 's/,//g'`
 CUDA_VERSION_MAJOR=`"$NVCC" --version | grep "Cuda compilation tools"  | awk '{print $5}' | sed 's/,//g' | sed 's/\..$//g'`
 AC_MSG_RESULT([CUDA version is $CUDA_VERSION])
@@ -728,11 +773,41 @@ if test x$enable_test = x"yes"; then
     enable_mpfr=yes
 fi
 AM_CONDITIONAL(ENABLE_MPFR, test x$enable_mpfr = xyes)
+if test x$enable_mpfr_cuda = xyes; then
+  if test x$enable_mpfr != xyes; then
+    AC_MSG_ERROR([--enable-mpfr-cuda requires --enable-mpfr])
+  fi
+  if test -z "$MPC_CUDA_INCLUDEDIR"; then
+    dnl Build the bundled mpc_cuda (external/mpc_cuda).
+    MPC_CUDA_DIR=mpc_cuda
+    MPC_CUDA_INCLUDEDIR="`pwd`/external/i/MPC_CUDA/include"
+    MPC_CUDA_LIBRARY="`pwd`/external/i/MPC_CUDA/lib/libmpc_cuda.a"
+    AC_MSG_NOTICE([MPFR CUDA: using the bundled mpc_cuda for compute capabilities $MPFR_CUDA_ARCHS])
+  else
+    if test ! -f "$MPC_CUDA_INCLUDEDIR/mpc_cuda.cuh"; then
+      AC_MSG_ERROR([--with-mpc-cuda-includedir=DIR must contain mpc_cuda.cuh (https://github.com/tkouya/mpc_cuda)])
+    fi
+    if test ! -f "$MPC_CUDA_INCLUDEDIR/mpc_cuda/cu_fround.cuh"; then
+      AC_MSG_ERROR([installed mpc_cuda needs cu_fround.cuh; apply external/mpc_cuda/patches/patch-cu_freal-correctly-rounded-div-sqrt])
+    fi
+    if test -z "$MPC_CUDA_LIBRARY"; then
+      MPC_CUDA_LIBRARY="$MPC_CUDA_INCLUDEDIR/../lib/libmpc_cuda.a"
+    fi
+    if test ! -f "$MPC_CUDA_LIBRARY"; then
+      AC_MSG_ERROR([libmpc_cuda.a not found; give it with --with-mpc-cuda-library=FILE])
+    fi
+  fi
+fi
+AM_CONDITIONAL(ENABLE_MPFR_CUDA, test x$enable_mpfr_cuda = xyes)
 
 dnl enable QD version of MPLAPACK.
 AC_ARG_ENABLE(qd,
 AS_HELP_STRING([--enable-qd], [Enable QD version]))
 AM_CONDITIONAL(ENABLE_QD, test x$enable_qd = xyes)
+if test x$enable_qd_cuda = xyes && test x$enable_qd != xyes; then
+  AC_MSG_ERROR([--enable-qd-cuda requires --enable-qd])
+fi
+AM_CONDITIONAL(ENABLE_QD_CUDA, test x$enable_qd_cuda = xyes)
 
 AC_ARG_WITH(qdlib-flags,
 AS_HELP_STRING([--with-qdlib-flags], [passing flag to internal qd library])
@@ -749,6 +824,20 @@ AS_HELP_STRING([--enable-dd], [Enable DD version]),
     *) AC_MSG_ERROR(bad value ${enableval} for --enable-dd) ;;
         esac],[enable_dd=yes])
 AM_CONDITIONAL(ENABLE_DD, test x$enable_dd = xyes)
+
+dnl enable TD (triple-double, libQD3) version of MPLAPACK.
+AC_ARG_ENABLE(td,
+AS_HELP_STRING([--enable-td], [Enable TD (triple-double) version]),
+[case "${enableval}" in
+    yes) enable_td=yes ;;
+    no)  enable_td=no  ;;
+    *) AC_MSG_ERROR(bad value ${enableval} for --enable-td) ;;
+        esac],[enable_td=no])
+AM_CONDITIONAL(ENABLE_TD, test x$enable_td = xyes)
+if test x$enable_td_cuda = xyes && test x$enable_td != xyes; then
+  AC_MSG_ERROR([--enable-td-cuda requires --enable-td])
+fi
+AM_CONDITIONAL(ENABLE_TD_CUDA, test x$enable_td_cuda = xyes)
 
 dnl enable double
 AC_ARG_ENABLE(double,
@@ -2204,7 +2293,7 @@ if test  $QD_PATHSET = 1 ; then
 		QD_LIBDIR="$with_system_qd/lib"
 	fi
 fi
-if test x$enable_qd = x"yes" -o x$enable_dd = x"yes" -o x$enable_test = x"yes"; then
+if test x$enable_qd = x"yes" -o x$enable_dd = x"yes" -o x$enable_td = x"yes" -o x$enable_test = x"yes"; then
     if test x$with_system_qd != x"no"; then
         HAVE_QD=""
         save_CXXFLAGS=$CXXFLAGS
@@ -2217,7 +2306,54 @@ if test x$enable_qd = x"yes" -o x$enable_dd = x"yes" -o x$enable_test = x"yes"; 
             AC_CHECK_LIB(qd, c_qd_sqrt, [QD_LIBS="-lqd"; HAVE_QD=yes])
             LDFLAGS=$save_LDFLAGS
         fi
-        if test x$HAVE_QD != xyes; then
+        dnl Keep in step with the libQD3 tarball bundled under external/qd.
+        dnl ds_complex.h and the c_ds C API first appear in libQD3 1.6.0.
+        if test x$HAVE_QD = xyes; then
+            AC_MSG_CHECKING([whether the system QD is libQD3 1.6.0 or later])
+            save_CXXFLAGS=$CXXFLAGS
+            save_LDFLAGS=$LDFLAGS
+            save_LIBS=$LIBS
+            CXXFLAGS="$CXXFLAGS -I$QD_INCLUDEDIR"
+            LDFLAGS="$LDFLAGS -L$QD_LIBDIR"
+            LIBS="-lqd -lm $LIBS"
+            AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <qd/ds_complex.h>
+#include <qd/c_ds.h>]], [[float a[2] = {2.0f, 0.0f}, b[2];
+ds_complex z(1.0f, 2.0f);
+c_ds_sqrt(a, b);
+return z.real() == ds_real(0.0f);]])],
+                [AC_MSG_RESULT([yes])],
+                [AC_MSG_RESULT([no])
+                 HAVE_QD=old])
+            CXXFLAGS=$save_CXXFLAGS
+            LDFLAGS=$save_LDFLAGS
+            LIBS=$save_LIBS
+        fi
+        dnl MPLAPACK computes dd, td and qd with libQD3's branch-free arithmetic
+        dnl (QD_BF; mpblas/optimized/common/Rgemm_qd_ops_common.h).
+        if test x$HAVE_QD = xyes; then
+            AC_MSG_CHECKING([whether the system QD uses branch-free arithmetic (QD_BF)])
+            save_CXXFLAGS=$CXXFLAGS
+            CXXFLAGS="$CXXFLAGS -I$QD_INCLUDEDIR"
+            AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <qd/dd_real.h>
+#include <qd/td_real.h>
+#include <qd/qd_real.h>
+#if !defined(QD_BF_ADD) || !defined(QD_BF_MUL)
+#error libQD3 without QD_BF
+#endif]], [[]])],
+                [AC_MSG_RESULT([yes])],
+                [AC_MSG_RESULT([no])
+                 HAVE_QD=nobf])
+            CXXFLAGS=$save_CXXFLAGS
+        fi
+        if test x$HAVE_QD = xnobf; then
+              AC_MSG_WARN([QD in $QD_INCLUDEDIR is not built with QD_BF (-DQD_ENABLE_BF=ON); using internal one instead])
+			QD_INCLUDEDIR=$highest_abs_top_builddir/external/i/QD/include/
+			QD_LIBDIR=$highest_abs_top_builddir/external/i/QD/lib/
+        elif test x$HAVE_QD = xold; then
+              AC_MSG_WARN([QD in $QD_INCLUDEDIR and $QD_LIBDIR is older than libQD3 1.6.0; using internal one instead])
+			QD_INCLUDEDIR=$highest_abs_top_builddir/external/i/QD/include/
+			QD_LIBDIR=$highest_abs_top_builddir/external/i/QD/lib/
+        elif test x$HAVE_QD != xyes; then
               AC_MSG_RESULT([No QD library found; using internal one instead])
 			QD_INCLUDEDIR=$highest_abs_top_builddir/external/i/QD/include/
 			QD_LIBDIR=$highest_abs_top_builddir/external/i/QD/lib/
@@ -2301,7 +2437,7 @@ fi
 #AM_CONDITIONAL(NEED_INTERNAL_GMPLIB, test x$need_internal_gmplib = xyes)
 
 need_internal_qdlib=no
-if test x$enable_qd = x"yes" || test x$enable_dd = x"yes"; then
+if test x$enable_qd = x"yes" || test x$enable_dd = x"yes" || test x$enable_td = x"yes"; then
     if test x$SYSTEM_QD != x"yes"; then
        need_internal_qdlib=yes
        AC_SUBST(QD_DIR, [qd])
@@ -2503,6 +2639,11 @@ AC_MSG_RESULT([Enable DD version])
 else
 AC_MSG_RESULT([Disable DD version])
 fi
+if test x$enable_td = x"yes"; then
+AC_MSG_RESULT([Enable TD version])
+else
+AC_MSG_RESULT([Disable TD version])
+fi
 
 if test x$enable_cuda = x"yes"; then
 AC_MSG_RESULT([Enable CUDA version : the home of CUDA Toolkit : $CUDATOOLKITHOME])
@@ -2693,6 +2834,12 @@ if test x$enable_dd = x"yes"; then
   AC_MSG_NOTICE([DD backend:       enabled])
 else
   AC_MSG_NOTICE([DD backend:       disabled])
+fi
+
+if test x$enable_td = x"yes"; then
+  AC_MSG_NOTICE([TD backend:       enabled])
+else
+  AC_MSG_NOTICE([TD backend:       disabled])
 fi
 
 if test x$enable_cuda = x"yes"; then
@@ -3068,6 +3215,11 @@ mpblas/optimized/mpfr/Makefile
 mpblas/optimized/qd/Makefile
 mpblas/optimized/dd/Makefile
 mpblas/optimized/dd/cuda/Makefile
+mpblas/optimized/qd/cuda/Makefile
+mpblas/optimized/td/cuda/Makefile
+mpblas/optimized/mpfr/cuda/Makefile
+external/mpc_cuda/Makefile
+mpblas/optimized/td/Makefile
 mpblas/optimized/double/Makefile
 mpblas/optimized/binary80/Makefile
 mpblas/optimized/binary128/Makefile
@@ -3077,6 +3229,7 @@ mplapack/optimized/gmp/Makefile
 mplapack/optimized/mpfr/Makefile
 mplapack/optimized/qd/Makefile
 mplapack/optimized/dd/Makefile
+mplapack/optimized/td/Makefile
 mplapack/optimized/double/Makefile
 mplapack/optimized/binary80/Makefile
 mplapack/optimized/binary128/Makefile
@@ -3085,6 +3238,7 @@ mpblas/test/gmp/Makefile
 mpblas/test/mpfr/Makefile
 mpblas/test/qd/Makefile
 mpblas/test/dd/Makefile
+mpblas/test/td/Makefile
 mpblas/test/double/Makefile
 mpblas/test/binary80/Makefile
 mpblas/test/binary128/Makefile
@@ -3095,6 +3249,7 @@ mplapack/test/compare/gmp/Makefile
 mplapack/test/compare/mpfr/Makefile
 mplapack/test/compare/qd/Makefile
 mplapack/test/compare/dd/Makefile
+mplapack/test/compare/td/Makefile
 mplapack/test/compare/double/Makefile
 mplapack/test/compare/binary80/Makefile
 mplapack/test/compare/binary128/Makefile
@@ -3104,6 +3259,7 @@ mplapack/test/lin/mpfr/Makefile
 mplapack/test/lin/gmp/Makefile
 mplapack/test/lin/qd/Makefile
 mplapack/test/lin/dd/Makefile
+mplapack/test/lin/td/Makefile
 mplapack/test/lin/double/Makefile
 mplapack/test/lin/binary80/Makefile
 mplapack/test/lin/binary128/Makefile
@@ -3112,6 +3268,7 @@ mplapack/test/eig/mpfr/Makefile
 mplapack/test/eig/gmp/Makefile
 mplapack/test/eig/qd/Makefile
 mplapack/test/eig/dd/Makefile
+mplapack/test/eig/td/Makefile
 mplapack/test/eig/double/Makefile
 mplapack/test/eig/binary80/Makefile
 mplapack/test/eig/binary128/Makefile

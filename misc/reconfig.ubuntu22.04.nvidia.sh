@@ -18,7 +18,7 @@ fi
 
 autoreconf --force --install
 if [ `uname -m` = "x86_64" ]; then
-./configure --prefix=$HOME/MPLAPACK_NVIDIA --enable-gmp=yes --enable-mpfr=yes --enable-binary128=yes --enable-qd=yes --enable-dd=yes --enable-double=yes --enable-binary80=yes --enable-cuda=yes --with-opencl=/usr/local/cuda --enable-test=yes --enable-benchmark=yes
+./configure --prefix=$HOME/MPLAPACK_NVIDIA --enable-gmp=yes --enable-mpfr=yes --enable-binary128=yes --enable-qd=yes --enable-dd=yes --enable-td=yes --enable-double=yes --enable-binary80=yes --enable-cuda=yes --with-opencl=/usr/local/cuda --enable-test=yes --enable-benchmark=yes
 else
-./configure --prefix=$HOME/MPLAPACK_NVIDIA --enable-gmp=yes --enable-mpfr=yes --enable-binary128=yes --enable-qd=yes --enable-dd=yes --enable-double=yes --enable-cuda=yes --with-opencl=/usr/local/cuda --enable-test=yes --enable-benchmark=yes
+./configure --prefix=$HOME/MPLAPACK_NVIDIA --enable-gmp=yes --enable-mpfr=yes --enable-binary128=yes --enable-qd=yes --enable-dd=yes --enable-td=yes --enable-double=yes --enable-cuda=yes --with-opencl=/usr/local/cuda --enable-test=yes --enable-benchmark=yes
 fi

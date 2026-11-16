@@ -1,0 +1,32 @@
+mpfr R n=512 cpu : Rgemm n=512 best=0.9465 s 0.284 GFLOPS
+mpfr R n=512 default : Rgemm n=512 best=0.0889 s 3.019 GFLOPS
+mpfr R n=512 wino256 : Rgemm n=512 best=0.0851 s 3.155 GFLOPS
+mpfr R n=512 wino512 : Rgemm n=512 best=0.0873 s 3.075 GFLOPS
+mpfr R n=512 runtime : Rgemm n=512 best=0.9121 s 0.294 GFLOPS
+mpfr C n=512 cpu : Cgemm n=512 best=4.1430 s 0.259 GFLOPS
+mpfr C n=512 default : Cgemm n=512 best=0.8554 s 1.255 GFLOPS
+mpfr C n=512 wino256 : Cgemm n=512 best=0.8842 s 1.214 GFLOPS
+mpfr C n=512 wino512 : Cgemm n=512 best=0.8774 s 1.224 GFLOPS
+mpfr C n=512 runtime : Cgemm n=512 best=4.3842 s 0.245 GFLOPS
+mpfr R n=1024 cpu : Rgemm n=1024 best=7.5259 s 0.285 GFLOPS
+mpfr R n=1024 default : Rgemm n=1024 best=0.5646 s 3.804 GFLOPS
+mpfr R n=1024 wino256 : Rgemm n=1024 best=0.5737 s 3.743 GFLOPS
+mpfr R n=1024 wino512 : Rgemm n=1024 best=0.5101 s 4.210 GFLOPS
+mpfr R n=1024 runtime : Rgemm n=1024 best=6.8125 s 0.315 GFLOPS
+mpfr C n=1024 cpu : Cgemm n=1024 best=32.8999 s 0.261 GFLOPS
+mpfr C n=1024 default : Cgemm n=1024 best=6.1543 s 1.396 GFLOPS
+mpfr C n=1024 wino256 : Cgemm n=1024 best=6.2629 s 1.372 GFLOPS
+mpfr C n=1024 wino512 : Cgemm n=1024 best=6.1565 s 1.395 GFLOPS
+mpfr C n=1024 runtime : Cgemm n=1024 best=32.9803 s 0.260 GFLOPS
+== accuracy (n=512, vs cpu)
+mpfr R n=512 default : max|diff|=0.000e+00 max|ref|=3.694e+01 rel=0.000e+00
+mpfr R n=512 wino256 : max|diff|=6.668e-152 max|ref|=3.694e+01 rel=1.805e-153
+mpfr R n=512 wino512 : max|diff|=0.000e+00 max|ref|=3.694e+01 rel=0.000e+00
+mpfr R n=512 runtime : max|diff|=0.000e+00 max|ref|=3.694e+01 rel=0.000e+00
+mpfr C n=512 default : max|diff|=0.000e+00 max|ref|=5.622e+01 rel=0.000e+00
+mpfr C n=512 wino256 : max|diff|=0.000e+00 max|ref|=5.622e+01 rel=0.000e+00
+mpfr C n=512 wino512 : max|diff|=0.000e+00 max|ref|=5.622e+01 rel=0.000e+00
+mpfr C n=512 runtime : max|diff|=0.000e+00 max|ref|=5.622e+01 rel=0.000e+00
+== verbose (default, n=512)
+mpfr R verbose: Rgemm n=512 best=0.5127 s 0.524 GFLOPS
+mpfr C verbose: Cgemm n=512 best=1.2705 s 0.845 GFLOPS

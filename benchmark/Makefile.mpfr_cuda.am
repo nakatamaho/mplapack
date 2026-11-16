@@ -1,0 +1,56 @@
+bench_PROGRAMS += \
+Rgemm.mpfr_cuda_total  \
+Rpotrf.mpfr_cuda_total \
+Rgetrf.mpfr_cuda_total \
+Rfactor.mpfr_cuda_total
+
+# libmplapack_mpfr_opt_cuda: MPFR Rgemm on the GPU (mpc_cuda), see
+# mpblas/optimized/mpfr/cuda/README.md.  The library is device-linked, so the
+# programs link with the C++ compiler.
+mpfr_cuda_cxxflags   = $(GMPFRXX_MKII_CPPFLAGS) $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR) $(CUDA_CFLAGS) -DMPLAPACK_BUILD_WITH_MPFR
+mpfr_cuda_libdepends = -L$(top_builddir)/mpblas/optimized/mpfr/cuda -lmplapack_mpfr_opt_cuda \
+                       $(CUDA_LDFLAGS) -lcudart \
+                       -L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(GMP_LIBDIR) -lmpfr -lmpc -lgmp $(DYLD)
+mpfr_cuda_link       = $(LIBTOOL) --mode=link $(CXX) -o $@ $(CUDA_LDFLAGS) $(CUDA_LIBS) $(mpfr_cuda_libdepends) $(OPENMP_CXXFLAGS)
+
+Rfactor_mpfr_cuda_total_SOURCES = Rfactor.cpp
+Rfactor_mpfr_cuda_total_LINK = $(mpfr_cuda_link)
+Rfactor_mpfr_cuda_total_CXXFLAGS = $(mpfr_cuda_cxxflags) -DMPLAPACK_FACTOR_CUDA
+
+Rgemm_mpfr_cuda_total_SOURCES=   Rgemm.cpp
+Rgemm_mpfr_cuda_total_LINK=      $(mpfr_cuda_link)
+Rgemm_mpfr_cuda_total_CXXFLAGS=  $(mpfr_cuda_cxxflags)
+
+Rpotrf_mpfr_cuda_total_SOURCES=  Rpotrf.cpp
+Rpotrf_mpfr_cuda_total_LINK=     $(mpfr_cuda_link)
+Rpotrf_mpfr_cuda_total_CXXFLAGS= $(mpfr_cuda_cxxflags)
+
+Rgetrf_mpfr_cuda_total_SOURCES=  Rgetrf.cpp
+Rgetrf_mpfr_cuda_total_LINK=     $(mpfr_cuda_link)
+Rgetrf_mpfr_cuda_total_CXXFLAGS= $(mpfr_cuda_cxxflags)
+
+# Rkernel_bench.mpfr_cuda_kernel: the MPFR GPU kernels of the factorizations
+# alone, called through the entry points <R>_mpfr_cuda and timed with CUPTI
+# (span of the call's kernels: no packing, no transfers); Rkernel_bench.mpfr_opt:
+# the same routines of libmplapack_mpfr_opt on the CPU.  Driven by
+# kernel_bench.py, see README.kernel_bench.md.
+bench_PROGRAMS += Rkernel_bench.mpfr_cuda_kernel Rkernel_bench.mpfr_opt Rkernel_bench.mpfr_cuda_resident
+Rkernel_bench_mpfr_cuda_resident_SOURCES = Rkernel_bench_mpfr_resident.cu
+nodist_EXTRA_Rkernel_bench_mpfr_cuda_resident_SOURCES = kernel_bench_cxx_link.cpp
+Rkernel_bench_mpfr_cuda_resident_LINK = $(LIBTOOL) --mode=link $(CXX) -o $@
+Rkernel_bench_mpfr_cuda_resident_LDADD = kernel_new_mpfr_dlink.o $(MPC_CUDA_LIBRARY) \
+    -L$(top_builddir)/mpblas/optimized/mpfr -lmplapack_mpfr_opt $(CUDA_LDFLAGS) -lcudart \
+    -L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(GMP_LIBDIR) -lmpfr -lmpc -lgmp $(OPENMP_CXXFLAGS) $(DYLD)
+Rkernel_bench_mpfr_resident.o: Makefile $(srcdir)/Rkernel_bench_mpfr_resident.cu $(srcdir)/Rkernel_bench.cpp $(srcdir)/Rkernel_new.h
+	$(MKDIR_P) $(DEPDIR)
+	$(NVCC) $(KERNEL_BENCH_NVCC_FLAGS) -rdc=true -I$(MPC_CUDA_INCLUDEDIR) \
+	    $(GMPFRXX_MKII_CPPFLAGS) -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR) -Xcompiler=$(OPENMP_CXXFLAGS) -c $(srcdir)/Rkernel_bench_mpfr_resident.cu -o $@
+kernel_new_mpfr_dlink.o: Rkernel_bench_mpfr_resident.o Makefile $(MPC_CUDA_LIBRARY)
+	$(NVCC) $(KERNEL_BENCH_CUDA_ARCH_FLAGS) -dlink $< $(MPC_CUDA_LIBRARY) -o $@
+CLEANFILES += kernel_new_mpfr_dlink.o
+Rkernel_bench_mpfr_cuda_kernel_SOURCES = Rkernel_bench.cpp
+Rkernel_bench_mpfr_cuda_kernel_LINK = $(LIBTOOL) --mode=link $(CXX) -o $@ $(CUDA_LDFLAGS) $(mpfr_cuda_libdepends) -lcupti $(OPENMP_CXXFLAGS)
+Rkernel_bench_mpfr_cuda_kernel_CXXFLAGS = $(mpfr_cuda_cxxflags) -DKERNEL_BENCH_MPFR_CUDA
+Rkernel_bench_mpfr_opt_SOURCES = Rkernel_bench.cpp
+Rkernel_bench_mpfr_opt_CXXFLAGS = $(GMPFRXX_MKII_CPPFLAGS) $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR) -DMPLAPACK_BUILD_WITH_MPFR
+Rkernel_bench_mpfr_opt_LDFLAGS = -L$(top_builddir)/mpblas/optimized/mpfr -lmplapack_mpfr_opt -L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(GMP_LIBDIR) -lmpfr -lmpc -lgmp $(DYLD)

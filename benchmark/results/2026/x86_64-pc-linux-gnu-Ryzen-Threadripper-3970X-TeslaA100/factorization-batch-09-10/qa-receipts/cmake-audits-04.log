@@ -1,0 +1,25 @@
+Test project /tmp/factor04-cmake
+      Start  34: unique_symbols_qd
+ 1/10 Test  #34: unique_symbols_qd ................   Passed    0.43 sec
+      Start  35: unique_symbols_qd_opt
+ 2/10 Test  #35: unique_symbols_qd_opt ............   Passed    0.45 sec
+      Start  36: unique_symbols_dd
+ 3/10 Test  #36: unique_symbols_dd ................   Passed    0.39 sec
+      Start  37: unique_symbols_dd_opt
+ 4/10 Test  #37: unique_symbols_dd_opt ............   Passed    0.44 sec
+      Start  38: unique_symbols_td
+ 5/10 Test  #38: unique_symbols_td ................   Passed    0.41 sec
+      Start  39: unique_symbols_td_opt
+ 6/10 Test  #39: unique_symbols_td_opt ............   Passed    0.46 sec
+      Start  40: unique_symbols_dd_opt_cuda
+ 7/10 Test  #40: unique_symbols_dd_opt_cuda .......   Passed    0.55 sec
+      Start  41: unique_symbols_qd_opt_cuda
+ 8/10 Test  #41: unique_symbols_qd_opt_cuda .......   Passed    0.69 sec
+      Start  42: unique_symbols_td_opt_cuda
+ 9/10 Test  #42: unique_symbols_td_opt_cuda .......   Passed    0.56 sec
+      Start 263: source_manifests
+10/10 Test #263: source_manifests .................   Passed   15.72 sec
+
+100% tests passed, 0 tests failed out of 10
+
+Total Test time (real) =  20.12 sec

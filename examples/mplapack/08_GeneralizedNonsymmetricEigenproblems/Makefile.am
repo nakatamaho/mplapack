@@ -124,6 +124,26 @@ Rggev_example_dd_LDFLAGS = $(dd_libdepends)
 
 endif
 
+if ENABLE_TD
+mplapackexamples_PROGRAMS += Cggev_example_td Rgges_example_td Rggev_example_td
+
+td_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(QD_INCLUDEDIR)
+td_libdepends = -Wl,-rpath,$(libdir) -L$(top_builddir)/mplapack/reference -lmplapack_td -L$(QD_LIBDIR) -lqd
+
+Cggev_example_td_SOURCES = Cggev_example_td.cpp
+Cggev_example_td_CXXFLAGS = $(td_cxxflags)
+Cggev_example_td_LDFLAGS = $(td_libdepends)
+
+Rgges_example_td_SOURCES = Rgges_example_td.cpp
+Rgges_example_td_CXXFLAGS = $(td_cxxflags)
+Rgges_example_td_LDFLAGS = $(td_libdepends)
+
+Rggev_example_td_SOURCES = Rggev_example_td.cpp
+Rggev_example_td_CXXFLAGS = $(td_cxxflags)
+Rggev_example_td_LDFLAGS = $(td_libdepends)
+
+endif
+
 if ENABLE_QD
 mplapackexamples_PROGRAMS += Cggev_example_qd Rgges_example_qd Rggev_example_qd
 
@@ -146,7 +166,7 @@ endif
 
 mplapackexamplesdir=$(prefix)/share/examples/mplapack/08_GeneralizedNonsymmetricEigenproblems
 
-mplapackexamples_DATA = Cggev_example_mpfr.cpp Cggev_example_gmp.cpp Cggev_example_binary128.cpp Cggev_example_binary80.cpp Cggev_example_double.cpp Cggev_example_dd.cpp Cggev_example_qd.cpp Rgges_example_mpfr.cpp Rgges_example_gmp.cpp Rgges_example_binary128.cpp Rgges_example_binary80.cpp Rgges_example_double.cpp Rgges_example_dd.cpp Rgges_example_qd.cpp Rggev_example_mpfr.cpp Rggev_example_gmp.cpp Rggev_example_binary128.cpp Rggev_example_binary80.cpp Rggev_example_double.cpp Rggev_example_dd.cpp Rggev_example_qd.cpp \
+mplapackexamples_DATA = Cggev_example_mpfr.cpp Cggev_example_gmp.cpp Cggev_example_binary128.cpp Cggev_example_binary80.cpp Cggev_example_double.cpp Cggev_example_dd.cpp Cggev_example_td.cpp Cggev_example_qd.cpp Rgges_example_mpfr.cpp Rgges_example_gmp.cpp Rgges_example_binary128.cpp Rgges_example_binary80.cpp Rgges_example_double.cpp Rgges_example_dd.cpp Rgges_example_td.cpp Rgges_example_qd.cpp Rggev_example_mpfr.cpp Rggev_example_gmp.cpp Rggev_example_binary128.cpp Rggev_example_binary80.cpp Rggev_example_double.cpp Rggev_example_dd.cpp Rggev_example_td.cpp Rggev_example_qd.cpp \
  Makefile.freebsd Makefile.linux Makefile.linux.inteloneAPI Makefile.macos Makefile.mingw
 
 install-data-hook:
@@ -205,6 +225,10 @@ endif
 if ENABLE_DD
 else
 DISABLED_EXAMPLE_SUFFIXES += dd
+endif
+if ENABLE_TD
+else
+DISABLED_EXAMPLE_SUFFIXES += td
 endif
 if ENABLE_DOUBLE
 else

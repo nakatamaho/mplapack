@@ -1,0 +1,153 @@
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt gemm NN 128,256,512,1024,2048 --label mpfr512
+# mpfr512 gemm NN: data for n <= 2048 in 4.2 s
+# exit 0, 96.2 s
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt gemm_update NN 128,256,512,1024,2048 --label mpfr512
+# mpfr512 gemm_update NN: data for n <= 2048 in 1.8 s
+# exit 0, 11.2 s
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt syrk LN 128,256,512,1024,2048 --label mpfr512
+# mpfr512 syrk LN: data for n <= 2048 in 3.1 s
+# exit 0, 57.3 s
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt syrk LN_k64 128,256,512,1024,2048 --label mpfr512
+# mpfr512 syrk LN_k64: data for n <= 2048 in 1.7 s
+# exit 0, 7.2 s
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt trsm LLNU 128,256,512,1024,2048 --label mpfr512
+# mpfr512 trsm LLNU: data for n <= 2048 in 5.0 s
+# exit 0, 50.2 s
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt trsm RLTN_p64 128,256,512,1024,2048 --label mpfr512
+# mpfr512 trsm RLTN_p64: data for n <= 2048 in 0.1 s
+# exit 0, 0.6 s
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt getrf2 P64 128,256,512,1024,2048 --label mpfr512
+# mpfr512 getrf2 P64: data for n <= 2048 in 0.1 s
+# exit 0, 1.1 s
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt gemm NT 128,256,512,1024,2048 --label mpfr512
+# mpfr512 gemm NT: data for n <= 2048 in 4.0 s
+# exit 0, 92.6 s
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt gemm TN 128,256,512,1024,2048 --label mpfr512
+# mpfr512 gemm TN: data for n <= 2048 in 4.0 s
+# exit 0, 93.6 s
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt syrk UT 128,256,512,1024,2048 --label mpfr512
+# mpfr512 syrk UT: data for n <= 2048 in 2.9 s
+# exit 0, 38.2 s
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt syrk UT_k64 128,256,512,1024,2048 --label mpfr512
+# mpfr512 syrk UT_k64: data for n <= 2048 in 1.7 s
+# exit 0, 5.9 s
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt trsm RLTN 128,256,512,1024,2048 --label mpfr512
+# mpfr512 trsm RLTN: data for n <= 2048 in 5.0 s
+# exit 0, 110.2 s
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt trsm LUTN 128,256,512,1024,2048 --label mpfr512
+# mpfr512 trsm LUTN: data for n <= 2048 in 5.0 s
+# exit 0, 39.3 s
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt trsm LUNN 128,256,512,1024,2048 --label mpfr512
+# mpfr512 trsm LUNN: data for n <= 2048 in 5.0 s
+# exit 0, 47.6 s
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt trsm LLNU_p64 128,256,512,1024,2048 --label mpfr512
+# mpfr512 trsm LLNU_p64: data for n <= 2048 in 0.1 s
+# exit 0, 0.3 s
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt trsm LUTN_p64 128,256,512,1024,2048 --label mpfr512
+# mpfr512 trsm LUTN_p64: data for n <= 2048 in 0.1 s
+# exit 0, 0.3 s
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt trsm LUNN_p64 128,256,512,1024,2048 --label mpfr512
+# mpfr512 trsm LUNN_p64: data for n <= 2048 in 0.1 s
+# exit 0, 0.3 s
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt potrf2 L 64,256 --label mpfr512
+# mpfr512 potrf2 L: data for n <= 256 in 0.0 s
+# exit 0, 0.3 s
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt laswp R64 128,256,512,1024,2048 --label mpfr512
+# mpfr512 laswp R64: data for n <= 2048 in 1.6 s
+# exit 0, 2.3 s
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt trtri UN 128,256,512,1024,2048 --label mpfr512
+# mpfr512 trtri UN: data for n <= 2048 in 3.7 s
+# exit 0, 133.1 s
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt lauum L 128,256,512,1024,2048 --label mpfr512
+# mpfr512 lauum L: data for n <= 2048 in 3.8 s
+# exit 0, 43.7 s
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt cgemm NN 128,256,512,1024,2048 --label mpfr512
+# mpfr512 cgemm NN: data for n <= 2048 in 10.1 s
+# exit 0, 308.8 s
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt cgemm NC 128,256,512,1024,2048 --label mpfr512
+# mpfr512 cgemm NC: data for n <= 2048 in 10.1 s
+# exit 0, 307.9 s
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt cherk LN 128,256,512,1024,2048 --label mpfr512
+# mpfr512 cherk LN: data for n <= 2048 in 6.9 s
+# exit 0, 150.4 s
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt cherk LN_k64 128,256,512,1024,2048 --label mpfr512
+# mpfr512 cherk LN_k64: data for n <= 2048 in 3.9 s
+# exit 0, 20.9 s
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt ctrsm LLNU 128,256,512,1024,2048 --label mpfr512
+# mpfr512 ctrsm LLNU: data for n <= 2048 in 10.9 s
+# exit 0, 161.4 s
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt ctrsm RLCN_p64 128,256,512,1024,2048 --label mpfr512
+# mpfr512 ctrsm RLCN_p64: data for n <= 2048 in 0.1 s
+# exit 0, 1.2 s
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt gemm NN 64,200 --label mpfr512 --reps 1 --warmup 0 --dump /home/docker/mplapack-acceralation/benchmark/results/2026/x86_64-pc-linux-gnu-Ryzen-Threadripper-3970X-TeslaA100/kernel-bench/dumps --dump-sizes 64,200
+# mpfr512 gemm NN: data for n <= 200 in 0.0 s
+# exit 0, 0.2 s
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt gemm NT 64,200 --label mpfr512 --reps 1 --warmup 0 --dump /home/docker/mplapack-acceralation/benchmark/results/2026/x86_64-pc-linux-gnu-Ryzen-Threadripper-3970X-TeslaA100/kernel-bench/dumps --dump-sizes 64,200
+# mpfr512 gemm NT: data for n <= 200 in 0.0 s
+# exit 0, 0.2 s
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt gemm TN 64,200 --label mpfr512 --reps 1 --warmup 0 --dump /home/docker/mplapack-acceralation/benchmark/results/2026/x86_64-pc-linux-gnu-Ryzen-Threadripper-3970X-TeslaA100/kernel-bench/dumps --dump-sizes 64,200
+# mpfr512 gemm TN: data for n <= 200 in 0.0 s
+# exit 0, 0.2 s
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt gemm_update NN 64,200 --label mpfr512 --reps 1 --warmup 0 --dump /home/docker/mplapack-acceralation/benchmark/results/2026/x86_64-pc-linux-gnu-Ryzen-Threadripper-3970X-TeslaA100/kernel-bench/dumps --dump-sizes 64,200
+# mpfr512 gemm_update NN: data for n <= 200 in 0.0 s
+# exit 0, 0.1 s
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt syrk LN 64,200 --label mpfr512 --reps 1 --warmup 0 --dump /home/docker/mplapack-acceralation/benchmark/results/2026/x86_64-pc-linux-gnu-Ryzen-Threadripper-3970X-TeslaA100/kernel-bench/dumps --dump-sizes 64,200
+# mpfr512 syrk LN: data for n <= 200 in 0.0 s
+# exit 0, 0.4 s
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt syrk UT 64,200 --label mpfr512 --reps 1 --warmup 0 --dump /home/docker/mplapack-acceralation/benchmark/results/2026/x86_64-pc-linux-gnu-Ryzen-Threadripper-3970X-TeslaA100/kernel-bench/dumps --dump-sizes 64,200
+# mpfr512 syrk UT: data for n <= 200 in 0.0 s
+# exit 0, 0.1 s
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt syrk LN_k64 64,200 --label mpfr512 --reps 1 --warmup 0 --dump /home/docker/mplapack-acceralation/benchmark/results/2026/x86_64-pc-linux-gnu-Ryzen-Threadripper-3970X-TeslaA100/kernel-bench/dumps --dump-sizes 64,200
+# mpfr512 syrk LN_k64: data for n <= 200 in 0.0 s
+# exit 0, 0.1 s
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt syrk UT_k64 64,200 --label mpfr512 --reps 1 --warmup 0 --dump /home/docker/mplapack-acceralation/benchmark/results/2026/x86_64-pc-linux-gnu-Ryzen-Threadripper-3970X-TeslaA100/kernel-bench/dumps --dump-sizes 64,200
+# mpfr512 syrk UT_k64: data for n <= 200 in 0.0 s
+# exit 0, 0.1 s
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt trsm LLNU 64,200 --label mpfr512 --reps 1 --warmup 0 --dump /home/docker/mplapack-acceralation/benchmark/results/2026/x86_64-pc-linux-gnu-Ryzen-Threadripper-3970X-TeslaA100/kernel-bench/dumps --dump-sizes 64,200
+# mpfr512 trsm LLNU: data for n <= 200 in 0.0 s
+# exit 0, 0.1 s
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt trsm RLTN 64,200 --label mpfr512 --reps 1 --warmup 0 --dump /home/docker/mplapack-acceralation/benchmark/results/2026/x86_64-pc-linux-gnu-Ryzen-Threadripper-3970X-TeslaA100/kernel-bench/dumps --dump-sizes 64,200
+# mpfr512 trsm RLTN: data for n <= 200 in 0.0 s
+# exit 0, 0.2 s
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt trsm LUTN 64,200 --label mpfr512 --reps 1 --warmup 0 --dump /home/docker/mplapack-acceralation/benchmark/results/2026/x86_64-pc-linux-gnu-Ryzen-Threadripper-3970X-TeslaA100/kernel-bench/dumps --dump-sizes 64,200
+# mpfr512 trsm LUTN: data for n <= 200 in 0.0 s
+# exit 0, 0.1 s
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt trsm LUNN 64,200 --label mpfr512 --reps 1 --warmup 0 --dump /home/docker/mplapack-acceralation/benchmark/results/2026/x86_64-pc-linux-gnu-Ryzen-Threadripper-3970X-TeslaA100/kernel-bench/dumps --dump-sizes 64,200
+# mpfr512 trsm LUNN: data for n <= 200 in 0.0 s
+# exit 0, 0.1 s
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt trsm LLNU_p64 64,200 --label mpfr512 --reps 1 --warmup 0 --dump /home/docker/mplapack-acceralation/benchmark/results/2026/x86_64-pc-linux-gnu-Ryzen-Threadripper-3970X-TeslaA100/kernel-bench/dumps --dump-sizes 64,200
+# mpfr512 trsm LLNU_p64: data for n <= 200 in 0.0 s
+# exit 0, 0.1 s
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt trsm RLTN_p64 64,200 --label mpfr512 --reps 1 --warmup 0 --dump /home/docker/mplapack-acceralation/benchmark/results/2026/x86_64-pc-linux-gnu-Ryzen-Threadripper-3970X-TeslaA100/kernel-bench/dumps --dump-sizes 64,200
+# mpfr512 trsm RLTN_p64: data for n <= 200 in 0.0 s
+# exit 0, 0.1 s
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt trsm LUTN_p64 64,200 --label mpfr512 --reps 1 --warmup 0 --dump /home/docker/mplapack-acceralation/benchmark/results/2026/x86_64-pc-linux-gnu-Ryzen-Threadripper-3970X-TeslaA100/kernel-bench/dumps --dump-sizes 64,200
+# mpfr512 trsm LUTN_p64: data for n <= 200 in 0.0 s
+# exit 0, 0.1 s
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt trsm LUNN_p64 64,200 --label mpfr512 --reps 1 --warmup 0 --dump /home/docker/mplapack-acceralation/benchmark/results/2026/x86_64-pc-linux-gnu-Ryzen-Threadripper-3970X-TeslaA100/kernel-bench/dumps --dump-sizes 64,200
+# mpfr512 trsm LUNN_p64: data for n <= 200 in 0.0 s
+# exit 0, 0.1 s
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt getrf2 P64 64,200 --label mpfr512 --reps 1 --warmup 0 --dump /home/docker/mplapack-acceralation/benchmark/results/2026/x86_64-pc-linux-gnu-Ryzen-Threadripper-3970X-TeslaA100/kernel-bench/dumps --dump-sizes 64,200
+# mpfr512 getrf2 P64: data for n <= 200 in 0.0 s
+# exit 0, 0.1 s
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt potrf2 L 64,200 --label mpfr512 --reps 1 --warmup 0 --dump /home/docker/mplapack-acceralation/benchmark/results/2026/x86_64-pc-linux-gnu-Ryzen-Threadripper-3970X-TeslaA100/kernel-bench/dumps --dump-sizes 64,200
+# mpfr512 potrf2 L: data for n <= 200 in 0.0 s
+# exit 0, 0.1 s
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt cgemm NN 64,200 --label mpfr512 --reps 1 --warmup 0 --dump /home/docker/mplapack-acceralation/benchmark/results/2026/x86_64-pc-linux-gnu-Ryzen-Threadripper-3970X-TeslaA100/kernel-bench/dumps --dump-sizes 64,200
+# mpfr512 cgemm NN: data for n <= 200 in 0.1 s
+# exit 0, 0.4 s
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt cgemm NC 64,200 --label mpfr512 --reps 1 --warmup 0 --dump /home/docker/mplapack-acceralation/benchmark/results/2026/x86_64-pc-linux-gnu-Ryzen-Threadripper-3970X-TeslaA100/kernel-bench/dumps --dump-sizes 64,200
+# mpfr512 cgemm NC: data for n <= 200 in 0.1 s
+# exit 0, 0.4 s
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt cherk LN 64,200 --label mpfr512 --reps 1 --warmup 0 --dump /home/docker/mplapack-acceralation/benchmark/results/2026/x86_64-pc-linux-gnu-Ryzen-Threadripper-3970X-TeslaA100/kernel-bench/dumps --dump-sizes 64,200
+# mpfr512 cherk LN: data for n <= 200 in 0.1 s
+# exit 0, 0.3 s
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt cherk LN_k64 64,200 --label mpfr512 --reps 1 --warmup 0 --dump /home/docker/mplapack-acceralation/benchmark/results/2026/x86_64-pc-linux-gnu-Ryzen-Threadripper-3970X-TeslaA100/kernel-bench/dumps --dump-sizes 64,200
+# mpfr512 cherk LN_k64: data for n <= 200 in 0.0 s
+# exit 0, 0.2 s
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt ctrsm LLNU 64,200 --label mpfr512 --reps 1 --warmup 0 --dump /home/docker/mplapack-acceralation/benchmark/results/2026/x86_64-pc-linux-gnu-Ryzen-Threadripper-3970X-TeslaA100/kernel-bench/dumps --dump-sizes 64,200
+# mpfr512 ctrsm LLNU: data for n <= 200 in 0.1 s
+# exit 0, 0.3 s
+$ /home/docker/mplapack-acceralation/benchmark/Rkernel_bench.mpfr_opt ctrsm RLCN_p64 64,200 --label mpfr512 --reps 1 --warmup 0 --dump /home/docker/mplapack-acceralation/benchmark/results/2026/x86_64-pc-linux-gnu-Ryzen-Threadripper-3970X-TeslaA100/kernel-bench/dumps --dump-sizes 64,200
+# mpfr512 ctrsm RLCN_p64: data for n <= 200 in 0.0 s
+# exit 0, 0.1 s

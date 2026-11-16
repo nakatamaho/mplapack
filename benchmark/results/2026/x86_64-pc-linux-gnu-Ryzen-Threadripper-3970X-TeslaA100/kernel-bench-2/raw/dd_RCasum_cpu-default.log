@@ -1,0 +1,531 @@
+
+### dd_RCasum_cpu-default_1024_pilot
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt RCasum default 1024 --reps 1 --warmup 1
+OMP_NUM_THREADS=32
+dd,RCasum,inc1,1024,cpu-default,1.2333e-05,0.166058542,1
+
+exit=0, elapsed=0.004172
+
+exit receipt: 0
+
+### dd_RCasum_cpu-default_32768_pilot
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt RCasum default 32768 --reps 1 --warmup 1
+OMP_NUM_THREADS=32
+dd,RCasum,inc1,32768,cpu-default,0.000563062,0.116392156,1
+
+exit=0, elapsed=0.010480
+
+exit receipt: 0
+
+### dd_RCasum_cpu-default_1024_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt RCasum default 1024
+OMP_NUM_THREADS=32
+dd,RCasum,inc1,1024,cpu-default,1.022e-05,0.200391389,3
+
+exit=0, elapsed=0.003610
+
+exit receipt: 0
+
+### dd_RCasum_cpu-default_1280_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt RCasum default 1280
+OMP_NUM_THREADS=32
+dd,RCasum,inc1,1280,cpu-default,1.2914e-05,0.198234474,3
+
+exit=0, elapsed=0.002824
+
+exit receipt: 0
+
+### dd_RCasum_cpu-default_1536_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt RCasum default 1536
+OMP_NUM_THREADS=32
+dd,RCasum,inc1,1536,cpu-default,1.6091e-05,0.190914176,3
+
+exit=0, elapsed=0.002420
+
+exit receipt: 0
+
+### dd_RCasum_cpu-default_1792_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt RCasum default 1792
+OMP_NUM_THREADS=32
+dd,RCasum,inc1,1792,cpu-default,1.8365e-05,0.195153825,3
+
+exit=0, elapsed=0.003115
+
+exit receipt: 0
+
+### dd_RCasum_cpu-default_2048_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt RCasum default 2048
+OMP_NUM_THREADS=32
+dd,RCasum,inc1,2048,cpu-default,2.3384e-05,0.175162504,3
+
+exit=0, elapsed=0.004551
+
+exit receipt: 0
+
+### dd_RCasum_cpu-default_2560_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt RCasum default 2560
+OMP_NUM_THREADS=32
+dd,RCasum,inc1,2560,cpu-default,5.4724e-05,0.0935604123,3
+
+exit=0, elapsed=0.004468
+
+exit receipt: 0
+
+### dd_RCasum_cpu-default_3072_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt RCasum default 3072
+OMP_NUM_THREADS=32
+dd,RCasum,inc1,3072,cpu-default,3.7471e-05,0.163966801,3
+
+exit=0, elapsed=0.004283
+
+exit receipt: 0
+
+### dd_RCasum_cpu-default_3584_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt RCasum default 3584
+OMP_NUM_THREADS=32
+dd,RCasum,inc1,3584,cpu-default,4.722e-05,0.151800085,3
+
+exit=0, elapsed=0.004531
+
+exit receipt: 0
+
+### dd_RCasum_cpu-default_4096_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt RCasum default 4096
+OMP_NUM_THREADS=32
+dd,RCasum,inc1,4096,cpu-default,5.802e-05,0.141192692,3
+
+exit=0, elapsed=0.004934
+
+exit receipt: 0
+
+### dd_RCasum_cpu-default_5120_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt RCasum default 5120
+OMP_NUM_THREADS=32
+dd,RCasum,inc1,5120,cpu-default,0.000113657,0.0900956386,3
+
+exit=0, elapsed=0.004969
+
+exit receipt: 0
+
+### dd_RCasum_cpu-default_6144_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt RCasum default 6144
+OMP_NUM_THREADS=32
+dd,RCasum,inc1,6144,cpu-default,9.4399e-05,0.13017087,3
+
+exit=0, elapsed=0.005364
+
+exit receipt: 0
+
+### dd_RCasum_cpu-default_7168_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt RCasum default 7168
+OMP_NUM_THREADS=32
+dd,RCasum,inc1,7168,cpu-default,0.000165885,0.086421316,3
+
+exit=0, elapsed=0.005463
+
+exit receipt: 0
+
+### dd_RCasum_cpu-default_8192_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt RCasum default 8192
+OMP_NUM_THREADS=32
+dd,RCasum,inc1,8192,cpu-default,0.000129185,0.12682587,3
+
+exit=0, elapsed=0.005732
+
+exit receipt: 0
+
+### dd_RCasum_cpu-default_10240_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt RCasum default 10240
+OMP_NUM_THREADS=32
+dd,RCasum,inc1,10240,cpu-default,0.000165555,0.123705113,3
+
+exit=0, elapsed=0.006078
+
+exit receipt: 0
+
+### dd_RCasum_cpu-default_12288_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt RCasum default 12288
+OMP_NUM_THREADS=32
+dd,RCasum,inc1,12288,cpu-default,0.000198858,0.123585674,3
+
+exit=0, elapsed=0.006629
+
+exit receipt: 0
+
+### dd_RCasum_cpu-default_14336_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt RCasum default 14336
+OMP_NUM_THREADS=32
+dd,RCasum,inc1,14336,cpu-default,0.00023144,0.12388524,3
+
+exit=0, elapsed=0.006641
+
+exit receipt: 0
+
+### dd_RCasum_cpu-default_16384_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt RCasum default 16384
+OMP_NUM_THREADS=32
+dd,RCasum,inc1,16384,cpu-default,0.000206353,0.15879585,3
+
+exit=0, elapsed=0.008766
+
+exit receipt: 0
+
+### dd_RCasum_cpu-default_20480_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt RCasum default 20480
+OMP_NUM_THREADS=32
+dd,RCasum,inc1,20480,cpu-default,0.000250656,0.163411209,3
+
+exit=0, elapsed=0.010063
+
+exit receipt: 0
+
+### dd_RCasum_cpu-default_24576_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt RCasum default 24576
+OMP_NUM_THREADS=32
+dd,RCasum,inc1,24576,cpu-default,0.000288278,0.170502085,3
+
+exit=0, elapsed=0.009436
+
+exit receipt: 0
+
+### dd_RCasum_cpu-default_28672_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt RCasum default 28672
+OMP_NUM_THREADS=32
+dd,RCasum,inc1,28672,cpu-default,0.000324437,0.176749261,3
+
+exit=0, elapsed=0.009880
+
+exit receipt: 0
+
+### dd_RCasum_cpu-default_32768_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt RCasum default 32768
+OMP_NUM_THREADS=32
+dd,RCasum,inc1,32768,cpu-default,0.000364673,0.179711687,3
+
+exit=0, elapsed=0.011382
+
+exit receipt: 0
+
+### dd_RCasum_cpu-default_40960_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt RCasum default 40960
+OMP_NUM_THREADS=32
+dd,RCasum,inc1,40960,cpu-default,0.000432913,0.189229707,3
+
+exit=0, elapsed=0.012551
+
+exit receipt: 0
+
+### dd_RCasum_cpu-default_49152_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt RCasum default 49152
+OMP_NUM_THREADS=32
+dd,RCasum,inc1,49152,cpu-default,0.000506703,0.19400714,3
+
+exit=0, elapsed=0.012522
+
+exit receipt: 0
+
+### dd_RCasum_cpu-default_57344_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt RCasum default 57344
+OMP_NUM_THREADS=32
+dd,RCasum,inc1,57344,cpu-default,0.000581125,0.19735513,3
+
+exit=0, elapsed=0.016990
+
+exit receipt: 0
+
+### dd_RCasum_cpu-default_65536_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt RCasum default 65536
+OMP_NUM_THREADS=32
+dd,RCasum,inc1,65536,cpu-default,0.000654384,0.200298296,3
+
+exit=0, elapsed=0.015623
+
+exit receipt: 0
+
+### dd_RCasum_cpu-default_81920_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt RCasum default 81920
+OMP_NUM_THREADS=32
+dd,RCasum,inc1,81920,cpu-default,0.000800441,0.204687166,3
+
+exit=0, elapsed=0.017945
+
+exit receipt: 0
+
+### dd_RCasum_cpu-default_98304_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt RCasum default 98304
+OMP_NUM_THREADS=32
+dd,RCasum,inc1,98304,cpu-default,0.000956709,0.205504495,3
+
+exit=0, elapsed=0.021471
+
+exit receipt: 0
+
+### dd_RCasum_cpu-default_114688_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt RCasum default 114688
+OMP_NUM_THREADS=32
+dd,RCasum,inc1,114688,cpu-default,0.00111019,0.206609679,3
+
+exit=0, elapsed=0.026028
+
+exit receipt: 0
+
+### dd_RCasum_cpu-default_131072_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt RCasum default 131072
+OMP_NUM_THREADS=32
+dd,RCasum,inc1,131072,cpu-default,0.001254975,0.208883842,3
+
+exit=0, elapsed=0.029217
+
+exit receipt: 0
+
+### dd_RCasum_cpu-default_163840_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt RCasum default 163840
+OMP_NUM_THREADS=32
+dd,RCasum,inc1,163840,cpu-default,0.001539947,0.212786544,3
+
+exit=0, elapsed=0.032561
+
+exit receipt: 0
+
+### dd_RCasum_cpu-default_196608_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt RCasum default 196608
+OMP_NUM_THREADS=32
+dd,RCasum,inc1,196608,cpu-default,0.001874012,0.209825764,3
+
+exit=0, elapsed=0.040989
+
+exit receipt: 0
+
+### dd_RCasum_cpu-default_229376_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt RCasum default 229376
+OMP_NUM_THREADS=32
+dd,RCasum,inc1,229376,cpu-default,0.002164956,0.211898995,3
+
+exit=0, elapsed=0.044302
+
+exit receipt: 0
+
+### dd_RCasum_cpu-default_262144_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt RCasum default 262144
+OMP_NUM_THREADS=32
+dd,RCasum,inc1,262144,cpu-default,0.00243592,0.215232027,3
+
+exit=0, elapsed=0.050862
+
+exit receipt: 0
+
+### dd_RCasum_cpu-default_327680_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt RCasum default 327680
+OMP_NUM_THREADS=32
+dd,RCasum,inc1,327680,cpu-default,0.003066139,0.213741125,3
+
+exit=0, elapsed=0.063144
+
+exit receipt: 0
+
+### dd_RCasum_cpu-default_393216_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt RCasum default 393216
+OMP_NUM_THREADS=32
+dd,RCasum,inc1,393216,cpu-default,0.003583613,0.219452268,3
+
+exit=0, elapsed=0.074747
+
+exit receipt: 0
+
+### dd_RCasum_cpu-default_458752_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt RCasum default 458752
+OMP_NUM_THREADS=32
+dd,RCasum,inc1,458752,cpu-default,0.004194404,0.218744785,3
+
+exit=0, elapsed=0.081636
+
+exit receipt: 0
+
+### dd_RCasum_cpu-default_524288_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt RCasum default 524288
+OMP_NUM_THREADS=32
+dd,RCasum,inc1,524288,cpu-default,0.004747746,0.220857645,3
+
+exit=0, elapsed=0.095862
+
+exit receipt: 0
+
+### dd_RCasum_cpu-default_655360_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt RCasum default 655360
+OMP_NUM_THREADS=32
+dd,RCasum,inc1,655360,cpu-default,0.005861785,0.223604243,3
+
+exit=0, elapsed=0.119512
+
+exit receipt: 0
+
+### dd_RCasum_cpu-default_786432_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt RCasum default 786432
+OMP_NUM_THREADS=32
+dd,RCasum,inc1,786432,cpu-default,0.007171374,0.219325334,3
+
+exit=0, elapsed=0.141293
+
+exit receipt: 0
+
+### dd_RCasum_cpu-default_917504_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt RCasum default 917504
+OMP_NUM_THREADS=32
+dd,RCasum,inc1,917504,cpu-default,0.008726962,0.21026882,3
+
+exit=0, elapsed=0.165161
+
+exit receipt: 0
+
+### dd_RCasum_cpu-default_1048576_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt RCasum default 1048576
+OMP_NUM_THREADS=32
+dd,RCasum,inc1,1048576,cpu-default,0.010059665,0.208471356,3
+
+exit=0, elapsed=0.194322
+
+exit receipt: 0
+
+### dd_RCasum_cpu-default_1310720_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt RCasum default 1310720
+OMP_NUM_THREADS=32
+dd,RCasum,inc1,1310720,cpu-default,0.012714813,0.206172124,3
+
+exit=0, elapsed=0.237465
+
+exit receipt: 0
+
+### dd_RCasum_cpu-default_1572864_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt RCasum default 1572864
+OMP_NUM_THREADS=32
+dd,RCasum,inc1,1572864,cpu-default,0.014897051,0.211164478,3
+
+exit=0, elapsed=0.290696
+
+exit receipt: 0
+
+### dd_RCasum_cpu-default_1835008_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt RCasum default 1835008
+OMP_NUM_THREADS=32
+dd,RCasum,inc1,1835008,cpu-default,0.017432392,0.210528538,3
+
+exit=0, elapsed=0.325230
+
+exit receipt: 0
+
+### dd_RCasum_cpu-default_2097152_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt RCasum default 2097152
+OMP_NUM_THREADS=32
+dd,RCasum,inc1,2097152,cpu-default,0.036153724,0.116013056,3
+
+exit=0, elapsed=0.405708
+
+exit receipt: 0
+
+### dd_RCasum_cpu-default_2621440_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt RCasum default 2621440
+OMP_NUM_THREADS=32
+dd,RCasum,inc1,2621440,cpu-default,0.047504504,0.110365956,1
+
+exit=0, elapsed=0.370112
+
+exit receipt: 0
+
+### dd_RCasum_cpu-default_3145728_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt RCasum default 3145728
+OMP_NUM_THREADS=32
+dd,RCasum,inc1,3145728,cpu-default,0.056105275,0.112136622,1
+
+exit=0, elapsed=0.436921
+
+exit receipt: 0
+
+### dd_RCasum_cpu-default_3670016_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt RCasum default 3670016
+OMP_NUM_THREADS=32
+dd,RCasum,inc1,3670016,cpu-default,0.06363527,0.115345342,1
+
+exit=0, elapsed=0.500604
+
+exit receipt: 0
+
+### dd_RCasum_cpu-default_4194304_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt RCasum default 4194304
+OMP_NUM_THREADS=32
+dd,RCasum,inc1,4194304,cpu-default,0.07347653,0.114167177,1
+
+exit=0, elapsed=0.576221
+
+exit receipt: 0
+
+### dd_RCasum_cpu-default_5242880_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt RCasum default 5242880
+OMP_NUM_THREADS=32
+dd,RCasum,inc1,5242880,cpu-default,0.089534238,0.117114528,1
+
+exit=0, elapsed=0.718217
+
+exit receipt: 0
+
+### dd_RCasum_cpu-default_6291456_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt RCasum default 6291456
+OMP_NUM_THREADS=32
+dd,RCasum,inc1,6291456,cpu-default,0.10483155,0.120029819,1
+
+exit=0, elapsed=0.837116
+
+exit receipt: 0
+
+### dd_RCasum_cpu-default_7340032_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt RCasum default 7340032
+OMP_NUM_THREADS=32
+dd,RCasum,inc1,7340032,cpu-default,0.121843452,0.120482995,1
+
+exit=0, elapsed=0.983646
+
+exit receipt: 0
+
+### dd_RCasum_cpu-default_8388608_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt RCasum default 8388608
+OMP_NUM_THREADS=32
+dd,RCasum,inc1,8388608,cpu-default,0.139630838,0.120154088,1
+
+exit=0, elapsed=1.144923
+
+exit receipt: 0
+
+### dd_RCasum_cpu-default_10485760_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt RCasum default 10485760
+OMP_NUM_THREADS=32
+dd,RCasum,inc1,10485760,cpu-default,0.176971408,0.118502306,1
+
+exit=0, elapsed=1.448877
+
+exit receipt: 0
+
+### dd_RCasum_cpu-default_12582912_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt RCasum default 12582912
+OMP_NUM_THREADS=32
+dd,RCasum,inc1,12582912,cpu-default,0.20751785,0.121270647,1
+
+exit=0, elapsed=1.727589
+
+exit receipt: 0
+
+### dd_RCasum_cpu-default_14680064_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt RCasum default 14680064
+OMP_NUM_THREADS=32
+dd,RCasum,inc1,14680064,cpu-default,0.241160798,0.121745028,1
+
+exit=0, elapsed=2.001488
+
+exit receipt: 0
+
+### dd_RCasum_cpu-default_16777216_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt RCasum default 16777216
+OMP_NUM_THREADS=32
+dd,RCasum,inc1,16777216,cpu-default,0.279724472,0.119955297,1
+
+exit=0, elapsed=2.303571
+
+exit receipt: 0

@@ -2,7 +2,7 @@
 set -u
 
 script_dir=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
-backends="mpfr gmp binary128 binary80 double dd qd"
+backends="mpfr gmp binary128 binary80 double dd td qd"
 passed=0
 failed=0
 skipped=0

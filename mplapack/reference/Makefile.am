@@ -11,6 +11,9 @@ endif
 if ENABLE_DD
 lib_LTLIBRARIES += libmplapack_dd.la
 endif
+if ENABLE_TD
+lib_LTLIBRARIES += libmplapack_td.la
+endif
 
 if ENABLE_QD
 lib_LTLIBRARIES += libmplapack_qd.la
@@ -80,6 +83,19 @@ libmplapack_dd_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif
 if IS_MINGW
 libmplapack_dd_la_LDFLAGS += -no-undefined
+endif
+endif
+if ENABLE_TD
+libmplapack_td_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) -DMPLAPACK_BUILD_WITH_TD
+libmplapack_td_la_SOURCES = $(MPLAPACK_SOURCES) $(MPBLAS_REFERENCE_SOURCES)
+libmplapack_td_la_LIBADD = $(QD_LIBADD)
+libmplapack_td_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO) -Wl,-rpath,$(libdir)
+libmplapack_td_la_CXXFLAGS = $(DD_CXXFLAGS)
+if IS_MACOS
+libmplapack_td_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
+endif
+if IS_MINGW
+libmplapack_td_la_LDFLAGS += -no-undefined
 endif
 endif
 

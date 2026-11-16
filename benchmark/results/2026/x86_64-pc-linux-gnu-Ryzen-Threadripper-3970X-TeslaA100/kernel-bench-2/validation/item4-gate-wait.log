@@ -1,0 +1,51 @@
+2026-11-04T22:12:09+09:00
+marker absent; sleep120, no GPU execution
+2026-11-04T22:14:09+09:00
+marker still absent
+ 22:14:09 up 15 days,  8:39,  0 users,  load average: 4.33, 3.54, 2.97
+2026-11-04T22:17:36+09:00
+ 22:17:36 up 15 days,  8:43,  0 users,  load average: 5.64, 4.40, 3.41
+1954956, /home/docker/mplapack-acceralation/benchmark/.libs/Rkernel_bench.mpfr_cuda_kernel
+nvidia_query_exit=0
+marker absent: no GPU test/timing; sleep120
+2026-11-04T22:19:37+09:00
+marker_test_exit=1
+2026-11-04T22:21:30+09:00
+marker_test_exit=1
+Waiting120 while CPU-only measurements continue; no GPU tests or timing
+2026-11-04T22:23:30+09:00
+marker_test_exit=1
+ 22:23:30 up 15 days,  8:49,  0 users,  load average: 5.41, 6.10, 4.63
+2026-11-04T22:28:52+09:00
+marker_test_exit=1
+Implementation complete; waiting120; CPU sweep only
+2026-11-04T22:30:52+09:00
+marker_test_exit=1
+ 22:30:52 up 15 days,  8:56,  0 users,  load average: 3.06, 3.99, 4.18
+2026-11-04T22:35:09+09:00
+marker_test_exit=1
+sleep120; GPU execution remains prohibited
+2026-11-04T22:37:09+09:00
+marker_test_exit=1
+ 22:37:09 up 15 days,  9:02,  0 users,  load average: 2.65, 3.71, 4.07
+2026-11-04T22:38:09+09:00
+marker absent; no GPU execution
+ 22:38:09 up 15 days,  9:03,  0 users,  load average: 2.49, 3.47, 3.96
+sleep120
+2026-11-04T22:40:09+09:00
+marker absent; no GPU execution
+ 22:40:09 up 15 days,  9:05,  0 users,  load average: 2.28, 3.07, 3.75
+sleep120
+2026-11-04T22:42:09+09:00
+marker absent; no GPU execution
+ 22:42:09 up 15 days,  9:07,  0 users,  load average: 2.48, 2.87, 3.59
+sleep120
+2026-11-04T22:44:09+09:00
+marker absent; no GPU execution
+ 22:44:09 up 15 days,  9:09,  0 users,  load average: 3.20, 3.10, 3.59
+sleep120
+2026-11-04T22:46:09+09:00
+2026-11-04T22:46:28+09:00
+2065358, /home/docker/mplapack-acceralation/benchmark/.libs/Rkernel_bench.mpfr_cuda_kernel
+exit=0
+ 22:46:28 up 15 days,  9:12,  0 users,  load average: 3.50, 3.12, 3.52

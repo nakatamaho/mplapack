@@ -1,0 +1,114 @@
+#!/bin/sh
+# go.Rgemm_algo.sh — CPU Rgemm algorithms of the dd, td, qd and binary128 optimized libraries
+# %%CPU_OS_DETECTION_SH%% and %%CC_TAG%% are replaced:
+#   - at "make" time   : builddir paths
+#   - at "make install": installed paths
+# Never edit the installed copy; edit go.Rgemm_algo.sh.in instead.
+
+TIMEOUT=7200
+
+# ---------------------------------------------------------------------------
+# Self-location: works both in builddir and after install
+# ---------------------------------------------------------------------------
+SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
+
+# ---------------------------------------------------------------------------
+# Platform detection (one call for OUTDIR and MODELNAME)
+# Field 1: directory-safe CPU tag   (e.g. Ryzen_Threadripper_3970X)
+# Field 2: OS identifier            (e.g. ubuntu2204)
+# Field 3: human-readable CPU name  (e.g. AMD Ryzen Threadripper 3970X)
+# ---------------------------------------------------------------------------
+_DETECTION=$(sh "%%CPU_OS_DETECTION_SH%%")
+_CPU_NORM=$(printf '%s' "${_DETECTION}" | cut -d'|' -f1)
+_OS_ID=$(   printf '%s' "${_DETECTION}" | cut -d'|' -f2)
+MODELNAME=$( printf '%s' "${_DETECTION}" | cut -d'|' -f3)
+MODELNAME="${MODELNAME:-unknown}"
+
+CC_TAG="%%CC_TAG%%"
+OUTDIR="${_CPU_NORM}-${_OS_ID}-${CC_TAG}"
+OUTPATH="${SCRIPT_DIR}/results/${OUTDIR}"
+mkdir -p "${OUTPATH}"
+
+# ---------------------------------------------------------------------------
+# Library path prefix (macOS vs Linux)
+# ---------------------------------------------------------------------------
+if [ "$(uname)" = "Darwin" ]; then
+    LDPATHPREFIX="DYLD_LIBRARY_PATH=%%PREFIX%%/lib"
+    SED=gsed
+else
+    LDPATHPREFIX="LD_LIBRARY_PATH=%%PREFIX%%/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+    SED=sed
+fi
+
+# ---------------------------------------------------------------------------
+# Helper: run one binary, save log under OUTPATH
+# ---------------------------------------------------------------------------
+run_bench() {
+    _bin="${SCRIPT_DIR}/$1"; shift
+    _log="${OUTPATH}/log.$(basename "${_bin}")"
+    if [ ! -x "${_bin}" ]; then
+        echo "SKIP (not found): ${_bin}" >&2
+        return 0
+    fi
+    echo "RUN: ${_bin} $*"
+    env ${LDPATHPREFIX} timeout ${TIMEOUT} "${_bin}" "$@" > "${_log}" 2>&1
+}
+
+
+# ---------------------------------------------------------------------------
+# Helper: run one binary with extra environment variables (algorithm
+# selection), save log under OUTPATH as log.<binary>.<tag>
+# ---------------------------------------------------------------------------
+run_variant() {
+    _tag="$1"; _vars="$2"; _bin="${SCRIPT_DIR}/$3"; shift 3
+    _log="${OUTPATH}/log.$(basename "${_bin}").${_tag}"
+    if [ ! -x "${_bin}" ]; then
+        echo "SKIP (not found): ${_bin}" >&2
+        return 0
+    fi
+    echo "RUN: ${_vars} ${_bin} $*"
+    env ${LDPATHPREFIX} ${_vars} timeout ${TIMEOUT} "${_bin}" "$@" > "${_log}" 2>&1
+}
+
+# ---------------------------------------------------------------------------
+# Rgemm algorithms of libmplapack_{dd,td,qd,binary128}_opt
+# (mpblas/optimized/common/README.md), selected by environment variables:
+#   blocked  : default; cache-blocked OpenMP (+ AVX2 BF kernels for dd, td,
+#              qd), bit-identical
+#   former   : <P>_GEMM_BLOCKED=0, the plain OpenMP loops
+#   winograd : <P>_GEMM_WINOGRAD_CUTOFF=N
+#   ozaki    : <P>_GEMM_OZAKI=1
+# Sizes: m = n = k = 16, 32, ..., 1024 (dd) and 8, 16, ..., 512 (td, qd,
+# binary128).
+# ---------------------------------------------------------------------------
+DDSIZES="-M 16 -N 16 -K 16 -STEPM 16 -STEPN 16 -STEPK 16 -TOTALSTEPS 64 -NOCHECK"
+SIZES="-M 8 -N 8 -K 8 -STEPM 8 -STEPN 8 -STEPK 8 -TOTALSTEPS 64 -NOCHECK"
+
+run_variant blocked  ""                                  Rgemm.dd_opt ${DDSIZES}
+run_variant former   "MPLAPACK_DD_GEMM_BLOCKED=0"         Rgemm.dd_opt ${DDSIZES}
+run_variant winograd "MPLAPACK_DD_GEMM_WINOGRAD_CUTOFF=256" Rgemm.dd_opt ${DDSIZES}
+run_variant ozaki    "MPLAPACK_DD_GEMM_OZAKI=1"           Rgemm.dd_opt ${DDSIZES}
+
+run_variant blocked  ""                                  Rgemm.td_opt ${SIZES}
+run_variant former   "MPLAPACK_TD_GEMM_BLOCKED=0"         Rgemm.td_opt ${SIZES}
+run_variant winograd "MPLAPACK_TD_GEMM_WINOGRAD_CUTOFF=64" Rgemm.td_opt ${SIZES}
+run_variant ozaki    "MPLAPACK_TD_GEMM_OZAKI=1"           Rgemm.td_opt ${SIZES}
+
+run_variant blocked  ""                                  Rgemm.qd_opt ${SIZES}
+run_variant former   "MPLAPACK_QD_GEMM_BLOCKED=0"         Rgemm.qd_opt ${SIZES}
+run_variant winograd "MPLAPACK_QD_GEMM_WINOGRAD_CUTOFF=64" Rgemm.qd_opt ${SIZES}
+run_variant ozaki    "MPLAPACK_QD_GEMM_OZAKI=1"           Rgemm.qd_opt ${SIZES}
+
+run_variant blocked  ""                                         Rgemm.binary128_opt ${SIZES}
+run_variant former   "MPLAPACK_BINARY128_GEMM_BLOCKED=0"         Rgemm.binary128_opt ${SIZES}
+run_variant winograd "MPLAPACK_BINARY128_GEMM_WINOGRAD_CUTOFF=64" Rgemm.binary128_opt ${SIZES}
+run_variant ozaki    "MPLAPACK_BINARY128_GEMM_OZAKI=1"           Rgemm.binary128_opt ${SIZES}
+
+# ---------------------------------------------------------------------------
+# Generate gnuplot script, render PDF (one page per type)
+# ---------------------------------------------------------------------------
+$SED -e "s/%%MODELNAME%%/${MODELNAME}/g" -e "s/%%GPU%%/${GPUNAME:-GPU}/g" \
+    "${SCRIPT_DIR}/Rgemm_algo.plt.in" > "${OUTPATH}/Rgemm_algo.plt"
+(cd "${OUTPATH}" && gnuplot "Rgemm_algo.plt" > "Rgemm_algo.pdf")
+
+echo "Done. Results: ${OUTPATH}"

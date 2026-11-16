@@ -1,7 +1,9 @@
 # FindQD.cmake — locate the QD library (double-double / quad-double).
 #
 # QD ships a qd_real.h under a qd/ subdirectory and a libqd. Some installs
-# also provide a qd.pc; we use it as a hint when present.
+# also provide a qd.pc; we use it as a hint when present.  QD_VERSION is the
+# libQD3 version, taken from QD3ConfigVersion.cmake or a matching qd.pc; it is
+# left empty for the original QD distribution, which MPLAPACK cannot use.
 #
 # Provides imported target QD::QD and variables
 # QD_FOUND, QD_INCLUDE_DIRS, QD_LIBRARIES, QD_VERSION.
@@ -18,8 +20,6 @@ find_path(QD_INCLUDE_DIR
 find_library(QD_LIBRARY
   NAMES qd
   HINTS ${PC_QD_LIBDIR} ${PC_QD_LIBRARY_DIRS})
-
-set(QD_VERSION ${PC_QD_VERSION})
 
 # Do not use a host qd.pc for a different custom QD library selected by the
 # caller.  If the selected library has no matching pkg-config metadata, the
@@ -44,10 +44,43 @@ if(PC_QD_FOUND)
   endif()
 endif()
 
+# libQD3 installs a CMake package version file next to the selected library;
+# prefer it to qd.pc, which may describe another installation.
+set(QD_VERSION "")
+if(QD_LIBRARY)
+  get_filename_component(_qd_selected_libdir "${QD_LIBRARY}" DIRECTORY)
+  set(_qd_version_file "${_qd_selected_libdir}/cmake/QD3/QD3ConfigVersion.cmake")
+  if(EXISTS "${_qd_version_file}")
+    file(STRINGS "${_qd_version_file}" _qd_version_line
+      REGEX "^set\\(PACKAGE_VERSION \"[^\"]+\"\\)")
+    if(_qd_version_line MATCHES "^set\\(PACKAGE_VERSION \"([^\"]+)\"\\)")
+      set(QD_VERSION "${CMAKE_MATCH_1}")
+    endif()
+  endif()
+endif()
+if(NOT QD_VERSION AND QD_PKGCONFIG_FOUND)
+  set(QD_VERSION "${PC_QD_VERSION}")
+endif()
+
+# The original QD distribution (2.3.x) has no qd/dd_complex.h.  Its version
+# numbers are larger than libQD3's, so they must not satisfy a version request.
+set(_qd_failure_message "")
+if(QD_INCLUDE_DIR AND NOT EXISTS "${QD_INCLUDE_DIR}/qd/dd_complex.h")
+  set(QD_VERSION "")
+  string(CONCAT _qd_failure_message
+    "${QD_INCLUDE_DIR}/qd is not libQD3 (qd/dd_complex.h is missing). "
+    "MPLAPACK needs libQD3 from https://github.com/nakatamaho/libQD3")
+elseif(QD_LIBRARY AND NOT QD_VERSION)
+  string(CONCAT _qd_failure_message
+    "cannot determine the libQD3 version: neither QD3ConfigVersion.cmake "
+    "next to ${QD_LIBRARY} nor a matching qd.pc was found")
+endif()
+
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(QD
   REQUIRED_VARS QD_LIBRARY QD_INCLUDE_DIR
-  VERSION_VAR QD_VERSION)
+  VERSION_VAR QD_VERSION
+  REASON_FAILURE_MESSAGE "${_qd_failure_message}")
 
 if(QD_FOUND)
   set(QD_INCLUDE_DIRS ${QD_INCLUDE_DIR})

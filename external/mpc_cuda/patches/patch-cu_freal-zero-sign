@@ -1,0 +1,48 @@
+From: MPLAPACK maintainers
+Subject: [PATCH] Canonical +0 for cu_freal zero arithmetic results
+
+Rebased to mpc_cuda v0.0.2-dev (0f219b0); the change is identical to the one
+proposed against abd9407. cu_freal has no signed zero. Handle both zero
+inputs before returning operands, do not negate a zero subtrahend, and
+canonicalize zero in neg/abs/scale2. Nonzero results and signatures are
+unchanged. MPFR oracle zero results are canonicalized; signed-zero consumers
+must retain their own sign policy. Standalone host/device tests are carried
+by MPLAPACK (mpblas/optimized/mpfr/cuda/test/cu_fzero_test.cpp). No upstream
+PR has been submitted.
+
+--- a/include/mpc_cuda/cu_freal.cuh
++++ b/include/mpc_cuda/cu_freal.cuh
+--- a/include/mpc_cuda/cu_freal.cuh
++++ b/include/mpc_cuda/cu_freal.cuh
+@@ -1123,7 +1123,10 @@
+ template<int PB> __host__ __device__ static cu_freal<PB>
+ cu_fadd (const cu_freal<PB> &a, const cu_freal<PB> &b)
+ {
+-  if (a.is_zero()) return b;
++  if (a.is_zero()) {
++    if (b.is_zero()) { cu_freal<PB> r; r.set_zero(); return r; }
++    return b;
++  }
+   if (b.is_zero()) return a;
+   if (a.sign==b.sign) return cu_addmag<PB>(a,b,a.sign);
+   int c = cu_cmpmag<PB>(a,b);
+@@ -1135,15 +1138,15 @@
+ }
+ template<int PB> __host__ __device__ static cu_freal<PB>
+ cu_fsub (const cu_freal<PB> &a, cu_freal<PB> b)
+-{ b.sign = -b.sign; return cu_fadd<PB>(a,b); }
++{ if (!b.is_zero()) b.sign = -b.sign; return cu_fadd<PB>(a,b); }
+ 
+ /* ---------------- utilities (sign / scale / convert / int) ---------------- */
+ template<int PB> __host__ __device__ static inline cu_freal<PB>
+-cu_neg (cu_freal<PB> a){ if(!a.is_zero()) a.sign=-a.sign; return a; }
++cu_neg (cu_freal<PB> a){ if(a.is_zero()) a.set_zero(); else a.sign=-a.sign; return a; }
+ template<int PB> __host__ __device__ static inline cu_freal<PB>
+-cu_abs (cu_freal<PB> a){ if(!a.is_zero()) a.sign=1; return a; }
++cu_abs (cu_freal<PB> a){ if(a.is_zero()) a.set_zero(); else a.sign=1; return a; }
+ template<int PB> __host__ __device__ static inline cu_freal<PB>
+-cu_scale2 (cu_freal<PB> a, long k){ if(!a.is_zero()) a.exp+=k; return a; }  /* a*2^k */
++cu_scale2 (cu_freal<PB> a, long k){ if(a.is_zero()) a.set_zero(); else a.exp+=k; return a; }  /* a*2^k */
+ template<int PB> __host__ __device__ static inline int
+ cu_sgn (const cu_freal<PB>&a){ return a.is_zero()?0:a.sign; }
+ 

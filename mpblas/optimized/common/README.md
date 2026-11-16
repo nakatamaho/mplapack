@@ -1,0 +1,737 @@
+# Optimized Rgemm and Level 1/2/3 BLAS
+
+Rgemm: header-only code shared by every `libmplapack_<type>_opt` (CPU) and
+`libmplapack_{dd,td,qd}_opt_cuda` (GPU). It covers the matrix-multiplication
+features of [BNCmatmul](https://github.com/tkouya/bncmatmul): SIMD, cache
+blocking, OpenMP, Strassen/Winograd and the Ozaki scheme on the CPU, and naive,
+tiled, Winograd and Ozaki kernels on the GPU. The code is an independent
+implementation of the algorithms, not a copy of BNCmatmul (LGPL).
+
+Level 1/2/3 BLAS (`Rsyrk`, `Rsyr2k`, `Rsymm`, `Rtrmm`, `Rtrsm`, `Rgemv`,
+`Rsymv`, `Rtrmv`, `Rger`, `Rsyr`, `Rsyr2`, `Rscal`, `Rswap`, `Rrot`): OpenMP for
+every optimized library, and the GPU for dd, td and qd. See
+[Level 1/2/3 BLAS](#level-123-blas).
+
+| | dd (106 bits) | td (159 bits) | qd (212 bits) | binary128 (113 bits) |
+|---|---|---|---|---|
+| CPU conventional | blocked + OpenMP + AVX2 SIMD (BF), **bit-identical** | blocked + OpenMP + AVX2 SIMD (BF), **bit-identical** | blocked + OpenMP + AVX2 SIMD (BF), **bit-identical** | blocked + OpenMP, **bit-identical** |
+| CPU Winograd | `MPLAPACK_DD_GEMM_WINOGRAD_CUTOFF=N` | `MPLAPACK_TD_GEMM_WINOGRAD_CUTOFF=N` | `MPLAPACK_QD_GEMM_WINOGRAD_CUTOFF=N` | `MPLAPACK_BINARY128_GEMM_WINOGRAD_CUTOFF=N` |
+| CPU Ozaki | `MPLAPACK_DD_GEMM_OZAKI=1` | `MPLAPACK_TD_GEMM_OZAKI=1` | `MPLAPACK_QD_GEMM_OZAKI=1` | `MPLAPACK_BINARY128_GEMM_OZAKI=1` |
+| GPU naive / tiled | bit-identical to the CPU | bit-identical to the CPU | bit-identical to the CPU | (CPU only) |
+| GPU Winograd | `MPLAPACK_DD_CUDA_WINOGRAD_CUTOFF=N` | `MPLAPACK_TD_CUDA_WINOGRAD_CUTOFF=N` | `MPLAPACK_QD_CUDA_WINOGRAD_CUTOFF=N` | |
+| GPU Ozaki (cuBLAS DGEMM) | `MPLAPACK_DD_CUDA_OZAKI=1` | `MPLAPACK_TD_CUDA_OZAKI=1` | `MPLAPACK_QD_CUDA_OZAKI=1` | |
+
+"Bit-identical" means that each element of C goes through the same operations,
+in the same order, as in `openmp/Rgemm_{NN,NT,TN,TT}_omp.cpp`. Only the loops
+over i and j are blocked and reordered. Every combination of transposes is
+supported.
+
+## Internal device-resident LAPACK blocks (dd/td/qd)
+
+`Rlapack_cuda_common.cuh`, namespace `mplapack_lapack_gpu`, is an internal,
+header-only layer, **not a public factorization API**. It does not read any
+LAPACK environment variables or dispatch/fall back to a CPU implementation.
+
+- `matrix<E>` owns a compact column-major matrix (`ld = max(1, rows)`).
+  `allocate` checks size overflow and `cudaMemGetInfo`; `copy(host, lda,
+  down)` uploads/downloads only the active rectangle, preserving host padding.
+  Callers pack C++ scalars into `dreal<Ops>` / `dcomplex<dreal<Ops>>` explicitly.
+- `panel<Ops>(rows, width)` owns at most `rows*width` workspace elements,
+  two scalar constants, one reciprocal and one status word; use panel widths <= nb. Its
+  `getrf2` and `potrf2` follow the reference recursion and BLAS call order.
+  Pivots are device `long` words, 1-based. Only status words return to the
+  host during recursion; no matrix arithmetic runs on the host.
+- `iamax` reduces a column in one block (strided scan plus tree reduction),
+  real abs or complex abs(real)+abs(imag), first index on ties. `laswp`
+  supports forward/reverse/strided pivots. Scaling follows the reference
+  sfmin branch and accurate division. `Rlapack_sqrt_common.h` reproduces
+  bundled libQD3's Karp (dd), Newton (td), and Heron (qd) square roots.
+- `mplapack_gemm::gemm_device` takes device operands and caller-owned k*n
+  workspace (used for alpha*op(B)), sharing the existing tiled kernel.
+  `mplapack_blas::blas_device` takes bound `gpu_lane_args` (including device
+  scalar pointers), sharing the existing Rtrsm and tiled Rsyrk kernels.
+  Complex `job_device` takes a bound job and caller-owned device job scratch;
+  it shares `k_job` with the copying wrapper, including Ctrsm and Cherk.
+  (There is no BLAS routine named Rherk; the complex Hermitian update is Cherk.)
+- Launches currently synchronize; stream/event look-ahead belongs to the
+  factorization driver goals. Errors are CUDA codes, 0 on success; the panel
+  retains its first failure in `error`. Device buffers may be partially
+  changed on failure: do not download/publish them until the whole call has
+  succeeded. A public driver's untouched-output guarantee is its responsibility.
+
+`test/Rlapack_gpu_test.cpp` runs the same code with
+`MPLAPACK_GEMM_CUDA_HOST_EMULATION` in autotools and CMake, and with nvcc in
+CMake (`*_cuda_Rlapack_device`, skip code 77 without a GPU). It compares
+pivots, swaps, scaling, sqrt, Cherk and recursive real panels bit for bit,
+including padded leading dimensions, rectangular/singular/tie/tiny-pivot LU,
+both Cholesky triangles and failed pivots. The unmodified reference panel
+bodies are included under private test names. Existing GPU BLAS regression
+tests also exercise the shared device-pointer launches through their wrappers.
+
+## Small-block engine (every CPU type)
+
+`Rblas_block_common.h` is the CPU engine of `Rgemm` for every type
+(`blas/Rgemm_blocked_omp.cpp`, called by `<type>/Rgemm.cpp`), after Goto and
+van de Geijn and [dgemm_tutorial](https://github.com/nakatamaho/dgemm_tutorial):
+NC columns, KC steps and MC rows per block; op(A) and alpha*op(B) packed into
+micro-panels of MR rows and NR columns, in the order the micro-kernel reads
+them, in page-aligned per-thread buffers (contiguous panels touch few pages,
+so few TLB entries); an MR x NR tile of C held in registers over the KC steps;
+the (NC, MC) blocks spread over the threads. Each element of C still goes
+through the operations of `Rgemm_*_omp` in their order. Only the micro-kernel
+depends on the type:
+
+| Type | Kernel | MR x NR | Rgemm, n = 400..1000, vs `Rgemm_*_omp` (1 / 4 threads) |
+|---|---|---|---|
+| double | values, AVX2 multiply and add (no FMA contraction) | 16 x 4 | 3.5-6.9x / 2.0-7.0x |
+| complex double | real and imaginary planes, the products of `std::complex` (lanes whose parts are both NaN recomputed with the operator, as its C99 recovery) | 16 x 4 | `Cgemm` 2.0x / 1.8x, `Ctrsm` 2.4x / 2.1x (n = 1000) |
+| dd, td, qd | words in planes, BF arithmetic, AVX2 | 4 x 4, 4 x 2, 4 x 2 | 3.8-6.6x / 2.7-4.5x |
+| long double, binary128 | values | 4 x 4 | 0.5-1.0x: not used by default |
+| MPFR, GMP | pointers (no copy, the precision is kept) | 4 x 4 | 0.7-0.9x: not used by default |
+
+double uses NC = 512 (a B panel of KC x NC = 1 MB per thread stays in L2;
+4 threads, n = 2048-3000: 71-75 GFLOPS against 68-72 with NC = 1024). The
+micro-kernels compute full MR x NR tiles without tests; an edge tile of C
+(mr < MR or nr < NR) is redirected to a local tile (its valid part copied in,
+the rest zero), computed there and copied back, the packed panels being zero
+past the edge (no copy beyond the packing, which copies anyway). The edges
+cost within 2% (1 thread, n = 1024..1047: 18.7-19.0 GFLOPS).
+
+For the last two rows the arithmetic dominates and blocking does not pay;
+`MPLAPACK_BLAS_BLOCK=2` uses the engine anyway (the tests do), `=0` never.
+
+`Rtrsm` and `Rsyrk` (`Rblas_cpu_common.h`) also run on the engine, with the
+operations of the reference routines in their order:
+
+- `Rtrsm`: the triangular index range is split in two recursively; the half
+  the reference solves first, then the terms of its rows (columns) in the
+  other half as one engine update, in the reference order (the zero tests of
+  the reference become the skipped steps), then the other half; ranges of at
+  most `MPLAPACK_BLAS_BLOCK_NB` (64; dd/td/qd 16) run the reference loops.
+  This applies to side L with transa = N, side L upper with transa = T, side
+  R upper with transa = N and side R with transa = T (alpha applied at the
+  end, which the reference allows since a column is not changed after its
+  scaling). Side L lower with transa = T and side R lower with transa = N take
+  the terms of an element from the diagonal on, so the solved part comes last;
+  there the columns (left) or the rows (right) of B, which are independent,
+  are the lanes of a vector: 32 (double) or 16 of them run the reference loops
+  together in registers, each lane with the operations of the reference in
+  their order (`blk_trsm_lane`; left packs its columns by rows); the lanes
+  past the last full chunk are peeled in chunks of W/2, W/4, ..., 1 (no padded
+  lanes, each chunk on its part of B through pointers). On 4 cores,
+  n = 1000: 4.7x and 16x over the former path (1 core: 4.6x, 1.6x).
+- `Rsyrk`: the triangle in tiles of MC x MC, the tiles off the diagonal in one
+  parallel engine loop, the diagonal tiles on the engine on a copy (trans = N)
+  or into the dot-product buffer (trans = T); all the terms of an element are
+  added in one place.
+
+`Cgemm` (`blk_cgemm`, the operations of the reference `Cgemm`) and `Ctrsm`
+(`blk_trsm`; transa = C on a conjugated copy of A, since the reference uses
+conj(a) where `Rtrsm` uses a) run on the engine as well, by default for
+complex double, and so does `Cherk` (`blk_herk`: the elements off the
+diagonal as `Rsyrk`, the diagonal with the reference expressions on the
+real parts; 2.0x). On 4 cores (n = 1000-2000) `Cgetrf` and `Cpotrf` become
+1.7-1.8x and 1.4-1.5x faster. `Rsyrk` and `Cherk` with fewer than 4 tiles
+(the small calls of the factorizations) keep the column forms, which run in
+parallel.
+
+`Rtrmm` (all eight forms: every term comes from the original B in a fixed
+order of k; left forms split the rows recursively, right forms take tiles
+of columns over a copy of B), `Rsymm` (temp2 by tiles, then the reference
+expression, then the terms of the later rows; right side per column),
+`Rsyr2k` (N: the pairs `a(i,l)*temp1 + b(i,l)*temp2` of the engine's
+`BLK_ADD2` mode; T: two dot-product buffers) and the complex `Ctrmm`
+(transa = C on a conjugated copy of A), `Csymm`, `Chemm`, `Csyrk`, `Csyr2k`,
+`Cher2k` (conj and the real diagonal as in the reference) run on the engine
+as well, by default for the double library (REAL and COMPLEX of
+`mpblas.h`). On 4 cores (n = 800) against the former paths: `Rtrmm`
+1.2-30x, `Rsymm` 1.0-5.5x, `Rsyr2k` 2.9-21x, the complex ones 1.3-2.0x (1
+core: 1.6-2.8x). The types are those of the library (`REAL`, `COMPLEX`,
+`mplapack_binary80_t`, `mplapack_binary128_t`), not the machine types.
+
+`Rsymm` with side L runs on slabs of columns, one per thread, each with the
+engine in its thread (the columns of C are independent), in row tiles of
+`MPLAPACK_BLAS_SYMM_NB` (32).
+
+When the engine is used. The packing buffers of a thread are kept between the
+calls and sized to the call; a thread takes at least
+`MPLAPACK_BLAS_BLOCK_WORK` (2^18) multiply-adds and a column block at least
+`MPLAPACK_BLAS_BLOCK_NCMIN` (64) columns. Each routine and form has a size
+n (cube root of m*n*k, or of m*n*na) below which the former path (the lanes,
+the split-parallel complex forms) is as fast, measured on 4 cores (AVX2) with
+n = 32..1000 and 1 and 4 threads, the two paths interleaved in one process:
+
+| | double, 1 / 4 threads | complex double, 1 / 4 | dd, td, qd, 1 / 4 |
+|---|---|---|---|
+| `Rgemm`, `Cgemm` | all / 150 | all / 150 | all |
+| `Rtrsm` L, N | 150 / 400 | 150 / 400 | planes |
+| `Rtrsm` L upper, T | 100 / 200 | 100 / 500 | 300 / 600 |
+| `Rtrsm` L lower, T (lanes) | 64 / 64 | 150 / 1000 | planes / 64 |
+| `Rtrsm` R lower, N (lanes) | 64 / 64 | 150 / 400 | planes |
+| `Rtrsm` R, other | 150 / 64 | 150 / 64 (T), 400 (N) | 300 / 600 |
+| `Rtrmm` L, N | 150 / 400 | 150 / 600 | planes |
+| `Rtrmm` L, T | 100 / 300 | 150 / 600 | 300 / 600 |
+| `Rtrmm` R | 300 / 64 | 300 / 64 (T), 500 (N) | 300 / 600 |
+| `Rsymm` L | 200 / 400 | 200 / 400 | 64 / 100 |
+| `Rsymm` R | 100 / 300 | 100 / 300 | 300 / 600 |
+| `Rsyrk`, `Cherk` N | 200 / 400 | 200 / 400 | planes |
+| `Rsyrk`, `Cherk` T | 64 / 400 | 100 / 400 | 300 / 600 |
+| `Rsyr2k`, `Cher2k` N | 200 / 400 | 200 / 400 | planes |
+| `Rsyr2k`, `Cher2k` T | 64 / 400 | 150 / 400 | 300 / 600 |
+
+("planes": the column forms on planes of `Rblas_simd_common.h` stay, being
+faster.) For binary80, binary128, MPFR and GMP the engine is slower than the
+lanes in most forms (its blocking does not pay when the arithmetic
+dominates) and is used only where it measured faster, the right-side forms
+whose lanes run the columns of B one after another, with threads
+(`blk_other_n`; 1 / 4 threads):
+
+| | binary80 | binary128 | GMP | MPFR |
+|---|---|---|---|---|
+| `Rtrsm` R lower, N (lanes) | 100 / 100 | - | - / 128 | - |
+| `Rtrsm` R, T | - / 100 | - | - / 128 | - |
+| `Rtrmm` R, N | - / 600 | - / 300 | - / 200 | - / 200 |
+| `Rtrmm` R, T | - / 100 | - / 300 | - / 128 | - / 128 |
+| `Rsyrk` N | - | - | - | - / 200 |
+| `Rsyr2k` N | - / 600 | - | - | - / 200 |
+
+There, on 4 cores: binary80 `Rtrsm` R 2.0-2.8x, `Rtrmm` R T 1.7-2.6x,
+`Rsyr2k` N 2.3-2.6x (n = 600), `Rtrsm` R lower N 1.6x with one thread;
+binary128 `Rtrmm` R 1.15x (n = 300); GMP `Rtrsm` R 1.3-1.5x, `Rtrmm` R
+1.1-1.8x (n = 128-200); MPFR `Rtrmm` R 1.1-1.9x, `Rsyrk`, `Rsyr2k` N
+1.1-1.2x (n = 128-200). With these the default is not slower than the former path in any
+measured case beyond the noise (0.9-1.1 between runs of the same path), and
+faster above the sizes: double at n = 1000 on 4 cores `Rtrsm` 2.4-64x,
+`Rtrmm` 2.1-40x, `Rsymm` 2.2-15x, `Rsyrk` 7.5-13x, `Rsyr2k` 3.9-63x,
+`Rgemm` 3.5-7.2x; dd, td, qd at n = 600 `Rsymm` L 2.4-3.6x, the other forms
+on the engine 1.15-1.7x, `Rgemm` 3.8-7.7x; the factorizations on 4 cores,
+n = 1000: double `Rgetrf` 1.2x, `Rpotrf` 2.0-5.5x, `Cpotrf` 1.45x; dd
+`Rgetrf` 3.3x, `Rpotrf` 2.5-4.2x. `MPLAPACK_BLAS_BLOCK_MIN=N` replaces the
+table by m*n*na >= N; `MPLAPACK_BLAS_BLOCK=2` uses the engine for every
+type and size (the tests do), `=0` never.
+
+Winograd and Ozaki are opt-in. Their results differ
+from the conventional ones in rounding, and their errors are bounded normwise,
+not elementwise.
+
+## Winograd (every CPU type, real and complex)
+
+`Rgemm_winograd_common.h` is the Winograd variant of Strassen's algorithm
+(BNCmatmul's schedule, 7 block products per level) for the CPU and the GPU.
+An odd dimension is peeled at its level (dynamic peeling with pointer
+redirection): the even part recurses on views of A, B and C (pointers and
+leading dimensions, no padded copies), then the peeled step of k (a rank-1
+update of that part), the last column and the last row are added by the
+leaf product on views. The leaves (a dimension at most the cutoff) are the
+library's conventional product: the small-block engine, else `Rgemm`
+(`Cgemm_omp` for complex); leaves below 32768 (complex 8192) multiply-adds
+run serially. The temporaries are computed in threads with the caller's
+context (the MPFR and GMP precision); the packed op(A), op(B) keep the
+precision of their sources.
+
+| Library | Rgemm | Cgemm |
+|---|---|---|
+| dd, td, qd, binary128 | `<P>_GEMM_WINOGRAD_CUTOFF=N` (with Ozaki) | `<P>_CGEMM_WINOGRAD_CUTOFF=N` |
+| double, binary80, MPFR, GMP | `<P>_GEMM_WINOGRAD_CUTOFF=N` | `<P>_CGEMM_WINOGRAD_CUTOFF=N` |
+
+`<P>` = `MPLAPACK_DOUBLE`, `MPLAPACK_BINARY80`, `MPLAPACK_BINARY128`,
+`MPLAPACK_DD`, `MPLAPACK_TD`, `MPLAPACK_QD`, `MPLAPACK_MPFR`, `MPLAPACK_GMP`;
+Winograd runs when `min(m,n,k) > N`. `{type}_opt_Rgemm_winograd_omp` tests
+every library: all transposes and conjugates, odd sizes, cutoffs 1, 2, 3, 8;
+integers exact, random matrices within `2^(20-p) (2k|alpha| max|A| max|B| +
+|beta| max|C|)`.
+
+Measured on 4 cores, 4 threads, NN, seconds (cutoff 0: conventional):
+
+| | cutoff 0 | 128 | 256 | 512 |
+|---|---|---|---|---|
+| double, n = 2048, Rgemm / Cgemm | 0.23 / 1.57 | 0.91 / 2.94 | 0.38 / 1.85 | 0.34 / 1.78 |
+| binary80, n = 1024 | 1.05 / 2.17 | 0.83 / 2.06 | 1.05 / 2.13 | 1.01 / 2.24 |
+| binary128, n = 768 | 5.23 / 21.1 | 4.47 / 17.0 | 4.49 / 18.4 | 4.76 / 19.7 |
+| dd, n = 1024 | 0.40 / 1.52 | 0.44 / 1.53 | 0.37 / 1.51 | 0.37 / 1.39 |
+| qd, n = 512 | 0.38 / 1.48 | 0.39 / 1.43 | 0.35 / 1.37 | 0.37 / 1.45 |
+| GMP, n = 512 | 2.87 / 10.6 | 2.98 / 10.9 | 3.11 / 10.4 | |
+| MPFR, n = 512 | 4.77 / 20.5 | 4.61 / 18.3 | 4.49 / 18.6 | |
+
+At these sizes Winograd gains 1.1-1.3x for binary80, binary128, dd and qd
+(MPFR 1.06x / 1.12x, GMP none: their additions cost about as much as their
+products) and loses for double, where the engine is close to the machine's speed and
+the additions of Winograd are bound by memory: even one level at n = 4096
+(cutoff 2048) takes 1.90 s against 1.85 s (7/8 of the products would be
+1.61 s; the 18 additions of 2048 x 2048 matrices take the rest). It pays more for larger n
+(one level saves 1/8 of the products).
+
+## Files
+
+| File | Contents |
+|---|---|
+| `Rblas_block_common.h` | small-block engine and the micro-kernels of every type |
+| `Rgemm_blocked_common.h` | shape of an Rgemm call, helpers of Winograd, Ozaki and CUDA |
+| `Rgemm_simd_common.h` | AVX2 / baseline function multiversioning (x86-64 ELF), `omp simd` |
+| `Rgemm_qd_ops_common.h` | dd/td/qd branch-free arithmetic on doubles for host and device, identical to libQD3 built with `QD_BF` |
+| `Rgemm_winograd_common.h` | Winograd recursion (BNCmatmul's schedule, dynamic peeling on views) |
+| `Rgemm_ozaki_common.h` | Ozaki splitting, exact integer DGEMM, accumulation |
+| `Rgemm_cpu_common.h` | CPU driver: environment variables, choice of algorithm |
+| `Rgemm_cuda_ops_common.h`, `Rgemm_cuda_common.cuh` | GPU kernels, and their host emulation |
+| `Rgemm_cuda_bridge_common.h` | GPU eligibility, choice of algorithm, CPU fallback |
+| `Rblas_lanes_common.h` | Level 1/2/3 BLAS as independent lanes (host and device) |
+| `Rblas_calls_common.h` | BLAS arguments to lane descriptions |
+| `Rblas_cpu_common.h` | OpenMP over the lanes, for every type |
+| `Rblas_simd_common.h` | dd/td/qd columns and row blocks with AVX2 loops (BF) |
+| `Cblas_simd_common.h` | the same for the complex routines |
+| `Rblas_split_common.h` | parallel reference calls on independent parts of the output |
+| `Rblas_cuda_common.cuh`, `Rblas_cuda_bridge_common.h` | the lanes on the GPU (dd, td, qd), host emulation, transfers |
+| `blas/R*.cpp`, `blas/R*_omp.cpp` | CPU dispatchers; the reference code renamed `R*_reference_cpu` and `R*_omp` |
+| `blas_cuda/R*.cpp`, `blas_cuda/Rblas_bridge_cuda.cpp` | dd/td/qd CUDA dispatchers and the entry points `R*_<type>_cuda` (`../../../include/mpblas_<type>_cuda.h`) |
+
+`blas/Rgemm_blocked_omp.cpp` instantiates the CPU code for every type and
+is called by `<type>/Rgemm.cpp`. `<type>/cuda/{Rgemm.cpp,
+Rgemm_bridge_cuda.cpp, Rgemm_gpu_cuda.cu}` instantiate the GPU code.
+
+The autotools `mpblas/optimized/<type>/Makefile.am` files are generated by
+`misc/gen_backend_makefiles.py`. The keys `rgemm_opt`, `rgemm_gpu_host_test`,
+`opt_nofma` and `accelerator` in `misc/backend_makefiles/backends.conf` add
+these sources, tests and CUDA subdirectories.
+
+## CPU
+
+Environment variables are read at every call. `<P>` is one of `MPLAPACK_DD`,
+`MPLAPACK_TD`, `MPLAPACK_QD` or `MPLAPACK_BINARY128`.
+
+| Variable | Meaning |
+|---|---|
+| `<P>_GEMM_BLOCKED=0` | use the plain OpenMP loops |
+| `<P>_GEMM_MIN_MNK=N` | smallest `m*n*k` for the blocked engine (default 32768) |
+| `<P>_GEMM_WINOGRAD_CUTOFF=N` | Winograd when `min(m,n,k) > N` (default 0: off) |
+| `<P>_GEMM_OZAKI=1` | Ozaki scheme (takes precedence over Winograd) |
+| `<P>_GEMM_OZAKI_SLICES=S` | number of slices (default: enough for precision + 8 bits) |
+
+Arithmetic and SIMD:
+
+- MPLAPACK computes dd, td and qd with the branch-free (BF) arithmetic of
+  libQD3 (Kouya's DWBFAdd/DWBFMul, TWBFAdd/TWBFMul, QWBFAdd/QWBFMul).
+  libQD3 must be built with `QD_BF` (CMake `-DQD_ENABLE_BF=ON`; the bundled
+  `external/qd` does so, and the configure step rejects a libQD3 without it),
+  so that `+`, `-` (`a + (-b)`) and `*` of `dd_real`, `td_real` and
+  `qd_real` are the BF functions. The kernels are therefore bit-identical to
+  the C++ operators, and so to the reference BLAS.
+- BF additions and multiplications have no data-dependent branches. The
+  kernels perform them on the words of 4 elements of C at a time (AVX2 +
+  FMA). They use FMA exactly where libQD3 does (`QD_FMS`).
+- **Instruction sets:** on x86-64 ELF systems the kernels are built twice,
+  for AVX2 + FMA (x86-64-v3) and for the baseline, and the variant is chosen
+  when the library is loaded. AVX-512 is not used. Both variants produce the
+  same results.
+
+The Ozaki scheme cuts the rows of op(A) and the columns of op(B), after
+scaling by powers of two, into slices of
+`beta = floor((53 - ceil(log2 k)) / 2)` bits. The slice products are integer
+matrix products below 2^53, so they are exact in double precision. They are
+summed in the target precision, slice pairs with `s + t < S` only. Calls fall
+back to the other paths when an entry is not finite or lies outside
+[2^-960, 2^960].
+
+Measured on 4 cores (Xeon, AVX2 variant), seconds for an n x n x n product.
+The baseline is the former `Rgemm`, i.e. `<P>_GEMM_BLOCKED=0`.
+
+| | former | blocked | Winograd | Ozaki | qd BF |
+|---|---|---|---|---|---|
+| dd, n = 1000, NN | 1.42 | 0.30 | 0.52 (cutoff 128) | 0.77 | |
+| dd, n = 1000, TN | 2.39 | 0.33 | | | |
+| qd, n = 500, NN | 3.27 | 3.18 | 2.67 (cutoff 64) | 0.33 | 0.33 |
+| binary128, n = 500, NN | 1.22 | 1.27 | 1.18 (cutoff 64) | 0.15 | |
+
+## GPU (dd, td, qd)
+
+`libmplapack_dd_opt_cuda` (`--enable-cuda`, `-DMPLAPACK_ENABLE_CUDA=ON`),
+`libmplapack_td_opt_cuda` (`--enable-td-cuda`, `-DMPLAPACK_ENABLE_TD_CUDA=ON`)
+and `libmplapack_qd_opt_cuda` (`--enable-qd-cuda`,
+`-DMPLAPACK_ENABLE_QD_CUDA=ON`) send eligible `Rgemm` calls to the GPU. Everything else, and every call whose
+GPU run fails, uses the CPU code above.
+
+| Variable (`<P>` = `MPLAPACK_DD`, `MPLAPACK_TD` or `MPLAPACK_QD`) | Meaning |
+|---|---|
+| `<P>_CUDA=0` | never use the GPU |
+| `<P>_CUDA_MIN_MNK=N` | smallest `m*n*k` sent to the GPU (default 32768) |
+| `<P>_CUDA_KERNEL=naive` | one thread per element, no shared memory (default: `tiled`, 16 x 16 shared-memory tiles) |
+| `<P>_CUDA_WINOGRAD_CUTOFF=N` | Winograd when `min(m,n,k) > N`, temporaries on the GPU, tiled leaves |
+| `<P>_CUDA_OZAKI=1` | Ozaki: slices made on the host, products by cuBLAS DGEMM, sums on the GPU |
+| `<P>_CUDA_OZAKI_SLICES=S` | number of slices |
+| `<P>_CUDA_SLOPPY_MUL=1` | sloppy multiplication: dd the SLOPPY_MUL `dd_mul` of the former kernels (fma, no renormalization), td the libQD3 multiplication without `QD_BF_MUL`, qd `qd_real::sloppy_mul` |
+| `<P>_CUDA_SLOPPY_ADD=1` | sloppy addition and subtraction: `dd_real`/`td_real`/`qd_real::sloppy_add` |
+| `<P>_CUDA_VERBOSE=1` | report CUDA errors that cause a CPU fallback |
+| `MPLAPACK_DD_CUDA_LEGACY=1` | dd: the former 2010-2011 kernels (`Rgemm_fermi.cu`; BF dd arithmetic, its own summation order) |
+
+The naive and tiled kernels are bit-identical to the CPU `Rgemm` (not with
+`<P>_CUDA_SLOPPY_MUL` or `<P>_CUDA_SLOPPY_ADD`, which apply to every GPU
+algorithm and trade that for speed). The device
+functions are libQD3's BF operations, compiled with `-fmad=false`. The GPU
+Ozaki result is bit-identical to the CPU Ozaki result.
+
+Limitations:
+
+- one element of C per thread;
+- Ozaki keeps all slices on the GPU (`S (mk + kn)` doubles);
+- not yet measured on a GPU.
+
+## Level 1/2/3 BLAS
+
+Each routine is split into lanes that are independent of each other: an
+element of the referenced triangle (`Rsyrk`, `Rsyr2k`, `Rsyr`, `Rsyr2`), an
+element of A (`Rger`), an element of y or x (`Rgemv`, `Rsymv`, `Rtrmv`, Level
+1), a column of B or C for side L and a row for side R (`Rsymm`, `Rtrmm`,
+`Rtrsm`). Every lane performs the operations of the reference routine
+(`mpblas/reference`, unchanged) for its elements, in the same order, so that
+the result is the reference result bit for bit whatever the engine:
+
+- **CPU (every type):** `blas/R*.cpp` runs the lanes in parallel with OpenMP
+  (`R*_omp`) and otherwise the reference code (`R*_reference_cpu`). The
+  arithmetic is that of the C++ type. For MPFR and GMP, the precision,
+  rounding mode and exponent range of the calling thread are installed in
+  every worker.
+- **CPU SIMD (dd, td, qd):** `Rblas_simd_common.h` runs a group of 8
+  columns of the result (`Rsyrk`/`Rsyr2k`, `Rsymm`/`Rtrmm`/`Rtrsm` with
+  side L and transa = N), a column (`Rger`, `Rsyr`, `Rsyr2`), a block of 64
+  columns (`Rtrmm`/`Rtrsm` with side L and transa = T, on a transposed
+  copy) or a block of 64 rows (`Rsymm`/`Rtrmm`/`Rtrsm` with side R, `Rgemv`
+  with trans = N, `Rscal`, `Rswap`, `Rrot`) per unit of work, in the loop
+  order of the reference, with the loops over the rows vectorized (AVX2 +
+  FMA and baseline variants, BF arithmetic on the words), also on one
+  thread. The columns of a group are independent; each goes through its own
+  operations in the reference order, and the steps of the group are
+  interleaved so that a column of A serves the whole group while it is in
+  the cache (`MPLAPACK_BLAS_SIMD_COLS=N` sets the group size). For
+  `Rsyrk`/`Rsyr2k` (trans = N) and `Rtrmm`/`Rtrsm` (side L, transa = N), A
+  and B are packed once into planes (word by word, structure of arrays)
+  and each unit packs its columns of the result, so that the vectorized
+  loops read and write unit-stride planes (`MPLAPACK_BLAS_SIMD_PLANES=0`:
+  the interleaved words instead). The complex column forms of
+  `Cblas_simd_common.h` (`Cgemm`, `Csyrk`, `Cherk`, `Ctrmm`/`Ctrsm` with
+  side L) take the same groups on planes. On 4 cores (n = 600) this makes
+  these routines 1.3 to 1.6 times faster than the column-by-column form. The
+  other cases keep the lanes.
+  `MPLAPACK_BLAS_SIMD=0` turns this off. On 4 cores, dd `Rsyrk` and `Rtrsm`
+  with n = 400 run about 10 times faster than the reference (2.7 to 3.3
+  times on one core).
+- **GPU (dd, td, qd):** `blas_cuda/R*.cpp` sends eligible calls to the GPU
+  (`R*_<type>_cuda`, one thread per lane; `Rsyrk`/`Rsyr2k` in 16 x 16 tiles of C
+  with the columns of A and B staged in shared memory, each thread doing
+  the operations of its lane) with the BF arithmetic of
+  `Rgemm_qd_ops_common.h`, including libQD3's division (`accurate_div`), and
+  otherwise falls back to the CPU code. dd's former `Rsyrk` kernels
+  (`dd/cuda/Rsyrk_legacy_cuda.cu`) remain available with
+  `MPLAPACK_DD_CUDA_LEGACY=1`.
+
+Invalid arguments, quick returns, `alpha == 0` (Level 2/3) and zero
+increments always run the reference code.
+
+| Variable | Meaning |
+|---|---|
+| `MPLAPACK_BLAS_OMP=0` | no OpenMP lanes |
+| `MPLAPACK_BLAS_SIMD=0` | dd/td/qd: lanes instead of the AVX2 columns/row blocks |
+| `MPLAPACK_BLAS_SIMD_COLS=N` | dd/td/qd: columns per unit of the column forms (8) |
+| `MPLAPACK_BLAS_SIMD_PLANES=0` | dd/td/qd: real column forms on the interleaved words instead of planes |
+| `MPLAPACK_BLAS_OMP_MIN=N` | smallest number of multiply-adds for OpenMP (32768; Level 1 needs 4N) |
+| `<P>_BLAS_CUDA=0` | dd/td/qd: no GPU |
+| `<P>_BLAS_CUDA_MIN=N` | smallest number of multiply-adds sent to the GPU (32768) |
+| `<P>_BLAS_CUDA_L12=1` | also Level 1 and 2 on the GPU (off: transfer-bound, for debugging) |
+
+Each operand is copied to the GPU as the memory span it occupies, and the
+written operands are copied back. Limitations: Level 1 and 2 are bound by
+the transfers; with side L or R, `Rsymm`, `Rtrmm` and `Rtrsm` have only n or
+m lanes; the GPU code has not been run on a device yet.
+
+## Complex BLAS, Rgemmtr, and LAPACK
+
+Many reference routines compute independent parts of their output: the
+columns of C in `Cgemm`, of B in `Ctrmm`/`Ctrsm` with side L (rows with side
+R), the elements of y in `Cgemv`, and so on. For every type, `blas/C*_omp.cpp`
+calls the unchanged reference routine on disjoint parts in parallel
+(`Rblas_split_common.h`), which gives the reference result bit for bit:
+
+| Routine | Parallel over |
+|---|---|
+| `Cgemm` | columns (n >= m) or rows of C |
+| `Csymm`, `Chemm`, `Ctrmm`, `Ctrsm` | columns of the output (side L) or rows (side R) |
+| `Cgemv` | elements of y (incy > 0) |
+| `Cgeru`, `Cgerc` | columns of A (incy > 0) |
+| `Caxpy`, `Ccopy`, `Cswap`, `Cscal`, `CRscal`, `CRrot` | elements (positive increments) |
+| `Csyrk`, `Cherk`, `Csyr2k`, `Cher2k`, `Cgemmtr`, `Rgemmtr` | columns of the triangle |
+| `Rlaswp`, `Claswp` (`mplapack/optimized/common`) | columns |
+
+For the triangular updates, `blas/<R>_columns.h` is the reference function
+with its column loops restricted to a range, generated by
+`misc/gen_blas_column_variants.py`.
+
+The Hermitian/symmetric, band, packed and triangular matrix-vector routines
+and the packed rank updates have a hand-written range variant in
+`blas/<R>_omp.cpp` (generated by `misc/gen_blas_l2_ranges.py`; the
+statements are those of the reference, with the loop bounds restricted), for
+unit increments:
+
+| Routine | Parallel over |
+|---|---|
+| `Chemv`, `Chbmv`, `Chpmv`, `Rsbmv`, `Rspmv` | elements of y: row i gets the terms of the columns that touch it, and column i's own dot product, in the reference order |
+| `Rgbmv`, `Cgbmv` | elements of y |
+| `Ctrmv`, `Rtbmv`, `Ctbmv`, `Rtpmv`, `Ctpmv` | elements of x, from a copy of the original x (the reference reads each x(j) before updating it) |
+| `Rspr`, `Rspr2`, `Chpr`, `Chpr2` | columns of AP |
+
+On the GPU (dd, td, qd and MPFR; Level 2, so only with `<P>_BLAS_CUDA_L12=1`
+or `MPLAPACK_MPFR_CUDA_L12=1`) every thread runs the same range variant on
+one element (one column for the packed updates): `blas_dev/l2_rows_dev.h`,
+the jobs of `Cblas_cuda_jobs_common.h` and `blas_cuda/<R>.cpp`, generated by
+`misc/gen_blas_l2_gpu.py`.
+
+The triangular solves `Rtrsv`, `Ctrsv`, `Rtbsv`, `Ctbsv`, `Rtpsv`, `Ctpsv`
+solve the columns one after the other as the reference does; for dd/td/qd
+with unit increment the work of a column uses AVX2 (`Rblas_simd_common.h`,
+`Cblas_simd_common.h`; `misc/gen_blas_tri_solves.py`): with trans = N the
+updates x(i) = x(i) - temp*a(i,j), with trans = T or C the products
+a(i,j)*x(i) (conj(a(i,j))*x(i)), which are then subtracted from temp in the
+reference order.
+
+The reductions are one sum (or comparison chain) each, whose result depends
+on the order of its terms; their parallel versions
+(`misc/gen_blas_l1_reductions.py`, unit increment, all types) compute the
+independent per-element work in parallel and keep the reference
+accumulation:
+
+| Routine | In parallel | Then, in the reference order |
+|---|---|---|
+| `Cdotu`, `Cdotc` | the products | their sum |
+| `RCasum` | `RCabs1` of the elements | their sum |
+| `Rasum` | the sums of six of the unrolled reference loop | their sum |
+| `Rnrm2`, `RCnrm2` | class (big/small/medium) and term of every value | the three accumulations |
+| `iRamax`, `iCamax` | abs (`RCabs1`) of the elements | the first index of the maximum (NaN: the reference) |
+
+`Rdot` (`<type>/Rdot.cpp`) computes the sums of five of the unrolled
+reference loop in parallel and adds them in the reference order
+(`blas/Rdot_par.cpp`), so it is the reference result bit for bit; the
+OpenMP version the libraries had before (`<type>/openmp/Rdot_omp.cpp`, which
+sums in another order) is no longer called.
+
+dd, td and qd use AVX2 loops instead (`Cblas_simd_common.h`, libQD3's complex
+product and BF arithmetic on the words) for `Cgemm`, `Csyrk`, `Cherk`,
+`Ctrmm`/`Ctrsm` (side L: all transa; side R), `Cgemv` with trans = N, `Cgeru`
+and `Cgerc`; the transposed forms (Cgemm transa = T/C, Csyrk T, Cherk C,
+Ctrmm/Ctrsm side L transa = T/C) run the reference loops over a transposed
+copy so that the vectorized loop has unit stride (the real Rsyrk/Rsyr2k
+trans = T and Rtrmm/Rtrsm side L transa = T likewise, `Rblas_simd_common.h`).
+The alpha = 0 and quick return cases go to the reference code.
+
+On the GPU (dd, td, qd), the complex routines above, `Rgemmtr`, `Cher` and
+`Cher2` run the text of the reference routines themselves: `blas_dev/<R>_dev.h`
+is the reference function as a host/device template (generated by
+`misc/gen_blas_device_reference.py`), instantiated with device types that
+reproduce libQD3's `dd_real`/`td_real`/`qd_real` and `qd3_complex` operators
+(`Rblas_dev_types.h`: BF addition and multiplication, `accurate_div`, the
+comparisons, `abs`, the complex product and division). Every thread computes
+an element (`Cgemm`, `Cgeru`, `Cgerc`, Level 1; `Cgemm` with alpha != 0 in
+16 x 16 tiles of C, op(A) and op(B) staged in shared memory, each thread
+doing the operations of its element), a column or row (`Csymm`,
+`Chemm`, `Ctrmm`, `Ctrsm`, `Cgemv`) or a column of the triangle (`Csyrk`,
+`Cherk`, `Csyr2k`, `Cher2k`, `Cgemmtr`, `Rgemmtr`, `Cher`, `Cher2`) with the
+reference code (`Cblas_cuda_common.cuh`, `Cblas_cuda_jobs_common.h`,
+`blas_cuda/Cblas_bridge_body.h`, `blas_cuda/Cblas_bridge_cuda.cpp`), so the
+results are the reference results bit for bit. The environment variables are
+those of the real routines (`<P>_BLAS_CUDA`, `<P>_BLAS_CUDA_MIN`,
+`<P>_BLAS_CUDA_L12`). The MPFR CUDA library runs the same jobs with
+`cu_freal` device types (`../mpfr/cuda/Cblas_mpfr_dev_types.h`,
+`../mpfr/cuda/README.md`); `Rblas_dev_base.h` and `Rblas_gpu_operand_common.h`
+are the parts shared by both.
+
+The reference LAPACK routines (`Rgetrf`, `Rpotrf`, `Rgetrs`, `Rtrtri`,
+`Rlauum`, `Rsygst`, `Rsytrf`, ...) call these BLAS routines, so they run
+faster with unchanged results.
+
+## Opt-in BLAS1 reductions (goal 11)
+
+The same public `Rdot`, `Cdotc`, `Cdotu`, `Rasum`, `RCasum`, `Rnrm2`,
+`RCnrm2` dispatchers support **CPU `MPLAPACK_MPBLAS_FAST=1`**, read on
+every call. Absent/zero/other values retain the previous reference-order
+implementation bit for bit. Fast mode uses OpenMP with the caller's
+precision context; `MPLAPACK_BLAS_OMP=0` runs the same tree serially.
+
+The dd/td/qd/MPFR CUDA libraries also provide those seven entries plus
+`Raxpy`, `Rcopy`, `iRamax`, `iCamax`, named `<Routine>_<backend>_cuda`.
+Non-void routines append a final reference `result` of the original return
+type. False leaves it and all operands untouched, including runtime errors;
+there is no CPU fallback inside an entry. The public dispatchers try the
+entry and otherwise retain their former CPU implementation. No default
+crossover or LAPACK policy was changed.
+
+GPU reductions require **`<P>_MPBLAS_FAST=1`** (read per call); otherwise
+all seven return false. They also honor the existing opt-in Level 1 gate:
+BF `<P>_BLAS_CUDA_L12=1`, `<P>_BLAS_CUDA`, `<P>_BLAS_CUDA_MIN` (default
+32768); MPFR `MPLAPACK_MPFR_CUDA_L12=1`, `MPLAPACK_MPFR_CUDA`,
+`MPLAPACK_MPFR_CUDA_MIN_MNK` (32768). New reductions interpret the minimum
+as vector length. `<P>_CUDA_VERBOSE` reports launch errors. Element-wise
+operations and iamax do not need FAST. Invalid/zero increments and n<=0
+are rejected; negative increments work for copy/axpy/dot/nrm2; asum/iamax
+retain their positive-increment contract. NaN/infinite GPU inputs are
+ineligible. CPU iamax is the goal 13 chunked scan (reference index bit for
+bit, thread-count independent); the entry and CPU contracts are otherwise
+unchanged.
+
+`Rblas1_reduction_common.h` defines adjacent-pair combination. Each tree
+level has a separate synchronization boundary, with no floating-point
+atomics, races, or scheduling-dependent accumulation. Consequently repeated
+runs, and CPU thread-count changes, have the same summation order. GPU
+operands are staged once; all tree levels and the final square root stay on
+the device. `Rblas1_jobs_common.h` exposes internal device-pointer jobs for
+kernel-only measurements.
+
+Goal 13 replaces the fast-mode order by a **fixed two-level scheme that
+depends on n alone** (`fast_sub_elements` = 32 elements per sub-lane for the
+BF backends, 8 for MPFR; `fast_sub_lanes` = 32 sub-lanes per chunk): a
+chunk of `fast_chunk_length` elements is split into sub-lanes (sub-lane s
+takes chunk*chunk_length + s + sub_lanes*k, coalesced on the GPU), each
+sub-lane is reduced by a fixed pairwise mini-tree over its elements, the
+sub-lane states of a chunk are combined by the adjacent-pair tree with
+ascending strides, and the chunk results are combined by the same
+adjacent-pair tree.  The CPU (`Rblas1_fast_common.h`, dd/td/qd additionally
+with the libQD3 word arithmetic of the SIMD BLAS) and the GPU
+(`Rblas1_jobs_common.h`) run this exact order, so their fast results are
+identical bit for bit and independent of thread counts, launch shapes and
+scheduling; the tests check exactly that.  Workspace is O(n/32) states, GPU
+launches O(log(n/256)); MPFR keeps the goal 11 state chain inside the
+sub-lane (the scalar mini-tree exceeds the bounded per-lane device scratch
+of the checked runtime-precision arithmetic).
+
+Goal 13 replaces the iamax tree: the CPU (`iRamax_omp`, `iCamax_omp`,
+`Riamax_chunks_common.h`) scans fixed contiguous chunks of 4096 elements in
+one pass and combines the chunk winners in chunk order; the GPU reduces
+(score, index) in registers and shared memory to one winner per block
+(<= 2048 blocks x 256 threads, >= 16 elements per thread) and one small
+second kernel over the block winners. Scores are exact and the tie rule is
+"smallest index wins", which is associative and commutative, so every
+launch shape, thread count and chunking returns the reference index.
+Workspace is O(n/16) pairs on the GPU, O(n/4096) scores on the CPU; two
+kernel launches. MPFR uses the same scheme with its checked arithmetic
+(pool chunk scan, hierarchical combine); the >4096-bit dynamic path keeps
+the goal 11 tree.
+
+Norm nodes carry `(scale, sumsq)` and combine the smaller scale through a
+ratio no greater than one. No original input is squared without scaling.
+Complex norm leaves are real/imaginary components in that order. Iamax
+combines exact scores with strict greater-than, keeping the first tie (the
+goal 13 one-pass paths use the equivalent smallest-index rule).
+
+Error checks assume finite inputs and a representable result; dot/asum
+also require no intermediate overflow/underflow. Use effective unit
+roundoff `u=4*Rlamch("E")`, conservatively allowing BF arithmetic error.
+With the goal 13 two-level order, every element-to-result path has about
+`(fast_sub_elements + ceil(log2(fast_sub_lanes)) + ceil(log2(n/fast_chunk_length)) + 2)`
+rounding steps, so dot/asum use the absolute bound
+`64*u*sum(abs(terms))` for the BF backends (complex products twice that for
+their components), independent of n; the MPFR state chain keeps the
+conservative `4*n*u*sum(abs(terms))` envelope. Division by the exact
+result gives the corresponding relative bound when it is nonzero. The
+focused bounded-input tests use the conservative envelope `32*n*n*u`.
+For scaled norms in normal arithmetic the test bound is
+`(16+8*ceil(log2(max(2,2*n))))*u*reference_norm`; this allows the tree's
+logarithmic number of divisions, squares and additions, rather than claiming
+an n-independent correctly-rounded result. Near binary64 underflow the BF
+expansions lose low words. The huge/tiny three-component checks use
+`64*u*reference_norm` plus 32 minimum binary64 subnormals. That floor is a
+focused test allowance, not a uniform all-n subnormal error bound. No
+relative-error claim is made for cancellation to zero or lost-low-word
+underflow.
+
+Focused tests: CMake `<b>_opt_Rblas1_fast`, `<b>_cuda_Rblas1_host` and
+`<b>_cuda_Rblas1_device` (MPFR suffixes 512/200/4097/8192); autotools
+`Rblas1_fast_test_<b>` and `Rblas1_gpu_host_test_<b>`. They check default
+identity, per-call switches, repeatability, odd tree sizes, nonunit/negative
+increments, zero/huge/tiny norms, first ties, padding, and untouched outputs.
+Device executables skip with 77 without a device. MPFR reuses the checked
+inverse adapters, including signed zeros, fixed/runtime precision, the GPU
+mutex, scoped arena/stack and dynamic real precision above 4096 bits;
+complex eligibility retains the factor adapter's 4096-bit cap. See the
+[MPFR README](../mpfr/cuda/README.md) for eligibility details.
+
+## Opt-in GPU triangular vector solves (goal 11)
+
+`Rtrsv`, `Rtbsv`, `Rtpsv`, `Ctrsv`, `Ctbsv`, `Ctpsv` now have
+`_<backend>_cuda` entries for dd/td/qd/MPFR. Public dispatchers keep the
+existing CPU `_omp`/reference path by default. Enable attempts with
+`<P>_BLAS_CUDA_L12=1` (BF) or `MPLAPACK_MPFR_CUDA_L12=1` (MPFR).
+The existing enable/minimum variables from the BLAS1 section apply; the
+minimum is compared with n*n (full/packed) or n*(k+1) (band). FAST does not
+change solve arithmetic. `<P>_CUDA_VERBOSE=1` reports launch errors.
+
+Goal 13 replaces the per-column launches by a **wavefront**: one persistent
+single-block kernel (`wave_job` in `Rtrisolve_jobs.h`, 512 threads for the BF
+backends with double-buffered shared-memory column staging and a prefetched
+diagonal; 256 threads for MPFR; the >4096-bit dynamic residency keeps the
+per-column flat schedule) runs all the column steps. N keeps the pivot
+then parallel independent updates with the **pre-division** zero skip; T/C
+launches independent products then folds them in the reference order
+(upper ascending, lower descending) on one thread, then divides. Every
+element keeps the exact reference sequence of terms, so the result is
+bit-identical; emulation runs the same phases serially. The expressions are
+extracted from the unchanged reference TRSV bodies by
+`misc/gen_blas_tri_cuda.py`; no existing arithmetic or CPU solve is changed.
+All U/L, N/T/C, unit/nonunit, negative/nonunit increments and native band/
+packed column layouts are supported. One residency includes all columns;
+extra workspace is O(n). The internal `schedule` takes device pointers for
+kernel-only timing; the public entry also includes allocations/transfers.
+
+False leaves every output untouched: invalid/overflowing sizes or strides,
+n=0, disabled/below-threshold calls, ineligible values, allocation/runtime
+errors, or nonfinite output. Only referenced matrix entries are read; unit
+diagonals and padding are ignored. Vector gaps/guards and A are never written.
+BLAS does **not** precheck singularity: a zero RHS in N skips a zero pivot
+and may succeed; an actually executed division by zero rejects publication
+(the ordinary dispatcher then runs the unchanged CPU implementation).
+MPFR additionally checks every intermediate, using the inverse-local signed,
+correctly rounded fixed/runtime arithmetic, mutex/arena/stack/memory policy.
+
+Focused CMake tests: `<b>_cuda_Rtrisolve_{host,device}` (MPFR suffix 512/200).
+Autotools: `Rtrisolve_gpu_host_test_<b>` (MPFR in its `cuda/` directory).
+Tests cover n=0/1/7/64/200, every flag/stride/layout, k=0/3/203, zero skips,
+strict signed-zero identity, guard/matrix preservation, singular rejection,
+invalid/overflowing inputs and unchanged CPU fallback. Device tests skip 77
+without a device. These are correctness-first kernels, not tuned defaults.
+
+## Benchmarks
+
+`benchmark/go.Rgemm_algo.sh` runs `Rgemm.{dd,td,qd,binary128}_opt` once per
+algorithm: blocked, former, Winograd and Ozaki. It plots MFLOPS against
+the dimension, one PDF page per type (`Rgemm_algo.plt.in`).
+
+`benchmark/go.Rgemm_cuda.sh` does the same for `Rgemm.{dd,td,qd}_cuda_total`:
+tiled, naive, Winograd, Ozaki, and the former dd kernels. It also runs
+`Rgemm.mpfr_cuda_total` at 512 and 1024 bits, using the `-PREC` option of the
+MPFR `Rgemm` benchmark.
+
+Both build systems build the programs and generate the scripts:
+
+- autotools: `Makefile.{td,qd,mpfr}_cuda.am`;
+- CMake: `-DMPLAPACK_BUILD_BENCHMARKS=ON`, which also builds the `*_opt` and
+  `*_cuda_total` programs.
+
+## Tests
+
+| CMake test | autotools `make check` in | Checks |
+|---|---|---|
+| `{dd,td,qd,binary128}_opt_Rgemm` | `mpblas/optimized/<type>` (`Rgemm_opt_test`) | blocked = OpenMP loops bit for bit; Winograd (cutoffs 1, 2, 3, 8), Ozaki exact on integers and within `2^(20-p) (k|alpha| max|A| max|B| + |beta| max|C|)` on reals; Ozaki fallback |
+| `{dd,td,qd}_cuda_Rgemm_host` | `mpblas/optimized/{dd,td,qd}` (`Rgemm_gpu_host_test`) | GPU code run on the host: naive = CPU bit for bit, Ozaki = CPU Ozaki bit for bit, Winograd exact / bounded |
+| `{dd,td,qd}_cuda_Rgemm_device` | | the same on the GPU, including the tiled kernel; skipped without a device |
+| `<type>_opt_Cblas_omp` | `mpblas/optimized/<type>` (`Cblas_omp_test_<type>`) | complex BLAS, `Claswp`: reference bit for bit (all trans/conj/side/uplo/diag, alpha/beta in {1, 0, random}, increments 1, 2, -2) |
+| `<type>_opt_Rblas_omp` | `mpblas/optimized/<type>` (`Rblas_omp_test_<type>`) | Level 1/2/3 BLAS with OpenMP = reference bit for bit (all transposes, sides, triangles, diagonals, alpha/beta in {1, 0, random}, increments 1, 2, -2) |
+| `{dd,td,qd}_cuda_Rblas_host` | `mpblas/optimized/{dd,td,qd}` (`Rblas_gpu_host_test_<type>`) | the same with every call on the GPU, run on the host |
+| `{dd,td,qd}_cuda_Rblas_device` | | the same on the GPU; skipped without a device |
+| `{dd,td,qd}_cuda_Cblas_host` | `mpblas/optimized/{dd,td,qd}` (`Cblas_gpu_host_test_<type>`) | the complex test with every call on the GPU, run on the host |
+| `{dd,td,qd}_cuda_Cblas_device` | | the same on the GPU; skipped without a device |
+| `mpfr_cuda_Cblas_host` | | the complex test with every call on the MPFR GPU code, run on the host (zeros differing only in sign are counted, not failures) |
+| `mpfr_cuda_Cblas_device` | | the same on the GPU; skipped without a device |
+| `qd_ops` | `mpblas/optimized/dd` (`Rqd_ops_test`) | `Rgemm_qd_ops_common.h` = libQD3 operators (`+ - * /`, mixed double forms) bit for bit, NaNs aside, including special values and rescaled division |
+
+autotools builds the tests from `<type>/test/*.cpp`, which include the files
+of `common/test`.
+
+The host emulation runs the naive element code for `Rgemm`; its tiled
+kernel, which uses shared memory and `__syncthreads`, is covered only by the
+device test. The tiled `Rsyrk`/`Rsyr2k` and `Cgemm` kernels are written in
+phases (load, step, finish) that the host emulation runs for all the
+threads of a block in turn, so the BLAS host tests cover them.

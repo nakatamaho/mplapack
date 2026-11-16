@@ -19,7 +19,13 @@ def outputs(root):
         "mplapack/test/eig", "mplapack/test/lin", "mplapack/test/matgen",
     ):
         paths.update(p.relative_to(root) for p in (root / directory).rglob("*.am"))
-    for flavor in ("gmp", "mpfr", "qd", "dd", "double", "binary80", "binary128"):
+    table = root / "backends.txt"
+    if table.is_file():
+        flavors = [line.split()[0] for line in table.read_text().splitlines()
+                   if line.strip() and not line.startswith("#")]
+    else:
+        flavors = ["gmp", "mpfr", "qd", "dd", "double", "binary80", "binary128"]
+    for flavor in flavors:
         for prefix in ("mpblas", "mplapack", "mplapack_eig", "mplapack_lin", "mplapack_matgen"):
             path = Path("include") / f"{prefix}_{flavor}.h"
             if (root / path).is_file():

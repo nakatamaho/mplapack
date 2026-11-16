@@ -1,0 +1,608 @@
+
+### qd_Raxpy_gpu_1024_pilot-pre-eager
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_cuda_kernel Raxpy fast 1024 --reps 1 --warmup 1
+OMP_NUM_THREADS=1
+qd,Raxpy,inc1,1024,gpu,7.1680001e-06,0.285714282,1
+
+exit=0, elapsed=0.232197
+
+exit receipt: 0
+
+### qd_Raxpy_gpu_32768_pilot-pre-eager
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_cuda_kernel Raxpy fast 32768 --reps 1 --warmup 1
+OMP_NUM_THREADS=1
+qd,Raxpy,inc1,32768,gpu,1.296e-05,5.05679014,1
+
+exit=0, elapsed=0.265815
+
+exit receipt: 0
+
+### qd_Raxpy_gpu_1024_pilot
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_cuda_kernel Raxpy fast 1024 --reps 1 --warmup 1
+OMP_NUM_THREADS=1
+qd,Raxpy,inc1,1024,gpu,7.1680001e-06,0.285714282,1
+
+exit=0, process_elapsed=0.242681
+charged_point_wall=0.301500
+
+exit receipt: 0
+
+### qd_Raxpy_gpu_32768_pilot
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_cuda_kernel Raxpy fast 32768 --reps 1 --warmup 1
+OMP_NUM_THREADS=1
+qd,Raxpy,inc1,32768,gpu,1.31200003e-05,4.99512186,1
+
+exit=0, process_elapsed=0.274997
+charged_point_wall=0.322073
+
+exit receipt: 0
+
+### qd_Raxpy_gpu_1024_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_cuda_kernel Raxpy fast 1024
+OMP_NUM_THREADS=1
+qd,Raxpy,inc1,1024,gpu,6.14400022e-06,0.333333322,3
+
+exit=0, process_elapsed=0.250375
+charged_point_wall=0.299933
+
+exit receipt: 0
+
+### qd_Raxpy_gpu_1280_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_cuda_kernel Raxpy fast 1280
+OMP_NUM_THREADS=1
+qd,Raxpy,inc1,1280,gpu,6.14400022e-06,0.416666652,3
+
+exit=0, process_elapsed=0.249969
+charged_point_wall=0.298635
+
+exit receipt: 0
+
+### qd_Raxpy_gpu_1536_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_cuda_kernel Raxpy fast 1536
+OMP_NUM_THREADS=1
+qd,Raxpy,inc1,1536,gpu,6.14400022e-06,0.499999982,3
+
+exit=0, process_elapsed=0.249151
+charged_point_wall=0.297329
+
+exit receipt: 0
+
+### qd_Raxpy_gpu_1792_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_cuda_kernel Raxpy fast 1792
+OMP_NUM_THREADS=1
+qd,Raxpy,inc1,1792,gpu,6.14400022e-06,0.583333313,3
+
+exit=0, process_elapsed=0.244391
+charged_point_wall=0.294719
+
+exit receipt: 0
+
+### qd_Raxpy_gpu_2048_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_cuda_kernel Raxpy fast 2048
+OMP_NUM_THREADS=1
+qd,Raxpy,inc1,2048,gpu,6.14400022e-06,0.666666643,3
+
+exit=0, process_elapsed=0.240723
+charged_point_wall=0.292089
+
+exit receipt: 0
+
+### qd_Raxpy_gpu_2560_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_cuda_kernel Raxpy fast 2560
+OMP_NUM_THREADS=1
+qd,Raxpy,inc1,2560,gpu,7.42400018e-06,0.689655155,3
+
+exit=0, process_elapsed=0.241813
+charged_point_wall=0.288190
+
+exit receipt: 0
+
+### qd_Raxpy_gpu_3072_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_cuda_kernel Raxpy fast 3072
+OMP_NUM_THREADS=1
+qd,Raxpy,inc1,3072,gpu,8.03199969e-06,0.764940268,3
+
+exit=0, process_elapsed=0.241443
+charged_point_wall=0.291483
+
+exit receipt: 0
+
+### qd_Raxpy_gpu_3584_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_cuda_kernel Raxpy fast 3584
+OMP_NUM_THREADS=1
+qd,Raxpy,inc1,3584,gpu,7.39199994e-06,0.969696977,3
+
+exit=0, process_elapsed=0.240128
+charged_point_wall=0.287754
+
+exit receipt: 0
+
+### qd_Raxpy_gpu_4096_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_cuda_kernel Raxpy fast 4096
+OMP_NUM_THREADS=1
+qd,Raxpy,inc1,4096,gpu,7.84000009e-06,1.04489795,3
+
+exit=0, process_elapsed=0.241393
+charged_point_wall=0.288873
+
+exit receipt: 0
+
+### qd_Raxpy_gpu_5120_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_cuda_kernel Raxpy fast 5120
+OMP_NUM_THREADS=1
+qd,Raxpy,inc1,5120,gpu,7.45599996e-06,1.37339056,3
+
+exit=0, process_elapsed=0.246092
+charged_point_wall=0.295147
+
+exit receipt: 0
+
+### qd_Raxpy_gpu_6144_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_cuda_kernel Raxpy fast 6144
+OMP_NUM_THREADS=1
+qd,Raxpy,inc1,6144,gpu,7.74399983e-06,1.58677689,3
+
+exit=0, process_elapsed=0.239884
+charged_point_wall=0.286465
+
+exit receipt: 0
+
+### qd_Raxpy_gpu_7168_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_cuda_kernel Raxpy fast 7168
+OMP_NUM_THREADS=1
+qd,Raxpy,inc1,7168,gpu,8.44800007e-06,1.69696968,3
+
+exit=0, process_elapsed=0.240092
+charged_point_wall=0.286632
+
+exit receipt: 0
+
+### qd_Raxpy_gpu_8192_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_cuda_kernel Raxpy fast 8192
+OMP_NUM_THREADS=1
+qd,Raxpy,inc1,8192,gpu,8.89599975e-06,1.84172667,3
+
+exit=0, process_elapsed=0.251107
+charged_point_wall=0.301356
+
+exit receipt: 0
+
+### qd_Raxpy_gpu_10240_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_cuda_kernel Raxpy fast 10240
+OMP_NUM_THREADS=1
+qd,Raxpy,inc1,10240,gpu,8.15999974e-06,2.509804,3
+
+exit=0, process_elapsed=0.249453
+charged_point_wall=0.298016
+
+exit receipt: 0
+
+### qd_Raxpy_gpu_12288_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_cuda_kernel Raxpy fast 12288
+OMP_NUM_THREADS=1
+qd,Raxpy,inc1,12288,gpu,9.56800021e-06,2.56856182,3
+
+exit=0, process_elapsed=0.250369
+charged_point_wall=0.300420
+
+exit receipt: 0
+
+### qd_Raxpy_gpu_14336_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_cuda_kernel Raxpy fast 14336
+OMP_NUM_THREADS=1
+qd,Raxpy,inc1,14336,gpu,9.95200034e-06,2.88102884,3
+
+exit=0, process_elapsed=0.254138
+charged_point_wall=0.302418
+
+exit receipt: 0
+
+### qd_Raxpy_gpu_16384_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_cuda_kernel Raxpy fast 16384
+OMP_NUM_THREADS=1
+qd,Raxpy,inc1,16384,gpu,1.05280001e-05,3.11246198,3
+
+exit=0, process_elapsed=0.249329
+charged_point_wall=0.294803
+
+exit receipt: 0
+
+### qd_Raxpy_gpu_20480_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_cuda_kernel Raxpy fast 20480
+OMP_NUM_THREADS=1
+qd,Raxpy,inc1,20480,gpu,1.1136e-05,3.6781609,3
+
+exit=0, process_elapsed=0.252174
+charged_point_wall=0.298996
+
+exit receipt: 0
+
+### qd_Raxpy_gpu_24576_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_cuda_kernel Raxpy fast 24576
+OMP_NUM_THREADS=1
+qd,Raxpy,inc1,24576,gpu,1.07840002e-05,4.55786343,3
+
+exit=0, process_elapsed=0.260937
+charged_point_wall=0.307233
+
+exit receipt: 0
+
+### qd_Raxpy_gpu_28672_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_cuda_kernel Raxpy fast 28672
+OMP_NUM_THREADS=1
+qd,Raxpy,inc1,28672,gpu,1.20959999e-05,4.74074078,3
+
+exit=0, process_elapsed=0.264280
+charged_point_wall=0.313887
+
+exit receipt: 0
+
+### qd_Raxpy_gpu_32768_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_cuda_kernel Raxpy fast 32768
+OMP_NUM_THREADS=1
+qd,Raxpy,inc1,32768,gpu,1.28640002e-05,5.0945273,3
+
+exit=0, process_elapsed=0.262892
+charged_point_wall=0.310852
+
+exit receipt: 0
+
+### qd_Raxpy_gpu_40960_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_cuda_kernel Raxpy fast 40960
+OMP_NUM_THREADS=1
+qd,Raxpy,inc1,40960,gpu,1.32160001e-05,6.19854719,3
+
+exit=0, process_elapsed=0.279536
+charged_point_wall=0.329775
+
+exit receipt: 0
+
+### qd_Raxpy_gpu_49152_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_cuda_kernel Raxpy fast 49152
+OMP_NUM_THREADS=1
+qd,Raxpy,inc1,49152,gpu,1.41439997e-05,6.95022641,3
+
+exit=0, process_elapsed=0.283478
+charged_point_wall=0.331999
+
+exit receipt: 0
+
+### qd_Raxpy_gpu_57344_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_cuda_kernel Raxpy fast 57344
+OMP_NUM_THREADS=1
+qd,Raxpy,inc1,57344,gpu,1.54879997e-05,7.40495884,3
+
+exit=0, process_elapsed=0.297632
+charged_point_wall=0.346602
+
+exit receipt: 0
+
+### qd_Raxpy_gpu_65536_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_cuda_kernel Raxpy fast 65536
+OMP_NUM_THREADS=1
+qd,Raxpy,inc1,65536,gpu,1.65759996e-05,7.90733612,3
+
+exit=0, process_elapsed=0.301433
+charged_point_wall=0.353941
+
+exit receipt: 0
+
+### qd_Raxpy_gpu_81920_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_cuda_kernel Raxpy fast 81920
+OMP_NUM_THREADS=1
+qd,Raxpy,inc1,81920,gpu,1.86560005e-05,8.782161,3
+
+exit=0, process_elapsed=0.334001
+charged_point_wall=0.384906
+
+exit receipt: 0
+
+### qd_Raxpy_gpu_98304_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_cuda_kernel Raxpy fast 98304
+OMP_NUM_THREADS=1
+qd,Raxpy,inc1,98304,gpu,2.07679998e-05,9.4668722,3
+
+exit=0, process_elapsed=0.339074
+charged_point_wall=0.386620
+
+exit receipt: 0
+
+### qd_Raxpy_gpu_114688_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_cuda_kernel Raxpy fast 114688
+OMP_NUM_THREADS=1
+qd,Raxpy,inc1,114688,gpu,2.21759994e-05,10.3434346,3
+
+exit=0, process_elapsed=0.354593
+charged_point_wall=0.401029
+
+exit receipt: 0
+
+### qd_Raxpy_gpu_131072_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_cuda_kernel Raxpy fast 131072
+OMP_NUM_THREADS=1
+qd,Raxpy,inc1,131072,gpu,2.51199994e-05,10.435669,3
+
+exit=0, process_elapsed=0.373483
+charged_point_wall=0.422523
+
+exit receipt: 0
+
+### qd_Raxpy_gpu_163840_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_cuda_kernel Raxpy fast 163840
+OMP_NUM_THREADS=1
+qd,Raxpy,inc1,163840,gpu,3.00479997e-05,10.9052184,3
+
+exit=0, process_elapsed=0.412412
+charged_point_wall=0.456549
+
+exit receipt: 0
+
+### qd_Raxpy_gpu_196608_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_cuda_kernel Raxpy fast 196608
+OMP_NUM_THREADS=1
+qd,Raxpy,inc1,196608,gpu,3.30239981e-05,11.9069774,3
+
+exit=0, process_elapsed=0.442314
+charged_point_wall=0.489105
+
+exit receipt: 0
+
+### qd_Raxpy_gpu_229376_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_cuda_kernel Raxpy fast 229376
+OMP_NUM_THREADS=1
+qd,Raxpy,inc1,229376,gpu,3.70879993e-05,12.3692841,3
+
+exit=0, process_elapsed=0.477905
+charged_point_wall=0.526480
+
+exit receipt: 0
+
+### qd_Raxpy_gpu_262144_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_cuda_kernel Raxpy fast 262144
+OMP_NUM_THREADS=1
+qd,Raxpy,inc1,262144,gpu,4.10879999e-05,12.7601246,3
+
+exit=0, process_elapsed=0.507394
+charged_point_wall=0.560094
+
+exit receipt: 0
+
+### qd_Raxpy_gpu_327680_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_cuda_kernel Raxpy fast 327680
+OMP_NUM_THREADS=1
+qd,Raxpy,inc1,327680,gpu,5.07839993e-05,12.9048521,3
+
+exit=0, process_elapsed=0.568377
+charged_point_wall=0.618103
+
+exit receipt: 0
+
+### qd_Raxpy_gpu_393216_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_cuda_kernel Raxpy fast 393216
+OMP_NUM_THREADS=1
+qd,Raxpy,inc1,393216,gpu,5.99999987e-05,13.1072003,3
+
+exit=0, process_elapsed=0.635275
+charged_point_wall=0.684006
+
+exit receipt: 0
+
+### qd_Raxpy_gpu_458752_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_cuda_kernel Raxpy fast 458752
+OMP_NUM_THREADS=1
+qd,Raxpy,inc1,458752,gpu,7.06240013e-05,12.9913908,3
+
+exit=0, process_elapsed=0.701316
+charged_point_wall=0.746985
+
+exit receipt: 0
+
+### qd_Raxpy_gpu_524288_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_cuda_kernel Raxpy fast 524288
+OMP_NUM_THREADS=1
+qd,Raxpy,inc1,524288,gpu,7.91679993e-05,13.2449476,3
+
+exit=0, process_elapsed=0.769199
+charged_point_wall=0.817070
+
+exit receipt: 0
+
+### qd_Raxpy_gpu_655360_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_cuda_kernel Raxpy fast 655360
+OMP_NUM_THREADS=1
+qd,Raxpy,inc1,655360,gpu,9.78560001e-05,13.3943754,3
+
+exit=0, process_elapsed=0.900844
+charged_point_wall=0.948732
+
+exit receipt: 0
+
+### qd_Raxpy_gpu_786432_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_cuda_kernel Raxpy fast 786432
+OMP_NUM_THREADS=1
+qd,Raxpy,inc1,786432,gpu,0.000116672002,13.4810749,3
+
+exit=0, process_elapsed=1.038949
+charged_point_wall=1.084702
+
+exit receipt: 0
+
+### qd_Raxpy_gpu_917504_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_cuda_kernel Raxpy fast 917504
+OMP_NUM_THREADS=1
+qd,Raxpy,inc1,917504,gpu,0.000132960007,13.8012027,3
+
+exit=0, process_elapsed=1.182767
+charged_point_wall=1.234407
+
+exit receipt: 0
+
+### qd_Raxpy_gpu_1048576_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_cuda_kernel Raxpy fast 1048576
+OMP_NUM_THREADS=1
+qd,Raxpy,inc1,1048576,gpu,0.000148640007,14.1089337,3
+
+exit=0, process_elapsed=1.313799
+charged_point_wall=1.364259
+
+exit receipt: 0
+
+### qd_Raxpy_gpu_1310720_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_cuda_kernel Raxpy fast 1310720
+OMP_NUM_THREADS=1
+qd,Raxpy,inc1,1310720,gpu,0.000181536004,14.4403311,3
+
+exit=0, process_elapsed=1.568851
+charged_point_wall=1.617140
+
+exit receipt: 0
+
+### qd_Raxpy_gpu_1572864_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_cuda_kernel Raxpy fast 1572864
+OMP_NUM_THREADS=1
+qd,Raxpy,inc1,1572864,gpu,0.000216192007,14.5506212,3
+
+exit=0, process_elapsed=1.834228
+charged_point_wall=1.880270
+
+exit receipt: 0
+
+### qd_Raxpy_gpu_1835008_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_cuda_kernel Raxpy fast 1835008
+OMP_NUM_THREADS=1
+qd,Raxpy,inc1,1835008,gpu,0.0002456,14.9430619,3
+
+exit=0, process_elapsed=2.096795
+charged_point_wall=2.142351
+
+exit receipt: 0
+
+### qd_Raxpy_gpu_2097152_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_cuda_kernel Raxpy fast 2097152
+OMP_NUM_THREADS=1
+qd,Raxpy,inc1,2097152,gpu,0.000278847992,15.0415428,3
+
+exit=0, process_elapsed=2.352591
+charged_point_wall=2.403308
+
+exit receipt: 0
+
+### qd_Raxpy_gpu_2621440_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_cuda_kernel Raxpy fast 2621440
+OMP_NUM_THREADS=1
+qd,Raxpy,inc1,2621440,gpu,0.00034473601,15.2083909,1
+
+exit=0, process_elapsed=2.884071
+charged_point_wall=2.936299
+
+exit receipt: 0
+
+### qd_Raxpy_gpu_3145728_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_cuda_kernel Raxpy fast 3145728
+OMP_NUM_THREADS=1
+qd,Raxpy,inc1,3145728,gpu,0.000408863991,15.38765,1
+
+exit=0, process_elapsed=3.434189
+charged_point_wall=3.480462
+
+exit receipt: 0
+
+### qd_Raxpy_gpu_3670016_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_cuda_kernel Raxpy fast 3670016
+OMP_NUM_THREADS=1
+qd,Raxpy,inc1,3670016,gpu,0.000472927988,15.520401,1
+
+exit=0, process_elapsed=3.924474
+charged_point_wall=3.975424
+
+exit receipt: 0
+
+### qd_Raxpy_gpu_4194304_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_cuda_kernel Raxpy fast 4194304
+OMP_NUM_THREADS=1
+qd,Raxpy,inc1,4194304,gpu,0.000540639997,15.5160699,1
+
+exit=0, process_elapsed=4.463353
+charged_point_wall=4.509569
+
+exit receipt: 0
+
+### qd_Raxpy_gpu_5242880_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_cuda_kernel Raxpy fast 5242880
+OMP_NUM_THREADS=1
+qd,Raxpy,inc1,5242880,gpu,0.000668799996,15.678469,1
+
+exit=0, process_elapsed=5.519344
+charged_point_wall=5.570836
+
+exit receipt: 0
+
+### qd_Raxpy_gpu_6291456_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_cuda_kernel Raxpy fast 6291456
+OMP_NUM_THREADS=1
+qd,Raxpy,inc1,6291456,gpu,0.00080272001,15.6753436,1
+
+exit=0, process_elapsed=6.526757
+charged_point_wall=6.573391
+
+exit receipt: 0
+
+### qd_Raxpy_gpu_7340032_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_cuda_kernel Raxpy fast 7340032
+OMP_NUM_THREADS=1
+qd,Raxpy,inc1,7340032,gpu,0.000933983982,15.7176828,1
+
+exit=0, process_elapsed=7.579531
+charged_point_wall=7.625077
+
+exit receipt: 0
+
+### qd_Raxpy_gpu_8388608_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_cuda_kernel Raxpy fast 8388608
+OMP_NUM_THREADS=1
+qd,Raxpy,inc1,8388608,gpu,0.00106886399,15.6963058,1
+
+exit=0, process_elapsed=8.615918
+charged_point_wall=8.664519
+
+exit receipt: 0
+
+### qd_Raxpy_gpu_10485760_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_cuda_kernel Raxpy fast 10485760
+OMP_NUM_THREADS=1
+qd,Raxpy,inc1,10485760,gpu,0.001322752,15.854461,1
+
+exit=0, process_elapsed=10.741684
+charged_point_wall=10.789853
+
+exit receipt: 0
+
+### qd_Raxpy_gpu_12582912_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_cuda_kernel Raxpy fast 12582912
+OMP_NUM_THREADS=1
+qd,Raxpy,inc1,12582912,gpu,0.00158748806,15.8526068,1
+
+exit=0, process_elapsed=12.847410
+charged_point_wall=12.895679
+
+exit receipt: 0
+
+### qd_Raxpy_gpu_14680064_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_cuda_kernel Raxpy fast 14680064
+OMP_NUM_THREADS=1
+qd,Raxpy,inc1,14680064,gpu,0.00185270405,15.8471765,1
+
+exit=0, process_elapsed=14.946567
+charged_point_wall=14.998968
+
+exit receipt: 0
+
+### qd_Raxpy_gpu_16777216_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_cuda_kernel Raxpy fast 16777216
+OMP_NUM_THREADS=1
+qd,Raxpy,inc1,16777216,gpu,0.00213113594,15.7448576,1
+
+exit=0, process_elapsed=16.929951
+charged_point_wall=16.981327
+
+exit receipt: 0

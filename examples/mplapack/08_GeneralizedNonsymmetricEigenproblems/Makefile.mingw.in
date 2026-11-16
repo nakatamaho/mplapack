@@ -9,6 +9,7 @@ MPFRLIBS= -lmplapack_mpfr -lmpfr -lmpc -lgmp
 GMPLIBS=-lmplapack_gmp -lgmp
 QDLIBS=-lmplapack_qd -lqd
 DDLIBS=-lmplapack_dd -lqd
+TDLIBS=-lmplapack_td -lqd
 BINARY80LIBS=-lmplapack_binary80
 BINARY128LIBS=-lmplapack_binary128%%LIBQUADMATH%%
 DOUBLELIBS=-lmplapack_double
@@ -16,7 +17,7 @@ BLAS=
 LAPACK=
 FLIBS=
 
-programs=Cggev_example_mpfr.exe Cggev_example_gmp.exe Cggev_example_qd.exe Cggev_example_dd.exe Cggev_example_binary80.exe Cggev_example_binary128.exe Cggev_example_double.exe Rgges_example_mpfr.exe Rgges_example_gmp.exe Rgges_example_qd.exe Rgges_example_dd.exe Rgges_example_binary80.exe Rgges_example_binary128.exe Rgges_example_double.exe Rggev_example_mpfr.exe Rggev_example_gmp.exe Rggev_example_qd.exe Rggev_example_dd.exe Rggev_example_binary80.exe Rggev_example_binary128.exe Rggev_example_double.exe
+programs=Cggev_example_mpfr.exe Cggev_example_gmp.exe Cggev_example_qd.exe Cggev_example_dd.exe Cggev_example_td.exe Cggev_example_binary80.exe Cggev_example_binary128.exe Cggev_example_double.exe Rgges_example_mpfr.exe Rgges_example_gmp.exe Rgges_example_qd.exe Rgges_example_dd.exe Rgges_example_td.exe Rgges_example_binary80.exe Rgges_example_binary128.exe Rgges_example_double.exe Rggev_example_mpfr.exe Rggev_example_gmp.exe Rggev_example_qd.exe Rggev_example_dd.exe Rggev_example_td.exe Rggev_example_binary80.exe Rggev_example_binary128.exe Rggev_example_double.exe
 
 all: $(programs)
 
@@ -34,6 +35,9 @@ Rgges_example_qd.exe: Rgges_example_qd.o
 
 Rgges_example_dd.exe: Rgges_example_dd.o
 	$(CXX) -o Rgges_example_dd.exe Rgges_example_dd.o $(LIBFLAGS) $(DDLIBS)
+
+Rgges_example_td.exe: Rgges_example_td.o
+	$(CXX) -o Rgges_example_td.exe Rgges_example_td.o $(LIBFLAGS) $(TDLIBS)
 
 Rgges_example_binary80.exe: Rgges_example_binary80.o
 	$(CXX) -o Rgges_example_binary80 Rgges_example_binary80.o $(LIBFLAGS) $(BINARY80LIBS)
@@ -59,6 +63,9 @@ Cggev_example_qd.exe: Cggev_example_qd.o
 Cggev_example_dd.exe: Cggev_example_dd.o
 	$(CXX) -o Cggev_example_dd.exe Cggev_example_dd.o $(LIBFLAGS) $(DDLIBS)
 
+Cggev_example_td.exe: Cggev_example_td.o
+	$(CXX) -o Cggev_example_td.exe Cggev_example_td.o $(LIBFLAGS) $(TDLIBS)
+
 Cggev_example_binary80.exe: Cggev_example_binary80.o
 	$(CXX) -o Cggev_example_binary80.exe Cggev_example_binary80.o $(LIBFLAGS) $(BINARY80LIBS)
 
@@ -79,6 +86,9 @@ Rggev_example_qd.exe: Rggev_example_qd.o
 
 Rggev_example_dd.exe: Rggev_example_dd.o
 	$(CXX) -o Rggev_example_dd.exe Rggev_example_dd.o $(LIBFLAGS) $(DDLIBS)
+
+Rggev_example_td.exe: Rggev_example_td.o
+	$(CXX) -o Rggev_example_td.exe Rggev_example_td.o $(LIBFLAGS) $(TDLIBS)
 
 Rggev_example_binary80.exe: Rggev_example_binary80.o
 	$(CXX) -o Rggev_example_binary80.exe Rggev_example_binary80.o $(LIBFLAGS) $(BINARY80LIBS)

@@ -93,6 +93,16 @@ dd_complex mpc_randomnumber(dd_complex /*dummy*/) {
 }
 #endif
 
+#if defined MPLAPACK_BUILD_WITH_TD
+td_real mpf_randomnumber(td_real /*dummy*/) {
+    return 2.0 * tdrand() - 1.0;
+}
+
+td_complex mpc_randomnumber(td_complex /*dummy*/) {
+    return td_complex(2.0 * tdrand() - 1.0, 2.0 * tdrand() - 1.0);
+}
+#endif
+
 #if defined MPLAPACK_BUILD_WITH_DOUBLE
 double mpf_randomnumber(double /*dummy*/) {
     return 2.0 * drand48() - 1.0;

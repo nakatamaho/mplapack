@@ -1,0 +1,8 @@
+2026-11-04T23:22:03+09:00
+    PID    PPID ELAPSED COMMAND
+2097387 2097385     357 python3 benchmark/kernel_bench.py new --methods gpu,cpu --bindir /tmp/factor04-cmake/benchmark --mpfr-bindir /tmp/factor01-cmake/benchmark --out benchmark/results/2026/x86_64-pc-linux-gnu-Ryzen-Threadripper-3970X-TeslaA100/kernel-bench-2 --hours 5.8
+    PID    PPID ELAPSED COMMAND
+2102281 2097387       1 /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_cuda_kernel Cdotc fast 6291456
+    PID    PPID STAT COMMAND
+    PID    PPID STAT COMMAND
+telemetry_exit=0

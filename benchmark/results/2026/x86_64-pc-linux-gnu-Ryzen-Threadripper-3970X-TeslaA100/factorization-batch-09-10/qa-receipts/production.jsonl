@@ -1,0 +1,28 @@
+{"name": "production-dd-1", "returncode": 0, "seconds": 71.51641297340393}
+{"name": "production-dd-8", "returncode": 0, "seconds": 18.99349546432495}
+{"name": "production-dd-32", "returncode": 0, "seconds": 52.589938163757324}
+{"name": "production-td-1", "returncode": 0, "seconds": 247.23369526863098}
+{"name": "production-td-8", "returncode": 0, "seconds": 52.05899429321289}
+{"name": "production-td-32", "returncode": 0, "seconds": 75.1870436668396}
+{"name": "production-qd-1", "returncode": 0, "seconds": 488.78700041770935}
+{"name": "production-qd-8", "returncode": 0, "seconds": 93.48783683776855}
+{"name": "production-qd-32", "returncode": 0, "seconds": 105.3511095046997}
+{"name": "production-double-1", "returncode": 0, "seconds": 10.900052309036255}
+{"name": "production-double-8", "returncode": 0, "seconds": 7.644230842590332}
+{"name": "production-double-32", "returncode": 0, "seconds": 51.35689425468445}
+{"name": "production-binary80-1", "returncode": 0, "seconds": 122.91512560844421}
+{"name": "production-binary80-8", "returncode": 0, "seconds": 24.672528505325317}
+{"name": "production-binary80-32", "returncode": 0, "seconds": 38.20164155960083}
+{"name": "production-binary128-1", "returncode": 0, "seconds": 1718.208112001419}
+{"name": "production-binary128-8", "returncode": 0, "seconds": 258.925080537796}
+{"name": "production-binary128-32", "returncode": 0, "seconds": 159.35832571983337}
+{"name": "production-gmp-1", "returncode": 0, "seconds": 1427.0023131370544, "subset": "LU only; unchanged Cholesky excluded"}
+{"name": "production-gmp-8", "returncode": 0, "seconds": 239.45001983642578, "subset": "LU only; unchanged Cholesky excluded"}
+{"name": "production-gmp-32", "returncode": 0, "seconds": 160.3049077987671, "subset": "LU only; unchanged Cholesky excluded"}
+{"name": "production-cuda-cpu-dd-32", "command": ["flock", "/tmp/batch0910-qa/gpu.lock", "/tmp/factor04-cmake/dd_opt_cuda_Rfactor_test", "--lu-scheduling"], "returncode": 0, "seconds": 2500.292952299118}
+{"name": "production-mpfr-1", "returncode": 0, "seconds": 2221.847772836685, "subset": "LU only; unchanged Cholesky excluded"}
+{"name": "production-mpfr-8", "returncode": 0, "seconds": 357.5198566913605, "subset": "LU only; unchanged Cholesky excluded"}
+{"name": "production-mpfr-32", "returncode": 0, "seconds": 234.9061985015869, "subset": "LU only; unchanged Cholesky excluded"}
+{"name": "production-cuda-cpu-td-32", "command": ["flock", "/tmp/batch0910-qa/gpu.lock", "/tmp/factor04-cmake/td_opt_cuda_Rfactor_test", "--lu-scheduling"], "returncode": 0, "seconds": 21956.44869661331}
+{"name": "production-cuda-cpu-qd-32", "command": ["flock", "/tmp/batch0910-qa/gpu.lock", "/tmp/factor04-cmake/qd_opt_cuda_Rfactor_test", "--lu-scheduling"], "returncode": 0, "seconds": 122.72597980499268}
+{"name": "production-cuda-cpu-mpfr-32", "command": ["flock", "/tmp/batch0910-qa/gpu.lock", "/tmp/factor01-cmake/mpfr_opt_cuda_Rfactor_test", "--lu-scheduling"], "returncode": 0, "seconds": 329.1944246292114}

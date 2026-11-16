@@ -9,6 +9,7 @@ MPFRLIBS= -lmplapack_mpfr -lmpfr -lmpc -lgmp
 GMPLIBS=-lmplapack_gmp -lgmp
 QDLIBS=-lmplapack_qd -lqd
 DDLIBS=-lmplapack_dd -lqd
+TDLIBS=-lmplapack_td -lqd
 BINARY80LIBS=-lmplapack_binary80
 BINARY128LIBS=-lmplapack_binary128%%LIBQUADMATH%%
 DOUBLELIBS=-lmplapack_double
@@ -16,7 +17,7 @@ BLAS=
 LAPACK=
 FLIBS=-framework vecLib
 
-programs=Cgesvd_test_mpfr Cgesvd_test_gmp Cgesvd_test_qd Cgesvd_test_dd Cgesvd_test_binary80 Cgesvd_test_binary128 Cgesvd_test_double Rgesvd_random_highcond_mpfr Rgesvd_random_highcond_gmp Rgesvd_random_highcond_qd Rgesvd_random_highcond_dd Rgesvd_random_highcond_binary80 Rgesvd_random_highcond_binary128 Rgesvd_random_highcond_double Rgesvd_readfromfile_mpfr Rgesvd_readfromfile_gmp Rgesvd_readfromfile_qd Rgesvd_readfromfile_dd Rgesvd_readfromfile_binary80 Rgesvd_readfromfile_binary128 Rgesvd_readfromfile_double Rgesvd_test2_mpfr Rgesvd_test2_gmp Rgesvd_test2_qd Rgesvd_test2_dd Rgesvd_test2_binary80 Rgesvd_test2_binary128 Rgesvd_test2_double Rgesvd_test_mpfr Rgesvd_test_gmp Rgesvd_test_qd Rgesvd_test_dd Rgesvd_test_binary80 Rgesvd_test_binary128 Rgesvd_test_double
+programs=Cgesvd_test_mpfr Cgesvd_test_gmp Cgesvd_test_qd Cgesvd_test_dd Cgesvd_test_td Cgesvd_test_binary80 Cgesvd_test_binary128 Cgesvd_test_double Rgesvd_random_highcond_mpfr Rgesvd_random_highcond_gmp Rgesvd_random_highcond_qd Rgesvd_random_highcond_dd Rgesvd_random_highcond_td Rgesvd_random_highcond_binary80 Rgesvd_random_highcond_binary128 Rgesvd_random_highcond_double Rgesvd_readfromfile_mpfr Rgesvd_readfromfile_gmp Rgesvd_readfromfile_qd Rgesvd_readfromfile_dd Rgesvd_readfromfile_td Rgesvd_readfromfile_binary80 Rgesvd_readfromfile_binary128 Rgesvd_readfromfile_double Rgesvd_test2_mpfr Rgesvd_test2_gmp Rgesvd_test2_qd Rgesvd_test2_dd Rgesvd_test2_td Rgesvd_test2_binary80 Rgesvd_test2_binary128 Rgesvd_test2_double Rgesvd_test_mpfr Rgesvd_test_gmp Rgesvd_test_qd Rgesvd_test_dd Rgesvd_test_td Rgesvd_test_binary80 Rgesvd_test_binary128 Rgesvd_test_double
 
 all: $(programs)
 
@@ -34,6 +35,9 @@ Rgesvd_random_highcond_qd: Rgesvd_random_highcond_qd.o
 
 Rgesvd_random_highcond_dd: Rgesvd_random_highcond_dd.o
 	$(CXX) -o Rgesvd_random_highcond_dd Rgesvd_random_highcond_dd.o $(LIBFLAGS) $(DDLIBS)
+
+Rgesvd_random_highcond_td: Rgesvd_random_highcond_td.o
+	$(CXX) -o Rgesvd_random_highcond_td Rgesvd_random_highcond_td.o $(LIBFLAGS) $(TDLIBS)
 
 Rgesvd_random_highcond_binary80: Rgesvd_random_highcond_binary80.o
 	$(CXX) -o Rgesvd_random_highcond_binary80 Rgesvd_random_highcond_binary80.o $(LIBFLAGS) $(BINARY80LIBS)
@@ -59,6 +63,9 @@ Cgesvd_test_qd: Cgesvd_test_qd.o
 Cgesvd_test_dd: Cgesvd_test_dd.o
 	$(CXX) -o Cgesvd_test_dd Cgesvd_test_dd.o $(LIBFLAGS) $(DDLIBS)
 
+Cgesvd_test_td: Cgesvd_test_td.o
+	$(CXX) -o Cgesvd_test_td Cgesvd_test_td.o $(LIBFLAGS) $(TDLIBS)
+
 Cgesvd_test_binary80: Cgesvd_test_binary80.o
 	$(CXX) -o Cgesvd_test_binary80 Cgesvd_test_binary80.o $(LIBFLAGS) $(BINARY80LIBS)
 
@@ -79,6 +86,9 @@ Rgesvd_readfromfile_qd: Rgesvd_readfromfile_qd.o
 
 Rgesvd_readfromfile_dd: Rgesvd_readfromfile_dd.o
 	$(CXX) -o Rgesvd_readfromfile_dd Rgesvd_readfromfile_dd.o $(LIBFLAGS) $(DDLIBS)
+
+Rgesvd_readfromfile_td: Rgesvd_readfromfile_td.o
+	$(CXX) -o Rgesvd_readfromfile_td Rgesvd_readfromfile_td.o $(LIBFLAGS) $(TDLIBS)
 
 Rgesvd_readfromfile_binary80: Rgesvd_readfromfile_binary80.o
 	$(CXX) -o Rgesvd_readfromfile_binary80 Rgesvd_readfromfile_binary80.o $(LIBFLAGS) $(BINARY80LIBS)
@@ -101,6 +111,9 @@ Rgesvd_test2_qd: Rgesvd_test2_qd.o
 Rgesvd_test2_dd: Rgesvd_test2_dd.o
 	$(CXX) -o Rgesvd_test2_dd Rgesvd_test2_dd.o $(LIBFLAGS) $(DDLIBS)
 
+Rgesvd_test2_td: Rgesvd_test2_td.o
+	$(CXX) -o Rgesvd_test2_td Rgesvd_test2_td.o $(LIBFLAGS) $(TDLIBS)
+
 Rgesvd_test2_binary80: Rgesvd_test2_binary80.o
 	$(CXX) -o Rgesvd_test2_binary80 Rgesvd_test2_binary80.o $(LIBFLAGS) $(BINARY80LIBS)
 
@@ -121,6 +134,9 @@ Rgesvd_test_qd: Rgesvd_test_qd.o
 
 Rgesvd_test_dd: Rgesvd_test_dd.o
 	$(CXX) -o Rgesvd_test_dd Rgesvd_test_dd.o $(LIBFLAGS) $(DDLIBS)
+
+Rgesvd_test_td: Rgesvd_test_td.o
+	$(CXX) -o Rgesvd_test_td Rgesvd_test_td.o $(LIBFLAGS) $(TDLIBS)
 
 Rgesvd_test_binary80: Rgesvd_test_binary80.o
 	$(CXX) -o Rgesvd_test_binary80 Rgesvd_test_binary80.o $(LIBFLAGS) $(BINARY80LIBS)

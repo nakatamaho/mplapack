@@ -45,6 +45,9 @@
 #if defined MPLAPACK_BUILD_WITH_DD
 #include <mplapack_utils_dd.h>
 #endif
+#if defined MPLAPACK_BUILD_WITH_TD
+#include <mplapack_utils_td.h>
+#endif
 
 #if defined MPLAPACK_BUILD_WITH_DOUBLE
 #include <mplapack_utils_double.h>

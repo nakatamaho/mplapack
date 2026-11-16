@@ -1,0 +1,883 @@
+# libmplapack_mpfr_opt_cuda
+
+MPFR flavor of MPLAPACK whose `Rgemm` and Level 3 BLAS (`Rsyrk`, `Rsyr2k`,
+`Rsymm`, `Rtrmm`, `Rtrsm`) run on an NVIDIA GPU, and, for debugging, Level 1
+and 2 BLAS (`Rgemv`, `Rsymv`, `Rtrmv`, `Rger`, `Rsyr`, `Rsyr2`, `Rscal`,
+`Rswap`, `Rrot`) with `MPLAPACK_MPFR_CUDA_L12=1`; likewise the complex BLAS
+(`Cgemm`, `Csymm`, `Chemm`, `Ctrmm`, `Ctrsm`, `Csyrk`, `Cherk`, `Csyr2k`,
+`Cher2k`, `Cgemmtr`, `Rgemmtr`; Level 1 and 2: `Cgemv`, `Cgeru`, `Cgerc`,
+`Cher`, `Cher2`, `Caxpy`, `Ccopy`, `Cswap`, `Cscal`, `CRscal`, `CRrot`) and the
+band/packed/Hermitian/triangular Level 2 routines (`Chemv`, `Chbmv`, `Chpmv`,
+`Rsbmv`, `Rspmv`, `Rgbmv`, `Cgbmv`, `Ctrmv`, `Rtbmv`, `Ctbmv`, `Rtpmv`,
+`Ctpmv`, `Rspr`, `Rspr2`, `Chpr`, `Chpr2`; Level 1 and 2 on request).
+`Rgetrf`, `Rpotrf`, `Cgetrf` and `Cpotrf` also have device-resident factorization
+entries (described below). Real/complex getrs/potrs/gesv/posv now have
+[resident solver entries](../../../../mplapack/optimized/common/Rsolver_cuda.md),
+reusing these factors without a device round trip before solving. Opt-in
+real/complex `trtri`, `lauum`, `potri`, and `getri` entries are described in
+[Device-resident inverses](#device-resident-inverses-goal-11) below.
+Every other routine, and every call that is not eligible, uses the same code as
+`libmplapack_mpfr_opt`.
+
+The GPU arithmetic comes from [mpc_cuda](https://github.com/tkouya/mpc_cuda)
+(bundled as `external/mpc_cuda`):
+
+| Precision | Kernels | Arithmetic | Result vs CPU `Rgemm` |
+|---|---|---|---|
+| 256, 512, 768, 1024, 2048 bits | `Rgemm_device_cuda.cu` | `cu_fp::cu_freal<PB>`: fixed precision, significand in registers | identical, except that a zero is always `+0` |
+| any other | `Rgemm_rt_cuda.cu` (port of mpc_cuda `demos/matmul_mpfr.cu`) | `cu_mpfr`: MPFR 4.2.2 compiled for the device | identical, signed zeros included |
+
+Both perform the same operations in the same order as
+`openmp/Rgemm_*_omp.cpp`. The fixed precisions are listed once, in
+`MPLAPACK_MPFR_CUDA_FIXED_PRECISIONS` (`Rgemm_kernel_cuda.h`). mpc_cuda
+reports that `cu_freal` keeps the significand in registers up to about 1024
+bits; at 2048 bits it spills to local memory and is several times slower per
+operation, which may make the `cu_mpfr` kernels
+(`MPLAPACK_MPFR_CUDA_FORCE_RUNTIME=1`) competitive there.
+
+### Winograd (Strassen) variant
+
+With `MPLAPACK_MPFR_CUDA_WINOGRAD_CUTOFF=N` (N > 0), fixed-precision calls with
+`min(m, n, k) > N` use the Winograd variant of Strassen's algorithm
+(`Rgemm_winograd_cuda.h`), 7 block products instead of 8 per level, recursing
+until a dimension is at most N; an odd dimension is peeled at that level (the
+even part recurses on views of the operands, pointers and leading dimensions,
+without padded copies; the last row, column and step of k are added by the
+conventional product on views). The schedule follows `mul_mpfmatrix_winograd_even()` of
+[BNCmatmul](https://github.com/tkouya/bncmatmul). It is off by default: the
+result differs from the conventional `Rgemm` in rounding, and its error is
+bounded normwise rather than elementwise. All temporaries stay on the GPU.
+
+## Level 1/2/3 BLAS
+
+The kernels are in `blas3_kernel_cuda.h`, the host side in
+`blas3_bridge_cuda.cpp`. They perform, for every element of the result, the
+operations of the reference BLAS (`mpblas/reference/R*.cpp`, which the MPFR
+libraries use for these routines) in the same order. Each operation is
+correctly rounded to the working precision, so the result is the reference
+result bit for bit. Except in `Rtrsm`, zeros are always `+0` on the
+`cu_freal` engine.
+
+The work is split into independent lanes:
+
+| Routine | Lane |
+|---|---|
+| `Rsyrk`, `Rsyr2k`, `Rsyr`, `Rsyr2` | one element of the referenced triangle |
+| `Rsymm`, `Rtrmm`, `Rtrsm` with side L | one column |
+| `Rsymm`, `Rtrmm`, `Rtrsm` with side R | one row |
+| `Rger` | one element of A |
+| `Rgemv`, `Rsymv`, `Rtrmv`, Level 1 | one element of y (`Rtrmv`: x) |
+
+The lanes are those of `../../common/Rblas_lanes_common.h`, shared with the
+CPU (OpenMP) and dd/td/qd GPU versions; the host side
+(`blas3_bridge_cuda.cpp`) takes the call descriptions of
+`../../common/Rblas_calls_common.h`.
+
+Each routine is written once against an arithmetic engine:
+
+- 256, 512, 768, 1024 and 2048 bits use `cu_freal`;
+- other precisions (or `MPLAPACK_MPFR_CUDA_FORCE_RUNTIME=1`) use `cu_mpfr`;
+- real `Rtrsm` uses `cu_fdiv_rn` on the fixed precisions (the additive
+  `cu_fround.cuh` patch in `external/mpc_cuda/patches`); runtime precisions
+  and `MPLAPACK_MPFR_CUDA_FORCE_RUNTIME=1` still use `cu_mpfr`. The existing
+  gate on the host MPFR exponent range, device default `[1-2^30, 2^30-1]`,
+  remains. Fixed calls also reject zero divisors and any intermediate
+  exponent outside that range, leaving the caller's outputs untouched.
+  Only Rtrsm preserves signed zeros in the otherwise unused sign field of
+  zero fixed values, so its results remain bit-identical including zeros.
+  Other fixed BLAS retain their documented +0 convention. Fixed Rtrsm now
+  raises the stack only to a precision-dependent limit (4 KiB at 256/512 bits,
+  8 KiB at 768/1024, 16 KiB at 2048), retaining the largest limit used to avoid
+  expensive per-BLAS-call resizing. It no longer requests a 64-KiB/thread
+  reservation; a larger pre-existing caller limit is not lowered. Resident
+  factorization entries use the same policy. All MPFR CUDA calls restore
+  their original limit only with `MPLAPACK_MPFR_CUDA_STACK_RESTORE=1`.
+  Complex divisions (`cu_mpc_div`) are unchanged.
+
+`cuda/R*.cpp` replaces the CPU dispatcher of `../../common/blas`. Calls that
+do not run on the GPU go to the CPU code of `../../common/blas/R*_omp.cpp`:
+the lane-parallel OpenMP version, or the reference code, compiled unchanged
+under another name. This includes invalid arguments, quick returns,
+`alpha == 0` (Level 2/3), zero increments and the cases listed for `Rgemm`
+below. The size threshold is `MPLAPACK_MPFR_CUDA_MIN_MNK`, compared with the
+number of multiply-adds (`n*n*k` for `Rsyrk`, `m*n*n` or `m*m*n` for
+`Rsymm`/`Rtrmm`/`Rtrsm`, `m*n` for `Rgemv`, ...). `MPLAPACK_MPFR_CUDA_L3=0`
+disables Level 3 on the GPU; Level 1 and 2 run there only with
+`MPLAPACK_MPFR_CUDA_L12=1`, since their transfers dominate.
+
+Limitations:
+
+- with side L or side R the parallelism is the number of columns or rows only;
+- a call copies its operands to the GPU and back;
+- `Rtrsm` timings are in `external/mpc_cuda/patches/README.md`; the other
+  routines have no timings recorded here.
+
+## Complex BLAS
+
+The complex routines (and `Rgemmtr`) run the text of the reference routines
+on the GPU: `../../common/blas_dev/` holds it as templates
+(`misc/gen_blas_device_reference.py`), `Cblas_mpfr_dev_types.h` the device
+types on `cu_freal<PB>`, and every GPU thread runs the reference routine on
+one column, row or element of the output (the jobs of
+`../../common/Cblas_cuda_jobs_common.h`, shared with dd/td/qd). gmpfrxx_mkII
+evaluates each operator of the reference text as one MPFR/MPC call rounded to
+nearest, never fused, and the device types perform the same call:
+
+- 256, 512, 768, 1024 and 2048 bits: `cu_freal<PB>` (`mpc_mul` is correctly
+  rounded per component, as `cu_cmul`; divisions are `cu_mpc_div`); zeros
+  the GPU computes are `+0`;
+- other precisions up to 4096 bits, 16384 bits when built with
+  `MPLAPACK_MPFR_CUDA_RT_LARGE` (CMake option of the same name; its device code
+  takes long to compile), or `MPLAPACK_MPFR_CUDA_FORCE_RUNTIME=1`:
+  `rreal`/`rcomplex`, the MPFR/MPC functions of libmpc_cuda themselves
+  (`cu_mpfr_add`, `cu_mpc_mul`, `cu_mpc_div`, ...), signed zeros included.
+
+So the results are the reference ones bit for bit, and elements the routine
+leaves unchanged keep their sign. The host side is `Cblas_mpfr_bridge_cuda.cpp` on
+`../../common/blas_cuda/Cblas_bridge_body.h`, with the dispatchers of
+`../../common/blas_cuda/C*.cpp`.
+
+Calls stay on the CPU (`../../common/blas/C*_omp.cpp`, then the reference)
+when:
+
+- the default precision (`mpfr_class`, both components of `mpc_class`) is
+  above that limit, or not one of the fixed precisions with
+  `MPLAPACK_MPFR_CUDA_RUNTIME=0`;
+- an element of an operand or a scalar has another precision, is not finite,
+  or has an exponent outside the bound that keeps every intermediate inside
+  the exponent range; a result is outside the range (`Ctrsm`: outside the
+  bound, since its results are factors of later operations);
+- `Ctrsm` has diag = N and a zero diagonal element (the divisions of
+  `Ctrsm` are `mpc_div`, on the device libmpc_cuda's `cu_mpc_div`);
+- the same settings as for the real routines (`MPLAPACK_MPFR_CUDA`,
+  `MPLAPACK_MPFR_CUDA_L3`, `MPLAPACK_MPFR_CUDA_L12`,
+  `MPLAPACK_MPFR_CUDA_MIN_MNK`, rounding mode) exclude them.
+
+## Building
+
+mpc_cuda needs CUDA 13 (nvcc 12.0 rejects its early-clobber `"=&l"` asm
+constraints). The bundled one is built for the GPU architectures given
+(several give fat binaries, e.g. 80 and 90 for A100 and H100); an installed
+libmpc_cuda.a must have been built for the same ones. An externally installed
+mpc_cuda must also provide `mpc_cuda/cu_fround.cuh`; apply the bundled patch
+if its upstream version does not yet contain it. Both bundled build systems
+apply the patch after extraction and re-extract/rebuild when it changes.
+
+CMake (builds `external/mpc_cuda` unless `MPLAPACK_MPC_CUDA_INCLUDE_DIR` names
+an installed mpc_cuda):
+
+    cmake -B build -DMPLAPACK_ENABLE_MPFR=ON -DMPLAPACK_ENABLE_OPT=ON \
+          -DMPLAPACK_ENABLE_MPFR_CUDA=ON \
+          -DMPLAPACK_CUDA_ARCHITECTURES=121        # e.g. 121 for GB10, "80;90" for A100 and H100
+    # installed mpc_cuda instead of the bundled one:
+    #     -DMPLAPACK_MPC_CUDA_INCLUDE_DIR=/opt/mpc_cuda/include
+    #     [-DMPLAPACK_MPC_CUDA_LIBRARY=/opt/mpc_cuda/lib/libmpc_cuda.a]
+
+autotools (builds `external/mpc_cuda` unless `--with-mpc-cuda-includedir`
+names an installed mpc_cuda):
+
+    ./configure --enable-mpfr --enable-mpfr-cuda --with-mpfr-cuda-arch=121 \
+                --with-cudatoolkithome=/usr/local/cuda
+    # A100 and H100 (fat binaries): --with-mpfr-cuda-arch=80,90
+    # installed mpc_cuda instead of the bundled one:
+    #     --with-mpc-cuda-includedir=/opt/mpc_cuda/include
+    #     [--with-mpc-cuda-library=/opt/mpc_cuda/lib/libmpc_cuda.a]
+
+The CUDA sources are compiled as relocatable device code and device-linked
+with `libmpc_cuda.a` inside the library, so programs link it with the C++
+compiler: `-lmplapack_mpfr_opt_cuda -lcudart` (pkg-config:
+`mplapack_mpfr_opt_cuda`).
+
+## When the GPU is used
+
+`Rgemm` sends a call to the GPU when all of the following hold; otherwise it
+runs on the CPU and the result is unchanged:
+
+- the MPFR default precision, `alpha`, `beta` and every referenced element of
+  `A`, `B` and `C` have the same precision;
+- the MPFR default rounding mode is `MPFR_RNDN`;
+- every referenced value is finite (`C` is not read when `beta == 0`);
+- exponents are small enough that no intermediate can leave the MPFR exponent
+  range (host and device), and every result fits in it;
+- `m*n*k >= MPLAPACK_MPFR_CUDA_MIN_MNK` (default 32768);
+- a CUDA device is available and `MPLAPACK_MPFR_CUDA` is not `0`.
+
+Environment variables:
+
+| Variable | Meaning |
+|---|---|
+| `MPLAPACK_MPFR_CUDA=0` | never use the GPU |
+| `MPLAPACK_MPFR_CUDA_MIN_MNK=N` | minimum `m*n*k` for the GPU path |
+| `MPLAPACK_MPFR_CUDA_RUNTIME=0` | no GPU for precisions other than 256/512/768/1024/2048 |
+| `MPLAPACK_MPFR_CUDA_FORCE_RUNTIME=1` | use the `cu_mpfr` kernels for 256/512/768/1024/2048 bits too |
+| `MPLAPACK_MPFR_CUDA_WINOGRAD_CUTOFF=N` | Winograd/Strassen for the fixed precisions when `min(m,n,k) > N` (default 0: off) |
+| `MPLAPACK_MPFR_CUDA_RT_BLOCKS`, `MPLAPACK_MPFR_CUDA_RT_THREADS` | thread pool of the `cu_mpfr` kernels (default 256 x 32) |
+| `MPLAPACK_MPFR_CUDA_VERBOSE=1` | print CUDA errors that cause a CPU fallback |
+| `MPLAPACK_MPFR_CUDA_STACK_RESTORE=1` | restore the original device stack limit after each call that raised it; read per call, only exact `1` enables restoration; unset, `0`, or any other value retain the raised limit (default) |
+
+The `cu_mpfr` kernels take the limbs MPFR allocates internally from a
+per-thread arena of 16 KB per 1024 bits of precision, reset at every step of
+the dot product (as in mpc_cuda's matmul demo); they raise the device stack
+limit to at least 64 KB. By default every MPFR CUDA path only raises the
+limit, avoiding expensive per-call device stack reconfiguration. With
+`MPLAPACK_MPFR_CUDA_STACK_RESTORE=1`, a guard that raised the limit restores
+the value it read on entry, including on error paths. A guard that did not
+raise it does nothing. Restoration is best effort: its errors are cleared
+and do not change computation results. Arithmetic is identical in both
+modes. Heap-limit guards keep their separate call-scoped policy.
+
+The default can retain a **64-KiB/thread** limit after runtime GEMM or Cblas.
+On an A100 this reserves approximately `108 * 2048 * 65536` bytes, **13.5 GiB
+(14.5 GB)**, even after the small matrix has been freed. Use
+`MPLAPACK_MPFR_CUDA_STACK_RESTORE=1` to avoid retaining that increase after
+the call. Set it before the call that would raise the limit: enabling it
+later does not undo an already inherited limit from an earlier raise-only call.
+Runtime GEMM now rejects a call if stack setup fails (the older
+best-effort guard continued); its dispatcher then uses the CPU. The direct
+GPU entry still never performs a CPU fallback itself.
+
+## Tests (CMake)
+
+Stack-policy probes in the solver, real/complex factor, inverse, runtime
+GEMM, complex BLAS and real TRSM device tests set the limit to 1024 bytes
+and read it back before each call. Unset/`0`/other values must really raise
+it to at least the engine budget; exact `1` must restore the read-back
+value. The same process switches policies and compares all padded outputs,
+workspace, pivots and info limb-for-limb (including zero signs).
+Each family also has a `*_restore` CTest with the environment preset to `1`;
+probes preserve that environment for the remaining numerical sweep. Cblas
+`--stack-restore-sweep` runs 18 small direct GEMMs and 48 direct TRSMs with
+CPU oracles and a stack check after every real call (300-second CTest limit).
+A test-executable-only CUDA API interposer logs the observed peak and the
+number of raises/lowers inside each Cblas call; fixture setters are excluded.
+Thus restore-mode output proves an actual raise followed by a lower, not
+merely equal endpoints. No production library hook or public API is added.
+Runtime GEMM has a corresponding bounded sweep; solver/factors use `--quick`,
+and inverse uses `--small`. Default full sweeps are unchanged.
+Singular Rgetrf and non-positive Cpotrf numerical trials check the real call's
+stack and compare all results in both modes; `256 --stack-errors` isolates
+these cases without eligibility probes, including a memory-preflight refusal.
+Autotools runs the actual family executables under `=1` through seven
+`test/stack_restore_*.sh` wrappers with the same arguments as CTest, not a
+probe-only executable. They link only `libmplapack_mpfr_opt_cuda.la`, also
+with `--disable-static`; no CPU archive can export BLAS symbols from the
+executable and interpose on the CUDA library. The autotools-only adapter uses
+private unchanged BLAS reference bodies, or the CUDA library's CPU paths
+(public BLAS gates set before their cached reads; LAPACK disabled only during
+solver oracle calls). Direct GPU entries must still compute every eligible
+trial. Run that GPU subset with `make check -j1`; a general
+`make -j check` is not serialized. Host-emulation suites may run in parallel. `mpfr_cuda_stack_guard_host` (autotools:
+`stack_guard_host_test_mpfr`) uses an isolated CUDA stub to check nesting,
+no-change and early-return paths, exact parsing and restoration-error
+cleanup without altering calculation status.
+
+`mpfr_cuda_Rgemm_{host,device}[_runtime]` compare the GPU `Rgemm` bit for bit
+with the CPU `Rgemm` at 256, 512, 768, 1024, 2048 (fixed) and 64, 200, 333,
+4096 (runtime) bits, for all
+transpose combinations and several `alpha`/`beta`, with zeros and mixed
+magnitudes, and check that ineligible calls fall back. `_runtime` runs every
+precision through the `cu_mpfr` kernels.
+
+- `host`: the kernels' element code runs on the host, with `cu_mpfr` mapped
+  to the system MPFR (libmpc_cuda's own host code needs a GPU). No GPU needed.
+- `device`: the kernels run on the GPU; skipped when no device is present.
+
+`mpfr_cuda_blas3_{host,device}[_runtime]` compare the Level 3 routines bit
+for bit with the reference. They cover every side, uplo, trans and diag,
+`alpha` in {1, -1/2, random}, `beta` in {0, 1, 3/4, -5/4}, and odd sizes and
+leading dimensions, at 256, 512, 768, 1024, 2048, 64, 200 and 333 bits.
+Elements outside the referenced part must be left untouched.
+
+`mpfr_cuda_Rblas_{host,device}` run `../../common/test/Rblas_omp_test.cpp`
+through the dispatchers with every call, Level 1 and 2 included, on the GPU
+(`cu_mpfr` engine), and compare with the reference routines bit for bit.
+
+`mpfr_cuda_Cblas_{host,device}` run `../../common/test/Cblas_omp_test.cpp`
+the same way for the complex routines with the MPFR/MPC engine, and
+`mpfr_cuda_Cblas_{host,device}_fixed` with the `cu_freal` engine
+(`MPLAPACK_MPFR_CUDA_FORCE_RUNTIME=0`), counting the zeros that differ only
+in sign; the default precision is 512 bits (`MPFRXX_DEFAULT_PRECISION_BITS`
+selects another).
+
+`mpfr_cuda_Rgemm_winograd_{host,device}` check the Winograd path at
+256/512/768/1024/2048 bits with cutoffs 1, 2, 3 and 8: integer matrices (no rounding) must
+equal the CPU `Rgemm` exactly for odd/even sizes, all transpose combinations
+and general `alpha`/`beta`; random real matrices must agree within
+`2^(20-p) * (k |alpha| max|A| max|B| + |beta| max|C|)`; and the GPU backend
+must equal the host backend bit for bit.
+
+They run with `OMP_NUM_THREADS=1`: the OpenMP CPU `Rgemm` used as the
+reference creates its temporaries in each worker thread at that thread's MPFR
+default precision, which is not the caller's precision.
+
+`mpfr_cuda_cu_fround_{host,device}` compare the new correctly rounded
+operations directly with host MPFR at 224 (SB=32), 256, 512, 768, 1024 and
+2048 bits: 100,000 random pairs per PB on the host, 1,000,000 on the device,
+plus 256 deliberately constructed pairs, domain/alias tests and integer
+midpoint tests. Output reports mismatches and exact-path counts separately
+for division and sqrt. The device test skips with code 77 without a GPU.
+See `external/mpc_cuda/patches/README.md` for the algorithm, reproducible
+benchmarks (`mpfr_cuda_cu_fround_bench`, `mpfr_cuda_Rtrsm_round_bench`) and
+verification results. These benchmarks are built with the CMake CUDA tests,
+but are not registered as correctness tests.
+
+## Device-resident real LU and Cholesky (goal 07)
+
+`Rgetrf_mpfr_cuda` and `Rpotrf_mpfr_cuda` have the LAPACK arguments and return
+`bool`; they never fall back to CPU factorization. `false` leaves A, pivots
+and info untouched. The `Rgetrf` / `Rpotrf` dispatchers alone fall back to the
+existing optimized CPU path. The complex entries are described in the goal 07b
+section below.
+
+The real entries pack once, upload once, keep the matrix on the device for
+the whole factorization, then download/unpack once. Only numerical status
+words return to the host between panels. LU pivots are one-based, first
+index on ties; singular LU completes, and Cholesky stops at the reference
+failure index. Both retain iMlaenv block sizes, the reference recursive
+panels and BLAS arithmetic order. No Winograd/sloppy arithmetic is enabled.
+The backend `MPLAPACK_MPFR_LAPACK_FAST=1` currently retains this same algorithm.
+
+Eligibility: default precision and every matrix element's precision agree,
+MPFR_RNDN, finite inputs, and the default MPFR exponent range (the same gate
+as Rtrsm). Fixed precisions 256/512/768/1024/2048 use cu_freal and correctly
+rounded cu_fdiv_rn / cu_sqrt_rn; other precisions use cu_mpfr. Both engines
+check intermediate range/domain failures before publication. Unlike the old
+fixed GEMM convention, the factorization engine retains signed zeros in
+all arithmetic, including updates. Padding and the opposite Cholesky triangle
+are never published. Device-memory preflight includes the matrix, pivots,
+candidate reduction, runtime arena/workspace and the device stack reservation.
+Allocation/launch/transfer failure also returns false without publication.
+
+Panels and updates use two nonblocking streams with ready/done events.
+Runtime launches use disjoint physical thread-index ranges and two arena /
+register-workspace pools: overlapping kernels must not reset or allocate from
+another stream's per-thread slab. The arena globals remain constant until
+both streams finish. The existing gpu_mutex serializes the whole call against
+other MPFR BLAS.
+Stack limits follow the shared raise-only/opt-in restore policy above;
+fixed limits are those above, runtime 8 KiB through 1024 bits, 16 KiB through
+4096 bits, and the existing conservative 64 KiB above that.
+
+Settings are read on every factorization call:
+
+| Variable | Meaning |
+|---|---|
+| `MPLAPACK_MPFR_LAPACK_CUDA=0` | disable resident factorization |
+| `MPLAPACK_MPFR_LAPACK_CUDA_MIN=N` | minimum min(m,n); defaults Rgetrf 512, Rpotrf 2048 (measured below); one override applies to both |
+| `MPLAPACK_MPFR_LAPACK_FAST=1` | currently the same reference-order algorithm |
+| `MPLAPACK_MPFR_CUDA=0` | disable the MPFR GPU entries, including these |
+| `MPLAPACK_MPFR_CUDA_RUNTIME=0` | disable the cu_mpfr engine |
+| `MPLAPACK_MPFR_CUDA_FORCE_RUNTIME=1` | select cu_mpfr at fixed precisions too |
+| `MPLAPACK_MPFR_CUDA_VERBOSE=1` | print measured upload / factor / download seconds |
+
+CMake tests `mpfr_cuda_Rfactor_{host,device}[_runtime]` use a CPU-only oracle
+and call the entries directly (no fallback can hide a failure). Device
+absence returns 77. The autotools host variant is
+`make -C mpblas/optimized/mpfr/cuda check`. Whole padded matrices, pivot
+sentinels and info are compared strictly, including signed zeros; default
+coverage is six precisions, square/tall/wide matrices, both triangles,
+block boundaries and odd sizes through 599, singular/tied/tiny pivots,
+nonpositive diagonals, backward error <=30, rejection and output preservation.
+`OMP_NUM_THREADS=1 mpfr_cuda_Rfactor_device_test PREC --quick` selects the smaller same-kernel cases
+for stack/memory sanitizer sweeps; default tests are not shortened.
+
+Benchmark targets: `mpfr_cpu_Rfactor_bench` (CPU default),
+`mpfr_cuda_Rfactor_bench` (end-to-end direct entry), and
+`mpfr_cuda_Rfactor_panel_bench` (512-bit panel comparison). The latter times
+the device fixed / device MPFR panel phase, or actual D2H/unpack/host-MPFR/
+pack/H2D for a hybrid panel. The common trailing updates are excluded from
+this isolated panel comparison, not estimated. `test/run_factor_bench.py`
+records raw results from separate CPU / retained-old-CUDA / new-entry binaries,
+interleaving order in multiple fresh-process rounds and reporting medians.
+Upload/download include conversion; allocation, initialization and cleanup
+are outside the split, so the parts need not sum to the end-to-end time.
+
+### Panel choice and measured crossover (A100 sm_80, CUDA 13.1)
+
+Choose cu_freal panels at the five fixed precisions and cu_mpfr otherwise
+(or when forced). At 512 bits the fixed GPU panel is 3.66x/4.87x faster than
+the runtime GPU LU panel, and 2.21x faster for Cholesky. The host hybrid is
+faster for the small Cholesky diagonal, but would require repeated panel
+conversion/transfers. It is a benchmark comparator, not an entry-point path:
+the default retains the required GPU panels and one conversion at each end.
+No CPU fallback or hybrid panel is hidden inside a successful entry.
+
+Panel-phase seconds, median of five interleaved/reversed rounds; OMP=32,
+MPFRXX_DEFAULT_PRECISION_BITS=512 in every process. LU has 64 columns;
+Cholesky is one 64x64 diagonal. Fixed/runtime phase excludes initial
+allocation/upload and final download; hybrid phase measures actual
+D2H/unpack/CPU-panel/pack/H2D. No trailing-update time is inferred.
+
+| panel | shape | GPU cu_freal | GPU cu_mpfr | host hybrid |
+|---|---:|---:|---:|---:|
+|Rgetrf2|512x64|0.035606|0.130347|0.284334|
+|Rgetrf2|2048x64|0.037426|0.182221|0.286631|
+|Rpotrf2 L|64x64|0.045240|0.100045|0.009627|
+
+End-to-end seconds, **three interleaved rounds with reversed call order**,
+medians, fresh process per call, OMP=32, deterministic full-precision random
+significands and strict diagonal dominance. CPU is libmplapack_mpfr_opt;
+old is the retained pre-goal CUDA shared library (CPU factors, GPU BLAS per
+eligible call); new calls the entry directly, with MIN=0, and must return
+true/info=0. All **126** timed calls succeeded. The shared host is not
+calibrated; no times below are estimates. The split excludes initialization,
+allocation and cleanup, and includes matrix conversion in upload/download.
+Set MPFRXX_DEFAULT_PRECISION_BITS to the requested precision also for OpenMP
+workers; the runner does this and clears inherited LAPACK/MPFR tuning.
+
+|bits|routine|n|CPU|old CUDA|new entry|upload|factor|download|old/new|
+|---:|---|---:|---:|---:|---:|---:|---:|---:|---:|
+|512|Rgetrf|512|1.756656|2.341467|0.848922|0.027765|0.287701|0.010484|2.758|
+|512|Rpotrf L|512|0.566250|0.889964|0.984371|0.026733|0.409643|0.007654|0.904|
+|512|Rgetrf|1024|10.162399|5.611150|1.355135|0.089125|0.683307|0.044113|4.141|
+|512|Rpotrf L|1024|2.701463|1.411368|1.592530|0.087411|0.941978|0.029290|0.886|
+|512|Rgetrf|2048|42.035304|13.834973|3.269151|0.303249|2.228172|0.163487|4.232|
+|512|Rpotrf L|2048|15.898697|4.085477|3.513640|0.306834|2.524661|0.115267|1.163|
+|512|Rgetrf|4096|207.326357|66.609945|14.326270|1.317213|11.433812|0.639304|4.649|
+|512|Rpotrf L|4096|108.800011|20.468114|12.022977|1.306446|9.303057|0.450669|1.702|
+|256|Rgetrf|512|2.357260|1.840826|0.721356|0.017675|0.171737|0.005474|2.552|
+|256|Rpotrf L|512|0.453155|0.754467|0.754167|0.018071|0.193519|0.004226|1.000|
+|1024|Rgetrf|512|2.360622|2.873891|1.404849|0.041723|0.811452|0.013564|2.046|
+|1024|Rpotrf L|512|0.806218|1.297241|2.124351|0.041456|1.546730|0.010665|0.611|
+|200|Rgetrf|512|1.910529|12.610459|1.720275|0.013817|1.141940|0.006778|7.330|
+|200|Rpotrf L|512|0.457441|6.889667|1.677536|0.014755|1.064007|0.004351|4.107|
+
+Historical goal-07 defaults were **Rgetrf 512**, **Rpotrf 2048**. LU won at
+every measured size from 512; Cholesky loses at 512/1024 but wins at both
+2048 and 4096. The losing points are retained above. These are measured
+eligibility points, not an extrapolated exact crossover. One explicit MIN
+overrides both. Other precisions retain this conservative shared policy.
+Raw records (ignored local assets): bench_local/results/goal07_real/.
+
+### Verification (real milestone, 2026-10-29)
+
+All values below are observed, not inferred from CPU fallback. The four main
+runs are host/device, each automatic and forced runtime. Each run compares
+241 LU cases / 2,832,648 matrix elements and 84 Cholesky cases / 1,361,932
+matrix elements **at each precision**. Entire padded matrices, pivots and
+info are checked. Small nonsingular cases also require backward error <=30.
+Signed zero is strict on both paths; no tolerance was weakened.
+
+|bits|automatic engine|LU cases (four runs)|Cholesky cases (four runs)|A/ipiv/info errors|zero-sign differences|
+|---:|---|---:|---:|---:|---:|
+|256|cu_freal|241 x 4|84 x 4|0|0|
+|512|cu_freal|241 x 4|84 x 4|0|0|
+|768|cu_freal|241 x 4|84 x 4|0|0|
+|1024|cu_freal|241 x 4|84 x 4|0|0|
+|2048|cu_freal|241 x 4|84 x 4|0|0|
+|200|cu_mpfr|241 x 4|84 x 4|0|0|
+
+Each main host run has 710 checks / 4,194,760 element comparisons per
+precision; each device run has 1,036 / 4,194,772 (including stack restoration
+and memory-budget rejection). Four main runs total 20,952 checks and
+100,674,384 element comparisons. All errors and zero-sign differences are 0.
+
+- **CMake**: `ctest -R mpfr_cuda_ -j2`: **22/22 PASS, 12,492.95 s**,
+  including all 18 pre-existing MPFR CUDA tests. Sanitizer jobs ran in
+  parallel, but no benchmark did. CPU/CUDA old factor default/fast tests:
+  **4/4 PASS, 1,174.61 s**. GPU-hidden device tests: **2/2 SKIP (77)**;
+  GPU-hidden host quick test: **506 checks, 476,131 elements, 0 errors**.
+- **Autotools**: regenerated Makefile, shared/static CUDA libraries and full
+  host `make check`: **1/1 PASS, 2,588 s**, all six precisions, 710 checks
+  each, no errors/zero differences. A previous full run also passed.
+- **compute-sanitizer memcheck**, same factor kernels, quick cases including
+  the 131-sized two-stream overlap: all six precisions **730 checks each**,
+  LU 165 cases / 340,907 elements; Cholesky 58 / 135,044; total 476,143
+  comparisons per precision, **0 numeric/zero-sign differences, 0 sanitizer
+  errors**. Fixed limits 4/4/8/8/16 KiB, runtime 200-bit limit 8 KiB;
+  every factor call uses the shared stack policy (restore is opt-in).
+- **Optional 4096-bit runtime**: final normal quick test passes 730 checks /
+  476,143 comparisons, LU 165 cases / Cholesky 58, no errors or zero-sign
+  differences, with a 16-KiB scoped limit. Memcheck was stopped after over
+  one hour without a completed result: **UNVERIFIED**, not counted as PASS.
+- **Fixed Rtrsm**: post-policy full blas3 device replay **1/1 PASS,
+  1,084.25 s**; memcheck **327,920 elements, 0 failures, 0 sanitizer errors**.
+  The suite's 580 allowed sign-only zeros belong to other fixed BLAS;
+  Rtrsm's zero-sign checks remain strict. A separate public-entry probe
+  observes retained limits 4/4/8/8/16/16 KiB for 256/512/768/1024/2048/256
+  bits, exact results including zeros, and the factor entry preserves the
+  inherited 16-KiB limit. The BLAS bridge retains its right-sized maximum
+  to avoid repeated CUDA stack reallocations; the factor guard follows the same policy.
+- **LAPACK real GE/PO drivers**: CPU and LD_PRELOAD CUDA both pass
+  3,653 + 5,748 GE and 1,628 + 1,910 PO checks (12,939 each), including
+  error exits. CPU 25.80 s; CUDA with MIN=0 1,532.51 s, **1,815 LU and
+  828 Cholesky successful resident-entry traces**. MIN=0 deliberately
+  exercises even tiny, latency-dominated calls; it is not a speed claim.
+- **Natural default gates**: 512-sized LU / 2048-sized Cholesky eligible,
+  one below each rejected with outputs untouched: 6 checks / 8,912,896
+  comparisons, 0 errors or sign differences.
+- **ABI/build hygiene**: `nm -D` has only the two declared entry additions,
+  no removals (3,983 -> 3,989 including four generated CUDA registration/
+  wrapper symbols). Seven produced/dependent archives pass
+  `check_unique_symbols.sh`; both final CUDA archives rechecked. All five
+  generated accelerator headers and generated backend Makefiles are fresh;
+  `git diff --check` passes. Both sm_80 and sm_90 fatbin targets build.
+
+**Deferred / UNVERIFIED at the real-only milestone**: complex entries and
+full goal 07/08 acceptance were deferred; see goal 07b below. The optional
+4096-bit real memcheck,
+sm_90 execution, actual injected
+cudaMalloc/copy/kernel failures, an n=10000 allocation, and crossovers beyond
+the measured table are UNVERIFIED. Preflight budget/overflow rejection and
+unchanged outputs are tested. No common dd/td/qd header, solver or bundled
+mpc_cuda patch is changed.
+
+## Device-resident complex LU and Cholesky (goal 07b)
+
+The full host/device acceptance, stack checks, both builds, regressions and
+measurements below pass. This completes the complex half of goal 07.
+
+`Cgetrf_mpfr_cuda` / `Cpotrf_mpfr_cuda` use the same public bool contract as
+real factorization: false publishes nothing, and only the dispatcher falls
+back to the CPU. Each call converts/uploads once, factors entirely on the
+GPU, then downloads/converts once. LU retains first-index ties and complete
+singular factors; Cholesky retains the opposite triangle and stops at the
+reference failure index, including the treatment of imaginary diagonals.
+
+The MPFR-local real scheduler supplies panels, pivot reduction, swaps,
+blocking and two-stream look-ahead. Complex policies reuse the generated
+reference Ctrsm/Cherk/Cgemm bodies. Both MPC component precisions must agree
+with the default real precision (at most 4096 bits, as in the real entries)
+and rounding must be nearest. Other gates,
+mutex ownership, environment variables and failure staging are as above.
+Fixed precisions use signed, range-checked cu_freal complex components;
+division uses the existing MPC custom-view method, and the real diagonal
+square root uses cu_sqrt_rn. Other/forced precisions use the existing runtime
+MPFR/MPC arithmetic through factor-local value wrappers. Every value owns
+its limbs, so each MPC operation may safely reset its thread's scratch arena.
+Without that reset, an exhausted bump arena silently falls back to slow
+device malloc. The two streams keep their disjoint physical arena indices.
+No bundled mpc_cuda source or patch, CPU routine, or dd/td/qd common header
+is changed.
+
+### Complex stack policy
+
+Real limits remain **4/4/8/8/16 KiB**, unchanged. Complex factorization uses
+separate limits, retaining them by default and restoring the original limit
+only with `MPLAPACK_MPFR_CUDA_STACK_RESTORE=1`. An inherited larger limit
+is never lowered. Current provisioned budgets (see `mpfr_cuda_stack.h`):
+
+| precision (bits) | automatic engine | complex fixed stack | forced/runtime stack |
+|---:|---|---:|---:|
+|256|cu_freal|16 KiB|8 KiB|
+|512|cu_freal|16 KiB|8 KiB|
+|768|cu_freal|16 KiB|8 KiB|
+|1024|cu_freal|16 KiB|8 KiB|
+|2048|cu_freal|32 KiB|16 KiB|
+|200|cu_mpfr|—|8 KiB|
+
+Above 2048 bits the runtime policy retains the existing conservative 64-KiB
+complex-BLAS bound; that optional range is not verified here. The measured
+historical minimum fixed limits were 8/8/8/8/16 KiB; the budgets above
+were increased for mpc_cuda v0.0.2-dev. The BLAS policy is 16 KiB times
+ceil(PB/512), runtime 64 KiB. On A100 sm_80 / CUDA 13.1, 4 KiB at 256 bits overflows in
+cu_mpfr_hypot (an expected failing control, not a numerical acceptance run);
+the final 8-KiB replay is clean. Each of the six automatic
+precisions passes the blocked stack-sizing memcheck (6 LU / 12 Cholesky,
+74 checks / 466428 component comparisons), including the 131-sized
+look-ahead case. Native and forced-runtime final frame replays at all six
+precisions pass 77 checks / 1048 comparisons each, with no sanitizer errors,
+numerical differences or zero-sign differences. The large automatic sizing
+runs used a local stack-limit interposition shim; the final frame replays
+use the actual policy without interposition. Full and quick numerical
+acceptance suites are not shortened by these sizing selectors.
+
+Memory preflight includes the full per-thread reserve, not just the small
+launch pool: SM count times max resident threads per SM times the requested
+stack (221184 threads on this A100), plus matrix, arena and factor workspace.
+A 512-MiB available-memory fixture fits the tiny matrix and arenas but not
+the stack: both entries reject it before changing the stack, leaving all
+outputs untouched. A separate 64-KiB inherited-limit fixture verifies that
+both entries preserve a larger caller limit. A failed device-precision
+restoration is checked before publication; an injected failure leaves A,
+pivots and info unchanged and the following factor call succeeds.
+
+CMake tests are `mpfr_cuda_Cfactor_{host,device}[_runtime]`; autotools runs
+`Cfactor_gpu_host_test_mpfr` in `make check`. Default coverage is six
+precisions, 241 LU / 136 Cholesky cases each (813 host checks / 9062456
+component comparisons), strict signed zeros, padding, singular/tiny/tied
+pivots, both triangles, imaginary diagonals, block boundaries and odd sizes
+through 599, rejection/unchanged outputs and small-matrix backward error.
+The device variant additionally forces a low stack and checks both stack
+policies with identical outputs, as well as the memory budget.
+`--quick` selects smaller same-kernel cases; `--stack-probe` selects blocked
+sizing cases with two-stream overlap; `--stack-frames` selects small frame
+paths without the large matrix arithmetic. Device absence returns 77.
+
+Benchmarks: `mpfr_cpu_Cfactor_bench` and `mpfr_cuda_Cfactor_bench`; arguments
+are `precision n getrf|potrf cpu|old|entry`. The retained baseline shared
+library supplies the old GPU-BLAS-per-call comparator. Upload/download
+include conversion, but the split excludes initialization, allocation and
+cleanup, as in the real benchmark. Pass `complex` after the round count to
+`test/run_factor_bench.py` to select the complex six-case comparison.
+
+### Complex verification (A100 sm_80, CUDA 13.1)
+
+All four host/device, automatic/forced-runtime runs pass the full default
+suite. Every comparison is strict, including signed zeros and padding; no
+CPU fallback is possible in these direct-entry tests.
+
+|bits|LU cases, four runs|Cholesky cases, four runs|A/ipiv/info errors|zero-sign differences|
+|---:|---:|---:|---:|---:|
+|256|241 x 4|136 x 4|0|0|
+|512|241 x 4|136 x 4|0|0|
+|768|241 x 4|136 x 4|0|0|
+|1024|241 x 4|136 x 4|0|0|
+|2048|241 x 4|136 x 4|0|0|
+|200|241 x 4|136 x 4|0|0|
+
+Device runs have 1191 checks / 9062480 component comparisons per precision.
+The four runs total **9048 cases, 24048 checks, 217499232 comparisons**, all
+without numerical or sign differences. Host CMake group (also real host
+regression): **4/4 PASS, 9979.17 s**; complex device group: **2/2 PASS,
+10402.91 s**. Autotools full host `make check`: **2/2 PASS, 10794.91 s**,
+real and complex at all six precisions, including its library build.
+Correctness jobs ran concurrently; secondary GPU regressions were paused
+while the complex matrix finished and during timing. These are observed
+wall times, not standalone performance figures.
+
+Both real device regressions pass, automatic and runtime at all six
+precisions, including strict zeros (6795.73 s wall, including a pause).
+All **18/18** pre-existing MPFR CUDA BLAS/rounding tests pass (**23298.92 s
+wall, including the controlled GPU pause**); the four existing CPU/CUDA
+factor default/fast tests pass **4/4, 2341.76 s**. The existing fixed BLAS
+retain their documented allowed sign-only zeros; factor comparisons stay
+strict. In total, the grouped CMake acceptance/regression runs pass 30/30.
+Both sm_80/sm_90 fatbin targets build in autotools and CMake. Seven produced
+or dependent archives pass `check_unique_symbols.sh`. `nm -D` adds exactly
+the two declared entries and removes no API names (3989 -> 3995 including
+compiler-generated CUDA registrations). Generated headers/backend Makefiles
+are fresh, and whitespace checks pass.
+CPU and LD_PRELOAD CUDA complex GE/PO check/driver tests each pass
+3653 + 5748 GE and 1628 + 1910 PO checks (**12939**), plus error exits;
+CPU 100.85 s, CUDA MIN=0 530.31 s, with successful resident-entry traces.
+Device-hidden entry tests return 77, and host emulation runs without a GPU.
+The final host-state restoration check and measured default tuning do not
+change the numerical kernels; final native/runtime frame replays and
+publication-contract fixtures also pass after the guard change.
+
+### Complex performance and defaults
+
+512 bits, OMP=32, three fresh-process rounds, CPU/old/new order reversed on
+alternate rounds. CPU is the default optimized CPU library; old is the
+retained f8d77c09a CUDA library's GPU-BLAS-per-call complex factorization;
+new is the direct entry with MIN=0. Matrices have deterministic full-precision
+significands and strict diagonal dominance. All **54** timed calls succeed,
+info=0; no correctness/sanitizer kernels ran concurrently with timing.
+The host is shared, so absolute CPU times are not calibrated. The parts
+exclude initialization/allocation/cleanup and need not sum to end-to-end.
+
+|routine|n|CPU|old CUDA|new entry|upload|factor|download|old/new|
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+|Cgetrf|512|4.437723|2.927598|3.895897|0.066894|3.219358|0.014473|0.751|
+|Cpotrf L|512|2.626491|7.256938|5.957726|0.066618|5.277321|0.010453|1.218|
+|Cgetrf|1024|51.220710|11.378824|7.921364|0.216977|7.049281|0.055465|1.436|
+|Cpotrf L|1024|15.768721|27.128117|20.151190|0.200292|19.328703|0.035075|1.346|
+|Cgetrf|2048|224.521175|66.598606|26.025302|0.722346|24.273885|0.229904|2.559|
+|Cpotrf L|2048|103.614952|117.505976|77.481797|0.729390|75.830973|0.156368|1.517|
+
+The table above and its original 1024/2048 natural-default receipts are
+historical goal-07b measurements. **Current complex defaults: Cgetrf 1024,
+Cpotrf 4096** (goal 08b). Direct CPU-library comparisons now give Cpotrf L
+2048: CPU 69.698 s / entry 76.852 s; 4096: CPU 490.306 s / entry 315.620 s.
+The 4096-point upper-triangle crossover was checked separately. See the
+[complete goal-08b measurements](../../../../benchmark/results/2026/x86_64-pc-linux-gnu-Ryzen-Threadripper-3970X-TeslaA100/factorization-goal08b/README.md).
+
+Rejected public factors now use optimized CPU BLAS throughout their panels,
+not GPU BLAS per call. Driver rejection uses public factor + CPU solve;
+fused posv is opt-in. The subsequent warm CPU-library retune makes Rgesv
+1024 and Cgesv opt-in (formerly 512/1024): at 512 Rgesv costs 1.437 s
+on GPU versus 0.415 s CPU; Cgesv at 2048 loses 161.626 vs 134.737 s.
+See the [cut-short retune](../../../../benchmark/results/2026/x86_64-pc-linux-gnu-Ryzen-Threadripper-3970X-TeslaA100/gate-retune/README.md)
+for raw cold/warm data, host-load caveats and limited verification.
+See [solver controls](../../../../mplapack/optimized/common/Rsolver_cuda.md).
+These are measured eligibility points, not extrapolated exact crossovers;
+other precisions retain the conservative shared policy. One explicit
+`MPLAPACK_MPFR_LAPACK_CUDA_MIN` overrides all four factors. Real defaults
+are now Rgetrf 1024 / Rpotrf 2048: LU at 512 is only warm CPU/GPU
+parity (0.302/0.303 s). Cgetrf stays 1024, Cpotrf stays 4096. MPFR
+Lower Rpotrf 1024 has residual CPU-fallback overhead; its root cause is
+not established or fixed by changing these constants. Inverse timing was
+not reached in that retune; goal 11 now adds opt-in resident inverse entries
+without changing any measured factor/solver gate.
+
+Panel comparison: `mpfr_cuda_Cfactor_panel_bench`, 512 bits, five interleaved
+rounds reversing fixed/runtime/hybrid order, **45 successful calls**.
+GPU phases exclude initial allocation/upload and final download; the hybrid
+measures actual D2H/unpack/CPU-panel/pack/H2D, never estimated trailing work.
+
+|panel|shape|GPU cu_freal|GPU cu_mpfr|host hybrid|
+|---|---:|---:|---:|---:|
+|Cgetrf2|512x64|0.119609|0.317161|0.325597|
+|Cgetrf2|2048x64|0.144364|0.454366|0.880343|
+|Cpotrf2 L|64x64|0.139431|0.350186|0.052442|
+
+Choose fixed GPU panels at the fixed precisions (2.65/3.15x faster than
+runtime LU, 2.51x for Cholesky). The host diagonal is faster, but a hybrid
+would violate the GPU-panel / one-conversion residency contract. It remains
+a benchmark comparator, never hidden inside an entry point.
+
+Real performance regression: the retained real entries versus the new
+library, three interleaved/reversed fresh-process rounds, same 512-bit
+inputs and OMP=32. All **36** calls succeed. Median end-to-end seconds:
+
+|real routine|n|f8d77c09a entry|new library entry|
+|---|---:|---:|---:|
+|Rgetrf|512|0.848894|0.859009|
+|Rpotrf L|512|0.967455|0.963690|
+|Rgetrf|1024|1.314561|1.341246|
+|Rpotrf L|1024|1.535009|1.575495|
+|Rgetrf|2048|3.239022|3.292352|
+|Rpotrf L|2048|3.484876|3.539234|
+
+All ratios are within 2.7% of baseline; factor-phase ratios are within 0.8%.
+The real arithmetic, launch policy, stack values and defaults are unchanged.
+Raw records and verification logs: `bench_local/results/goal07b/resume/`
+(ignored local assets). No common dd/td/qd header was changed, so their
+conditional device-regression requirement does not apply.
+
+UNVERIFIED: optional >2048-bit runtime validation, sm_90 hardware execution
+(both fatbin targets compile), actual huge allocation and malloc/transfer/
+kernel fault injection, and performance beyond the measured sizes/triangles.
+The device-precision restoration failure was injected and tested explicitly.
+
+## Device-resident inverses (goal 11)
+
+Real and complex `trtri`, `lauum`, `potri`, and `getri` now expose the eight
+`<Routine>_mpfr_cuda` bool entries in `mpblas_mpfr_cuda.h`. They share the
+[reference-order inverse schedule](../../../../mplapack/optimized/common/Rinverse_cuda.md)
+with dd/td/qd and reuse its generated `inverse_dev` leaves. No reference
+body or pre-existing arithmetic is changed. Fixed precisions
+256/512/768/1024/2048 use the signed factor cu_freal values and correctly
+rounded `cu_fdiv_rn`; complex division reuses the factor MPC adapter.
+Other/forced precisions use cu_mpfr/MPC. Through 4096 bits they reuse the
+existing owned-limb value tiers. Complex eligibility retains the factor API's
+4096-bit limit; real inverses have the same precision range as real factors
+(subject to memory preflight), using dynamically sized matrix views and
+per-thread scalar limb slots above the compiled tiers. These slots are
+separate from MPC scratch, so reclaiming scratch cannot invalidate live
+reference-template temporaries. No device heap or CPU inverse is used.
+
+All eight entries are **opt-in**. Settings are read on every call:
+`MPLAPACK_MPFR_LAPACK_INVERSE_CUDA_MIN=N` overrides
+`MPLAPACK_MPFR_LAPACK_CUDA_MIN=N`; absent both, the minimum is LONG_MAX.
+`MPLAPACK_MPFR_CUDA=0` or `MPLAPACK_MPFR_LAPACK_CUDA=0` disables them.
+`MPLAPACK_MPFR_CUDA_FORCE_RUNTIME=1`, `MPLAPACK_MPFR_CUDA_RUNTIME=0`, and
+`MPLAPACK_MPFR_CUDA_VERBOSE=1` have their usual meanings. LAPACK_FAST retains
+reference arithmetic. No new performance crossover or dispatcher default
+is inferred. Rejection uses the same optimized CPU inverse and CPU BLAS
+implementation as the CPU library, not a private serial reference substitute.
+
+Eligibility requires uniform default precision, nearest rounding, finite
+referenced inputs, and the default exponent range. The opposite triangle,
+padding, and unit diagonal are neither packed nor published. In addition,
+operands of each arithmetic operation must have exponents within
++/-floor((2^30-1-4*p-128)/4), with p the precision: this conservative guard
+reserves cancellation/rounding headroom and avoids device MPC's shared exception
+state and guarantees that a primitive operation cannot underflow or overflow.
+It is deliberately stricter than the factor input gate near exponent limits.
+Every operation records a sticky thread failure, even if the generated
+reference subsequently overwrites that value. Zero signs are strict, with
+no legacy-BLAS allowance.
+
+The common GPU mutex protects the whole residency. A and GETRI scratch stay
+on-device; only singular-status feedback crosses between blocks. Memory
+preflight accounts for the actual value-tier sizes, matrix, O(n*nb) scratch,
+pivots, bounded thread arenas, dynamic scalar slots/view descriptors when
+needed, and **all potentially resident threads' stack**,
+including a larger inherited limit. The inverse stack reserve is twice the
+complex factor policy to allow the generated inverse/BLAS caller frames:
+fixed <=1024 bits 16 KiB, fixed 2048 bits 32 KiB; runtime <=1024 bits
+16 KiB, <=2048 bits 32 KiB, above that 128 KiB. This is a conservative
+reserve, not a measured minimum. Arena/precision state is restored before
+publication; stack restoration follows the shared opt-in policy. Any rejection, allocation/launch/transfer
+or arithmetic failure leaves A, work, pivots and info untouched. Pivots are
+input-only. GETRI queries and n=0 return false; reduced lwork, singular info,
+work[0] and precisely the reference-written scratch slots are preserved.
+Scratch values are never read from the caller; written destinations must
+have the default precision, including work[0].
+
+Focused tests: CMake `mpfr_cuda_inverse_{host,device}_{512,200,forced}`;
+autotools `make -C mpblas/optimized/mpfr/cuda inverse_gpu_host_test_mpfr`
+and `cd mpblas/optimized/mpfr/cuda && test/inverse_host_sweep.sh`.
+They compare unchanged CPU reference oracles, all matrix/work storage and
+zero signs, both triangles, unit/nonunit, singular and pivoted cases,
+reduced/optimal workspace, padding, n=1/2/3/63/64/65/131, and rejection
+atomicity (n=0/query, invalid arguments/pivots, precision, NaN, exponent,
+rounding, disabled and default opt-in gates). `--small` selects n=1/3.
+`--real-small` and `--real-blocked` exercise the dynamic real engine at
+16384 and 8192 bits (the latter includes n=65 and reduced/blocked GETRI);
+CMake registers them as `_larger_real` and `_large_real`, respectively.
+Device tests skip with 77 without a GPU. Full LAPACK QA, performance gates,
+and untested hardware remain outside this focused check.
+
+## BLAS1 entries and fast reductions (goal 11)
+
+`Raxpy`, `Rcopy`, `iRamax`, `iCamax`, `Rdot`, `Cdotc`, `Cdotu`, `Rasum`,
+`RCasum`, `Rnrm2`, `RCnrm2` have `_mpfr_cuda` entries. Non-void results
+use the final `result` reference in the generated header. New dispatchers
+remain CPU by default: `MPLAPACK_MPFR_CUDA_L12=1` enables GPU attempts,
+subject to `MPLAPACK_MPFR_CUDA` and `MPLAPACK_MPFR_CUDA_MIN_MNK` (vector
+length, default 32768). The seven summation entries additionally require
+`MPLAPACK_MPFR_MPBLAS_FAST=1`. CPU fast reductions use the separate
+`MPLAPACK_MPBLAS_FAST=1`. These new-entry settings are read on every call.
+
+The new kernels share the deterministic adjacent-pair tree and scaled norm
+algebra with the CPU and BF backends; see the [common README](../../common/README.md#opt-in-blas1-reductions-goal-11)
+for error bounds and tests. The MPFR adapters reuse the inverse-local signed
+and checked values: fixed 256/512/768/1024/2048, runtime cu_mpfr otherwise
+or with `MPLAPACK_MPFR_CUDA_FORCE_RUNTIME=1`. Real precision is dynamically
+sized above 4096; complex retains the factor adapter's 4096-bit cap.
+`MPLAPACK_MPFR_CUDA_RUNTIME=0` disables runtime precision, and
+`MPLAPACK_MPFR_CUDA_VERBOSE=1` reports runtime/launch failures.
+
+Uniform default precision, RNDN, finite inputs, default exponent limits,
+and the inverse per-operation exponent guard apply. All operations use the
+common GPU mutex; memory preflight includes operands/tree, bounded scratch,
+scalar pool and inherited/scoped stack. Final results are downloaded and
+validated before publication; failures leave every caller output unchanged.
+Copy's output values are not read. No legacy signed-zero allowance is used.
+The inverse driver translation units instantiate these shared internal
+adapters; no inverse schedule or numerical operation was changed.
+
+Focused CMake tests: `mpfr_cuda_Rblas1_{host,device}_{512,200,4097,8192}`;
+`make -C mpblas/optimized/mpfr/cuda Rblas1_gpu_host_test_mpfr` builds the
+matching autotools executable. 4097/8192 test the dynamic real path only.
+
+## Triangular vector solves (goal 11)
+
+`Rtrsv/Rtbsv/Rtpsv/Ctrsv/Ctbsv/Ctpsv_mpfr_cuda` follow the
+[shared solve contract](../../common/README.md#opt-in-gpu-triangular-vector-solves-goal-11).
+The ordinary symbols remain CPU by default: `MPLAPACK_MPFR_CUDA_L12=1`
+enables GPU attempts, subject to `MPLAPACK_MPFR_CUDA` and
+`MPLAPACK_MPFR_CUDA_MIN_MNK` (n*n or band n*(k+1), default 32768).
+No new crossover or LAPACK dispatch policy is introduced.
+
+They use inverse-local checked values, fixed256/512/768/1024/2048 with
+correctly rounded real division, cu_mpfr otherwise/forced, dynamically
+sized real precision above4096 and the existing complex4096 cap. Runtime
+can be disabled with `MPLAPACK_MPFR_CUDA_RUNTIME=0`. Uniform default
+precision/RNDN, finite inputs, default exponent bounds and per-operation
+exponent guards match the inverse/BLAS1 entries. The common mutex, scoped
+arena/stack, inherited-stack memory preflight and all-or-nothing publication
+are reused. Legacy fixed-BLAS signed-zero exceptions are not used.
+
+CMake: `mpfr_cuda_Rtrisolve_{host,device}_{512,200}`; autotools:
+`make -C mpblas/optimized/mpfr/cuda Rtrisolve_gpu_host_test_mpfr`.
+Run with `MPFRXX_DEFAULT_PRECISION_BITS=P`; above4096 tests use real n<=7.
+`MPLAPACK_MPFR_CUDA_FORCE_RUNTIME=1` exercises runtime arithmetic at a
+fixed-tier precision. Device-pointer schedules use `Rtrisolve_jobs.h`;
+`Rtrisolve_device_body.cuh` and the dynamic residency adapter launch them.
+
+## Limitations
+
+- Accelerated: `Rgemm`, `Rsyrk`, `Rsyr2k`, `Rsymm`, `Rtrmm`, `Rtrsm`, the
+  complex Level 3 routines and `Rgemmtr` (Level 1 and 2 on request), and
+  resident `Rgetrf` / `Cgetrf` / `Rpotrf` / `Cpotrf`, and real/complex
+  `getrs` / `potrs` / `gesv` / `posv`, plus opt-in real/complex
+  `trtri` / `lauum` / `potri` / `getri`.
+- One thread per element of `C`, no shared-memory tiling yet.
+- The Winograd variant exists for the fixed precisions only (not for the
+  `cu_mpfr` kernels) and allocates its temporaries with `cudaMalloc` at every level.
+- `Rtrsm` has been measured on A100 (see the patch README); no timings for
+  the remaining BLAS routines are recorded here.

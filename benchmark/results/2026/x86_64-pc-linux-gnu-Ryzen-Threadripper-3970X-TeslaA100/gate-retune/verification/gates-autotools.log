@@ -1,0 +1,37 @@
+PASS td Rpotrf n=256 upper=False settings=None entry=0
+PASS td Rpotrf n=512 upper=False settings=None entry=1
+PASS td Rpotrf n=256 upper=True settings=None entry=0
+PASS td Rpotrf n=512 upper=True settings=None entry=1
+PASS qd Rpotrf n=256 upper=False settings=None entry=0
+PASS qd Rpotrf n=512 upper=False settings=None entry=1
+PASS qd Rpotrf n=256 upper=True settings=None entry=0
+PASS qd Rpotrf n=512 upper=True settings=None entry=1
+PASS qd Rgetrf n=256 upper=False settings=None entry=0
+PASS qd Rgetrf n=512 upper=False settings=None entry=1
+PASS qd Cgetrf n=256 upper=False settings=None entry=0
+PASS qd Cgetrf n=512 upper=False settings=None entry=1
+PASS mpfr Rgetrf n=512 upper=False settings=None entry=0
+PASS mpfr Rgetrf n=1024 upper=False settings=None entry=1
+PASS mpfr Rgesv n=512 upper=False settings=None entry=0
+PASS mpfr Rgesv n=1024 upper=False settings=None entry=1
+PASS mpfr Cgesv n=1024 upper=False settings=None entry=0
+PASS dd Cpotrf n=4096 upper=True settings=None entry=0
+PASS td Cpotrf n=4096 upper=True settings=None entry=0
+PASS qd Cpotrf n=4096 upper=True settings=None entry=0
+PASS dd Rpotrf n=32 upper=False settings={'_LAPACK_CUDA_MIN': 0} entry=1
+PASS dd Rpotrf n=32 upper=False settings={'_LAPACK_CUDA_MIN': 0, '_LAPACK_CUDA': 0} entry=0
+PASS dd Cpotrf n=32 upper=False settings={'_LAPACK_CUDA_MIN': 0} entry=1
+PASS dd Rgesv n=32 upper=False settings={'_LAPACK_DRIVER_CUDA_MIN': 0} entry=1
+PASS td Rpotrf n=32 upper=False settings={'_LAPACK_CUDA_MIN': 0} entry=1
+PASS td Rpotrf n=32 upper=False settings={'_LAPACK_CUDA_MIN': 0, '_LAPACK_CUDA': 0} entry=0
+PASS td Cpotrf n=32 upper=False settings={'_LAPACK_CUDA_MIN': 0} entry=1
+PASS td Rgesv n=32 upper=False settings={'_LAPACK_DRIVER_CUDA_MIN': 0} entry=1
+PASS qd Rpotrf n=32 upper=False settings={'_LAPACK_CUDA_MIN': 0} entry=1
+PASS qd Rpotrf n=32 upper=False settings={'_LAPACK_CUDA_MIN': 0, '_LAPACK_CUDA': 0} entry=0
+PASS qd Cpotrf n=32 upper=False settings={'_LAPACK_CUDA_MIN': 0} entry=1
+PASS qd Rgesv n=32 upper=False settings={'_LAPACK_DRIVER_CUDA_MIN': 0} entry=1
+PASS mpfr Rpotrf n=32 upper=False settings={'_LAPACK_CUDA_MIN': 0} entry=1
+PASS mpfr Rpotrf n=32 upper=False settings={'_LAPACK_CUDA_MIN': 0, '_LAPACK_CUDA': 0} entry=0
+PASS mpfr Cpotrf n=32 upper=False settings={'_LAPACK_CUDA_MIN': 0} entry=1
+PASS mpfr Rgesv n=32 upper=False settings={'_LAPACK_DRIVER_CUDA_MIN': 0} entry=1
+PASS 36 dispatch checks

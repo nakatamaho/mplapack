@@ -22,7 +22,7 @@ fi
 autoreconf --force --install
 arch="$(uname -m)"
 enable_benchmark="${ENABLE_BENCHMARK:-yes}"
-configure_opts="--prefix=$HOME/MPLAPACK --enable-gmp=yes --enable-mpfr=yes --enable-binary128=yes --enable-qd=yes --enable-dd=yes --enable-double=yes --enable-test=yes"
+configure_opts="--prefix=$HOME/MPLAPACK --enable-gmp=yes --enable-mpfr=yes --enable-binary128=yes --enable-qd=yes --enable-dd=yes --enable-td=yes --enable-double=yes --enable-test=yes"
 
 case "$arch" in
     x86_64|i386|i486|i586|i686)

@@ -1,0 +1,13 @@
+backend,library,routine,n,threads,best_of_2_s
+dd,cpu,Rgetrf,512,32,0.035127662
+dd,cpu,Rgetrf,1024,32,0.151571835
+dd,cpu,Cgetrf,512,32,0.245224884
+dd,cpu,Cgetrf,1024,32,0.452364719
+td,cpu,Rgetrf,512,32,0.120686719
+td,cpu,Rgetrf,1024,32,0.450751184
+td,cpu,Cgetrf,512,32,0.344974512
+td,cpu,Cgetrf,1024,32,1.534629
+qd,cpu,Rgetrf,512,32,0.232608018
+qd,cpu,Rgetrf,1024,32,0.868539302
+qd,cpu,Cgetrf,512,32,0.709852297
+qd,cpu,Cgetrf,1024,32,2.78357296

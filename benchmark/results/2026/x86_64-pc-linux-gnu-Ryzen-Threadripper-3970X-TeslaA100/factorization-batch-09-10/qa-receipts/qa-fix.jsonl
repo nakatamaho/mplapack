@@ -1,0 +1,8 @@
+{"name": "lin-mpfr-reference-R", "returncode": 0, "seconds": 35.663161277770996, "fix": "MPFR LATB4 Rlabad generator scaling", "command": ["/home/docker/mplapack-acceralation/mplapack/test/lin/mpfr/xlintstR_mpfr"]}
+{"name": "lin-mpfr-cpu-R", "returncode": 0, "seconds": 40.744497776031494, "fix": "MPFR LATB4 Rlabad generator scaling", "command": ["/home/docker/mplapack-acceralation/mplapack/test/lin/mpfr/xlintstR_mpfr_opt"]}
+{"name": "lin-mpfr-cmake-reference-R", "returncode": 0, "seconds": 35.76508355140686, "fix": "MPFR LATB4 Rlabad generator scaling", "command": ["/tmp/factor01-cmake/mplapack/test/xlintstR_mpfr"]}
+{"name": "lin-mpfr-cmake-opt-R", "returncode": 0, "seconds": 41.82733106613159, "fix": "MPFR LATB4 Rlabad generator scaling", "command": ["/tmp/factor01-cmake/mplapack/test/xlintstR_mpfr_opt"]}
+{"name": "lin-mpfr-cpu-C", "returncode": 0, "seconds": 129.72559571266174, "fix": "MPFR LATB4 Rlabad generator scaling", "command": ["/home/docker/mplapack-acceralation/mplapack/test/lin/mpfr/xlintstC_mpfr_opt"]}
+{"name": "lin-mpfr-reference-C", "returncode": 0, "seconds": 142.5312623977661, "fix": "MPFR LATB4 Rlabad generator scaling", "command": ["/home/docker/mplapack-acceralation/mplapack/test/lin/mpfr/xlintstC_mpfr"]}
+{"name": "lin-mpfr-cmake-reference-C", "returncode": 0, "seconds": 142.68545126914978, "fix": "MPFR LATB4 Rlabad generator scaling", "command": ["/tmp/factor01-cmake/mplapack/test/xlintstC_mpfr"]}
+{"name": "lin-mpfr-cmake-opt-C", "returncode": 0, "seconds": 123.25073146820068, "fix": "MPFR LATB4 Rlabad generator scaling", "command": ["/tmp/factor01-cmake/mplapack/test/xlintstC_mpfr_opt"]}

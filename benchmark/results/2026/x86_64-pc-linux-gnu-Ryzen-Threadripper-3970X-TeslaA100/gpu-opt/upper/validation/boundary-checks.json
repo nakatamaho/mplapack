@@ -1,0 +1,42 @@
+[
+  {
+    "rank": 0,
+    "n": 7,
+    "sha256": "ae8f24fa525c45ff16e2cb57d61b9e667098895c788e9e28268fdbb982d8a166"
+  },
+  {
+    "rank": 0,
+    "n": 63,
+    "sha256": "13dd08885041b6fb1e90d9f718d1e35d17cd1dfe1d5f607101fba02020a21ab5"
+  },
+  {
+    "rank": 0,
+    "n": 64,
+    "sha256": "7a2e135df1106817e19b788d20b2133fc5df6dc2149aec8f212753d2c0a6a21a"
+  },
+  {
+    "rank": 0,
+    "n": 65,
+    "sha256": "06cee586b9aa38d0cf5c493017c7c5ae564597c706f9b65024eb2028bb2ef2ee"
+  },
+  {
+    "rank": 1,
+    "n": 7,
+    "sha256": "4cd17d153a1a0b3ab90469f56c0f12e21d8c5ee536ddaf2c214fa16ea4c95ab6"
+  },
+  {
+    "rank": 1,
+    "n": 63,
+    "sha256": "5e8737c171e9edb5dae82cdd5b801f55bcc9dfd92de342baf97c830e6023a727"
+  },
+  {
+    "rank": 1,
+    "n": 64,
+    "sha256": "c3abe2716791f54095092ef5ca2012e69d7a3a83dccb8c067e40d696a66a6ef2"
+  },
+  {
+    "rank": 1,
+    "n": 65,
+    "sha256": "500ae398fbe940884862d93a322fa9968dfbdfbb6a1bf3d4c6f82e0e564a83dc"
+  }
+]

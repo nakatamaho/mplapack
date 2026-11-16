@@ -1,0 +1,531 @@
+
+### dd_Rasum_cpu-default_1024_pilot
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Rasum default 1024 --reps 1 --warmup 1
+OMP_NUM_THREADS=32
+dd,Rasum,inc1,1024,cpu-default,1.7223e-05,0.0594553794,1
+
+exit=0, elapsed=0.003954
+
+exit receipt: 0
+
+### dd_Rasum_cpu-default_32768_pilot
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Rasum default 32768 --reps 1 --warmup 1
+OMP_NUM_THREADS=32
+dd,Rasum,inc1,32768,cpu-default,9.3649e-05,0.349902295,1
+
+exit=0, elapsed=0.007723
+
+exit receipt: 0
+
+### dd_Rasum_cpu-default_1024_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Rasum default 1024
+OMP_NUM_THREADS=32
+dd,Rasum,inc1,1024,cpu-default,1.3135e-05,0.0779596498,3
+
+exit=0, elapsed=0.004703
+
+exit receipt: 0
+
+### dd_Rasum_cpu-default_1280_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Rasum default 1280
+OMP_NUM_THREADS=32
+dd,Rasum,inc1,1280,cpu-default,1.2364e-05,0.103526367,3
+
+exit=0, elapsed=0.003291
+
+exit receipt: 0
+
+### dd_Rasum_cpu-default_1536_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Rasum default 1536
+OMP_NUM_THREADS=32
+dd,Rasum,inc1,1536,cpu-default,9.909e-06,0.155010596,3
+
+exit=0, elapsed=0.002956
+
+exit receipt: 0
+
+### dd_Rasum_cpu-default_1792_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Rasum default 1792
+OMP_NUM_THREADS=32
+dd,Rasum,inc1,1792,cpu-default,1.6832e-05,0.106463878,3
+
+exit=0, elapsed=0.004119
+
+exit receipt: 0
+
+### dd_Rasum_cpu-default_2048_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Rasum default 2048
+OMP_NUM_THREADS=32
+dd,Rasum,inc1,2048,cpu-default,1.9257e-05,0.106350937,3
+
+exit=0, elapsed=0.003639
+
+exit receipt: 0
+
+### dd_Rasum_cpu-default_2560_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Rasum default 2560
+OMP_NUM_THREADS=32
+dd,Rasum,inc1,2560,cpu-default,3.2021e-05,0.0799475344,3
+
+exit=0, elapsed=0.004390
+
+exit receipt: 0
+
+### dd_Rasum_cpu-default_3072_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Rasum default 3072
+OMP_NUM_THREADS=32
+dd,Rasum,inc1,3072,cpu-default,2.8515e-05,0.107732772,3
+
+exit=0, elapsed=0.003476
+
+exit receipt: 0
+
+### dd_Rasum_cpu-default_3584_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Rasum default 3584
+OMP_NUM_THREADS=32
+dd,Rasum,inc1,3584,cpu-default,3.3503e-05,0.106975495,3
+
+exit=0, elapsed=0.003610
+
+exit receipt: 0
+
+### dd_Rasum_cpu-default_4096_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Rasum default 4096
+OMP_NUM_THREADS=32
+dd,Rasum,inc1,4096,cpu-default,5.7099e-05,0.0717350567,3
+
+exit=0, elapsed=0.005125
+
+exit receipt: 0
+
+### dd_Rasum_cpu-default_5120_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Rasum default 5120
+OMP_NUM_THREADS=32
+dd,Rasum,inc1,5120,cpu-default,5.0375e-05,0.101637717,3
+
+exit=0, elapsed=0.003687
+
+exit receipt: 0
+
+### dd_Rasum_cpu-default_6144_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Rasum default 6144
+OMP_NUM_THREADS=32
+dd,Rasum,inc1,6144,cpu-default,8.6395e-05,0.0711152266,3
+
+exit=0, elapsed=0.005100
+
+exit receipt: 0
+
+### dd_Rasum_cpu-default_7168_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Rasum default 7168
+OMP_NUM_THREADS=32
+dd,Rasum,inc1,7168,cpu-default,4.4575e-05,0.160807628,3
+
+exit=0, elapsed=0.004924
+
+exit receipt: 0
+
+### dd_Rasum_cpu-default_8192_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Rasum default 8192
+OMP_NUM_THREADS=32
+dd,Rasum,inc1,8192,cpu-default,5.1248e-05,0.15985014,3
+
+exit=0, elapsed=0.004660
+
+exit receipt: 0
+
+### dd_Rasum_cpu-default_10240_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Rasum default 10240
+OMP_NUM_THREADS=32
+dd,Rasum,inc1,10240,cpu-default,6.6126e-05,0.154855881,3
+
+exit=0, elapsed=0.004757
+
+exit receipt: 0
+
+### dd_Rasum_cpu-default_12288_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Rasum default 12288
+OMP_NUM_THREADS=32
+dd,Rasum,inc1,12288,cpu-default,7.9681e-05,0.154214932,3
+
+exit=0, elapsed=0.004979
+
+exit receipt: 0
+
+### dd_Rasum_cpu-default_14336_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Rasum default 14336
+OMP_NUM_THREADS=32
+dd,Rasum,inc1,14336,cpu-default,0.000114948,0.124717263,3
+
+exit=0, elapsed=0.004854
+
+exit receipt: 0
+
+### dd_Rasum_cpu-default_16384_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Rasum default 16384
+OMP_NUM_THREADS=32
+dd,Rasum,inc1,16384,cpu-default,5.4213e-05,0.302215336,3
+
+exit=0, elapsed=0.004794
+
+exit receipt: 0
+
+### dd_Rasum_cpu-default_20480_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Rasum default 20480
+OMP_NUM_THREADS=32
+dd,Rasum,inc1,20480,cpu-default,6.5695e-05,0.311743664,3
+
+exit=0, elapsed=0.006846
+
+exit receipt: 0
+
+### dd_Rasum_cpu-default_24576_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Rasum default 24576
+OMP_NUM_THREADS=32
+dd,Rasum,inc1,24576,cpu-default,9.1624e-05,0.268226666,3
+
+exit=0, elapsed=0.007137
+
+exit receipt: 0
+
+### dd_Rasum_cpu-default_28672_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Rasum default 28672
+OMP_NUM_THREADS=32
+dd,Rasum,inc1,28672,cpu-default,7.1997e-05,0.398238816,3
+
+exit=0, elapsed=0.006959
+
+exit receipt: 0
+
+### dd_Rasum_cpu-default_32768_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Rasum default 32768
+OMP_NUM_THREADS=32
+dd,Rasum,inc1,32768,cpu-default,9.2486e-05,0.354302273,3
+
+exit=0, elapsed=0.007319
+
+exit receipt: 0
+
+### dd_Rasum_cpu-default_40960_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Rasum default 40960
+OMP_NUM_THREADS=32
+dd,Rasum,inc1,40960,cpu-default,0.000112343,0.364597705,3
+
+exit=0, elapsed=0.007433
+
+exit receipt: 0
+
+### dd_Rasum_cpu-default_49152_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Rasum default 49152
+OMP_NUM_THREADS=32
+dd,Rasum,inc1,49152,cpu-default,0.00012609,0.389816798,3
+
+exit=0, elapsed=0.007427
+
+exit receipt: 0
+
+### dd_Rasum_cpu-default_57344_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Rasum default 57344
+OMP_NUM_THREADS=32
+dd,Rasum,inc1,57344,cpu-default,0.00015253,0.375952272,3
+
+exit=0, elapsed=0.009174
+
+exit receipt: 0
+
+### dd_Rasum_cpu-default_65536_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Rasum default 65536
+OMP_NUM_THREADS=32
+dd,Rasum,inc1,65536,cpu-default,0.000168971,0.387853537,3
+
+exit=0, elapsed=0.010395
+
+exit receipt: 0
+
+### dd_Rasum_cpu-default_81920_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Rasum default 81920
+OMP_NUM_THREADS=32
+dd,Rasum,inc1,81920,cpu-default,0.000205821,0.398015752,3
+
+exit=0, elapsed=0.010790
+
+exit receipt: 0
+
+### dd_Rasum_cpu-default_98304_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Rasum default 98304
+OMP_NUM_THREADS=32
+dd,Rasum,inc1,98304,cpu-default,0.000241579,0.406922787,3
+
+exit=0, elapsed=0.010943
+
+exit receipt: 0
+
+### dd_Rasum_cpu-default_114688_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Rasum default 114688
+OMP_NUM_THREADS=32
+dd,Rasum,inc1,114688,cpu-default,0.00028424,0.403490008,3
+
+exit=0, elapsed=0.012372
+
+exit receipt: 0
+
+### dd_Rasum_cpu-default_131072_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Rasum default 131072
+OMP_NUM_THREADS=32
+dd,Rasum,inc1,131072,cpu-default,0.00031034,0.422349681,3
+
+exit=0, elapsed=0.013511
+
+exit receipt: 0
+
+### dd_Rasum_cpu-default_163840_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Rasum default 163840
+OMP_NUM_THREADS=32
+dd,Rasum,inc1,163840,cpu-default,0.000371887,0.440563935,3
+
+exit=0, elapsed=0.017107
+
+exit receipt: 0
+
+### dd_Rasum_cpu-default_196608_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Rasum default 196608
+OMP_NUM_THREADS=32
+dd,Rasum,inc1,196608,cpu-default,0.000433605,0.453426506,3
+
+exit=0, elapsed=0.019004
+
+exit receipt: 0
+
+### dd_Rasum_cpu-default_229376_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Rasum default 229376
+OMP_NUM_THREADS=32
+dd,Rasum,inc1,229376,cpu-default,0.0004995,0.459211211,3
+
+exit=0, elapsed=0.020574
+
+exit receipt: 0
+
+### dd_Rasum_cpu-default_262144_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Rasum default 262144
+OMP_NUM_THREADS=32
+dd,Rasum,inc1,262144,cpu-default,0.00054201,0.483651593,3
+
+exit=0, elapsed=0.023093
+
+exit receipt: 0
+
+### dd_Rasum_cpu-default_327680_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Rasum default 327680
+OMP_NUM_THREADS=32
+dd,Rasum,inc1,327680,cpu-default,0.000664984,0.492763736,3
+
+exit=0, elapsed=0.028682
+
+exit receipt: 0
+
+### dd_Rasum_cpu-default_393216_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Rasum default 393216
+OMP_NUM_THREADS=32
+dd,Rasum,inc1,393216,cpu-default,0.000796023,0.493975677,3
+
+exit=0, elapsed=0.031470
+
+exit receipt: 0
+
+### dd_Rasum_cpu-default_458752_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Rasum default 458752
+OMP_NUM_THREADS=32
+dd,Rasum,inc1,458752,cpu-default,0.000900903,0.509213534,3
+
+exit=0, elapsed=0.037710
+
+exit receipt: 0
+
+### dd_Rasum_cpu-default_524288_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Rasum default 524288
+OMP_NUM_THREADS=32
+dd,Rasum,inc1,524288,cpu-default,0.001007095,0.520594383,3
+
+exit=0, elapsed=0.042070
+
+exit receipt: 0
+
+### dd_Rasum_cpu-default_655360_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Rasum default 655360
+OMP_NUM_THREADS=32
+dd,Rasum,inc1,655360,cpu-default,0.001277809,0.512877903,3
+
+exit=0, elapsed=0.052185
+
+exit receipt: 0
+
+### dd_Rasum_cpu-default_786432_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Rasum default 786432
+OMP_NUM_THREADS=32
+dd,Rasum,inc1,786432,cpu-default,0.001438786,0.546594143,3
+
+exit=0, elapsed=0.061292
+
+exit receipt: 0
+
+### dd_Rasum_cpu-default_917504_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Rasum default 917504
+OMP_NUM_THREADS=32
+dd,Rasum,inc1,917504,cpu-default,0.001559625,0.588285004,3
+
+exit=0, elapsed=0.072747
+
+exit receipt: 0
+
+### dd_Rasum_cpu-default_1048576_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Rasum default 1048576
+OMP_NUM_THREADS=32
+dd,Rasum,inc1,1048576,cpu-default,0.001838636,0.570301028,3
+
+exit=0, elapsed=0.080312
+
+exit receipt: 0
+
+### dd_Rasum_cpu-default_1310720_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Rasum default 1310720
+OMP_NUM_THREADS=32
+dd,Rasum,inc1,1310720,cpu-default,0.002265227,0.578626336,3
+
+exit=0, elapsed=0.100525
+
+exit receipt: 0
+
+### dd_Rasum_cpu-default_1572864_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Rasum default 1572864
+OMP_NUM_THREADS=32
+dd,Rasum,inc1,1572864,cpu-default,0.002722065,0.577820148,3
+
+exit=0, elapsed=0.112450
+
+exit receipt: 0
+
+### dd_Rasum_cpu-default_1835008_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Rasum default 1835008
+OMP_NUM_THREADS=32
+dd,Rasum,inc1,1835008,cpu-default,0.003062893,0.599109404,3
+
+exit=0, elapsed=0.135305
+
+exit receipt: 0
+
+### dd_Rasum_cpu-default_2097152_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Rasum default 2097152
+OMP_NUM_THREADS=32
+dd,Rasum,inc1,2097152,cpu-default,0.003512027,0.597134361,3
+
+exit=0, elapsed=0.153055
+
+exit receipt: 0
+
+### dd_Rasum_cpu-default_2621440_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Rasum default 2621440
+OMP_NUM_THREADS=32
+dd,Rasum,inc1,2621440,cpu-default,0.009844918,0.266273421,1
+
+exit=0, elapsed=0.168309
+
+exit receipt: 0
+
+### dd_Rasum_cpu-default_3145728_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Rasum default 3145728
+OMP_NUM_THREADS=32
+dd,Rasum,inc1,3145728,cpu-default,0.011973204,0.262730678,1
+
+exit=0, elapsed=0.203059
+
+exit receipt: 0
+
+### dd_Rasum_cpu-default_3670016_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Rasum default 3670016
+OMP_NUM_THREADS=32
+dd,Rasum,inc1,3670016,cpu-default,0.013190979,0.278221654,1
+
+exit=0, elapsed=0.237716
+
+exit receipt: 0
+
+### dd_Rasum_cpu-default_4194304_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Rasum default 4194304
+OMP_NUM_THREADS=32
+dd,Rasum,inc1,4194304,cpu-default,0.015116479,0.277465672,1
+
+exit=0, elapsed=0.266805
+
+exit receipt: 0
+
+### dd_Rasum_cpu-default_5242880_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Rasum default 5242880
+OMP_NUM_THREADS=32
+dd,Rasum,inc1,5242880,cpu-default,0.018021703,0.290920342,1
+
+exit=0, elapsed=0.326095
+
+exit receipt: 0
+
+### dd_Rasum_cpu-default_6291456_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Rasum default 6291456
+OMP_NUM_THREADS=32
+dd,Rasum,inc1,6291456,cpu-default,0.021292392,0.295479061,1
+
+exit=0, elapsed=0.387305
+
+exit receipt: 0
+
+### dd_Rasum_cpu-default_7340032_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Rasum default 7340032
+OMP_NUM_THREADS=32
+dd,Rasum,inc1,7340032,cpu-default,0.025864374,0.283789277,1
+
+exit=0, elapsed=0.466927
+
+exit receipt: 0
+
+### dd_Rasum_cpu-default_8388608_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Rasum default 8388608
+OMP_NUM_THREADS=32
+dd,Rasum,inc1,8388608,cpu-default,0.029491349,0.284443007,1
+
+exit=0, elapsed=0.536334
+
+exit receipt: 0
+
+### dd_Rasum_cpu-default_10485760_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Rasum default 10485760
+OMP_NUM_THREADS=32
+dd,Rasum,inc1,10485760,cpu-default,0.034647332,0.302642639,1
+
+exit=0, elapsed=0.648246
+
+exit receipt: 0
+
+### dd_Rasum_cpu-default_12582912_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Rasum default 12582912
+OMP_NUM_THREADS=32
+dd,Rasum,inc1,12582912,cpu-default,0.042409659,0.296699202,1
+
+exit=0, elapsed=0.778970
+
+exit receipt: 0
+
+### dd_Rasum_cpu-default_14680064_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Rasum default 14680064
+OMP_NUM_THREADS=32
+dd,Rasum,inc1,14680064,cpu-default,0.047075821,0.311838725,1
+
+exit=0, elapsed=0.931363
+
+exit receipt: 0
+
+### dd_Rasum_cpu-default_16777216_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Rasum default 16777216
+OMP_NUM_THREADS=32
+dd,Rasum,inc1,16777216,cpu-default,0.053751744,0.312124124,1
+
+exit=0, elapsed=1.054700
+
+exit receipt: 0

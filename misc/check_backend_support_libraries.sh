@@ -16,6 +16,7 @@ runtime_dirs="$runtime_dirs:$top_builddir/mpblas/optimized/gmp/.libs"
 runtime_dirs="$runtime_dirs:$top_builddir/mpblas/optimized/mpfr/.libs"
 runtime_dirs="$runtime_dirs:$top_builddir/mpblas/optimized/qd/.libs"
 runtime_dirs="$runtime_dirs:$top_builddir/mpblas/optimized/dd/.libs"
+runtime_dirs="$runtime_dirs:$top_builddir/mpblas/optimized/td/.libs"
 runtime_dirs="$runtime_dirs:$top_builddir/mplapack/test/matgen/.libs"
 runtime_dirs="$runtime_dirs:$top_builddir/mplapack/test/lin/.libs"
 runtime_dirs="$runtime_dirs:$top_builddir/mplapack/test/eig/.libs"
@@ -28,11 +29,11 @@ done
 status=0
 for suite in matgen lin eig; do
     library_dir="$top_builddir/mplapack/test/$suite/.libs"
-    for backend in gmp gmp_opt mpfr mpfr_opt qd qd_opt dd dd_opt; do
+    for backend in gmp gmp_opt mpfr mpfr_opt qd qd_opt dd dd_opt td td_opt; do
         case "$backend" in
             gmp*) dependency=gmp ;;
             mpfr*) dependency=mpc ;;
-            qd*|dd*) dependency=qd ;;
+            qd*|dd*|td*) dependency=qd ;;
         esac
         for library in \
             "$library_dir"/lib${suite}_${backend}.so \

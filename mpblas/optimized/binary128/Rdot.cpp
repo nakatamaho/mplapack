@@ -35,15 +35,16 @@ mplapack_binary128_t Rdot_omp(mplapackint n, mplapack_binary128_t * dx, mplapack
 
 #define SINGLEOROMP 1000
 
+
+// The reference result bit for bit: Rdot_par (../common/blas/Rdot_par.cpp,
+// the reference loop with its sums of five in parallel), else the reference.
+bool Rdot_par(mplapackint const n, mplapack_binary128_t *dx, mplapackint const incx, mplapack_binary128_t *dy, mplapackint const incy, mplapack_binary128_t &result);
+mplapack_binary128_t Rdot_reference_cpu(mplapackint const n, mplapack_binary128_t *dx, mplapackint const incx, mplapack_binary128_t *dy, mplapackint const incy);
+
 mplapack_binary128_t Rdot(mplapackint const n, mplapack_binary128_t *dx, mplapackint const incx, mplapack_binary128_t *dy, mplapackint const incy)
 {
-    mplapackint ix = 0;
-    mplapackint iy = 0;
-    mplapackint i;
-
-    if (1) {
-	return Rdot_omp(n, dx, incx, dy, incy);
-    } else {
-	return Rdot_ref(n, dx, incx, dy, incy);
-    }
+    mplapack_binary128_t result;
+    if (Rdot_par(n, dx, incx, dy, incy, result))
+        return result;
+    return Rdot_reference_cpu(n, dx, incx, dy, incy);
 }

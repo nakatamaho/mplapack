@@ -1,0 +1,679 @@
+// MPFR-only reference-order real LU/Cholesky scheduler and panel jobs.
+// Included after the arithmetic engine; never includes host mpfr_class.
+#ifndef MPLAPACK_MPFR_FACTOR_DEVICE_BODY_CUH
+#define MPLAPACK_MPFR_FACTOR_DEVICE_BODY_CUH
+#include <algorithm>
+#include <chrono>
+#include <cstdlib>
+#include <vector>
+#include <limits>
+#include "Rfactor_kernel_cuda.h"
+#include "blas3_kernel_cuda.h"
+#ifndef MPLAPACK_MPFR_FACTOR_COMPLEX
+#include "Rgemm_tiled_cuda.h"
+#endif
+#include "mpfr_cuda_stack.h"
+#include "../../common/Rpotrf_right_common.h"
+#ifdef MPLAPACK_MPFR_FACTOR_COMPLEX
+#include "Rpotrf_upper_cuda.h"
+#endif
+#ifndef MPLAPACK_MPFR_CUDA_HOST_EMULATION
+#include <cuda_runtime.h>
+#endif
+namespace mplapack_mpfr_cuda {
+namespace {
+constexpr long factor_threads=64,factor_blocks=128,factor_pool=factor_threads*factor_blocks;
+template<class E> struct factor_job {
+    E e;
+    typename E::M a{}, b{}, c{}, constants{};
+    l3_shape s{};
+    gemm_shape g{};
+    long *piv=nullptr, *status=nullptr, *candidates=nullptr;
+    long m=0,n=0,k1=0,k2=0,offset=0;
+    int op=0;
+    // 0 BLAS, 1 GEMM, 2 pivot chunks, 3 pivot/reciprocal, 4 scale,
+    // 5 swaps, 6 adjust pivots, 7 sqrt. Pivots are local, one-based.
+    L3_HD void operator()(long lane) {
+        if(op==0) {
+            blas_mats<E> x{};
+            x.a=a; x.b=b; x.c=c;
+            x.al=constants; x.be=constants;
+#ifdef MPLAPACK_MPFR_FACTOR_COMPLEX
+            e.trsm(s,x,lane);
+#else
+            l3_trsm(e,s,x,lane);
+#endif
+        } else if(op==2) {
+            long start=lane*128, end=start+128<m?start+128:m, best=start;
+            auto largest=e.reg(0), v=e.reg(1);
+            e.absolute(largest,e.at(a,start,0));
+            for(long i=start+1;i<end;++i) {
+                e.absolute(v,e.at(a,i,0));
+                if(e.compare(v,largest)>0) { best=i; e.set(largest,v); }
+            }
+            candidates[lane]=best;
+        } else if(op==3) {
+            long best=0;
+            if(m>1) {
+                auto largest=e.reg(0),v=e.reg(1);
+                best=candidates[0]; e.absolute(largest,e.at(a,best,0));
+                for(long i=1;i<(m+127)/128;++i) {
+                    long p=candidates[i]; e.absolute(v,e.at(a,p,0));
+                    if(e.compare(v,largest)>0) { best=p; e.set(largest,v); }
+                }
+            }
+            piv[0]=best+1;
+            status[0]=e.iszero(e.at(a,best,0))?1:0;
+            if(m>1 && !status[0]) {
+                auto v=e.reg(0), t=e.reg(1);
+                e.set(t,e.at(a,0,0)); e.set(v,e.at(a,best,0));
+                e.put(a,0,0,v); e.put(a,best,0,t);
+#ifdef MPLAPACK_MPFR_FACTOR_COMPLEX
+                e.magnitude(v,e.at(a,0,0));
+#else
+                e.absolute(v,e.at(a,0,0));
+#endif
+                status[1]=e.compare(v,e.at(constants,2,0))>=0;
+                if(status[1]) {
+                    e.div(t,e.at(constants,0,0),e.at(a,0,0));
+                    e.put(constants,3,0,t);
+                }
+            }
+        } else if(op==4) {
+            if(status[0]) return; // singular leaf: queued scaling is a no-op
+            auto t=e.reg(0);
+            if(status[1]) e.mul(t,e.at(constants,3,0),e.at(a,lane+1,0));
+            else e.div(t,e.at(a,lane+1,0),e.at(a,0,0));
+            e.put(a,lane+1,0,t);
+        } else if(op==5) {
+            auto t=e.reg(0),v=e.reg(1);
+            for(long i=k1;i<k2;++i) {
+                long p=piv[i]-1;
+                if(p==i) continue;
+                e.set(t,e.at(a,i,lane)); e.set(v,e.at(a,p,lane));
+                e.put(a,i,lane,v); e.put(a,p,lane,t);
+            }
+        } else if(op==6) piv[lane]+=offset;
+        else if(op==7) {
+            auto t=e.reg(0),z=e.reg(1); e.zero(z);
+            status[0]=e.compare(e.at(a,0,0),z)<=0?1:0;
+            if(!status[0]) { e.root(t,e.at(a,0,0)); e.put(a,0,0,t); }
+        }
+    }
+};
+// Inlined update arithmetic, separate from the panel's noinline Newton and
+// BLAS job. This reuses the GEMM/SYRK element bodies without routing every
+// multiply/add through a function call or compiling all panel branches into
+// the high-throughput update kernel.
+template<class E> struct factor_update_job {
+    E e; typename E::M a{},b{},c{},constants{};
+    l3_shape s{}; gemm_shape g{}; int op=0;
+    L3_HD void operator()(long lane) {
+        if(op==0) {
+            blas_mats<E> x{}; x.a=a; x.c=c;
+            x.al=E::shift(constants,1); x.be=constants;
+#ifdef MPLAPACK_MPFR_FACTOR_COMPLEX
+            e.herk(s,x,lane);
+#else
+            l3_syrk(e,s,x,lane%s.n,lane/s.n);
+#endif
+        } else {
+            auto al=E::shift(constants,1),ab=a;
+#ifdef MPLAPACK_MPFR_FACTOR_COMPLEX
+            e.gemm(g,al,constants,a,b,c,lane%g.m,lane/g.m);
+#else
+            gemm_engine_element(e,g,al,constants,a,b,ab,c,lane%g.m,lane/g.m,false);
+#endif
+        }
+    }
+};
+template<class E> struct factor_right_policy {
+    using V=typename E::V; using M=typename E::M;
+    E e;
+    L3_HD V reg(int slot) const { return e.reg(slot); }
+    L3_HD V at(const M &a,long i,long j) const { return e.at(a,i,j); }
+    L3_HD bool iszero(const V &v) const { return e.iszero(v); }
+    L3_HD bool ok() const { return e.ok; }
+    L3_HD void init(V &v,const V &a,bool diag) const {
+#ifdef MPLAPACK_MPFR_FACTOR_COMPLEX
+        v=diag?V(a.real()):a;
+#else
+        e.set(v,a);
+#endif
+    }
+    L3_HD void scaled(V &v,const V &b,bool rank,const M &constants) const {
+#ifdef MPLAPACK_MPFR_FACTOR_COMPLEX
+        using R=typename E::DR;
+        // Cpotrf passes -cone, including the negative imaginary zero.
+        v=rank?R(-1)*conj(b):(-V(1))*conj(b);
+#else
+        e.mul(v,e.at(constants,1,0),b);
+#endif
+    }
+    L3_HD void product(V &v,const V &a,const V &b) const {
+#ifdef MPLAPACK_MPFR_FACTOR_COMPLEX
+        v=a*b;
+#else
+        e.mul(v,a,b);
+#endif
+    }
+    L3_HD void accumulate(V &v,const V &term,bool diag) const {
+#ifdef MPLAPACK_MPFR_FACTOR_COMPLEX
+        if(diag) v=V(v.real()+term.real()); else v+=term;
+#else
+        e.add(v,v,term);
+#endif
+    }
+    L3_HD void put(M &a,long i,long j,const V &v) const { e.put(a,i,j,v); }
+};
+// Arena-backed engines retain their existing scalar jobs and bounded physical
+// thread pool. Only independent output elements are redistributed.
+template<class E> struct factor_right_runtime_job {
+    E e; typename E::M a{},constants{};
+    long n=0,nb=0,col=0,k=0,first=0,cols=0;
+    L3_HD void operator()(long lane) {
+        const long rows=n-first,i=first+lane%rows,j=first+lane/rows;
+        if(i<j || i>=n || j>=first+cols) return;
+        factor_update_job<E> u{}; u.e=e; u.constants=constants;
+        if(i/nb==j/nb) {
+            const long begin=(j/nb)*nb,size=n-begin<nb?n-begin:nb;
+            u.op=0; u.s.op=L3_SYRK; u.s.n=size; u.s.k=k; u.s.beta_one=1;
+            u.a=E::shift(a,begin+col*a.ld); u.c=E::shift(a,begin+begin*a.ld);
+#ifdef MPLAPACK_MPFR_FACTOR_COMPLEX
+            // Runtime complex HERK owns a whole column. Let its diagonal
+            // lane submit that column once, including the rows below it.
+            if(i!=j) return;
+            u((j-begin)*size);
+#else
+            u((i-begin)+(j-begin)*size);
+#endif
+        } else {
+            u.op=1; u.a=E::shift(a,i+col*a.ld); u.b=E::shift(a,j+col*a.ld); u.c=E::shift(a,i+j*a.ld);
+            u.g={1,0,1,1,k,a.ld,a.ld,a.ld,0,1};
+#ifdef MPLAPACK_MPFR_FACTOR_COMPLEX
+            using V=typename E::V;
+            V scalars[2]={V(1),-V(1)};
+            u.constants={scalars,2}; // -cone, not complex(-1,+0)
+#endif
+            u(0);
+        }
+        if(!u.e.ok) e.ok=false;
+    }
+};
+// Two scalar recursive Cholesky leaves and their intervening solve/update.
+// Reuse the exact jobs; no host feedback is needed between these phases.
+template<class E> L3_HD void factor_chol_leaf(factor_job<E> &j,bool upper,long n) {
+    j.op=7; j(0);
+    if(n==1 || j.status[0]) return;
+    auto off=E::shift(j.a,upper?j.a.ld:1),diag=E::shift(j.a,1+j.a.ld);
+    j.op=0; j.c=off; j.s.op=L3_TRSM;
+    j.s.left=upper; j.s.upper=upper; j.s.trans=1; j.s.nounit=1;
+    j.s.m=1; j.s.n=1; j.s.alpha_one=1;
+    j(0);
+    factor_update_job<E> update{};
+    update.e=j.e; update.a=off; update.c=diag; update.constants=j.constants;
+    update.op=0; update.s.op=L3_SYRK; update.s.upper=upper; update.s.trans=upper;
+    update.s.n=1; update.s.k=1; update.s.beta_one=1;
+    update(0);
+    if(!update.e.ok) j.e.ok=false;
+    j.op=7; j.a=diag; j(0);
+    if(j.status[0]) j.status[0]=2;
+}
+#ifndef MPLAPACK_MPFR_CUDA_HOST_EMULATION
+template<class E> __global__ void factor_chol_leaf_kernel(factor_job<E> j,bool upper,long n,int *failed) {
+    j.e.thread(0); factor_chol_leaf(j,upper,n);
+    if(!j.e.ok) atomicExch(failed,1);
+}
+template<class E> __global__ void factor_lu_leaf_kernel(factor_job<E> j,int *failed) {
+    j.e.thread(threadIdx.x);
+    if(j.m>1) {
+        j.op=2;
+        for(long chunk=threadIdx.x;chunk<(j.m+127)/128;chunk+=blockDim.x) j(chunk);
+    }
+    __syncthreads();
+    if(threadIdx.x==0) {
+        // Only candidate indices survive phase2; reclaim its temporary arena
+        // exactly as the former separate pivot/reciprocal launch did.
+        const bool was_ok=j.e.ok; j.e.thread(0); j.e.ok=j.e.ok && was_ok;
+        j.op=3; j(0);
+    }
+    if(!j.e.ok) atomicExch(failed,1);
+}
+template<class Job> __global__ void factor_kernel(Job job,long units,int *failed,long offset) {
+    long tid=(long)blockIdx.x*blockDim.x+threadIdx.x;
+    if(tid<offset) return;
+    // libmpc_cuda indexes its arena by the physical CUDA thread index. Far
+    // updates occupy a disjoint index range, without changing arena globals
+    // while either stream is running. The skipped blocks do no arithmetic.
+    job.e.thread(tid);
+    for(long lane=tid-offset;lane<units;lane+=(long)gridDim.x*blockDim.x-offset) job(lane);
+    if(!job.e.ok) atomicExch(failed,1);
+}
+// Block-cooperative variant of factor_kernel: block b handles units
+// grid-strided, the threads of the block cooperate through the job's
+// block_run (shared memory reductions).  The physical thread id stays within
+// factor_pool, which the arena indexing requires.
+template<class Job> __global__ void factor_block_kernel(Job job,long units,char staged,int *failed) {
+    extern __shared__ unsigned char mplapack_factor_block_sh[];
+    const long tid=(long)blockIdx.x*blockDim.x+threadIdx.x;
+    job.e.thread(tid);
+    for(long u=blockIdx.x;u<units;u+=gridDim.x)
+        job.block_run((int)threadIdx.x,(int)blockDim.x,u,staged?reinterpret_cast<char *>(mplapack_factor_block_sh):nullptr);
+    if(!job.e.ok) atomicExch(failed,1);
+}
+using factor_stack_guard=mpfr_stack_guard;
+template<class T> struct factor_buffer {
+    T *p=nullptr;
+    ~factor_buffer() { cudaFree(p); }
+    int allocate(size_t n) { return cudaMalloc(&p,std::max(size_t(1),n)*sizeof(T)); }
+    int upload(const T *h,size_t n) { return cudaMemcpy(p,h,n*sizeof(T),cudaMemcpyHostToDevice); }
+    int download(T *h,size_t n) { return cudaMemcpy(h,p,n*sizeof(T),cudaMemcpyDeviceToHost); }
+};
+#else
+template<class T> struct factor_buffer {
+    std::vector<T> data; T *p=nullptr;
+    int allocate(size_t n) { data.resize(std::max(size_t(1),n)); p=data.data(); return 0; }
+    int upload(const T *h,size_t n) { std::copy_n(h,n,p); return 0; }
+    int download(T *h,size_t n) { std::copy_n(p,n,h); return 0; }
+};
+#endif
+template<class E> class factor_context {
+  public:
+    using M=typename E::M;
+    E engine;
+    M constants;
+    factor_buffer<long> status,candidates,pivots;
+    factor_buffer<int> failed;
+    int error=0; bool far=false;
+#ifndef MPLAPACK_MPFR_CUDA_HOST_EMULATION
+    cudaStream_t streams[2]{}; cudaEvent_t ready{},done{};
+    cudaStream_t stream() const { return streams[far?1:0]; }
+#endif
+    factor_context(E e,M c,long m,long n):engine(e),constants(c) {
+        error=status.allocate(2);
+        if(!error) error=candidates.allocate((m+127)/128);
+        if(!error) error=pivots.allocate(std::min(m,n));
+        if(!error) error=failed.allocate(1);
+        int z=0; if(!error) error=failed.upload(&z,1);
+#ifndef MPLAPACK_MPFR_CUDA_HOST_EMULATION
+        if(!error) error=cudaStreamCreateWithFlags(&streams[0],cudaStreamNonBlocking);
+        if(!error) error=cudaStreamCreateWithFlags(&streams[1],cudaStreamNonBlocking);
+        if(!error) error=cudaEventCreateWithFlags(&ready,cudaEventDisableTiming);
+        if(!error) error=cudaEventCreateWithFlags(&done,cudaEventDisableTiming);
+#endif
+    }
+    ~factor_context() {
+        finish();
+#ifndef MPLAPACK_MPFR_CUDA_HOST_EMULATION
+        if(ready) cudaEventDestroy(ready); if(done) cudaEventDestroy(done);
+        for(auto s:streams) if(s) cudaStreamDestroy(s);
+#endif
+    }
+    void finish() {
+#ifndef MPLAPACK_MPFR_CUDA_HOST_EMULATION
+        for(auto s:streams) if(s) { int r=cudaStreamSynchronize(s); if(!error) error=r; }
+#endif
+    }
+    void join() {
+#ifndef MPLAPACK_MPFR_CUDA_HOST_EMULATION
+        if(!error) error=cudaEventRecord(done,streams[1]);
+        if(!error) error=cudaStreamWaitEvent(streams[0],done,0);
+#endif
+    }
+    void release() {
+#ifndef MPLAPACK_MPFR_CUDA_HOST_EMULATION
+        if(!error) error=cudaEventRecord(ready,streams[0]);
+        if(!error) error=cudaStreamWaitEvent(streams[1],ready,0);
+#endif
+    }
+    factor_job<E> job(int op,M a) {
+        factor_job<E> j{}; j.e=engine; j.op=op; j.a=a; j.constants=constants;
+        j.status=status.p; j.candidates=candidates.p; return j;
+    }
+    template<class Job> void execute(Job j,long units) {
+        if(error || !units) return;
+#ifndef MPLAPACK_MPFR_CUDA_HOST_EMULATION
+        long blocks=(units+factor_threads-1)/factor_threads;
+        // Only cu_mpfr needs a bounded pool (its per-thread arena/registers).
+        // Fixed updates expose every output lane to the GPU, as GEMM does.
+        if(E::runtime) blocks=std::min(factor_blocks,blocks);
+        long offset=E::runtime && far?factor_pool:0;
+        factor_kernel<<<(unsigned)(blocks+offset/factor_threads),factor_threads,0,stream()>>>(j,units,failed.p,offset);
+        error=cudaGetLastError();
+#else
+        j.e.thread(0);
+        for(long i=0;i<units;++i) j(i);
+        if(!j.e.ok) *failed.p=1;
+#endif
+    }
+    // Block-cooperative launch for the shared-memory chunk reductions; the
+    // return value is 0 on success, nonzero on a launch failure.
+    template<class Job> int execute_blocks(Job j,long units,int T,size_t smem,bool staged=true) {
+        if(error || !units) return error?1:0;
+#ifndef MPLAPACK_MPFR_CUDA_HOST_EMULATION
+        long blocks=(units+T-1)/T;
+        if(E::runtime) blocks=std::min((long)factor_blocks,blocks);
+        if((long)blocks*T>factor_pool) blocks=factor_pool/T;
+        if(blocks<1) { error=1;return 1; }
+        if(smem>48*1024 && cudaFuncSetAttribute(factor_block_kernel<Job>,cudaFuncAttributeMaxDynamicSharedMemorySize,(int)smem)!=cudaSuccess) { error=1;return 1; }
+        const char st=staged?(char)1:(char)0;
+        factor_block_kernel<Job><<<(unsigned)blocks,(unsigned)T,(unsigned)smem,stream()>>>(j,units,st,failed.p);
+        error=cudaGetLastError();
+        return error?1:0;
+#else
+        j.e.thread(0);
+        std::vector<char> sh(smem?smem:1);
+        for(long u=0;u<units;++u) j.block_run(0,1,u,sh.data());
+        if(!j.e.ok) *failed.p=1;
+        return 0;
+#endif
+    }
+#ifndef MPLAPACK_MPFR_FACTOR_COMPLEX
+    template<bool Nota> void value_update(factor_update_job<typename E::Update> u) {
+        using U=typename E::Update;
+        value_gemm_job<U,Nota,false> t{u.e,u.g,E::shift(u.constants,1),u.constants,u.a,u.b,u.b,u.c};
+#ifndef MPLAPACK_MPFR_CUDA_HOST_EMULATION
+        error=value_gemm_device(t,stream(),failed.p);
+#else
+        error=value_gemm_host(t);
+#endif
+    }
+#endif
+    void launch(factor_job<E> j,long units) {
+#ifndef MPLAPACK_MPFR_FACTOR_COMPLEX
+        if constexpr(!E::runtime) {
+            if(!error && units>0 && j.op==0 && trsm_team_shape(j.s)) {
+                trsm_team_args<E> t{}; t.e=j.e; t.s=j.s;
+                t.x.a=j.a; t.x.c=j.c; t.x.al=j.constants;
+#ifndef MPLAPACK_MPFR_CUDA_HOST_EMULATION
+                error=trsm_team_device<E,false,true>(t,stream(),failed.p);
+#else
+                error=trsm_team_device<E,false,true>(t);
+#endif
+                return;
+            }
+        }
+#else
+        // Fixed complex values fit in shared memory. Bound physical threads
+        // to the existing arena pool; join both streams before and after the
+        // solve so no arena index aliases a concurrently running update.
+        if constexpr(sizeof(typename E::V)<=1024) {
+            if(!error && units>0 && j.op==0 && trsm_team_shape(j.s)) {
+                finish();
+                const long lanes=j.s.left?j.s.n:j.s.m;
+                const long chunk=(factor_pool/128)*(trsm_dot_shape(j.s)?2:j.s.left?4:16);
+                for(long base=0;base<lanes && !error;base+=chunk) {
+                    trsm_team_args<E> t{}; t.e=j.e; t.s=j.s;
+                    t.x.a=j.a; t.x.c=E::shift(j.c,j.s.left?base*j.c.ld:base); t.x.al=j.constants;
+                    if(j.s.left) t.s.n=std::min(chunk,lanes-base);
+                    else t.s.m=std::min(chunk,lanes-base);
+#ifndef MPLAPACK_MPFR_CUDA_HOST_EMULATION
+                    if(j.s.trans==1) error=trsm_team_device<E,true,true>(t,stream(),failed.p);
+                    else error=trsm_team_device<E,false,true>(t,stream(),failed.p);
+#else
+                    if(j.s.trans==1) error=trsm_team_device<E,true,true>(t);
+                    else error=trsm_team_device<E,false,true>(t);
+#endif
+                }
+                finish(); return;
+            }
+        }
+#endif
+        if(j.op==1 || (j.op==0 && j.s.op==L3_SYRK)) {
+            factor_update_job<typename E::Update> u{};
+            u.e=j.e.update(); u.a=j.a; u.b=j.b; u.c=j.c; u.constants=j.constants;
+            u.s=j.s; u.g=j.g; u.op=j.op;
+#ifdef MPLAPACK_MPFR_FACTOR_COMPLEX
+            if constexpr(E::Traits::value_math && sizeof(typename E::V)<=320) {
+                bool dot_rank=j.op==0 && j.s.upper && j.s.trans;
+                bool dot_gemm=j.op==1 && !j.g.nota && j.g.notb;
+                if(!error && units>0 && (dot_rank || dot_gemm)) {
+                    upper_update_job<typename E::Update> t{u.e,u.a,dot_rank?u.a:u.b,u.c,u.constants,
+                        dot_rank?u.s.n:u.g.m,dot_rank?u.s.n:u.g.n,dot_rank?u.s.k:u.g.k,dot_rank};
+#ifndef MPLAPACK_MPFR_CUDA_HOST_EMULATION
+                    error=upper_update_device(t,stream(),failed.p);
+#else
+                    error=upper_update_host(t);
+#endif
+                    return;
+                }
+            }
+#endif
+#ifndef MPLAPACK_MPFR_FACTOR_COMPLEX
+            if constexpr(!E::runtime) {
+                constexpr bool tuned=sizeof(typename E::V)<=80 || sizeof(typename E::V)==144;
+                if constexpr(tuned) {
+                    if(!error && units>0 && j.op==1 && u.g.k>0) {
+                        if(u.g.nota) value_update<true>(u);else value_update<false>(u);
+                        return;
+                    }
+                }
+            }
+#endif
+            execute(u,units);
+        } else execute(j,units);
+    }
+    long feedback() {
+        long result=0;
+#ifndef MPLAPACK_MPFR_CUDA_HOST_EMULATION
+        if(!error) error=cudaMemcpyAsync(&result,status.p,sizeof(long),cudaMemcpyDeviceToHost,stream());
+        if(!error) error=cudaStreamSynchronize(stream());
+#else
+        result=status.p[0];
+#endif
+        return result;
+    }
+    void blas(l3_shape s,M a,M c) {
+        if(!s.m && s.op==L3_TRSM) return;
+        if(!s.n || (s.op==L3_SYRK && !s.k)) return;
+        auto j=job(0,a); j.s=s; j.c=c; launch(j,blas_lanes(s));
+    }
+    void solve(bool upper,long m,long n,M a,M b,bool chol) {
+        l3_shape s{}; s.op=L3_TRSM; s.m=m; s.n=n;
+        s.left=chol?upper:1; s.upper=chol?upper:0;
+        s.trans=chol; s.nounit=chol; s.alpha_one=1;
+        s.lda=a.ld; s.ldc=b.ld; blas(s,a,b);
+    }
+    void rank(bool upper,long n,long k,M a,M c) {
+        l3_shape s{}; s.op=L3_SYRK; s.n=n; s.k=k;
+        s.upper=upper; s.trans=upper; s.beta_one=1;
+        s.lda=a.ld; s.ldc=c.ld; blas(s,a,c);
+    }
+    void update(bool upper,long m,long n,long k,M a,M b,M c) {
+        if(!m || !n || !k) return;
+        auto j=job(1,a); j.b=b; j.c=c;
+        j.g={ !upper,upper,m,n,k,a.ld,b.ld,c.ld,0,1 };
+        launch(j,m*n);
+    }
+    void right(long n,long nb,long col,long k,long first,long cols,M a) {
+        if(error || cols<=0) return;
+#ifdef MPLAPACK_MPFR_FACTOR_COMPLEX
+        constexpr bool value_math=E::Traits::value_math;
+#else
+        constexpr bool value_math=!E::runtime;
+#endif
+        using U=typename E::Update;
+        if constexpr(value_math) {
+            mplapack_lapack_gpu::right_chol_job<factor_right_policy<U>> j{};
+            j.p.e=engine.update(); j.a=a; j.constants=constants;
+            j.n=n; j.nb=nb; j.col=col; j.k=k; j.first=first; j.cols=cols;
+#ifndef MPLAPACK_MPFR_CUDA_HOST_EMULATION
+            error=mplapack_lapack_gpu::right_chol_device(j,stream(),failed.p);
+#else
+            error=mplapack_lapack_gpu::right_chol_host(j);
+#endif
+        } else {
+            factor_right_runtime_job<U> j{}; j.e=engine.update(); j.a=a; j.constants=constants;
+            j.n=n; j.nb=nb; j.col=col; j.k=k; j.first=first; j.cols=cols;
+            execute(j,(n-first)*cols);
+        }
+    }
+    void swap(long n,M a,long k1,long k2,long *piv) {
+        auto j=job(5,a); j.k1=k1; j.k2=k2; j.piv=piv; launch(j,n);
+    }
+    void adjust(long *piv,long n,long offset) {
+        auto j=job(6,constants); j.piv=piv; j.offset=offset; launch(j,n);
+    }
+    long lu_recursive(long m,long n,M a,long *piv) {
+        if(error || !m || !n) return 0;
+        if(m==1 || n==1) {
+            auto j=job(2,a); j.m=m; j.piv=piv;
+#ifndef MPLAPACK_MPFR_CUDA_HOST_EMULATION
+#ifdef MPLAPACK_MPFR_FACTOR_COMPLEX
+            constexpr bool fuse_leaf=sizeof(typename E::V)<=192;
+#else
+            constexpr bool fuse_leaf=true;
+#endif
+            bool fused=false;
+            if constexpr(fuse_leaf) {
+                if(!far) {
+                    factor_lu_leaf_kernel<<<1,factor_threads,0,stream()>>>(j,failed.p);
+                    error=cudaGetLastError(); fused=true;
+                }
+            }
+            // Larger complex frames retain separate kernels and the existing
+            // scoped stack budget instead of increasing reservation globally.
+            if(!fused) {
+                if(m>1) launch(j,(m+127)/128);
+                j.op=3; launch(j,1);
+            }
+#else
+            if(m>1) launch(j,(m+127)/128);
+            j.op=3; launch(j,1);
+#endif
+            if(m>1) { j.op=4; launch(j,m-1); }
+            return feedback();
+        }
+        long n1=std::min(m,n)/2,n2=n-n1;
+        long info=lu_recursive(m,n1,a,piv);
+        M right=E::shift(a,n1*a.ld), lower=E::shift(a,n1), diag=E::shift(right,n1);
+        swap(n2,right,0,n1,piv);
+        solve(false,n1,n2,a,right,false);
+        // LU uses N,N; Cholesky lower uses N,T.
+        auto j=job(1,lower); j.b=right; j.c=diag;
+        j.g={1,1,m-n1,n2,n1,a.ld,a.ld,a.ld,0,1}; launch(j,(m-n1)*n2);
+        long i=lu_recursive(m-n1,n2,diag,piv+n1);
+        if(!info && i) info=i+n1;
+        adjust(piv+n1,std::min(m,n)-n1,n1);
+        swap(n1,a,n1,std::min(m,n),piv);
+        return info;
+    }
+    long lu(long m,long n,long nb,M a) {
+        long mn=std::min(m,n),info=0;
+        if(nb<=1 || nb>=mn) return lu_recursive(m,n,a,pivots.p);
+        for(long col=0;col<mn && !error;col+=nb) {
+            long jb=std::min(nb,mn-col);
+            long i=lu_recursive(m-col,jb,E::shift(a,col+col*a.ld),pivots.p+col);
+            if(!info && i) info=col+i;
+            join(); adjust(pivots.p+col,jb,col);
+            swap(col,a,col,col+jb,pivots.p);
+            for(int part=0;part<2;++part) {
+                long c=col+jb+(part?std::min(nb,n-col-jb):0);
+                long cols=part?n-c:std::min(nb,n-c); far=part;
+                if(cols) {
+                    swap(cols,E::shift(a,c*a.ld),col,col+jb,pivots.p);
+                    M right=E::shift(a,col+c*a.ld);
+                    solve(false,jb,cols,E::shift(a,col+col*a.ld),right,false);
+                    auto j=job(1,E::shift(a,col+jb+col*a.ld)); j.b=right; j.c=E::shift(right,jb);
+                    j.g={1,1,m-col-jb,cols,jb,a.ld,a.ld,a.ld,0,1}; launch(j,(m-col-jb)*cols);
+                }
+                if(!part) release();
+            }
+            far=false;
+        }
+        return info;
+    }
+    long chol_recursive(bool upper,long n,M a) {
+        if(error || !n) return 0;
+        if constexpr(E::runtime) {
+            // Runtime scratch-register and complex engines retain separate
+            // scalar phases: do not extend temporary or MPC stack lifetimes.
+            if(n==1) { launch(job(7,a),1); return feedback(); }
+        } else if(n<=2) {
+            auto j=job(7,a);
+#ifndef MPLAPACK_MPFR_CUDA_HOST_EMULATION
+            factor_chol_leaf_kernel<<<1,1,0,stream()>>>(j,upper,n,failed.p);
+            error=cudaGetLastError();
+#else
+            j.e.thread(0); factor_chol_leaf(j,upper,n);
+            if(!j.e.ok) *failed.p=1;
+#endif
+            return feedback();
+        }
+        long n1=n/2,n2=n-n1;
+        long info=chol_recursive(upper,n1,a);
+        if(error || info) return info;
+        M off=E::shift(a,upper?n1*a.ld:n1), diag=E::shift(a,n1+n1*a.ld);
+        solve(upper,upper?n1:n2,upper?n2:n1,a,off,true);
+        rank(upper,n2,n1,off,diag);
+        info=chol_recursive(upper,n2,diag);
+        return info?info+n1:0;
+    }
+    long chol(bool upper,long n,long nb,M a) {
+        if(nb<=1 || nb>=n) return chol_recursive(upper,n,a);
+        if(!upper) {
+            for(long col=0;col<n && !error;col+=nb) {
+                const long kb=std::min(nb,n-col),first=col+kb,near=std::min(nb,n-first);
+                M diag=E::shift(a,col+col*a.ld);
+                long info=chol_recursive(false,kb,diag);
+                if(error || info) { finish(); return info?col+info:0; }
+                if(first<n) {
+                    solve(false,n-first,kb,diag,E::shift(a,first+col*a.ld),true);
+                    join(); release();
+                    right(n,nb,col,kb,first,near,a);
+                    far=true; right(n,nb,col,kb,first+near,n-first-near,a); far=false;
+                }
+            }
+            finish(); return 0;
+        }
+        for(long col=0;col<n && !error;col+=nb) {
+            long jb=std::min(nb,n-col);
+            M diag=E::shift(a,col+col*a.ld);
+            rank(upper,jb,col,E::shift(a,upper?col*a.ld:col),diag);
+            long info=chol_recursive(upper,jb,diag);
+            if(error || info) { finish(); return info?info+col:0; }
+            join();
+#ifdef MPLAPACK_MPFR_FACTOR_COMPLEX
+            // MPC solves join both streams to reuse the bounded arena safely.
+            // Release the far stream after the panel, then enqueue BOTH GEMMs
+            // before either solve can join them. The two updates read only
+            // prefix rows and write disjoint column ranges, so moving the far
+            // update before the near solve preserves every ordered dot product.
+            release();
+            for(int phase=0;phase<2;++phase) for(int part=0;part<2;++part) {
+                long c=col+jb+(part?std::min(nb,n-col-jb):0);
+                long rest=part?n-c:std::min(nb,n-c); far=part;
+                if(rest) {
+                    M off=E::shift(a,col+c*a.ld);
+                    if(!phase) update(true,jb,rest,col,E::shift(a,col*a.ld),E::shift(a,c*a.ld),off);
+                    else solve(true,jb,rest,diag,off,true);
+                }
+            }
+#else
+            for(int part=0;part<2;++part) {
+                long c=col+jb+(part?std::min(nb,n-col-jb):0);
+                long rest=part?n-c:std::min(nb,n-c); far=part;
+                if(rest) {
+                    M off=E::shift(a,upper?col+c*a.ld:c+col*a.ld);
+                    update(upper,upper?jb:rest,upper?rest:jb,col,
+                           E::shift(a,upper?col*a.ld:c),E::shift(a,upper?c*a.ld:col),off);
+                    solve(upper,upper?jb:rest,upper?rest:jb,diag,off,true);
+                }
+                if(!part) release();
+            }
+#endif
+            far=false;
+        }
+        return 0;
+    }
+    long factor(const factor_shape &s,M a) {
+        long info=s.chol?chol(s.upper,s.n,s.nb,a):lu(s.m,s.n,s.nb,a);
+        finish(); int f=0;
+        if(!error) error=failed.download(&f,1);
+        if(!error && f) error=1;
+        return info;
+    }
+};
+}
+}
+#endif

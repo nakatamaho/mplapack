@@ -1,0 +1,1 @@
+python3 benchmark/test_kernel_new.py --gpu-check --bindir benchmark --mpfr-bindir benchmark --out benchmark/results/2026/x86_64-pc-linux-gnu-Ryzen-Threadripper-3970X-TeslaA100/kernel-bench-2/checks-autotools-reviewed 

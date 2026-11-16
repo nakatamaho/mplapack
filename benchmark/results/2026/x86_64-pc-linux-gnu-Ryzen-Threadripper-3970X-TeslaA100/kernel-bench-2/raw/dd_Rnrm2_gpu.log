@@ -1,0 +1,608 @@
+
+### dd_Rnrm2_gpu_1024_pilot-pre-eager
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_cuda_kernel Rnrm2 fast 1024 --reps 1 --warmup 1
+OMP_NUM_THREADS=1
+dd,Rnrm2,inc1,1024,gpu,6.65600002e-05,0.0307692307,1
+
+exit=0, elapsed=0.231380
+
+exit receipt: 0
+
+### dd_Rnrm2_gpu_32768_pilot-pre-eager
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_cuda_kernel Rnrm2 fast 32768 --reps 1 --warmup 1
+OMP_NUM_THREADS=1
+dd,Rnrm2,inc1,32768,gpu,0.000108543999,0.603773588,1
+
+exit=0, elapsed=0.247594
+
+exit receipt: 0
+
+### dd_Rnrm2_gpu_1024_pilot
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_cuda_kernel Rnrm2 fast 1024 --reps 1 --warmup 1
+OMP_NUM_THREADS=1
+dd,Rnrm2,inc1,1024,gpu,6.55359998e-05,0.0312500001,1
+
+exit=0, process_elapsed=0.228994
+charged_point_wall=0.276668
+
+exit receipt: 0
+
+### dd_Rnrm2_gpu_32768_pilot
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_cuda_kernel Rnrm2 fast 32768 --reps 1 --warmup 1
+OMP_NUM_THREADS=1
+dd,Rnrm2,inc1,32768,gpu,0.000108543999,0.603773588,1
+
+exit=0, process_elapsed=0.234552
+charged_point_wall=0.284105
+
+exit receipt: 0
+
+### dd_Rnrm2_gpu_1024_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_cuda_kernel Rnrm2 fast 1024
+OMP_NUM_THREADS=1
+dd,Rnrm2,inc1,1024,gpu,6.55359998e-05,0.0312500001,3
+
+exit=0, process_elapsed=0.242179
+charged_point_wall=0.291171
+
+exit receipt: 0
+
+### dd_Rnrm2_gpu_1280_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_cuda_kernel Rnrm2 fast 1280
+OMP_NUM_THREADS=1
+dd,Rnrm2,inc1,1280,gpu,7.06560016e-05,0.0362318833,3
+
+exit=0, process_elapsed=0.246370
+charged_point_wall=0.294270
+
+exit receipt: 0
+
+### dd_Rnrm2_gpu_1536_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_cuda_kernel Rnrm2 fast 1536
+OMP_NUM_THREADS=1
+dd,Rnrm2,inc1,1536,gpu,7.16800019e-05,0.0428571417,3
+
+exit=0, process_elapsed=0.231099
+charged_point_wall=0.278973
+
+exit receipt: 0
+
+### dd_Rnrm2_gpu_1792_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_cuda_kernel Rnrm2 fast 1792
+OMP_NUM_THREADS=1
+dd,Rnrm2,inc1,1792,gpu,7.16800019e-05,0.0499999987,3
+
+exit=0, process_elapsed=0.237346
+charged_point_wall=0.286887
+
+exit receipt: 0
+
+### dd_Rnrm2_gpu_2048_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_cuda_kernel Rnrm2 fast 2048
+OMP_NUM_THREADS=1
+dd,Rnrm2,inc1,2048,gpu,7.27040023e-05,0.0563380264,3
+
+exit=0, process_elapsed=0.235891
+charged_point_wall=0.285339
+
+exit receipt: 0
+
+### dd_Rnrm2_gpu_2560_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_cuda_kernel Rnrm2 fast 2560
+OMP_NUM_THREADS=1
+dd,Rnrm2,inc1,2560,gpu,7.78239965e-05,0.0657894766,3
+
+exit=0, process_elapsed=0.241365
+charged_point_wall=0.290421
+
+exit receipt: 0
+
+### dd_Rnrm2_gpu_3072_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_cuda_kernel Rnrm2 fast 3072
+OMP_NUM_THREADS=1
+dd,Rnrm2,inc1,3072,gpu,7.88479969e-05,0.077922081,3
+
+exit=0, process_elapsed=0.231283
+charged_point_wall=0.281588
+
+exit receipt: 0
+
+### dd_Rnrm2_gpu_3584_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_cuda_kernel Rnrm2 fast 3584
+OMP_NUM_THREADS=1
+dd,Rnrm2,inc1,3584,gpu,8.08959976e-05,0.0886075976,3
+
+exit=0, process_elapsed=0.232918
+charged_point_wall=0.281485
+
+exit receipt: 0
+
+### dd_Rnrm2_gpu_4096_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_cuda_kernel Rnrm2 fast 4096
+OMP_NUM_THREADS=1
+dd,Rnrm2,inc1,4096,gpu,7.98719972e-05,0.102564106,3
+
+exit=0, process_elapsed=0.232690
+charged_point_wall=0.278515
+
+exit receipt: 0
+
+### dd_Rnrm2_gpu_5120_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_cuda_kernel Rnrm2 fast 5120
+OMP_NUM_THREADS=1
+dd,Rnrm2,inc1,5120,gpu,8.4991999e-05,0.120481929,3
+
+exit=0, process_elapsed=0.231363
+charged_point_wall=0.281564
+
+exit receipt: 0
+
+### dd_Rnrm2_gpu_6144_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_cuda_kernel Rnrm2 fast 6144
+OMP_NUM_THREADS=1
+dd,Rnrm2,inc1,6144,gpu,8.60159993e-05,0.142857144,3
+
+exit=0, process_elapsed=0.231826
+charged_point_wall=0.281113
+
+exit receipt: 0
+
+### dd_Rnrm2_gpu_7168_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_cuda_kernel Rnrm2 fast 7168
+OMP_NUM_THREADS=1
+dd,Rnrm2,inc1,7168,gpu,8.70399997e-05,0.164705883,3
+
+exit=0, process_elapsed=0.237539
+charged_point_wall=0.285987
+
+exit receipt: 0
+
+### dd_Rnrm2_gpu_8192_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_cuda_kernel Rnrm2 fast 8192
+OMP_NUM_THREADS=1
+dd,Rnrm2,inc1,8192,gpu,8.70399997e-05,0.188235295,3
+
+exit=0, process_elapsed=0.230889
+charged_point_wall=0.277692
+
+exit receipt: 0
+
+### dd_Rnrm2_gpu_10240_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_cuda_kernel Rnrm2 fast 10240
+OMP_NUM_THREADS=1
+dd,Rnrm2,inc1,10240,gpu,9.31840017e-05,0.219780216,3
+
+exit=0, process_elapsed=0.230162
+charged_point_wall=0.278371
+
+exit receipt: 0
+
+### dd_Rnrm2_gpu_12288_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_cuda_kernel Rnrm2 fast 12288
+OMP_NUM_THREADS=1
+dd,Rnrm2,inc1,12288,gpu,9.52320024e-05,0.25806451,3
+
+exit=0, process_elapsed=0.234505
+charged_point_wall=0.280890
+
+exit receipt: 0
+
+### dd_Rnrm2_gpu_14336_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_cuda_kernel Rnrm2 fast 14336
+OMP_NUM_THREADS=1
+dd,Rnrm2,inc1,14336,gpu,9.52320024e-05,0.301075261,3
+
+exit=0, process_elapsed=0.229240
+charged_point_wall=0.277608
+
+exit receipt: 0
+
+### dd_Rnrm2_gpu_16384_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_cuda_kernel Rnrm2 fast 16384
+OMP_NUM_THREADS=1
+dd,Rnrm2,inc1,16384,gpu,9.72800031e-05,0.336842094,3
+
+exit=0, process_elapsed=0.235488
+charged_point_wall=0.283983
+
+exit receipt: 0
+
+### dd_Rnrm2_gpu_20480_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_cuda_kernel Rnrm2 fast 20480
+OMP_NUM_THREADS=1
+dd,Rnrm2,inc1,20480,gpu,0.000102399997,0.40000001,3
+
+exit=0, process_elapsed=0.234482
+charged_point_wall=0.280578
+
+exit receipt: 0
+
+### dd_Rnrm2_gpu_24576_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_cuda_kernel Rnrm2 fast 24576
+OMP_NUM_THREADS=1
+dd,Rnrm2,inc1,24576,gpu,0.000103423998,0.475247535,3
+
+exit=0, process_elapsed=0.240603
+charged_point_wall=0.286377
+
+exit receipt: 0
+
+### dd_Rnrm2_gpu_28672_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_cuda_kernel Rnrm2 fast 28672
+OMP_NUM_THREADS=1
+dd,Rnrm2,inc1,28672,gpu,0.000106495999,0.538461545,3
+
+exit=0, process_elapsed=0.237616
+charged_point_wall=0.284847
+
+exit receipt: 0
+
+### dd_Rnrm2_gpu_32768_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_cuda_kernel Rnrm2 fast 32768
+OMP_NUM_THREADS=1
+dd,Rnrm2,inc1,32768,gpu,0.000108543999,0.603773588,3
+
+exit=0, process_elapsed=0.242027
+charged_point_wall=0.290359
+
+exit receipt: 0
+
+### dd_Rnrm2_gpu_40960_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_cuda_kernel Rnrm2 fast 40960
+OMP_NUM_THREADS=1
+dd,Rnrm2,inc1,40960,gpu,0.000113664001,0.720720713,3
+
+exit=0, process_elapsed=0.243992
+charged_point_wall=0.290271
+
+exit receipt: 0
+
+### dd_Rnrm2_gpu_49152_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_cuda_kernel Rnrm2 fast 49152
+OMP_NUM_THREADS=1
+dd,Rnrm2,inc1,49152,gpu,0.000116736002,0.842105247,3
+
+exit=0, process_elapsed=0.244567
+charged_point_wall=0.292831
+
+exit receipt: 0
+
+### dd_Rnrm2_gpu_57344_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_cuda_kernel Rnrm2 fast 57344
+OMP_NUM_THREADS=1
+dd,Rnrm2,inc1,57344,gpu,0.000121855997,0.941176497,3
+
+exit=0, process_elapsed=0.251834
+charged_point_wall=0.304712
+
+exit receipt: 0
+
+### dd_Rnrm2_gpu_65536_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_cuda_kernel Rnrm2 fast 65536
+OMP_NUM_THREADS=1
+dd,Rnrm2,inc1,65536,gpu,0.000123903997,1.05785126,3
+
+exit=0, process_elapsed=0.246753
+charged_point_wall=0.296837
+
+exit receipt: 0
+
+### dd_Rnrm2_gpu_81920_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_cuda_kernel Rnrm2 fast 81920
+OMP_NUM_THREADS=1
+dd,Rnrm2,inc1,81920,gpu,0.00013312,1.23076923,3
+
+exit=0, process_elapsed=0.250928
+charged_point_wall=0.297726
+
+exit receipt: 0
+
+### dd_Rnrm2_gpu_98304_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_cuda_kernel Rnrm2 fast 98304
+OMP_NUM_THREADS=1
+dd,Rnrm2,inc1,98304,gpu,0.000138239995,1.42222228,3
+
+exit=0, process_elapsed=0.253173
+charged_point_wall=0.300500
+
+exit receipt: 0
+
+### dd_Rnrm2_gpu_114688_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_cuda_kernel Rnrm2 fast 114688
+OMP_NUM_THREADS=1
+dd,Rnrm2,inc1,114688,gpu,0.000145408005,1.57746474,3
+
+exit=0, process_elapsed=0.252954
+charged_point_wall=0.298529
+
+exit receipt: 0
+
+### dd_Rnrm2_gpu_131072_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_cuda_kernel Rnrm2 fast 131072
+OMP_NUM_THREADS=1
+dd,Rnrm2,inc1,131072,gpu,0.000150527999,1.74149661,3
+
+exit=0, process_elapsed=0.260316
+charged_point_wall=0.306096
+
+exit receipt: 0
+
+### dd_Rnrm2_gpu_163840_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_cuda_kernel Rnrm2 fast 163840
+OMP_NUM_THREADS=1
+dd,Rnrm2,inc1,163840,gpu,0.000161791995,2.02531652,3
+
+exit=0, process_elapsed=0.270043
+charged_point_wall=0.319397
+
+exit receipt: 0
+
+### dd_Rnrm2_gpu_196608_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_cuda_kernel Rnrm2 fast 196608
+OMP_NUM_THREADS=1
+dd,Rnrm2,inc1,196608,gpu,0.000173056006,2.27218926,3
+
+exit=0, process_elapsed=0.278136
+charged_point_wall=0.323041
+
+exit receipt: 0
+
+### dd_Rnrm2_gpu_229376_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_cuda_kernel Rnrm2 fast 229376
+OMP_NUM_THREADS=1
+dd,Rnrm2,inc1,229376,gpu,0.000183295995,2.50279336,3
+
+exit=0, process_elapsed=0.268675
+charged_point_wall=0.317429
+
+exit receipt: 0
+
+### dd_Rnrm2_gpu_262144_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_cuda_kernel Rnrm2 fast 262144
+OMP_NUM_THREADS=1
+dd,Rnrm2,inc1,262144,gpu,0.000193535998,2.70899473,3
+
+exit=0, process_elapsed=0.272564
+charged_point_wall=0.320405
+
+exit receipt: 0
+
+### dd_Rnrm2_gpu_327680_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_cuda_kernel Rnrm2 fast 327680
+OMP_NUM_THREADS=1
+dd,Rnrm2,inc1,327680,gpu,0.000216064006,3.03317527,3
+
+exit=0, process_elapsed=0.307484
+charged_point_wall=0.354617
+
+exit receipt: 0
+
+### dd_Rnrm2_gpu_393216_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_cuda_kernel Rnrm2 fast 393216
+OMP_NUM_THREADS=1
+dd,Rnrm2,inc1,393216,gpu,0.000239616007,3.28205119,3
+
+exit=0, process_elapsed=0.309711
+charged_point_wall=0.359314
+
+exit receipt: 0
+
+### dd_Rnrm2_gpu_458752_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_cuda_kernel Rnrm2 fast 458752
+OMP_NUM_THREADS=1
+dd,Rnrm2,inc1,458752,gpu,0.000265215993,3.45945955,3
+
+exit=0, process_elapsed=0.318323
+charged_point_wall=0.367143
+
+exit receipt: 0
+
+### dd_Rnrm2_gpu_524288_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_cuda_kernel Rnrm2 fast 524288
+OMP_NUM_THREADS=1
+dd,Rnrm2,inc1,524288,gpu,0.000290816009,3.60563369,3
+
+exit=0, process_elapsed=0.336643
+charged_point_wall=0.383272
+
+exit receipt: 0
+
+### dd_Rnrm2_gpu_655360_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_cuda_kernel Rnrm2 fast 655360
+OMP_NUM_THREADS=1
+dd,Rnrm2,inc1,655360,gpu,0.000348159999,3.7647059,3
+
+exit=0, process_elapsed=0.358476
+charged_point_wall=0.408237
+
+exit receipt: 0
+
+### dd_Rnrm2_gpu_786432_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_cuda_kernel Rnrm2 fast 786432
+OMP_NUM_THREADS=1
+dd,Rnrm2,inc1,786432,gpu,0.000399360001,3.93846153,3
+
+exit=0, process_elapsed=0.385027
+charged_point_wall=0.430669
+
+exit receipt: 0
+
+### dd_Rnrm2_gpu_917504_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_cuda_kernel Rnrm2 fast 917504
+OMP_NUM_THREADS=1
+dd,Rnrm2,inc1,917504,gpu,0.000454656005,4.03603599,3
+
+exit=0, process_elapsed=0.404692
+charged_point_wall=0.450877
+
+exit receipt: 0
+
+### dd_Rnrm2_gpu_1048576_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_cuda_kernel Rnrm2 fast 1048576
+OMP_NUM_THREADS=1
+dd,Rnrm2,inc1,1048576,gpu,0.000501760006,4.17959179,3
+
+exit=0, process_elapsed=0.426409
+charged_point_wall=0.477190
+
+exit receipt: 0
+
+### dd_Rnrm2_gpu_1310720_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_cuda_kernel Rnrm2 fast 1310720
+OMP_NUM_THREADS=1
+dd,Rnrm2,inc1,1310720,gpu,0.000594944,4.40619621,3
+
+exit=0, process_elapsed=0.472837
+charged_point_wall=0.521007
+
+exit receipt: 0
+
+### dd_Rnrm2_gpu_1572864_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_cuda_kernel Rnrm2 fast 1572864
+OMP_NUM_THREADS=1
+dd,Rnrm2,inc1,1572864,gpu,0.000688127995,4.57142861,3
+
+exit=0, process_elapsed=0.525529
+charged_point_wall=0.570434
+
+exit receipt: 0
+
+### dd_Rnrm2_gpu_1835008_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_cuda_kernel Rnrm2 fast 1835008
+OMP_NUM_THREADS=1
+dd,Rnrm2,inc1,1835008,gpu,0.000791552007,4.6364812,3
+
+exit=0, process_elapsed=0.570184
+charged_point_wall=0.621376
+
+exit receipt: 0
+
+### dd_Rnrm2_gpu_2097152_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_cuda_kernel Rnrm2 fast 2097152
+OMP_NUM_THREADS=1
+dd,Rnrm2,inc1,2097152,gpu,0.000881663978,4.75725912,3
+
+exit=0, process_elapsed=0.621666
+charged_point_wall=0.672761
+
+exit receipt: 0
+
+### dd_Rnrm2_gpu_2621440_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_cuda_kernel Rnrm2 fast 2621440
+OMP_NUM_THREADS=1
+dd,Rnrm2,inc1,2621440,gpu,0.00107110405,4.89483725,1
+
+exit=0, process_elapsed=0.711063
+charged_point_wall=0.759323
+
+exit receipt: 0
+
+### dd_Rnrm2_gpu_3145728_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_cuda_kernel Rnrm2 fast 3145728
+OMP_NUM_THREADS=1
+dd,Rnrm2,inc1,3145728,gpu,0.00126054394,4.9910644,1
+
+exit=0, process_elapsed=0.811583
+charged_point_wall=0.858053
+
+exit receipt: 0
+
+### dd_Rnrm2_gpu_3670016_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_cuda_kernel Rnrm2 fast 3670016
+OMP_NUM_THREADS=1
+dd,Rnrm2,inc1,3670016,gpu,0.00144895995,5.06572457,1
+
+exit=0, process_elapsed=0.918470
+charged_point_wall=0.966674
+
+exit receipt: 0
+
+### dd_Rnrm2_gpu_4194304_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_cuda_kernel Rnrm2 fast 4194304
+OMP_NUM_THREADS=1
+dd,Rnrm2,inc1,4194304,gpu,0.00163532805,5.12961786,1
+
+exit=0, process_elapsed=0.997595
+charged_point_wall=1.047559
+
+exit receipt: 0
+
+### dd_Rnrm2_gpu_5242880_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_cuda_kernel Rnrm2 fast 5242880
+OMP_NUM_THREADS=1
+dd,Rnrm2,inc1,5242880,gpu,0.00200601602,5.22715667,1
+
+exit=0, process_elapsed=1.186165
+charged_point_wall=1.233050
+
+exit receipt: 0
+
+### dd_Rnrm2_gpu_6291456_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_cuda_kernel Rnrm2 fast 6291456
+OMP_NUM_THREADS=1
+dd,Rnrm2,inc1,6291456,gpu,0.00237875199,5.2897116,1
+
+exit=0, process_elapsed=1.370038
+charged_point_wall=1.418475
+
+exit receipt: 0
+
+### dd_Rnrm2_gpu_7340032_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_cuda_kernel Rnrm2 fast 7340032
+OMP_NUM_THREADS=1
+dd,Rnrm2,inc1,7340032,gpu,0.00275353599,5.33134997,1
+
+exit=0, process_elapsed=1.540316
+charged_point_wall=1.586197
+
+exit receipt: 0
+
+### dd_Rnrm2_gpu_8388608_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_cuda_kernel Rnrm2 fast 8388608
+OMP_NUM_THREADS=1
+dd,Rnrm2,inc1,8388608,gpu,0.00311910391,5.37885768,1
+
+exit=0, process_elapsed=1.730803
+charged_point_wall=1.779604
+
+exit receipt: 0
+
+### dd_Rnrm2_gpu_10485760_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_cuda_kernel Rnrm2 fast 10485760
+OMP_NUM_THREADS=1
+dd,Rnrm2,inc1,10485760,gpu,0.00387788796,5.4079747,1
+
+exit=0, process_elapsed=2.127219
+charged_point_wall=2.177673
+
+exit receipt: 0
+
+### dd_Rnrm2_gpu_12582912_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_cuda_kernel Rnrm2 fast 12582912
+OMP_NUM_THREADS=1
+dd,Rnrm2,inc1,12582912,gpu,0.00463872004,5.42516552,1
+
+exit=0, process_elapsed=2.491178
+charged_point_wall=2.539668
+
+exit receipt: 0
+
+### dd_Rnrm2_gpu_14680064_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_cuda_kernel Rnrm2 fast 14680064
+OMP_NUM_THREADS=1
+dd,Rnrm2,inc1,14680064,gpu,0.00541695976,5.42003804,1
+
+exit=0, process_elapsed=2.863848
+charged_point_wall=2.913655
+
+exit receipt: 0
+
+### dd_Rnrm2_gpu_16777216_sweep
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_cuda_kernel Rnrm2 fast 16777216
+OMP_NUM_THREADS=1
+dd,Rnrm2,inc1,16777216,gpu,0.00619315195,5.41798946,1
+
+exit=0, process_elapsed=3.249401
+charged_point_wall=3.296604
+
+exit receipt: 0

@@ -17,7 +17,7 @@ with `-Wl,-u,<symbol>`, including reference, optimized and DMD drivers. CMake
 static test executables do the same. GMP is different on 3.x: its normally
 referenced context provider replaces the old GMP initializer, so do not add
 an undefined `mplapack_initialize_gmp` reference. MPFR's initializer is a no-op;
-DD/QD initialization remains necessary for the x87 precision control word.
+DD/TD/QD initialization remains necessary for the x87 precision control word.
 
 Check both link order and initializer retention with:
 
@@ -31,10 +31,10 @@ its unretained negative control must fail:
     CPPFLAGS='-I<qd-prefix>/include' LIBS='-L<qd-prefix>/lib -lqd' \
       sh misc/check_backend_initializer.sh . dd
 
-Repeat for qd. For MinGW set CXX/AR/NM to the cross tools, LOG_COMPILER=wine,
-and WINEPATH to the dependency DLL directories. Supply an rpath or temporary
-LD_LIBRARY_PATH for a native non-system QD installation. The probe skips
-non-x86 hosts; it does not replace numerical QA.
+Repeat for td and qd. For MinGW set CXX/AR/NM to the cross tools,
+LOG_COMPILER=wine, and WINEPATH to the dependency DLL directories. Supply an
+rpath or temporary LD_LIBRARY_PATH for a native non-system QD installation.
+The probe skips non-x86 hosts; it does not replace numerical QA.
 
 After building the configured GMP, MPFR, QD or DD reference and optimized
 support libraries, run:

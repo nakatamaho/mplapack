@@ -1,0 +1,51 @@
+CMake Warning (dev) at /usr/share/cmake-4.2/Modules/ExternalProject/shared_internal_commands.cmake:1261 (message):
+  The DOWNLOAD_EXTRACT_TIMESTAMP option was not given and policy CMP0135 is
+  not set.  The policy's OLD behavior will be used.  When using a URL
+  download, the timestamps of extracted files should preferably be that of
+  the time of extraction, otherwise code that depends on the extracted
+  contents might not be rebuilt if the URL changes.  The OLD behavior
+  preserves the timestamps from the archive instead, but this is usually not
+  what you want.  Update your project to the NEW behavior or specify the
+  DOWNLOAD_EXTRACT_TIMESTAMP option with a value of true to avoid this
+  robustness issue.
+Call Stack (most recent call first):
+  /usr/share/cmake-4.2/Modules/ExternalProject.cmake:3258 (_ep_add_download_command)
+  CMakeLists.txt:463 (ExternalProject_Add)
+This warning is for project developers.  Use -Wno-dev to suppress it.
+
+-- Reference LAPACK: bundled 3.12.1 with patch-print|patch-iseed|patch-xLAQP2RK.f|patch-xxxGVD.f|patch-stebz-error-propagation|patch-redundant-dble-real|patch-trsyl3-ldswork-overwrite|patch-xpgvx-info-to-iinfo|patch-zunbdb3-conjugate-x21|patch-fix-testparameters|patch-xERRTSQR.f|patch-tsqr01-cq-residual|patch-cabs1_unification|patch-cabsmax|patch-claghe-zero-leading|patch-zlaghe-zero-leading
+-- Configuring done (0.5s)
+-- Generating done (1.9s)
+-- Build files have been written to: /tmp/factor01-cmake
+[  0%] Built target mpc_cuda_bundled
+[100%] Built target mplapack_mpfr_opt
+[100%] Building CUDA object benchmark/CMakeFiles/bench_Rkernel_bench_mpfr_cuda_resident.dir/Rkernel_bench_mpfr_resident.cu.o
+/home/docker/mplapack-acceralation/benchmark/Rkernel_bench_mpfr_resident.cu:4:9: warning: ‘MPLAPACK_BUILD_WITH_MPFR’ redefined
+    4 | #define MPLAPACK_BUILD_WITH_MPFR
+      |         ^~~~~~~~~~~~~~~~~~~~~~~~
+<command-line>: note: this is the location of the previous definition
+/home/docker/mplapack-acceralation/benchmark/Rkernel_bench_mpfr_resident.cu:4:9: warning: ‘MPLAPACK_BUILD_WITH_MPFR’ redefined
+    4 | #define MPLAPACK_BUILD_WITH_MPFR
+      |         ^~~~~~~~~~~~~~~~~~~~~~~~
+<command-line>: note: this is the location of the previous definition
+/home/docker/mplapack-acceralation/benchmark/Rkernel_bench_mpfr_resident.cu:4:9: warning: ‘MPLAPACK_BUILD_WITH_MPFR’ redefined
+    4 | #define MPLAPACK_BUILD_WITH_MPFR
+      |         ^~~~~~~~~~~~~~~~~~~~~~~~
+<command-line>: note: this is the location of the previous definition
+/usr/include/c++/15/bits/std_mutex.h(187): error: identifier "pthread_cond_clockwait" is undefined
+        pthread_cond_clockwait(&_M_cond, __m.native_handle(), __clock,
+        ^
+
+/usr/include/c++/15/mutex(305): error: identifier "pthread_mutex_clocklock" is undefined
+        { return !pthread_mutex_clocklock(&_M_mutex, __clockid, &__ts); }
+                  ^
+
+/usr/include/c++/15/mutex(383): error: identifier "pthread_mutex_clocklock" is undefined
+        { return !pthread_mutex_clocklock(&_M_mutex, __clockid, &__ts); }
+                  ^
+
+3 errors detected in the compilation of "/home/docker/mplapack-acceralation/benchmark/Rkernel_bench_mpfr_resident.cu".
+gmake[3]: *** [benchmark/CMakeFiles/bench_Rkernel_bench_mpfr_cuda_resident.dir/build.make:80: benchmark/CMakeFiles/bench_Rkernel_bench_mpfr_cuda_resident.dir/Rkernel_bench_mpfr_resident.cu.o] Error 2
+gmake[2]: *** [CMakeFiles/Makefile2:16998: benchmark/CMakeFiles/bench_Rkernel_bench_mpfr_cuda_resident.dir/all] Error 2
+gmake[1]: *** [CMakeFiles/Makefile2:17005: benchmark/CMakeFiles/bench_Rkernel_bench_mpfr_cuda_resident.dir/rule] Error 2
+gmake: *** [Makefile:6271: bench_Rkernel_bench_mpfr_cuda_resident] Error 2

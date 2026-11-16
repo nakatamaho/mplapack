@@ -60,7 +60,7 @@ git log -1; \
 autoreconf --force --install; \
 \
 # CUDA builds are x86_64, so enable binary80 \
-CONFIGURE_OPTS=\"--enable-cuda --enable-gmp=yes --enable-mpfr=yes --enable-binary128=yes --enable-binary80=yes --enable-qd=yes --enable-dd=yes --enable-double=yes --enable-test=yes --enable-benchmark=yes --with-openblas=system\"; \
+CONFIGURE_OPTS=\"--enable-cuda --enable-gmp=yes --enable-mpfr=yes --enable-binary128=yes --enable-binary80=yes --enable-qd=yes --enable-dd=yes --enable-td=yes --enable-double=yes --enable-test=yes --enable-benchmark=yes --with-openblas=system\"; \
 echo \"Configure options: $CONFIGURE_OPTS\"; \
 \
 ./configure $CONFIGURE_OPTS; \

@@ -34,14 +34,8 @@
 #include <mplapack.h>
 #include <mplapack_benchmark.h>
 #include <mplapack_symbol_resolver.h>
+#include <mpblas_binary128_opencl.h>
 
-void Rgemm_binary128_opencl_kernel(bool btransa, bool btransb,
-                                   int m, int n, int k,
-                                   mplapack_binary128_t alpha,
-                                   mplapack_binary128_t *A, int lda,
-                                   mplapack_binary128_t *B, int ldb,
-                                   mplapack_binary128_t beta,
-                                   mplapack_binary128_t *C, int ldc);
 
 static double flops_gemm(mplapackint k_i, mplapackint m_i, mplapackint n_i) {
     double m = (double)m_i;
@@ -172,19 +166,16 @@ int main(int argc, char *argv[]) {
                 Cref[i] = C[i];
         }
 
-        bool btransa = Mlsame(&transa, "t");
-        bool btransb = Mlsame(&transb, "t");
-
         if (check_flag) {
             auto t1 = Clock::now();
-            Rgemm_binary128_opencl_kernel(btransa, btransb, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc);
+            Rgemm_binary128_opencl(&transa, &transb, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc);
             auto t2 = Clock::now();
             elapsedtime = (double)duration_cast<nanoseconds>(t2 - t1).count() / 1.0e9;
         } else {
             elapsedtime = 0.0;
             for (int j = 0; j < LOOPS; j++) {
                 auto t1 = Clock::now();
-                Rgemm_binary128_opencl_kernel(btransa, btransb, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc);
+                Rgemm_binary128_opencl(&transa, &transb, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc);
                 auto t2 = Clock::now();
                 elapsedtime += (double)duration_cast<nanoseconds>(t2 - t1).count() / 1.0e9;
             }

@@ -33,6 +33,11 @@ except OSError:
 
 # generate the command to compile the .cu for shared library
 args = sys.argv[2:]
+# A compilation (not a device link): let nvcc write the headers the .cu
+# includes to <object>.lo.d, which the Makefile.am of the directory
+# includes, so that changing a header rebuilds the object.
+if "-c" in args and "-dlink" not in args:
+   args.extend(["-MD", "-MP", "-MF", lo_filepath + ".d", "-MT", lo_filepath])
 args.extend(["-Xcompiler","-fPIC"]) # position indep code
 args.append("-o")
 args.append(pic_filepath)

@@ -75,7 +75,7 @@ WP_TEST=$(winepath -w /work 2>/dev/null || true)
 test -n "$WP_TEST"
 echo "winepath(/work)=$WP_TEST"
 
-COMMON_OPTS="--host=x86_64-w64-mingw32 --build=$BUILD_TRIPLE --enable-gmp=yes --enable-mpfr=yes --enable-binary128=yes --enable-qd=yes --enable-dd=yes --enable-double=yes --enable-test=yes"
+COMMON_OPTS="--host=x86_64-w64-mingw32 --build=$BUILD_TRIPLE --enable-gmp=yes --enable-mpfr=yes --enable-binary128=yes --enable-qd=yes --enable-dd=yes --enable-td=yes --enable-double=yes --enable-test=yes"
 if [ "$ARCH" = "amd64" ] || [ "$ARCH" = "i386" ]; then
     CONFIGURE_OPTS="$COMMON_OPTS --enable-benchmark=yes --enable-binary80=yes"
 else

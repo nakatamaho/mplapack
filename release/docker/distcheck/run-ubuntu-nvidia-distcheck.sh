@@ -37,7 +37,7 @@ get_m4_value() {
 MAKE_JOBS="$(get_make_jobs)"
 DISTRO_VERSION="$(get_distro_version)"
 RECONFIG_SCRIPT="misc/reconfig.ubuntu${DISTRO_VERSION}.nvidia.sh"
-NVIDIA_CONFIGURE_OPTS="--enable-gmp=yes --enable-mpfr=yes --enable-binary128=yes --enable-qd=yes --enable-dd=yes --enable-double=yes --enable-binary80=yes --enable-cuda=yes --enable-test=yes --enable-benchmark=yes"
+NVIDIA_CONFIGURE_OPTS="--enable-gmp=yes --enable-mpfr=yes --enable-binary128=yes --enable-qd=yes --enable-dd=yes --enable-td=yes --enable-double=yes --enable-binary80=yes --enable-cuda=yes --enable-test=yes --enable-benchmark=yes"
 
 echo "MAKE_JOBS=${MAKE_JOBS}"
 echo "MPLAPACK_DISTRO_VERSION=${DISTRO_VERSION}"

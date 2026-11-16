@@ -1,0 +1,453 @@
+/*
+ * Copyright (c) 2026
+ *      Nakata, Maho
+ *      All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+ * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+ * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGE.
+ *
+ */
+
+/*
+ * dd/td/qd complex Level 1/2/3 BLAS (and Rgemmtr) on CUDA: every thread runs
+ * the reference routine (blas_dev/<R>_dev.h, the reference text on the
+ * device types of Rblas_dev_types.h) on its part of the output: an element
+ * (Cgemm, Cgeru, Cgerc, Level 1), a column or row (Csymm, Chemm, Ctrmm,
+ * Ctrsm, Cgemv), or a column of the triangle (Csyrk, Cherk, Csyr2k, Cher2k,
+ * Cgemmtr, Rgemmtr, Cher, Cher2), so the results are the reference results
+ * bit for bit.  The host side is ../common/blas_cuda/Cblas_bridge_cuda.cpp;
+ * instantiated per type in <type>/cuda/Rgemm_gpu_cuda.cu.  With
+ * MPLAPACK_GEMM_CUDA_HOST_EMULATION the threads run on the host.
+ */
+
+#ifndef _MPLAPACK_CBLAS_CUDA_COMMON_CUH_
+#define _MPLAPACK_CBLAS_CUDA_COMMON_CUH_
+
+#include <vector>
+#include "blas_dev/blas_dev.h"
+#include "Rblas_gpu_operand_common.h"
+
+// MPLAPACK_GEMM_CUDA_HOST_EMULATION (dd/td/qd) or
+// MPLAPACK_MPFR_CUDA_HOST_EMULATION (MPFR): the jobs run on the host.
+#if defined(MPLAPACK_GEMM_CUDA_HOST_EMULATION) || defined(MPLAPACK_MPFR_CUDA_HOST_EMULATION)
+#define MPLAPACK_CBLAS_CUDA_DEVICE 0
+#elif defined(__CUDACC__)
+#define MPLAPACK_CBLAS_CUDA_DEVICE 1
+#include <cuda_runtime.h>
+#else
+#error "Cblas_cuda_common.cuh: compile with nvcc, or define MPLAPACK_GEMM_CUDA_HOST_EMULATION"
+#endif
+
+#include "Cblas_cuda_jobs_common.h"
+#include "Rtrsm_team_common.h"
+#include "Cherk_tiled_common.h"
+
+namespace mplapack_blas_dev {
+
+using mplapack_blas::gpu_operand;
+
+// Arithmetic adapter for the small, value-semantic complex device types.
+// The MPFR arena-backed types retain their checked production scheduler.
+template<class Ops> struct ctrsm_team_engine {
+    using V=typename cgpu_types<Ops>::DC;
+    struct M { V *p; long ld; };
+    MPLAPACK_DEV_HD V reg(int) const { return V(0); }
+    MPLAPACK_DEV_HD V at(const M &a,long i,long j) const { return a.p[i+j*a.ld]; }
+    MPLAPACK_DEV_HD void put(M &a,long i,long j,const V &v) const { a.p[i+j*a.ld]=v; }
+    MPLAPACK_DEV_HD void set(V &r,const V &v) const { r=v; }
+    MPLAPACK_DEV_HD void one(V &r) const { r=V(1); }
+    MPLAPACK_DEV_HD bool iszero(const V &v) const { return v==V(0); }
+    MPLAPACK_DEV_HD void mul(V &r,const V &a,const V &b) const { r=a*b; }
+    MPLAPACK_DEV_HD void sub(V &r,const V &a,const V &b) const { r=a-b; }
+    MPLAPACK_DEV_HD void div(V &r,const V &a,const V &b) const { r=a/b; }
+    MPLAPACK_DEV_HD void conjugate(V &r,const V &v) const { r=conj(v); }
+};
+template<class Job> struct ctrsm_constants {
+    MPLAPACK_DEV_HD static bool zero(const typename Job::DC &v) { return v==typename Job::DC(0); }
+    MPLAPACK_DEV_HD static bool one(const typename Job::DC &v) { return v==typename Job::DC(1); }
+};
+template<class Job> struct cgpu_is_ctrsm { static constexpr bool value=false; };
+template<class Ops> struct cgpu_is_ctrsm<job_Ctrsm<Ops>> {
+    static constexpr bool value=sizeof(typename cgpu_types<Ops>::DC)<=64;
+};
+template<class Ops> MPLAPACK_DEV_HD mplapack_blas::trsm_team_args<ctrsm_team_engine<Ops>> ctrsm_args(job_Ctrsm<Ops> &j) {
+    mplapack_blas::trsm_team_args<ctrsm_team_engine<Ops>> t{};
+    t.s.op=mplapack_blas::L3_TRSM; t.s.left=lsame(j.side,"L"); t.s.upper=lsame(j.uplo,"U");
+    t.s.trans=!lsame(j.ta,"N"); t.s.nounit=lsame(j.diag,"N");
+    t.s.alpha_one=ctrsm_constants<job_Ctrsm<Ops>>::one(j.alpha);
+    t.s.m=j.m; t.s.n=j.n; t.x.al={&j.alpha,1}; t.x.a={j.A,j.lda}; t.x.c={j.B,j.ldb}; return t;
+}
+#if MPLAPACK_CBLAS_CUDA_DEVICE
+template<class Ops,bool Conjugate,bool Local=false> __global__ void k_ctrsm_team(job_Ctrsm<Ops> j) {
+    // alpha lives in each thread's copy of j, not in host memory.
+    mplapack_blas::trsm_team_body<ctrsm_team_engine<Ops>,Conjugate,false,Local>(ctrsm_args(j),nullptr);
+}
+template<class Ops,bool Conjugate> __global__ void k_ctrsm_dot(job_Ctrsm<Ops> j) {
+    mplapack_blas::trsm_dot_body<ctrsm_team_engine<Ops>,Conjugate,false>(ctrsm_args(j),nullptr);
+}
+template<class Ops> static int ctrsm_team_device(job_Ctrsm<Ops> j,cudaStream_t stream=nullptr) {
+    auto t=ctrsm_args(j);
+    if(mplapack_blas::trsm_dot_shape(t.s)) {
+        if(j.m && j.n) {
+            const unsigned blocks=(unsigned)((j.n+1)/2);
+            if(lsame(j.ta,"C")) k_ctrsm_dot<Ops,true><<<blocks,dim3(64,2),0,stream>>>(j);
+            else k_ctrsm_dot<Ops,false><<<blocks,dim3(64,2),0,stream>>>(j);
+        }
+        return cudaGetLastError();
+    }
+    if(mplapack_blas::trsm_block_eligible(t.s)) {
+        using V=typename ctrsm_team_engine<Ops>::V;
+        V *alpha=nullptr;
+        int error=cudaMalloc(&alpha,sizeof(V));
+        if(error) return error;
+        error=cudaMemcpyAsync(alpha,&j.alpha,sizeof(V),cudaMemcpyHostToDevice,stream);
+        t.x.al.p=alpha;
+        if(!error) {
+            if(lsame(j.ta,"C")) error=mplapack_blas::trsm_team_device<ctrsm_team_engine<Ops>,true>(t,stream);
+            else error=mplapack_blas::trsm_team_device(t,stream);
+        }
+        int e=cudaStreamSynchronize(stream); if(!error) error=e;
+        e=cudaFree(alpha); if(!error) error=e;
+        return error;
+    }
+    const bool left=lsame(j.side,"L");
+    const int width=mplapack_blas::trsm_team_width<ctrsm_team_engine<Ops>>(left);
+    const dim3 threads=left?dim3(width==1?64:32,width):dim3(width,128/width);
+    const unsigned blocks=(unsigned)((j.units()+width-1)/width);
+    if(!blocks || !j.m || !j.n) return 0;
+    if constexpr(sizeof(typename ctrsm_team_engine<Ops>::V)<=64) {
+        if((left?j.m:j.n)<=64) {
+            if(lsame(j.ta,"C")) k_ctrsm_team<Ops,true,true><<<blocks,threads,0,stream>>>(j);
+            else k_ctrsm_team<Ops,false,true><<<blocks,threads,0,stream>>>(j);
+            return cudaGetLastError();
+        }
+    }
+    if(lsame(j.ta,"C")) k_ctrsm_team<Ops,true><<<blocks,threads,0,stream>>>(j);
+    else k_ctrsm_team<Ops,false><<<blocks,threads,0,stream>>>(j);
+    return cudaGetLastError();
+}
+#endif
+
+#if MPLAPACK_CBLAS_CUDA_DEVICE
+// The job is read from device memory: its scalars may exceed the size of the
+// kernel parameters (MPFR runtime precision).
+template <class Job> __global__ void k_job(const Job *job, long units)
+{
+    const long u = (long)blockIdx.x * blockDim.x + threadIdx.x;
+    if (u < units)
+        (*job)(u);
+}
+#endif
+
+// Bound device pointers; scratch belongs to the caller (one Job on device).
+// This shares k_job with the host-copy wrapper, without transferring operands.
+template<class Job> static int job_device(Job job, long units, Job *scratch)
+{
+#if MPLAPACK_CBLAS_CUDA_DEVICE
+    if (units <= 0) return 0;
+    cudaError_t e=cudaMemcpy(scratch,&job,sizeof(Job),cudaMemcpyHostToDevice);
+    if(e==cudaSuccess) {
+        if constexpr(cgpu_is_herk<Job>::value) {
+            if(herk_tiled_eligible(job)) e=(cudaError_t)herk_tiled_device(job,scratch);
+            else k_job<Job><<<(unsigned)((units+63)/64),64>>>(scratch,units);
+        } else if constexpr(cgpu_is_ctrsm<Job>::value) {
+            if(mplapack_blas::trsm_team_shape(ctrsm_args(job).s) && !ctrsm_constants<Job>::zero(job.alpha))
+                e=(cudaError_t)ctrsm_team_device(job);
+            else k_job<Job><<<(unsigned)((units+63)/64),64>>>(scratch,units);
+        } else k_job<Job><<<(unsigned)((units+63)/64),64>>>(scratch,units);
+    }
+    if(e==cudaSuccess) e=cudaGetLastError();
+    return (int)(e==cudaSuccess ? cudaDeviceSynchronize() : e);
+#else
+    (void)scratch;
+    if constexpr(cgpu_is_herk<Job>::value) {
+        if(herk_tiled_eligible(job)) return herk_tiled_host(job);
+    }
+    if constexpr(cgpu_is_ctrsm<Job>::value) {
+        auto t=ctrsm_args(job);
+        if(mplapack_blas::trsm_team_shape(t.s) && !ctrsm_constants<Job>::zero(job.alpha)) {
+            if(lsame(job.ta,"C")) return mplapack_blas::trsm_team_device<decltype(t.e),true>(t);
+            return mplapack_blas::trsm_team_device(t);
+        }
+    }
+    for(long u=0;u<units;++u) job(u);
+    return 0;
+#endif
+}
+
+// Uploads the operands (their referenced elements, Rblas_gpu_operand_common.h),
+// runs job(u) for u < units, downloads the written ones.  ops[q].host is the logical element (0, 0); bind() gets the
+// device addresses of these elements.
+template <class E, class Job> int run_job(Job job, long units, const gpu_operand<E> *ops, int nops)
+{
+    E *dev[4] = {0, 0, 0, 0};
+#if MPLAPACK_CBLAS_CUDA_DEVICE
+    E *buf[4] = {0, 0, 0, 0};
+    cudaError_t e = cudaSuccess;
+    for (int q = 0; q < nops && e == cudaSuccess; q++) {
+        const size_t count = (size_t)(ops[q].count ? ops[q].count : 1);
+        e = cudaMalloc(&buf[q], count * sizeof(E));
+        if (e == cudaSuccess)
+            e = gpu_operand_upload(ops[q], buf[q]);
+        dev[q] = buf[q] - ops[q].lo;
+    }
+    Job *djob = 0;
+    if (e == cudaSuccess && units > 0) {
+        job.bind(dev);
+        e = cudaMalloc(&djob, sizeof(Job));
+        if (e == cudaSuccess)
+            e = (cudaError_t)job_device(job, units, djob);
+    }
+    cudaFree(djob);
+    for (int q = 0; q < nops && e == cudaSuccess; q++)
+        e = gpu_operand_download(ops[q], buf[q]);
+    for (int q = 0; q < nops; q++)
+        cudaFree(buf[q]);
+    return (int)e;
+#else
+    std::vector<E> buf[4];
+    for (int q = 0; q < nops; q++) {
+        buf[q].assign((size_t)(ops[q].count ? ops[q].count : 1), E());
+        if (ops[q].count)
+            gpu_operand_gather(ops[q], buf[q].data());
+        dev[q] = buf[q].data() - ops[q].lo;
+    }
+    job.bind(dev);
+    job_device(job,units,static_cast<Job*>(nullptr));
+    for (int q = 0; q < nops; q++)
+        if (ops[q].download && ops[q].count)
+            gpu_operand_scatter(ops[q], buf[q].data());
+    return 0;
+#endif
+}
+
+// ---- Cgemm tiled (dd/td/qd): a CG_TILE x CG_TILE block of threads computes a
+// tile of C, the columns (rows) l of op(A) and op(B) in chunks of CG_TILE held
+// in shared memory.  Every thread performs the operations of the reference
+// Cgemm on its element in the reference order (transa = N: c = beta*c, then
+// c += (alpha*op(b)(l,j))*a(i,l); otherwise temp += op(a)(l,i)*op(b)(l,j) and
+// c = alpha*temp [+ beta*c]), so the result is the same bit for bit.  The
+// phases are separate functions so that the host emulation runs them for all
+// the threads of a block in turn.
+
+static const int CG_TILE = 16;
+
+template <class Ops, int Tile=CG_TILE> struct cgemm_tile {
+    typedef typename cgpu_types<Ops>::DC DC;
+    struct shared {
+        DC a[Tile][Tile + 1]; // a[l][t]: op(A)(row i0 + t, l) as used
+        DC b[Tile][Tile + 1]; // b[l][t]: op(B)(l, column j0 + t)
+    };
+    const job_Cgemm<Ops> &j;
+    bool nota, conja, notb, conjb;
+    MPLAPACK_DEV_HD explicit cgemm_tile(const job_Cgemm<Ops> &job) : j(job)
+    {
+        nota = lsame(j.ta, "N"), conja = lsame(j.ta, "C");
+        notb = lsame(j.tb, "N"), conjb = lsame(j.tb, "C");
+    }
+    MPLAPACK_DEV_HD bool mine(long i, long jj) const { return i < j.m && jj < j.n; }
+    MPLAPACK_DEV_HD void init(DC &acc, long i, long jj) const
+    {
+        const DC zero = DC(0.0, 0.0), one = DC(1.0, 0.0);
+        if (!mine(i, jj))
+            return;
+        if (nota) {
+            if (j.beta == zero)
+                acc = zero;
+            else if (j.beta != one)
+                acc = j.beta * j.C[i + jj * j.ldc];
+            else
+                acc = j.C[i + jj * j.ldc];
+        } else {
+            acc = zero; // temp = zero
+        }
+    }
+    MPLAPACK_DEV_HD void load(shared &sh, long i0, long j0, long p0, int ti, int tj) const
+    {
+        const long l = p0 + tj;
+        if (l >= j.k)
+            return;
+        const long i = i0 + ti, jj = j0 + ti;
+        if (i < j.m)
+            sh.a[tj][ti] = nota ? j.A[i + l * j.lda] : (conja ? conj(j.A[l + i * j.lda]) : j.A[l + i * j.lda]);
+        if (jj < j.n)
+            sh.b[tj][ti] = notb ? j.B[l + jj * j.ldb] : (conjb ? conj(j.B[jj + l * j.ldb]) : j.B[jj + l * j.ldb]);
+    }
+    MPLAPACK_DEV_HD void step(const shared &sh, DC &acc, long i, long jj, long kc, int ti, int tj) const
+    {
+        if (!mine(i, jj))
+            return;
+        DC temp = 0.0;
+        for (long l = 0; l < kc; l++) {
+            if (nota) {
+                temp = j.alpha * sh.b[l][tj];  // temp = alpha*op(b)(l,j)
+                acc += temp * sh.a[l][ti];     // c(i,j) += temp*a(i,l)
+            } else {
+                acc += sh.a[l][ti] * sh.b[l][tj]; // temp += op(a)(l,i)*op(b)(l,j)
+            }
+        }
+    }
+    MPLAPACK_DEV_HD void finish(const DC &acc, long i, long jj) const
+    {
+        const DC zero = DC(0.0, 0.0);
+        if (!mine(i, jj))
+            return;
+        DC &cij = j.C[i + jj * j.ldc];
+        if (nota)
+            cij = acc;
+        else if (j.beta == zero)
+            cij = j.alpha * acc;
+        else
+            cij = j.alpha * acc + j.beta * cij;
+    }
+};
+
+// the tiled form: dd/td/qd elements (small enough for shared memory), alpha != 0
+template <class Job> struct cgpu_is_cgemm {
+    static const bool value = false;
+};
+template <class Ops> struct cgpu_is_cgemm<job_Cgemm<Ops> > {
+    static const bool value = sizeof(typename cgpu_types<Ops>::DC) <= 64;
+};
+
+#if MPLAPACK_CBLAS_CUDA_DEVICE
+template <class Ops,int Tile=CG_TILE> __device__ void cgemm_tiled_body(const job_Cgemm<Ops> &job)
+{
+    typedef cgemm_tile<Ops,Tile> T;
+    __shared__ typename T::shared sh;
+    const T t(job);
+    const int ti = threadIdx.x, tj = threadIdx.y;
+    const long i0 = (long)blockIdx.x * Tile, j0 = (long)blockIdx.y * Tile;
+    const long i = i0 + ti, jj = j0 + tj;
+    typename T::DC acc;
+    t.init(acc, i, jj);
+    for (long p0 = 0; p0 < job.k; p0 += Tile) {
+        t.load(sh, i0, j0, p0, ti, tj);
+        __syncthreads();
+        const long kc = job.k - p0 < Tile ? job.k - p0 : Tile;
+        t.step(sh, acc, i, jj, kc, ti, tj);
+        __syncthreads();
+    }
+    t.finish(acc, i, jj);
+}
+template<class Ops> __global__ void k_cgemm_tiled(const job_Cgemm<Ops> *job) { cgemm_tiled_body(*job); }
+template<class Ops,int Tile=CG_TILE> __global__ void k_cgemm_tiled_value(job_Cgemm<Ops> job) { cgemm_tiled_body<Ops,Tile>(job); }
+template<class Ops> static int cgemm_tiled_stream(const job_Cgemm<Ops> &j,cudaStream_t stream) {
+    // A long-k 64x64 near update otherwise exposes only sixteen blocks.
+    if(!lsame(j.ta,"N") && j.m>0 && j.n>0 && j.m<=64 && j.n<=64) {
+        k_cgemm_tiled_value<Ops,8><<<dim3((unsigned)((j.m+7)/8),(unsigned)((j.n+7)/8)),dim3(8,8),0,stream>>>(j);
+        return cudaGetLastError();
+    }
+    if(j.m && j.n) k_cgemm_tiled_value<<<dim3((unsigned)((j.m+CG_TILE-1)/CG_TILE),(unsigned)((j.n+CG_TILE-1)/CG_TILE)),dim3(CG_TILE,CG_TILE),0,stream>>>(j);
+    return cudaGetLastError();
+}
+#else
+template<class Ops,int Tile> static int cgemm_tiled_host_width(const job_Cgemm<Ops> &job) {
+    using T=cgemm_tile<Ops,Tile>;
+    const T t(job);
+    const long nbi=(job.m+Tile-1)/Tile,nbj=(job.n+Tile-1)/Tile;
+#ifdef _OPENMP
+#pragma omp parallel for schedule(dynamic, 1)
+#endif
+    for(long b=0;b<nbi*nbj;++b) {
+        const long i0=(b%nbi)*Tile,j0=(b/nbi)*Tile;
+        typename T::shared sh;
+        typename T::DC acc[Tile][Tile];
+        for(int y=0;y<Tile;++y) for(int x=0;x<Tile;++x) t.init(acc[y][x],i0+x,j0+y);
+        for(long p=0;p<job.k;p+=Tile) {
+            for(int y=0;y<Tile;++y) for(int x=0;x<Tile;++x) t.load(sh,i0,j0,p,x,y);
+            for(int y=0;y<Tile;++y) for(int x=0;x<Tile;++x) t.step(sh,acc[y][x],i0+x,j0+y,job.k-p<Tile?job.k-p:Tile,x,y);
+        }
+        for(int y=0;y<Tile;++y) for(int x=0;x<Tile;++x) t.finish(acc[y][x],i0+x,j0+y);
+    }
+    return 0;
+}
+template<class Ops> static int cgemm_tiled_host(const job_Cgemm<Ops> &job) {
+    if(!lsame(job.ta,"N") && job.m<=64 && job.n<=64) return cgemm_tiled_host_width<Ops,8>(job);
+    return cgemm_tiled_host_width<Ops,CG_TILE>(job);
+}
+#endif
+
+template <class Ops> int cgemm_tiled_run(job_Cgemm<Ops> job, const gpu_operand<typename job_Cgemm<Ops>::E> *ops, int nops)
+{
+    typedef typename job_Cgemm<Ops>::E E;
+    typedef cgemm_tile<Ops> T;
+    E *dev[4] = {0, 0, 0, 0};
+#if MPLAPACK_CBLAS_CUDA_DEVICE
+    E *buf[4] = {0, 0, 0, 0};
+    job_Cgemm<Ops> *djob = 0;
+    cudaError_t e = cudaSuccess;
+    for (int q = 0; q < nops && e == cudaSuccess; q++) {
+        const size_t count = (size_t)(ops[q].count ? ops[q].count : 1);
+        e = cudaMalloc(&buf[q], count * sizeof(E));
+        if (e == cudaSuccess)
+            e = gpu_operand_upload(ops[q], buf[q]);
+        dev[q] = buf[q] - ops[q].lo;
+    }
+    if (e == cudaSuccess) {
+        job.bind(dev);
+        e = cudaMalloc(&djob, sizeof job);
+        if (e == cudaSuccess)
+            e = cudaMemcpy(djob, &job, sizeof job, cudaMemcpyHostToDevice);
+        const dim3 grid((unsigned)((job.m + CG_TILE - 1) / CG_TILE), (unsigned)((job.n + CG_TILE - 1) / CG_TILE));
+        if (e == cudaSuccess)
+            k_cgemm_tiled<Ops><<<grid, dim3(CG_TILE, CG_TILE)>>>(djob);
+        if (e == cudaSuccess)
+            e = cudaGetLastError();
+        if (e == cudaSuccess)
+            e = cudaDeviceSynchronize();
+    }
+    for (int q = 0; q < nops && e == cudaSuccess; q++)
+        e = gpu_operand_download(ops[q], buf[q]);
+    cudaFree(djob);
+    for (int q = 0; q < nops; q++)
+        cudaFree(buf[q]);
+    return (int)e;
+#else
+    std::vector<E> buf[4];
+    for (int q = 0; q < nops; q++) {
+        buf[q].assign((size_t)(ops[q].count ? ops[q].count : 1), E());
+        if (ops[q].count)
+            gpu_operand_gather(ops[q], buf[q].data());
+        dev[q] = buf[q].data() - ops[q].lo;
+    }
+    job.bind(dev);
+    cgemm_tiled_host(job);
+    for (int q = 0; q < nops; q++)
+        if (ops[q].download && ops[q].count)
+            gpu_operand_scatter(ops[q], buf[q].data());
+    return 0;
+#endif
+}
+
+template <class Job> int cgpu_run(Job job, const mplapack_blas::gpu_operand<typename Job::E> *ops, int nops)
+{
+    if constexpr (cgpu_is_cgemm<Job>::value) {
+        typedef typename Job::DC DC;
+        if (job.m > 0 && job.n > 0 && job.k > 0 && !(job.alpha == DC(0.0, 0.0)))
+            return cgemm_tiled_run(job, ops, nops);
+    }
+    return run_job<typename Job::E>(job, job.units(), ops, nops);
+}
+
+} // namespace mplapack_blas_dev
+
+#endif

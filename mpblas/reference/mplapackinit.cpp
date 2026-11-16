@@ -116,6 +116,14 @@ void mplapack_initialize_dd(void) { fpu_fix_start(&oldcw_dd); }
 void mplapack_finalize_dd(void) { fpu_fix_end(&oldcw_dd); }
 #endif
 
+#if defined MPLAPACK_BUILD_WITH_TD
+void __attribute__((constructor)) mplapack_initialize_td(void);
+void __attribute__((destructor)) mplapack_finalize_td(void);
+static unsigned int oldcw_td;
+void mplapack_initialize_td(void) { fpu_fix_start(&oldcw_td); }
+void mplapack_finalize_td(void) { fpu_fix_end(&oldcw_td); }
+#endif
+
 #if defined MPLAPACK_BUILD_WITH_DOUBLE
 void __attribute__((constructor)) mplapack_initialize_double(void);
 void __attribute__((destructor)) mplapack_finalize_double(void);

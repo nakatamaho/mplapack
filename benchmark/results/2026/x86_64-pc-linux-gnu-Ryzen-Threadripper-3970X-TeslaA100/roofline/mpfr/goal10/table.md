@@ -1,0 +1,34 @@
+| type | kernel | form | n | old (double operands) % | level 2 (cu_freal) % | level 1 (hardware) % |
+|---|---|---|---:|---:|---:|---:|
+| mpfr1024 | potrf2 | L | 512 | 0.7 | 1.4 | 0.7 |
+| mpfr1024 | potrf2 | L | 1024 | 2.6 | 5.1 | 2.7 |
+| mpfr1024 | potrf2 | U | 512 | 0.4 | 0.9 | 0.5 |
+| mpfr1024 | potrf2 | U | 1024 | 1.4 | 2.8 | 1.5 |
+| mpfr256 | potrf2 | L | 512 | 1.8 | 2.1 | 0.6 |
+| mpfr256 | potrf2 | L | 1024 | 6.4 | 7.7 | 2.3 |
+| mpfr256 | potrf2 | L | 2048 | 18.2 | 21.8 | 6.5 |
+| mpfr256 | potrf2 | U | 512 | 0.8 | 0.9 | 0.3 |
+| mpfr256 | potrf2 | U | 1024 | 2.6 | 3.2 | 0.9 |
+| mpfr256 | potrf2 | U | 2048 | 8.0 | 9.5 | 2.8 |
+| mpfr512 | cherk | LN | 512 | 8.7 | 13.6 | 6.0 |
+| mpfr512 | cherk | LN | 1024 | 9.0 | 14.0 | 6.1 |
+| mpfr512 | getrf2 | P64 | 512 | 0.8 | 1.2 | 0.5 |
+| mpfr512 | getrf2 | P64 | 1024 | 1.5 | 2.3 | 1.0 |
+| mpfr512 | potrf2 | L | 512 | 1.2 | 1.9 | 0.8 |
+| mpfr512 | potrf2 | L | 1024 | 4.5 | 6.9 | 3.0 |
+| mpfr512 | potrf2 | L | 2048 | 13.2 | 20.5 | 9.0 |
+| mpfr512 | potrf2 | U | 512 | 0.7 | 1.0 | 0.4 |
+| mpfr512 | potrf2 | U | 1024 | 2.2 | 3.3 | 1.5 |
+| mpfr512 | potrf2 | U | 2048 | 6.1 | 9.4 | 4.2 |
+| mpfr512 | syrk | LN | 512 | 17.8 | 27.6 | 12.2 |
+| mpfr512 | syrk | LN | 1024 | 20.6 | 31.9 | 14.1 |
+| mpfr512 | syrk | UT | 512 | 20.5 | 31.8 | 14.0 |
+| mpfr512 | syrk | UT | 1024 | 24.0 | 37.3 | 16.4 |
+| mpfr512 | trsm | LLNU | 512 | 28.3 | 43.9 | 19.3 |
+| mpfr512 | trsm | LLNU | 1024 | 38.9 | 60.3 | 26.6 |
+| mpfr512 | trsm | LLNU_p64 | 512 | 11.8 | 18.4 | 8.2 |
+| mpfr512 | trsm | LLNU_p64 | 1024 | 11.7 | 18.3 | 8.1 |
+| mpfr512 | trsm | RLTN | 512 | 23.7 | 36.8 | 16.2 |
+| mpfr512 | trsm | RLTN | 1024 | 38.5 | 59.9 | 26.4 |
+| mpfr512 | trsm | RLTN_p64 | 512 | 4.4 | 6.8 | 3.0 |
+| mpfr512 | trsm | RLTN_p64 | 1024 | 8.5 | 13.3 | 5.9 |

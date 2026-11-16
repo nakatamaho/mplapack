@@ -39,6 +39,30 @@ function(mplapack_configure_dd_arithmetic target)
   endif()
 endfunction()
 
+# Apply the build traits that backends.txt lists for a backend to one of its
+# library targets.
+function(mplapack_configure_backend_traits target backend)
+  foreach(_trait IN LISTS MPLAPACK_BACKEND_${backend}_TRAITS)
+    if(_trait STREQUAL "gmp")
+      target_include_directories(${target} PUBLIC
+          "$<BUILD_INTERFACE:${MPLAPACK_GMPFRXX_MKII_ROOT}/include>")
+      target_link_libraries(${target} PUBLIC GMP::GMP)
+    elseif(_trait STREQUAL "mpfr")
+      target_include_directories(${target} PUBLIC
+          "$<BUILD_INTERFACE:${MPLAPACK_GMPFRXX_MKII_ROOT}/include>")
+      target_link_libraries(${target} PUBLIC MPC::MPC MPFR::MPFR GMP::GMP)
+    elseif(_trait STREQUAL "qd")
+      target_link_libraries(${target} PUBLIC QD::QD)
+    elseif(_trait STREQUAL "nofma")
+      mplapack_configure_dd_arithmetic(${target})
+    elseif(_trait STREQUAL "binary128libs")
+      if(MPLAPACK_BINARY128_EXTRA_LIBS)
+        target_link_libraries(${target} PUBLIC ${MPLAPACK_BINARY128_EXTRA_LIBS})
+      endif()
+    endif()
+  endforeach()
+endfunction()
+
 function(mplapack_add_backend backend macro)
   set(_target mplapack_${backend})
   add_library(${_target} ${MPBLAS_SOURCES} ${MPLAPACK_SOURCES})
@@ -96,12 +120,16 @@ function(mplapack_collect_opt_backend_sources
   # CPU-only sources. Accelerator subdirectories are separate libraries.
   file(GLOB _mpblas_opt_sources CONFIGURE_DEPENDS
     "${CMAKE_CURRENT_SOURCE_DIR}/mpblas/optimized/${backend}/*.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/mpblas/optimized/${backend}/openmp/*.cpp")
+    "${CMAKE_CURRENT_SOURCE_DIR}/mpblas/optimized/${backend}/openmp/*.cpp"
+    # Lane-parallel Level 1/2/3 BLAS shared by every backend.
+    "${CMAKE_CURRENT_SOURCE_DIR}/mpblas/optimized/common/blas/*.cpp")
   # Despite its helper-style name, this legacy file defines public Rgemm
   # again. The explicit autotools source lists intentionally exclude it.
   list(FILTER _mpblas_opt_sources EXCLUDE REGEX "/openmp/Rgemm_omp\\.cpp$")
   file(GLOB _mplapack_opt_sources CONFIGURE_DEPENDS
-    "${CMAKE_CURRENT_SOURCE_DIR}/mplapack/optimized/${backend}/*.cpp")
+    "${CMAKE_CURRENT_SOURCE_DIR}/mplapack/optimized/${backend}/*.cpp"
+    # LAPACK routines shared by every backend (parallel, bit-identical).
+    "${CMAKE_CURRENT_SOURCE_DIR}/mplapack/optimized/common/*.cpp")
 
   mplapack_shadow_sources(
     _mpblas_reference_sources MPBLAS_SOURCES _mpblas_opt_sources)
@@ -132,17 +160,26 @@ function(mplapack_add_accelerator_backend backend accelerator)
   mplapack_shadow_sources(
     _mpblas_accelerated_reference_sources MPBLAS_SOURCES _mpblas_overrides)
 
+  mplapack_shadow_sources(
+    _mplapack_accelerated_opt_sources _mplapack_opt_sources _accelerator_sources)
+  set(_mplapack_overrides ${_mplapack_accelerated_opt_sources} ${_accelerator_sources})
+  mplapack_shadow_sources(
+    _mplapack_accelerated_reference_sources _mplapack_reference_sources _mplapack_overrides)
+
   set(_target mplapack_${backend}_opt_${accelerator})
   add_library(${_target}
     ${_mpblas_accelerated_reference_sources}
     ${_mpblas_accelerated_opt_sources}
-    ${_mplapack_reference_sources}
-    ${_mplapack_opt_sources}
+    ${_mplapack_accelerated_reference_sources}
+    ${_mplapack_accelerated_opt_sources}
     ${_accelerator_sources})
   add_library(mplapack::${_target} ALIAS ${_target})
   string(TOUPPER "${backend}" _backend_upper)
   mplapack_configure_backend_target(
     ${_target} MPLAPACK_BUILD_WITH_${_backend_upper})
+  # GPU-backed BLAS: the LAPACK look-ahead tasks are off by default
+  # (mplapack/optimized/common/Rlookahead_common.h).
+  target_compile_definitions(${_target} PRIVATE MPLAPACK_ACCELERATOR_LIBRARY=1)
   message(VERBOSE
     "${_target}: accelerator-shadowed source set computed from: "
     "${_accelerator_sources}")

@@ -71,7 +71,7 @@ done
 # ---------------------------------------------------------------------------
 # MPLAPACK — arbitrary-precision backends
 # ---------------------------------------------------------------------------
-for _mplib in mpfr gmp qd; do
+for _mplib in mpfr gmp td qd; do
     run_bench Rgemm.${_mplib}_opt -NOCHECK
     run_bench Rgemm.${_mplib}     -NOCHECK
 done

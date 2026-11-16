@@ -1,0 +1,26 @@
+type,op,ops_per_second,note
+memory,copy_bytes,6.178543e+11,read+write of 2x4 GiB
+dd,madd,1.833908e+11,best of ILP 1/2/4, 64-256 threads
+dd,add,1.091516e+11,best of ILP 1/2/4, 64-256 threads
+dd,mul,2.988378e+11,best of ILP 1/2/4, 64-256 threads
+dd,div,3.364591e+10,best of ILP 1/2/4, 64-256 threads
+td,madd,5.880485e+10,best of ILP 1/2/4, 64-256 threads
+td,add,4.222048e+10,best of ILP 1/2/4, 64-256 threads
+td,mul,1.120671e+11,best of ILP 1/2/4, 64-256 threads
+td,div,1.260946e+10,best of ILP 1/2/4, 64-256 threads
+qd,madd,1.460249e+10,best of ILP 1/2/4, 64-256 threads
+qd,add,4.614727e+10,best of ILP 1/2/4, 64-256 threads
+qd,mul,4.454221e+10,best of ILP 1/2/4, 64-256 threads
+qd,div,3.227092e+09,best of ILP 1/2/4, 64-256 threads
+mpfr256,madd,1.328086e+10,best of ILP 1/2, 32-128 threads
+mpfr256,add,2.839490e+10,best of ILP 1/2, 32-128 threads
+mpfr256,mul,3.595206e+10,best of ILP 1/2, 32-128 threads
+mpfr256,div,1.248439e+09,best of ILP 1/2, 32-128 threads
+mpfr512,madd,9.101923e+09,best of ILP 1/2, 32-128 threads
+mpfr512,add,1.718890e+10,best of ILP 1/2, 32-128 threads
+mpfr512,mul,1.896192e+10,best of ILP 1/2, 32-128 threads
+mpfr512,div,4.015915e+08,best of ILP 1/2, 32-128 threads
+mpfr1024,madd,3.912689e+09,best of ILP 1/2, 32-128 threads
+mpfr1024,add,8.730800e+09,best of ILP 1/2, 32-128 threads
+mpfr1024,mul,5.322819e+09,best of ILP 1/2, 32-128 threads
+mpfr1024,div,8.076095e+07,best of ILP 1/2, 32-128 threads

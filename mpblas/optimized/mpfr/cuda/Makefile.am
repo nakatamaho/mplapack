@@ -1,0 +1,277 @@
+include $(top_srcdir)/mplapack/reference/accelerator-sources.am
+
+# Layered basename shadowing:
+# - cuda/Rgemm.cpp replaces ../Rgemm.cpp; it computes eligible calls on
+#   the GPU and otherwise runs the same OpenMP code as ../Rgemm.cpp.
+# - cuda/R{syrk,syr2k,symm,trmm,trsm,gemv,symv,trmv,ger,syr,syr2,scal,swap,
+#   rot}.cpp replace ../../common/blas/R*.cpp (the GPU: blas3_bridge_cuda.cpp;
+#   Level 1 and 2 only with MPLAPACK_MPFR_CUDA_L12=1); the CPU fallback is
+#   ../../common/blas/R*_omp.cpp (lane-parallel OpenMP and the reference code
+#   under the name R*_reference_cpu).
+# - *_cuda.* files are helpers and never shadow.
+MPLAPACK_MPFR_CUDA_LAPACK_OPTIMIZED_SOURCES =
+
+# The CUDA sources are relocatable device code (Rgemm_rt_cuda.cu calls the
+# cu_mpfr device functions of libmpc_cuda.a); Rgemm_dlink_cuda.lo is their
+# device link, so that C++ programs can link the library normally.
+NVCC_MPFR_CUDA_FLAGS = $(NVCC_GLIBC_FEATURE_FLAGS) -std=c++17 -rdc=true -fmad=false -I$(MPC_CUDA_INCLUDEDIR) -I$(srcdir) -I$(top_builddir)/include -I$(top_srcdir)/include $(MPFR_CUDA_GENCODE)
+
+.cu.o:
+	$(NVCC) $(NVCC_MPFR_CUDA_FLAGS) -o $@ -c $< $(CUDA_CFLAGS)
+
+.cu.lo:
+	$(top_srcdir)/misc/cudalt.py $@ $(NVCC) $(NVCC_MPFR_CUDA_FLAGS) --compiler-options=\"$(CFLAGS) $(DEFAULT_INCLUDES) $(CPPFLAGS) \" -c $<
+
+# Header dependencies of the .cu objects, written by nvcc through
+# misc/cudalt.py (automake does not track the .cu.lo suffix rule).
+-include $(wildcard *.lo.d)
+
+MPFR_CBLAS_DEVICE_LO = Cblas_mpfr_device_cuda.lo Cblas_mpfr_device_rt_cuda.lo Cblas_mpfr_device_rt64_cuda.lo Cblas_mpfr_device_rt128_cuda.lo Cblas_mpfr_device_rt256_cuda.lo
+Rgemm_dlink_cuda.lo: Rgemm_device_cuda.lo Rgemm_rt_cuda.lo blas3_device_cuda.lo Rfactor_device_cuda.lo Rfactor_rt_cuda.lo Cfactor_device_cuda.lo Cfactor_rt_cuda.lo Rinverse_device_cuda.lo Rinverse_rt_cuda.lo Rinverse_dynamic_cuda.lo $(MPFR_CBLAS_DEVICE_LO)
+	$(top_srcdir)/misc/cudalt.py $@ $(NVCC) $(MPFR_CUDA_GENCODE) -dlink .libs/Rgemm_device_cuda.o .libs/Rgemm_rt_cuda.o .libs/blas3_device_cuda.o .libs/Rfactor_device_cuda.o .libs/Rfactor_rt_cuda.o .libs/Cfactor_device_cuda.o .libs/Cfactor_rt_cuda.o .libs/Rinverse_device_cuda.o .libs/Rinverse_rt_cuda.o .libs/Rinverse_dynamic_cuda.o $(MPFR_CBLAS_DEVICE_LO:%.lo=.libs/%.o) $(MPC_CUDA_LIBRARY)
+
+# Must match the architectures libmpc_cuda.a was built for (--with-mpfr-cuda-arch,
+# e.g. 80,90 for A100 and H100).
+MPFR_CUDA_GENCODE = $(MPFR_CUDA_GENCODES) -m64 -O3
+NVCC_GLIBC_FEATURE_FLAGS = -U_GNU_SOURCE -D_XOPEN_SOURCE=700
+
+MPLAPACK_MPFR_CUDA_CPPFLAGS = $(GMPFRXX_MKII_CPPFLAGS) -I. -I$(srcdir) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR) -I$(MPC_CUDA_INCLUDEDIR) $(CUDA_CFLAGS) $(OPENMP_CXXFLAGS) -DMPLAPACK_BUILD_WITH_MPFR -DMPLAPACK_ACCELERATOR_LIBRARY=1
+AM_CPPFLAGS = $(MPLAPACK_MPFR_CUDA_CPPFLAGS)
+
+lib_LTLIBRARIES = libmplapack_mpfr_opt_cuda.la
+libmplapack_mpfr_opt_cuda_la_CPPFLAGS = $(MPLAPACK_MPFR_CUDA_CPPFLAGS)
+libmplapack_mpfr_opt_cuda_la_SOURCES = \
+../../common/blas_cuda/Rcopy.cpp ../Rcopy_ref.cpp ../openmp/Rcopy_omp.cpp \
+../../common/blas_cuda/Rdot.cpp ../Rdot_ref.cpp  ../openmp/Rdot_omp.cpp \
+../../common/blas/Rdot_par.cpp \
+../Rgemm_ref.cpp ../openmp/Rgemm_NN_omp.cpp ../openmp/Rgemm_NT_omp.cpp ../openmp/Rgemm_TN_omp.cpp ../openmp/Rgemm_TT_omp.cpp \
+../../common/blas_cuda/Raxpy.cpp ../Raxpy_ref.cpp ../openmp/Raxpy_omp.cpp \
+../../common/blas/Rsyrk_omp.cpp \
+../../common/blas/Rsyr2k_omp.cpp \
+../../common/blas/Rsymm_omp.cpp \
+../../common/blas/Rtrmm_omp.cpp \
+../../common/blas/Rtrsm_omp.cpp \
+../../common/blas/Rgemv_omp.cpp Rgemv.cpp \
+../../common/blas/Rsymv_omp.cpp Rsymv.cpp \
+../../common/blas/Rtrmv_omp.cpp Rtrmv.cpp \
+../../common/blas/Rger_omp.cpp Rger.cpp \
+../../common/blas/Rsyr_omp.cpp Rsyr.cpp \
+../../common/blas/Rsyr2_omp.cpp Rsyr2.cpp \
+../../common/blas/Rscal_omp.cpp Rscal.cpp \
+../../common/blas/Rswap_omp.cpp Rswap.cpp \
+../../common/blas/Rrot_omp.cpp Rrot.cpp \
+../../common/blas_cuda/Rgemmtr.cpp ../../common/blas/Rgemmtr_omp.cpp \
+../../common/blas_cuda/Cgemm.cpp ../../common/blas/Cgemm_omp.cpp \
+../../common/blas_cuda/Csymm.cpp ../../common/blas/Csymm_omp.cpp \
+../../common/blas_cuda/Chemm.cpp ../../common/blas/Chemm_omp.cpp \
+../../common/blas_cuda/Ctrmm.cpp ../../common/blas/Ctrmm_omp.cpp \
+../../common/blas_cuda/Ctrsm.cpp ../../common/blas/Ctrsm_omp.cpp \
+../../common/blas_cuda/Cgemv.cpp ../../common/blas/Cgemv_omp.cpp \
+../../common/blas_cuda/Cgeru.cpp ../../common/blas/Cgeru_omp.cpp \
+../../common/blas_cuda/Cgerc.cpp ../../common/blas/Cgerc_omp.cpp \
+../../common/blas_cuda/Caxpy.cpp ../../common/blas/Caxpy_omp.cpp \
+../../common/blas_cuda/Ccopy.cpp ../../common/blas/Ccopy_omp.cpp \
+../../common/blas_cuda/Cscal.cpp ../../common/blas/Cscal_omp.cpp \
+../../common/blas_cuda/CRscal.cpp ../../common/blas/CRscal_omp.cpp \
+../../common/blas_cuda/Cswap.cpp ../../common/blas/Cswap_omp.cpp \
+../../common/blas_cuda/CRrot.cpp ../../common/blas/CRrot_omp.cpp \
+../../common/blas_cuda/Csyrk.cpp ../../common/blas/Csyrk_omp.cpp \
+../../common/blas_cuda/Cherk.cpp ../../common/blas/Cherk_omp.cpp \
+../../common/blas_cuda/Csyr2k.cpp ../../common/blas/Csyr2k_omp.cpp \
+../../common/blas_cuda/Cher2k.cpp ../../common/blas/Cher2k_omp.cpp \
+../../common/blas_cuda/Cgemmtr.cpp ../../common/blas/Cgemmtr_omp.cpp \
+../../common/blas_cuda/Rtrsv.cpp ../../common/blas/Rtrsv_omp.cpp \
+../../common/blas_cuda/Ctrsv.cpp ../../common/blas/Ctrsv_omp.cpp \
+../../common/blas_cuda/Cher.cpp ../../common/blas/Cher_omp.cpp \
+../../common/blas_cuda/Cher2.cpp ../../common/blas/Cher2_omp.cpp \
+../../common/blas_cuda/Cdotc.cpp ../../common/blas/Cdotc_omp.cpp \
+../../common/blas_cuda/Cdotu.cpp ../../common/blas/Cdotu_omp.cpp \
+../../common/blas_cuda/Cgbmv.cpp ../../common/blas/Cgbmv_omp.cpp \
+../../common/blas_cuda/Chbmv.cpp ../../common/blas/Chbmv_omp.cpp \
+../../common/blas_cuda/Chemv.cpp ../../common/blas/Chemv_omp.cpp \
+../../common/blas_cuda/Chpmv.cpp ../../common/blas/Chpmv_omp.cpp \
+../../common/blas_cuda/Chpr.cpp ../../common/blas/Chpr_omp.cpp \
+../../common/blas_cuda/Chpr2.cpp ../../common/blas/Chpr2_omp.cpp \
+../../../reference/Crotg.cpp \
+../../common/blas_cuda/Ctbmv.cpp ../../common/blas/Ctbmv_omp.cpp \
+../../common/blas_cuda/Ctbsv.cpp ../../common/blas/Ctbsv_omp.cpp \
+../../common/blas_cuda/Ctpmv.cpp ../../common/blas/Ctpmv_omp.cpp \
+../../common/blas_cuda/Ctpsv.cpp ../../common/blas/Ctpsv_omp.cpp \
+../../common/blas_cuda/Ctrmv.cpp ../../common/blas/Ctrmv_omp.cpp \
+../../../reference/Mlsame.cpp \
+../../../reference/Mxerbla.cpp \
+../../../reference/RCabs1.cpp \
+../../common/blas_cuda/RCasum.cpp ../../common/blas/RCasum_omp.cpp \
+../../common/blas_cuda/RCnrm2.cpp ../../common/blas/RCnrm2_omp.cpp \
+../../common/blas_cuda/Rasum.cpp ../../common/blas/Rasum_omp.cpp \
+../../common/blas_cuda/Rgbmv.cpp ../../common/blas/Rgbmv_omp.cpp \
+../../common/blas_cuda/Rnrm2.cpp ../../common/blas/Rnrm2_omp.cpp \
+../../../reference/Rrotg.cpp \
+../../../reference/Rrotm.cpp \
+../../../reference/Rrotmg.cpp \
+../../common/blas_cuda/Rsbmv.cpp ../../common/blas/Rsbmv_omp.cpp \
+../../common/blas_cuda/Rspmv.cpp ../../common/blas/Rspmv_omp.cpp \
+../../common/blas_cuda/Rspr.cpp ../../common/blas/Rspr_omp.cpp \
+../../common/blas_cuda/Rspr2.cpp ../../common/blas/Rspr2_omp.cpp \
+../../common/blas_cuda/Rtbmv.cpp ../../common/blas/Rtbmv_omp.cpp \
+../../common/blas_cuda/Rtbsv.cpp ../../common/blas/Rtbsv_omp.cpp \
+../../common/blas_cuda/Rtpmv.cpp ../../common/blas/Rtpmv_omp.cpp \
+../../common/blas_cuda/Rtpsv.cpp ../../common/blas/Rtpsv_omp.cpp \
+../../common/blas_cuda/iCamax.cpp ../../common/blas/iCamax_omp.cpp \
+../../common/blas_cuda/iRamax.cpp ../../common/blas/iRamax_omp.cpp \
+../../../reference/mplapackinit.cpp \
+$(MPLAPACK_ACCEL_REFERENCE_SOURCES) \
+Rgetri.cpp Cgetri.cpp Rpotri.cpp Cpotri.cpp Rtrtri.cpp Ctrtri.cpp Rlauum.cpp Clauum.cpp \
+Rinverse_bridge_cuda.cpp Rinverse_device_cuda.cu Rinverse_rt_cuda.cu Rinverse_dynamic_cuda.cu \
+Rinverse_types.h Rinverse_kernel_cuda.h Rinverse_device_body.cuh Rinverse_dynamic_cuda.h \
+Rblas1_kernel_cuda.h Rblas1_device_body.cuh Rblas1_bridge_body.h Rblas1_dynamic_body.cuh \
+Rtrisolve_kernel_cuda.h Rtrisolve_device_body.cuh Rtrisolve_bridge_body.h \
+../../../../mplapack/optimized/common/Rlaswp.cpp \
+../../../../mplapack/optimized/common/Claswp.cpp \
+Rgetrs.cpp Rpotrs.cpp Rgesv.cpp Rposv.cpp Cgetrs.cpp Cpotrs.cpp Cgesv.cpp Cposv.cpp \
+Rsolver_device_body.cuh Rsolver_bridge_body.h \
+Rgetrf.cpp \
+Cgetrf.cpp \
+../../../../mplapack/optimized/common/Rgetrf2.cpp \
+../../../../mplapack/optimized/common/Cgetrf2.cpp \
+Rpotrf.cpp \
+Cpotrf.cpp \
+$(MPLAPACK_MPFR_CUDA_LAPACK_OPTIMIZED_SOURCES) \
+Rfactor_bridge_cuda.cpp Rfactor_device_cuda.cu Rfactor_rt_cuda.cu \
+Rfactor_kernel_cuda.h Rfactor_device_body.cuh Rfactor_rt_body.cuh Rpotrf_upper_cuda.h mpfr_cuda_stack.h \
+Cfactor_bridge_cuda.cpp Cfactor_device_cuda.cu Cfactor_rt_cuda.cu Cfactor_kernel_cuda.h Cfactor_device_body.cuh Cfactor_fixed_types.h Cfactor_runtime_types.h \
+Rgemm.cpp Rgemm_bridge_cuda.cpp Rgemm_device_cuda.cu Rgemm_kernel_cuda.h Rgemm_tiled_cuda.h \
+Rgemm_rt_cuda.cu Rgemm_rt_cuda.h Rgemm_winograd_cuda.h mpfr_pack_cuda.h \
+Rsyrk.cpp Rsyr2k.cpp Rsymm.cpp Rtrmm.cpp Rtrsm.cpp \
+blas3_bridge_cuda.cpp blas3_device_cuda.cu blas3_kernel_cuda.h \
+Cblas_mpfr_bridge_cuda.cpp Cblas_mpfr_device_cuda.cu Cblas_mpfr_dev_types.h Cblas_mpfr_device_cuda.h \
+Cblas_mpfr_device_rt_cuda.cu Cblas_mpfr_device_rt64_cuda.cu Cblas_mpfr_device_rt128_cuda.cu Cblas_mpfr_device_rt256_cuda.cu
+
+libmplapack_mpfr_opt_cuda_la_LDFLAGS = $(AM_LDFLAGS) $(CUDA_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO) -Wl,-rpath,$(libdir)
+libmplapack_mpfr_opt_cuda_la_LIBADD = Rgemm_dlink_cuda.lo $(MPC_CUDA_LIBRARY) $(CUDA_LIBS) -lcudart $(MPLAPACK_MPFR_LIBS) $(OPENMP_LIBS)
+EXTRA_libmplapack_mpfr_opt_cuda_la_DEPENDENCIES = Rgemm_dlink_cuda.lo
+CLEANFILES = Rgemm_dlink_cuda.lo .libs/Rgemm_dlink_cuda.o Rgemm_dlink_cuda.o
+
+check_PROGRAMS = Rtrisolve_gpu_host_test_mpfr Rtrisolve_wave_order_host_test_mpfr Rfactor_gpu_host_test_mpfr Cfactor_gpu_host_test_mpfr solver_gpu_host_test_mpfr inverse_gpu_host_test_mpfr Rblas1_gpu_host_test_mpfr
+TESTS = Rtrisolve_gpu_host_test_mpfr Rtrisolve_wave_order_host_test_mpfr Rblas1_gpu_host_test_mpfr Rfactor_gpu_host_test_mpfr Cfactor_gpu_host_test_mpfr test/solver_host_sweep.sh test/inverse_host_sweep.sh cu_fzero_host_test_mpfr cu_fzero_device_test_mpfr cu_farith_host_test_mpfr cu_farith_device_test_mpfr
+check_PROGRAMS += cu_fzero_host_test_mpfr cu_farith_host_test_mpfr
+cu_fzero_host_test_mpfr_SOURCES = test/cu_fzero_test.cpp test/cu_freal_before_zero.cuh
+cu_fzero_host_test_mpfr_CXXFLAGS = $(AM_CXXFLAGS) -std=c++17
+cu_fzero_host_test_mpfr_LDADD = $(MPLAPACK_MPFR_LIBS)
+cu_fzero_host_test_mpfr_LDFLAGS = -Wl,--disable-new-dtags -Wl,-rpath,$(MPFR_LIBDIR):$(GMP_LIBDIR)
+check_DATA = cu_fzero_device_test_mpfr
+cu_fzero_device_test_mpfr: $(srcdir)/test/cu_fzero_device_test.cu $(srcdir)/test/cu_fzero_test.cpp $(srcdir)/test/cu_freal_before_zero.cuh $(MPC_CUDA_INCLUDEDIR)/mpc_cuda/cu_freal.cuh
+	$(NVCC) $(NVCC_MPFR_CUDA_FLAGS) -I$(MPFR_INCLUDEDIR) -I$(GMP_INCLUDEDIR) $(srcdir)/test/cu_fzero_device_test.cu -o $@ -L$(MPFR_LIBDIR) -L$(GMP_LIBDIR) -lmpfr -lgmp -Xlinker -rpath -Xlinker $(MPFR_LIBDIR):$(GMP_LIBDIR)
+CLEANFILES += cu_fzero_device_test_mpfr
+cu_farith_host_test_mpfr_SOURCES = test/cu_farith_test.cpp test/cu_freal_before_fast.cuh
+cu_farith_host_test_mpfr_CXXFLAGS = $(AM_CXXFLAGS) -std=c++17
+cu_farith_host_test_mpfr_LDADD = $(MPLAPACK_MPFR_LIBS)
+cu_farith_host_test_mpfr_LDFLAGS = -Wl,--disable-new-dtags -Wl,-rpath,$(MPFR_LIBDIR):$(GMP_LIBDIR)
+cu_farith_device_test_mpfr: $(srcdir)/test/cu_farith_device_test.cu $(srcdir)/test/cu_farith_test.cpp $(srcdir)/test/cu_freal_before_fast.cuh $(MPC_CUDA_INCLUDEDIR)/mpc_cuda/cu_freal.cuh
+	$(NVCC) $(NVCC_MPFR_CUDA_FLAGS) -I$(MPFR_INCLUDEDIR) -I$(GMP_INCLUDEDIR) $(srcdir)/test/cu_farith_device_test.cu -o $@ -L$(MPFR_LIBDIR) -L$(GMP_LIBDIR) -lmpfr -lgmp -Xlinker -rpath -Xlinker $(MPFR_LIBDIR):$(GMP_LIBDIR)
+CLEANFILES += cu_farith_device_test_mpfr
+Rtrisolve_gpu_host_test_mpfr_SOURCES = ../../common/test/Rtrisolve_gpu_test.cpp Rinverse_bridge_cuda.cpp test/Rinverse_fixed_host.cpp test/Rinverse_runtime_host.cpp test/Rinverse_dynamic_host.cpp \
+../../common/blas_cuda/Rtrsv.cpp ../../common/blas_cuda/Rtbsv.cpp ../../common/blas_cuda/Rtpsv.cpp \
+../../common/blas_cuda/Ctrsv.cpp ../../common/blas_cuda/Ctbsv.cpp ../../common/blas_cuda/Ctpsv.cpp
+Rtrisolve_gpu_host_test_mpfr_CPPFLAGS = $(MPLAPACK_MPFR_CUDA_CPPFLAGS) -DMPLAPACK_MPFR_CUDA_HOST_EMULATION
+Rtrisolve_gpu_host_test_mpfr_CXXFLAGS = $(AM_CXXFLAGS) -std=c++17
+Rtrisolve_gpu_host_test_mpfr_LDADD = ../libmplapack_mpfr_opt.la $(MPLAPACK_MPFR_LIBS) $(OPENMP_LIBS)
+Rtrisolve_wave_order_host_test_mpfr_SOURCES = ../../common/test/Rtrisolve_wave_order_test.cpp Rinverse_bridge_cuda.cpp test/Rinverse_fixed_host.cpp test/Rinverse_runtime_host.cpp test/Rinverse_dynamic_host.cpp \
+../../common/blas_cuda/Rtrsv.cpp ../../common/blas_cuda/Rtbsv.cpp ../../common/blas_cuda/Rtpsv.cpp \
+../../common/blas_cuda/Ctrsv.cpp ../../common/blas_cuda/Ctbsv.cpp ../../common/blas_cuda/Ctpsv.cpp
+Rtrisolve_wave_order_host_test_mpfr_CPPFLAGS = $(MPLAPACK_MPFR_CUDA_CPPFLAGS) -DMPLAPACK_MPFR_CUDA_HOST_EMULATION
+Rtrisolve_wave_order_host_test_mpfr_CXXFLAGS = $(AM_CXXFLAGS) -std=c++17
+Rtrisolve_wave_order_host_test_mpfr_LDADD = ../libmplapack_mpfr_opt.la $(MPLAPACK_MPFR_LIBS) $(OPENMP_LIBS)
+Rtrisolve_gpu_host_test_mpfr_LDFLAGS = -static -Wl,--disable-new-dtags -Wl,-rpath,$(MPC_LIBDIR):$(MPFR_LIBDIR):$(GMP_LIBDIR)
+
+Rblas1_gpu_host_test_mpfr_SOURCES = ../../common/test/Rblas1_gpu_test.cpp Rinverse_bridge_cuda.cpp test/Rinverse_fixed_host.cpp test/Rinverse_runtime_host.cpp test/Rinverse_dynamic_host.cpp \
+../../common/blas_cuda/Raxpy.cpp ../../common/blas_cuda/Rcopy.cpp ../../common/blas_cuda/Rdot.cpp \
+../../common/blas_cuda/Cdotc.cpp ../../common/blas_cuda/Cdotu.cpp ../../common/blas_cuda/Rasum.cpp \
+../../common/blas_cuda/RCasum.cpp ../../common/blas_cuda/Rnrm2.cpp ../../common/blas_cuda/RCnrm2.cpp \
+../../common/blas_cuda/iRamax.cpp ../../common/blas_cuda/iCamax.cpp
+Rblas1_gpu_host_test_mpfr_CPPFLAGS = $(MPLAPACK_MPFR_CUDA_CPPFLAGS) -DMPLAPACK_MPFR_CUDA_HOST_EMULATION
+Rblas1_gpu_host_test_mpfr_CXXFLAGS = $(AM_CXXFLAGS) -std=c++17
+Rblas1_gpu_host_test_mpfr_LDADD = ../libmplapack_mpfr_opt.la $(MPLAPACK_MPFR_LIBS) $(OPENMP_LIBS)
+Rblas1_gpu_host_test_mpfr_LDFLAGS = -static -Wl,--disable-new-dtags -Wl,-rpath,$(MPC_LIBDIR):$(MPFR_LIBDIR):$(GMP_LIBDIR)
+
+inverse_gpu_host_test_mpfr_SOURCES = test/Rinverse_cuda_test.cpp Rinverse_bridge_cuda.cpp test/Rinverse_fixed_host.cpp test/Rinverse_runtime_host.cpp test/Rinverse_dynamic_host.cpp
+inverse_gpu_host_test_mpfr_CPPFLAGS = $(MPLAPACK_MPFR_CUDA_CPPFLAGS) -DMPLAPACK_MPFR_CUDA_HOST_EMULATION
+inverse_gpu_host_test_mpfr_CXXFLAGS = $(AM_CXXFLAGS) -std=c++17
+inverse_gpu_host_test_mpfr_LDADD = ../libmplapack_mpfr_opt.la $(MPLAPACK_MPFR_LIBS) $(OPENMP_LIBS)
+inverse_gpu_host_test_mpfr_LDFLAGS = -static -Wl,--disable-new-dtags -Wl,-rpath,$(MPC_LIBDIR):$(MPFR_LIBDIR):$(GMP_LIBDIR)
+Rfactor_gpu_host_test_mpfr_SOURCES = test/Rfactor_cuda_test.cpp Rfactor_bridge_cuda.cpp test/Rfactor_fixed_host.cpp test/Rfactor_runtime_host.cpp
+Rfactor_gpu_host_test_mpfr_CPPFLAGS = $(MPLAPACK_MPFR_CUDA_CPPFLAGS) -DMPLAPACK_MPFR_CUDA_HOST_EMULATION
+Rfactor_gpu_host_test_mpfr_LDADD = ../libmplapack_mpfr_opt.la $(MPLAPACK_MPFR_LIBS) $(OPENMP_LIBS)
+Rfactor_gpu_host_test_mpfr_LDFLAGS = -static -Wl,--disable-new-dtags -Wl,-rpath,$(MPC_LIBDIR):$(MPFR_LIBDIR):$(GMP_LIBDIR)
+Cfactor_gpu_host_test_mpfr_SOURCES = test/Cfactor_cuda_test.cpp Cfactor_bridge_cuda.cpp test/Cfactor_fixed_host.cpp test/Cfactor_runtime_host.cpp
+Cfactor_gpu_host_test_mpfr_CPPFLAGS = $(MPLAPACK_MPFR_CUDA_CPPFLAGS) -DMPLAPACK_MPFR_CUDA_HOST_EMULATION
+Cfactor_gpu_host_test_mpfr_LDADD = ../libmplapack_mpfr_opt.la $(MPLAPACK_MPFR_LIBS) $(OPENMP_LIBS)
+Cfactor_gpu_host_test_mpfr_LDFLAGS = -static -Wl,--disable-new-dtags -Wl,-rpath,$(MPC_LIBDIR):$(MPFR_LIBDIR):$(GMP_LIBDIR)
+solver_gpu_host_test_mpfr_SOURCES = ../../../../mplapack/optimized/common/test/Rsolver_gpu_test.cpp Rfactor_bridge_cuda.cpp Cfactor_bridge_cuda.cpp test/Rfactor_fixed_host.cpp test/Rfactor_runtime_host.cpp test/Cfactor_fixed_host.cpp test/Cfactor_runtime_host.cpp
+solver_gpu_host_test_mpfr_CPPFLAGS = $(MPLAPACK_MPFR_CUDA_CPPFLAGS) -DMPLAPACK_MPFR_CUDA_HOST_EMULATION
+solver_gpu_host_test_mpfr_LDADD = ../libmplapack_mpfr_opt.la $(MPLAPACK_MPFR_LIBS) $(OPENMP_LIBS)
+solver_gpu_host_test_mpfr_LDFLAGS = -static -Wl,--disable-new-dtags -Wl,-rpath,$(MPC_LIBDIR):$(MPFR_LIBDIR):$(GMP_LIBDIR)
+# Restore variants execute the actual numerical family tests, not just probes.
+# Run the GPU subset with make check -j1; make -j check does NOT serialize it.
+# Link only the CUDA flavor, including with --disable-static. Test-only
+# adapters select its CPU paths or private reference bodies for the oracles;
+# no executable exports CPU BLAS symbols that could preempt the CUDA DSO.
+stack_device_ldadd = libmplapack_mpfr_opt_cuda.la $(MPLAPACK_MPFR_LIBS) $(CUDA_LIBS) -lcudart $(OPENMP_LIBS)
+stack_device_ldflags = -Wl,--disable-new-dtags -Wl,-rpath,$(MPC_LIBDIR):$(MPFR_LIBDIR):$(GMP_LIBDIR)
+check_PROGRAMS += Rfactor_gpu_device_test_mpfr Cfactor_gpu_device_test_mpfr solver_gpu_device_test_mpfr inverse_gpu_device_test_mpfr Rgemm_gpu_device_test_mpfr Cblas_gpu_device_test_mpfr blas3_gpu_device_test_mpfr stack_guard_host_test_mpfr
+stack_guard_host_test_mpfr_SOURCES = test/stack_guard_test.cpp test/stack_guard_stub/cuda_runtime.h
+stack_guard_host_test_mpfr_CPPFLAGS = -I$(srcdir)/test/stack_guard_stub
+stack_guard_host_test_mpfr_CXXFLAGS = $(AM_CXXFLAGS) -std=c++17
+TESTS += stack_guard_host_test_mpfr
+Rfactor_gpu_device_test_mpfr_SOURCES = test/stack_device_test.cpp test/stack_policy_test.h
+Rfactor_gpu_device_test_mpfr_CPPFLAGS = $(MPLAPACK_MPFR_CUDA_CPPFLAGS) -DMPLAPACK_STACK_DEVICE_RFACTOR
+Rfactor_gpu_device_test_mpfr_CXXFLAGS = $(AM_CXXFLAGS) -std=c++17
+Rfactor_gpu_device_test_mpfr_LDADD = $(stack_device_ldadd)
+Rfactor_gpu_device_test_mpfr_LDFLAGS = $(stack_device_ldflags)
+Cfactor_gpu_device_test_mpfr_SOURCES = test/stack_device_test.cpp
+Cfactor_gpu_device_test_mpfr_CPPFLAGS = $(MPLAPACK_MPFR_CUDA_CPPFLAGS) -DMPLAPACK_STACK_DEVICE_CFACTOR
+Cfactor_gpu_device_test_mpfr_CXXFLAGS = $(AM_CXXFLAGS) -std=c++17
+Cfactor_gpu_device_test_mpfr_LDADD = $(stack_device_ldadd)
+Cfactor_gpu_device_test_mpfr_LDFLAGS = $(stack_device_ldflags)
+solver_gpu_device_test_mpfr_SOURCES = test/stack_device_test.cpp
+solver_gpu_device_test_mpfr_CPPFLAGS = $(MPLAPACK_MPFR_CUDA_CPPFLAGS) -DMPLAPACK_SOLVER_DEVICE_TEST -DMPLAPACK_STACK_DEVICE_SOLVER
+solver_gpu_device_test_mpfr_CXXFLAGS = $(AM_CXXFLAGS) -std=c++17
+solver_gpu_device_test_mpfr_LDADD = $(stack_device_ldadd)
+solver_gpu_device_test_mpfr_LDFLAGS = $(stack_device_ldflags)
+inverse_gpu_device_test_mpfr_SOURCES = test/stack_device_test.cpp
+inverse_gpu_device_test_mpfr_CPPFLAGS = $(MPLAPACK_MPFR_CUDA_CPPFLAGS) -DMPLAPACK_STACK_DEVICE_INVERSE
+inverse_gpu_device_test_mpfr_CXXFLAGS = $(AM_CXXFLAGS) -std=c++17
+inverse_gpu_device_test_mpfr_LDADD = $(stack_device_ldadd)
+inverse_gpu_device_test_mpfr_LDFLAGS = $(stack_device_ldflags)
+Rgemm_gpu_device_test_mpfr_SOURCES = test/stack_device_test.cpp
+Rgemm_gpu_device_test_mpfr_CPPFLAGS = $(MPLAPACK_MPFR_CUDA_CPPFLAGS) -DMPLAPACK_STACK_DEVICE_RGEMM
+Rgemm_gpu_device_test_mpfr_CXXFLAGS = $(AM_CXXFLAGS) -std=c++17
+Rgemm_gpu_device_test_mpfr_LDADD = $(stack_device_ldadd)
+Rgemm_gpu_device_test_mpfr_LDFLAGS = $(stack_device_ldflags)
+blas3_gpu_device_test_mpfr_SOURCES = test/stack_device_test.cpp
+blas3_gpu_device_test_mpfr_CPPFLAGS = $(MPLAPACK_MPFR_CUDA_CPPFLAGS) -DMPLAPACK_STACK_DEVICE_BLAS3
+blas3_gpu_device_test_mpfr_CXXFLAGS = $(AM_CXXFLAGS) -std=c++17
+blas3_gpu_device_test_mpfr_LDADD = $(stack_device_ldadd)
+blas3_gpu_device_test_mpfr_LDFLAGS = $(stack_device_ldflags)
+Cblas_gpu_device_test_mpfr_SOURCES = ../../common/test/Cblas_gpu_test.cpp test/stack_limit_trace.cpp test/stack_limit_trace.h
+Cblas_gpu_device_test_mpfr_CPPFLAGS = $(MPLAPACK_MPFR_CUDA_CPPFLAGS) -DMPLAPACK_MPFR_STACK_TRACE
+Cblas_gpu_device_test_mpfr_CXXFLAGS = $(AM_CXXFLAGS) -std=c++17
+Cblas_gpu_device_test_mpfr_LDADD = $(stack_device_ldadd) -ldl
+Cblas_gpu_device_test_mpfr_LDFLAGS = $(stack_device_ldflags) -Wl,--export-dynamic-symbol=cudaDeviceSetLimit
+TESTS += test/stack_restore_solver.sh test/stack_restore_Rfactor.sh test/stack_restore_Cfactor.sh \
+ test/stack_restore_inverse.sh test/stack_restore_Rgemm.sh test/stack_restore_Cblas.sh test/stack_restore_blas3.sh
+TESTS_ENVIRONMENT = OMP_NUM_THREADS=1
+
+clean-local:
+	rm -f *.lo.d
+if IS_MACOS
+libmplapack_mpfr_opt_cuda_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
+endif
+if IS_MINGW
+libmplapack_mpfr_opt_cuda_la_LDFLAGS += -fopenmp -no-undefined
+endif
+
+EXTRA_DIST = test/stack_restore_solver.sh test/stack_restore_Rfactor.sh test/stack_restore_Cfactor.sh \
+    test/stack_restore_inverse.sh test/stack_restore_Rgemm.sh test/stack_restore_Cblas.sh test/stack_restore_blas3.sh \
+    test/cu_fzero_device_test.cu test/cu_farith_device_test.cu test/inverse_host_sweep.sh test/solver_host_sweep.sh test/solver_pivot_publication.cpp test/Cfactor_device_globals.cu README.md Rgemm_host_cuda.cpp test/Rgemm_cuda_test.cpp test/Rgemm_winograd_cuda_test.cpp test/blas3_cuda_test.cpp \
+    test/Rfactor_cuda_test.cpp test/Rfactor_bench.cpp test/Cfactor_bench.cpp test/Rfactor_panel_bench.cpp test/Cfactor_panel_bench.cpp test/run_factor_bench.py test/cu_fround_test.cpp test/cu_fround_device_test.cu test/cu_fround_bench.cu test/Rtrsm_round_bench.cpp test/run_round_bench.py

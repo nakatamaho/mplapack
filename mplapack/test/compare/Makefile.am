@@ -15,6 +15,9 @@ endif
 if ENABLE_DD
 SUBDIRS += dd
 endif
+if ENABLE_TD
+SUBDIRS += td
+endif
 
 if ENABLE_DOUBLE
 SUBDIRS += double

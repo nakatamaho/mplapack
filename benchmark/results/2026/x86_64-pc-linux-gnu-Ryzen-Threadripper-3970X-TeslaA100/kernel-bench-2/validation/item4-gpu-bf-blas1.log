@@ -1,0 +1,11 @@
+Test project /tmp/factor04-cmake
+    Start  83: dd_cuda_Rblas1_device
+1/3 Test  #83: dd_cuda_Rblas1_device ............   Passed    0.58 sec
+    Start  99: td_cuda_Rblas1_device
+2/3 Test  #99: td_cuda_Rblas1_device ............   Passed    0.39 sec
+    Start 115: qd_cuda_Rblas1_device
+3/3 Test #115: qd_cuda_Rblas1_device ............   Passed    0.41 sec
+
+100% tests passed, 0 tests failed out of 3
+
+Total Test time (real) =   1.39 sec

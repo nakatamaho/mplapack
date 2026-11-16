@@ -30,7 +30,7 @@
 #include <mplapack_compare_debug.h>
 #include <complex>
 
-#if defined MPLAPACK_BUILD_WITH_QD || defined MPLAPACK_BUILD_WITH_DD
+#if defined MPLAPACK_BUILD_WITH_QD || defined MPLAPACK_BUILD_WITH_DD || defined MPLAPACK_BUILD_WITH_TD
 #include <qd/fpu.h>
 static unsigned int g_oldcw;
 static void __attribute__((constructor)) mplapack_test_fpu_init(void) { fpu_fix_start(&g_oldcw); }
@@ -928,9 +928,9 @@ void mpc_algebraic_test() {
 }
 #endif
 
-#if defined MPLAPACK_BUILD_WITH_DD || defined MPLAPACK_BUILD_WITH_QD
+#if defined MPLAPACK_BUILD_WITH_DD || defined MPLAPACK_BUILD_WITH_TD || defined MPLAPACK_BUILD_WITH_QD
 void qd_dd_complex_helper_test() {
-    printf("QD/DD complex helper test \n");
+    printf("QD/TD/DD complex helper test \n");
 
     int flag = 0;
     const REAL tolerance = EPSILON;
@@ -1014,7 +1014,7 @@ int main(int argc, char *argv[]) {
 #if defined MPLAPACK_BUILD_WITH_GMP
     mpc_algebraic_test();
 #endif
-#if defined MPLAPACK_BUILD_WITH_DD || defined MPLAPACK_BUILD_WITH_QD
+#if defined MPLAPACK_BUILD_WITH_DD || defined MPLAPACK_BUILD_WITH_TD || defined MPLAPACK_BUILD_WITH_QD
     qd_dd_complex_helper_test();
 #endif
     printf("*** Testing complex successful ***\n");

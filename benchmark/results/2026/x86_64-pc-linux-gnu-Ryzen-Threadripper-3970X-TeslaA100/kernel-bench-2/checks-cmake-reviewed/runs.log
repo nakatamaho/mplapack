@@ -1,0 +1,2432 @@
+
+### dd_Cdotc_200_cpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Cdotc fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+dd,Cdotc,inc1,200,cpu,1.7904e-05,0.0893655049,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_Cdotc_200_gpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_cuda_kernel Cdotc fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+dd,Cdotc,inc1,200,gpu,3.27679999e-05,0.0488281251,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_Cdotc_64_cpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Cdotc fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+dd,Cdotc,inc1,64,cpu,9.538e-06,0.0536800168,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_Cdotc_64_gpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_cuda_kernel Cdotc fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+dd,Cdotc,inc1,64,gpu,2.45760009e-05,0.0208333326,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_Cdotu_200_cpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Cdotu fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+dd,Cdotu,inc1,200,cpu,1.7554e-05,0.0911473169,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_Cdotu_200_gpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_cuda_kernel Cdotu fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+dd,Cdotu,inc1,200,gpu,3.27679999e-05,0.0488281251,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_Cdotu_64_cpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Cdotu fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+dd,Cdotu,inc1,64,cpu,9.598e-06,0.0533444468,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_Cdotu_64_gpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_cuda_kernel Cdotu fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+dd,Cdotu,inc1,64,gpu,2.45760009e-05,0.0208333326,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_Ctbsv_200_cpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Ctbsv fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+dd,Ctbsv,UNN_k64,200,cpu,0.000298419,0.29006196,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_Ctbsv_200_gpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_cuda_kernel Ctbsv fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+dd,Ctbsv,UNN_k64,200,gpu,0.00164966404,0.0524712897,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_Ctbsv_64_cpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Ctbsv fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+dd,Ctbsv,UNN_k64,64,cpu,0.000114799,0.142719013,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_Ctbsv_64_gpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_cuda_kernel Ctbsv fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+dd,Ctbsv,UNN_k64,64,gpu,0.000515071988,0.0318091459,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_Ctpsv_200_cpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Ctpsv fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+dd,Ctpsv,UNN_k64,200,cpu,0.000536072,0.29846737,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_Ctpsv_200_gpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_cuda_kernel Ctpsv fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+dd,Ctpsv,UNN_k64,200,gpu,0.00167116797,0.0957414233,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_Ctpsv_64_cpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Ctpsv fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+dd,Ctpsv,UNN_k64,64,cpu,0.000114929,0.142557579,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_Ctpsv_64_gpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_cuda_kernel Ctpsv fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+dd,Ctpsv,UNN_k64,64,gpu,0.00052838397,0.0310077537,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_Ctrsv_200_cpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Ctrsv fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+dd,Ctrsv,UNN_k64,200,cpu,0.000169573,0.943546437,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_Ctrsv_200_gpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_cuda_kernel Ctrsv fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+dd,Ctrsv,UNN_k64,200,gpu,0.00166911995,0.0958588983,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_Ctrsv_64_cpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Ctrsv fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+dd,Ctrsv,UNN_k64,64,cpu,8.4842e-05,0.193111902,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_Ctrsv_64_gpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_cuda_kernel Ctrsv fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+dd,Ctrsv,UNN_k64,64,gpu,0.00051404798,0.0318725112,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_RCasum_200_cpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt RCasum fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+dd,RCasum,inc1,200,cpu,1.3566e-05,0.0294854784,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_RCasum_200_gpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_cuda_kernel RCasum fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+dd,RCasum,inc1,200,gpu,3.27679999e-05,0.0122070313,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_RCasum_64_cpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt RCasum fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+dd,RCasum,inc1,64,cpu,7.955e-06,0.0160905091,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_RCasum_64_gpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_cuda_kernel RCasum fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+dd,RCasum,inc1,64,gpu,2.45760009e-05,0.00520833315,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_RCnrm2_200_cpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt RCnrm2 fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+dd,RCnrm2,inc1,200,cpu,7.7468e-05,0.0103268446,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_RCnrm2_200_gpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_cuda_kernel RCnrm2 fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+dd,RCnrm2,inc1,200,gpu,5.52960001e-05,0.0144675926,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_RCnrm2_64_cpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt RCnrm2 fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+dd,RCnrm2,inc1,64,cpu,2.5308e-05,0.0101153785,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_RCnrm2_64_gpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_cuda_kernel RCnrm2 fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+dd,RCnrm2,inc1,64,gpu,4.30079997e-05,0.005952381,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_Rasum_200_cpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Rasum fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+dd,Rasum,inc1,200,cpu,1.2835e-05,0.0155823919,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_Rasum_200_gpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_cuda_kernel Rasum fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+dd,Rasum,inc1,200,gpu,3.27679999e-05,0.00610351564,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_Rasum_64_cpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Rasum fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+dd,Rasum,inc1,64,cpu,7.805e-06,0.00819987188,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_Rasum_64_gpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_cuda_kernel Rasum fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+dd,Rasum,inc1,64,gpu,2.45760009e-05,0.00260416657,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_Raxpy_200_cpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Raxpy fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+dd,Raxpy,inc1,200,cpu,7.976e-06,0.0501504514,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_Raxpy_200_gpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_cuda_kernel Raxpy fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+dd,Raxpy,inc1,200,gpu,5.11999987e-06,0.078125002,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_Raxpy_64_cpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Raxpy fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+dd,Raxpy,inc1,64,cpu,6.723e-06,0.0190391194,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_Raxpy_64_gpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_cuda_kernel Raxpy fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+dd,Raxpy,inc1,64,gpu,5.11999987e-06,0.0250000006,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_Rcopy_200_cpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Rcopy fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+dd,Rcopy,inc1,200,cpu,7.444e-06,0,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_Rcopy_200_gpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_cuda_kernel Rcopy fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+dd,Rcopy,inc1,200,gpu,5.11999987e-06,0,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_Rcopy_64_cpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Rcopy fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+dd,Rcopy,inc1,64,cpu,7.444e-06,0,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_Rcopy_64_gpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_cuda_kernel Rcopy fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+dd,Rcopy,inc1,64,gpu,5.11999987e-06,0,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_Rdot_200_cpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Rdot fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+dd,Rdot,inc1,200,cpu,1.2965e-05,0.0308522946,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_Rdot_200_gpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_cuda_kernel Rdot fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+dd,Rdot,inc1,200,gpu,3.27679999e-05,0.0122070313,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_Rdot_64_cpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Rdot fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+dd,Rdot,inc1,64,cpu,7.975e-06,0.0160501567,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_Rdot_64_gpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_cuda_kernel Rdot fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+dd,Rdot,inc1,64,gpu,2.45760009e-05,0.00520833315,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_Rnrm2_200_cpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Rnrm2 fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+dd,Rnrm2,inc1,200,cpu,3.659e-05,0.0109319486,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_Rnrm2_200_gpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_cuda_kernel Rnrm2 fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+dd,Rnrm2,inc1,200,gpu,4.91520017e-05,0.00813802055,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_Rnrm2_64_cpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Rnrm2 fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+dd,Rnrm2,inc1,64,cpu,1.4087e-05,0.00908639171,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_Rnrm2_64_gpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_cuda_kernel Rnrm2 fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+dd,Rnrm2,inc1,64,gpu,3.78880017e-05,0.00337837823,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_Rtbsv_200_cpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Rtbsv fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+dd,Rtbsv,UNN_k64,200,cpu,6.7398e-05,0.321077777,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_Rtbsv_200_gpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_cuda_kernel Rtbsv fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+dd,Rtbsv,UNN_k64,200,gpu,0.00133939195,0.0161565851,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_Rtbsv_64_cpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Rtbsv fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+dd,Rtbsv,UNN_k64,64,cpu,2.7292e-05,0.15008061,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_Rtbsv_64_gpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_cuda_kernel Rtbsv fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+dd,Rtbsv,UNN_k64,64,gpu,0.000427008003,0.00959232607,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_Rtpsv_200_cpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Rtpsv fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+dd,Rtpsv,UNN_k64,200,cpu,0.000117915,0.33922741,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_Rtpsv_200_gpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_cuda_kernel Rtpsv fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+dd,Rtpsv,UNN_k64,200,gpu,0.00134758401,0.0296827506,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_Rtpsv_64_cpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Rtpsv fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+dd,Rtpsv,UNN_k64,64,cpu,2.7282e-05,0.150135621,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_Rtpsv_64_gpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_cuda_kernel Rtpsv fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+dd,Rtpsv,UNN_k64,64,gpu,0.000427008003,0.00959232607,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_Rtrsv_200_cpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Rtrsv fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+dd,Rtrsv,UNN_k64,200,cpu,5.1909e-05,0.770579283,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_Rtrsv_200_gpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_cuda_kernel Rtrsv fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+dd,Rtrsv,UNN_k64,200,gpu,0.00134041595,0.0298414831,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_Rtrsv_64_cpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt Rtrsv fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+dd,Rtrsv,UNN_k64,64,cpu,2.7221e-05,0.150472062,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_Rtrsv_64_gpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_cuda_kernel Rtrsv fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+dd,Rtrsv,UNN_k64,64,gpu,0.000425983995,0.00961538472,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_iCamax_200_cpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt iCamax fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+dd,iCamax,inc1,200,cpu,4.218e-06,0,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_iCamax_200_gpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_cuda_kernel iCamax fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+dd,iCamax,inc1,200,gpu,3.48160006e-05,0,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_iCamax_64_cpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt iCamax fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+dd,iCamax,inc1,64,cpu,8.12e-07,0,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_iCamax_64_gpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_cuda_kernel iCamax fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+dd,iCamax,inc1,64,gpu,2.66239997e-05,0,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_iRamax_200_cpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt iRamax fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+dd,iRamax,inc1,200,cpu,9.02e-07,0,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_iRamax_200_gpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_cuda_kernel iRamax fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+dd,iRamax,inc1,200,gpu,3.48160006e-05,0,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_iRamax_64_cpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_opt iRamax fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+dd,iRamax,inc1,64,cpu,7.11e-07,0,3
+
+exit=0
+
+exit receipt: 0
+
+### dd_iRamax_64_gpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.dd_cuda_kernel iRamax fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+dd,iRamax,inc1,64,gpu,2.66239997e-05,0,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Cdotc_200_cpu.log
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Cdotc fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+mpfr512,Cdotc,inc1,200,cpu,0.000368643,0.00434024246,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Cdotc_200_gpu.log
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Cdotc fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+mpfr512,Cdotc,inc1,200,gpu,0.000193535998,0.00826719583,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Cdotc_64_cpu.log
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Cdotc fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+mpfr512,Cdotc,inc1,64,cpu,0.000122674,0.00417366353,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Cdotc_64_gpu.log
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Cdotc fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+mpfr512,Cdotc,inc1,64,gpu,0.000145408005,0.00352112665,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Cdotu_200_cpu.log
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Cdotu fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+mpfr512,Cdotu,inc1,200,cpu,0.000258593,0.00618732912,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Cdotu_200_gpu.log
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Cdotu fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+mpfr512,Cdotu,inc1,200,gpu,0.000185343996,0.00863259689,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Cdotu_64_cpu.log
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Cdotu fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+mpfr512,Cdotu,inc1,64,cpu,0.000168661,0.00303567511,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Cdotu_64_gpu.log
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Cdotu fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+mpfr512,Cdotu,inc1,64,gpu,0.000148479998,0.00344827591,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Cgetri_200_cpu.log
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Cgetri fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+mpfr512,Cgetri,UN,200,cpu,0.232198838,0.183750561,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Cgetri_200_gpu.log
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Cgetri fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+mpfr512,Cgetri,UN,200,gpu,6.83406006,0.00624323847,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Cgetri_64_cpu.log
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Cgetri fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+mpfr512,Cgetri,UN,64,cpu,0.102103981,0.013692917,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Cgetri_64_gpu.log
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Cgetri fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+mpfr512,Cgetri,UN,64,gpu,1.75927393,0.000794703606,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Clauum_200_cpu.log
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Clauum fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+mpfr512,Clauum,UN,200,cpu,0.139143055,0.0772356191,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Clauum_200_gpu.log
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Clauum fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+mpfr512,Clauum,UN,200,gpu,6.02109131,0.00178485916,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Clauum_64_cpu.log
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Clauum fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+mpfr512,Clauum,UN,64,cpu,0.02814516,0.0127112441,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Clauum_64_gpu.log
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Clauum fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+mpfr512,Clauum,UN,64,gpu,1.70468347,0.000209868874,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Cpotri_200_cpu.log
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Cpotri fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+mpfr512,Cpotri,UN,200,cpu,0.260430653,0.0819156005,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Cpotri_200_gpu.log
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Cpotri fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+mpfr512,Cpotri,UN,200,gpu,12.508458,0.00170551265,1
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Cpotri_64_cpu.log
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Cpotri fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+mpfr512,Cpotri,UN,64,cpu,0.054950211,0.0127215283,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Cpotri_64_gpu.log
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Cpotri fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+mpfr512,Cpotri,UN,64,gpu,3.34421802,0.000209032624,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Ctbsv_200_cpu.log
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Ctbsv fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+mpfr512,Ctbsv,UNN_k64,200,cpu,0.006494029,0.0133291675,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Ctbsv_200_gpu.log
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Ctbsv fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+mpfr512,Ctbsv,UNN_k64,200,gpu,0.0299356155,0.00289153901,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Ctbsv_64_cpu.log
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Ctbsv fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+mpfr512,Ctbsv,UNN_k64,64,cpu,0.001212621,0.013511229,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Ctbsv_64_gpu.log
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Ctbsv fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+mpfr512,Ctbsv,UNN_k64,64,gpu,0.00949350357,0.00172581175,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Ctpsv_200_cpu.log
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Ctpsv fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+mpfr512,Ctpsv,UNN_k64,200,cpu,0.012107428,0.013215028,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Ctpsv_200_gpu.log
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Ctpsv fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+mpfr512,Ctpsv,UNN_k64,200,gpu,0.0300554237,0.00532349839,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Ctpsv_64_cpu.log
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Ctpsv fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+mpfr512,Ctpsv,UNN_k64,64,cpu,0.001194757,0.0137132488,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Ctpsv_64_gpu.log
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Ctpsv fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+mpfr512,Ctpsv,UNN_k64,64,gpu,0.00949350357,0.00172581175,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Ctrsv_200_cpu.log
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Ctrsv fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+mpfr512,Ctrsv,UNN_k64,200,cpu,0.012073414,0.0132522582,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Ctrsv_200_gpu.log
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Ctrsv fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+mpfr512,Ctrsv,UNN_k64,200,gpu,0.0300595207,0.00532277282,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Ctrsv_64_cpu.log
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Ctrsv fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+mpfr512,Ctrsv,UNN_k64,64,cpu,0.00120137,0.0136377636,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Ctrsv_64_gpu.log
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Ctrsv fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+mpfr512,Ctrsv,UNN_k64,64,gpu,0.00949043179,0.00172637035,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Ctrtri_200_cpu.log
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Ctrtri fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+mpfr512,Ctrtri,UN,200,cpu,0.124106329,0.0859521032,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Ctrtri_200_gpu.log
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Ctrtri fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+mpfr512,Ctrtri,UN,200,gpu,6.48787549,0.00164417459,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Ctrtri_64_cpu.log
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Ctrtri fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+mpfr512,Ctrtri,UN,64,cpu,0.025769215,0.0135703008,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Ctrtri_64_gpu.log
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Ctrtri fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+mpfr512,Ctrtri,UN,64,gpu,1.63956433,0.000213285928,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_RCasum_200_cpu.log
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt RCasum fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+mpfr512,RCasum,inc1,200,cpu,0.000399883,0.00100029259,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_RCasum_200_gpu.log
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident RCasum fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+mpfr512,RCasum,inc1,200,gpu,9.72800031e-05,0.00411184197,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_RCasum_64_cpu.log
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt RCasum fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+mpfr512,RCasum,inc1,64,cpu,7.5173e-05,0.00170273902,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_RCasum_64_gpu.log
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident RCasum fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+mpfr512,RCasum,inc1,64,gpu,7.16800019e-05,0.00178571424,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_RCnrm2_200_cpu.log
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt RCnrm2 fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+mpfr512,RCnrm2,inc1,200,cpu,0.00044091,0.00181442925,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_RCnrm2_200_gpu.log
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident RCnrm2 fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+mpfr512,RCnrm2,inc1,200,gpu,0.00148992002,0.000536941574,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_RCnrm2_64_cpu.log
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt RCnrm2 fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+mpfr512,RCnrm2,inc1,64,cpu,0.000263652,0.000970976894,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_RCnrm2_64_gpu.log
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident RCnrm2 fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+mpfr512,RCnrm2,inc1,64,gpu,0.00116019201,0.000220653131,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Rasum_200_cpu.log
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rasum fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+mpfr512,Rasum,inc1,200,cpu,0.000198238,0.00100888831,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Rasum_200_gpu.log
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Rasum fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+mpfr512,Rasum,inc1,200,gpu,9.31840017e-05,0.00214629117,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Rasum_64_cpu.log
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rasum fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+mpfr512,Rasum,inc1,64,cpu,4.5567e-05,0.0014045252,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Rasum_64_gpu.log
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Rasum fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+mpfr512,Rasum,inc1,64,gpu,6.86080009e-05,0.000932835809,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Raxpy_200_cpu.log
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Raxpy fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+mpfr512,Raxpy,inc1,200,cpu,1.081e-05,0.0370027752,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Raxpy_200_gpu.log
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Raxpy fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+mpfr512,Raxpy,inc1,200,gpu,2.04799995e-05,0.0195312505,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Raxpy_64_cpu.log
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Raxpy fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+mpfr512,Raxpy,inc1,64,cpu,8.557e-06,0.0149585135,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Raxpy_64_gpu.log
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Raxpy fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+mpfr512,Raxpy,inc1,64,gpu,2.04799995e-05,0.00625000016,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Rcopy_200_cpu.log
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rcopy fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+mpfr512,Rcopy,inc1,200,cpu,6.924e-06,0,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Rcopy_200_gpu.log
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Rcopy fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+mpfr512,Rcopy,inc1,200,gpu,7.1680001e-06,0,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Rcopy_64_cpu.log
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rcopy fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+mpfr512,Rcopy,inc1,64,cpu,7.985e-06,0,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Rcopy_64_gpu.log
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Rcopy fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+mpfr512,Rcopy,inc1,64,gpu,7.1680001e-06,0,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Rdot_200_cpu.log
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rdot fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+mpfr512,Rdot,inc1,200,cpu,0.000130609,0.00306257609,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Rdot_200_gpu.log
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Rdot fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+mpfr512,Rdot,inc1,200,gpu,0.000119808003,0.00333867512,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Rdot_64_cpu.log
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rdot fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+mpfr512,Rdot,inc1,64,cpu,4.5557e-05,0.00280966701,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Rdot_64_gpu.log
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Rdot fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+mpfr512,Rdot,inc1,64,gpu,8.90880004e-05,0.0014367816,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Rgetri_200_cpu.log
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rgetri fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+mpfr512,Rgetri,UN,200,cpu,0.058947383,0.180952336,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Rgetri_200_gpu.log
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Rgetri fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+mpfr512,Rgetri,UN,200,gpu,1.47389026,0.00723708336,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Rgetri_64_cpu.log
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rgetri fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+mpfr512,Rgetri,UN,64,cpu,0.024009214,0.0145579665,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Rgetri_64_gpu.log
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Rgetri fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+mpfr512,Rgetri,UN,64,gpu,0.381665283,0.000915790219,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Rlauum_200_cpu.log
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rlauum fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+mpfr512,Rlauum,UN,200,cpu,0.037687041,0.0712897571,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Rlauum_200_gpu.log
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Rlauum fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+mpfr512,Rlauum,UN,200,gpu,1.26775806,0.00211925295,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Rlauum_64_cpu.log
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rlauum fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+mpfr512,Rlauum,UN,64,cpu,0.006336037,0.0141160792,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Rlauum_64_gpu.log
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Rlauum fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+mpfr512,Rlauum,UN,64,gpu,0.352600067,0.000253658488,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Rnrm2_200_cpu.log
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rnrm2 fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+mpfr512,Rnrm2,inc1,200,cpu,0.000505473,0.000791338014,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Rnrm2_200_gpu.log
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Rnrm2 fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+mpfr512,Rnrm2,inc1,200,gpu,0.00124723196,0.000320710191,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Rnrm2_64_cpu.log
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rnrm2 fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+mpfr512,Rnrm2,inc1,64,cpu,0.000202526,0.000632017617,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Rnrm2_64_gpu.log
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Rnrm2 fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+mpfr512,Rnrm2,inc1,64,gpu,0.000994304001,0.000128733265,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Rpotri_200_cpu.log
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rpotri fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+mpfr512,Rpotri,UN,200,cpu,0.07129549,0.0748060408,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Rpotri_200_gpu.log
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Rpotri fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+mpfr512,Rpotri,UN,200,gpu,2.66246558,0.00200315579,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Rpotri_64_cpu.log
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rpotri fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+mpfr512,Rpotri,UN,64,cpu,0.012491638,0.0139903723,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Rpotri_64_gpu.log
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Rpotri fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+mpfr512,Rpotri,UN,64,gpu,0.702046204,0.000248933284,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Rtbsv_200_cpu.log
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rtbsv fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+mpfr512,Rtbsv,UNN_k64,200,cpu,0.001451527,0.0149084378,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Rtbsv_200_gpu.log
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Rtbsv fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+mpfr512,Rtbsv,UNN_k64,200,gpu,0.0169850883,0.00127405872,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Rtbsv_64_cpu.log
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rtbsv fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+mpfr512,Rtbsv,UNN_k64,64,cpu,0.000270446,0.0151453525,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Rtbsv_64_gpu.log
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Rtbsv fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+mpfr512,Rtbsv,UNN_k64,64,gpu,0.00540672016,0.000757575735,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Rtpsv_200_cpu.log
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rtpsv fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+mpfr512,Rtpsv,UNN_k64,200,cpu,0.002776373,0.0144072861,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Rtpsv_200_gpu.log
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Rtpsv fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+mpfr512,Rtpsv,UNN_k64,200,gpu,0.0169697285,0.00235713848,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Rtpsv_64_cpu.log
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rtpsv fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+mpfr512,Rtpsv,UNN_k64,64,cpu,0.00027836,0.0147147579,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Rtpsv_64_gpu.log
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Rtpsv fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+mpfr512,Rtpsv,UNN_k64,64,gpu,0.00541183996,0.00075685904,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Rtrsv_200_cpu.log
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rtrsv fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+mpfr512,Rtrsv,UNN_k64,200,cpu,0.002694126,0.0148471155,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Rtrsv_200_gpu.log
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Rtrsv fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+mpfr512,Rtrsv,UNN_k64,200,gpu,0.0169512959,0.0023597016,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Rtrsv_64_cpu.log
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rtrsv fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+mpfr512,Rtrsv,UNN_k64,64,cpu,0.00027244,0.015034503,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Rtrsv_64_gpu.log
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Rtrsv fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+mpfr512,Rtrsv,UNN_k64,64,gpu,0.00540467215,0.000757862806,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Rtrtri_200_cpu.log
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rtrtri fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+mpfr512,Rtrtri,UN,200,cpu,0.034599601,0.0770760333,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Rtrtri_200_gpu.log
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Rtrtri fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+mpfr512,Rtrtri,UN,200,gpu,1.39461023,0.00191221887,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Rtrtri_64_cpu.log
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt Rtrtri fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+mpfr512,Rtrtri,UN,64,cpu,0.006061855,0.014421988,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_Rtrtri_64_gpu.log
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident Rtrtri fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+mpfr512,Rtrtri,UN,64,gpu,0.349395966,0.000250214681,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_iCamax_200_cpu.log
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt iCamax fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+mpfr512,iCamax,inc1,200,cpu,0.000134076,0,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_iCamax_200_gpu.log
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iCamax fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+mpfr512,iCamax,inc1,200,gpu,6.24639988e-05,0,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_iCamax_64_cpu.log
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt iCamax fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+mpfr512,iCamax,inc1,64,cpu,4.4314e-05,0,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_iCamax_64_gpu.log
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iCamax fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+mpfr512,iCamax,inc1,64,gpu,4.60800007e-05,0,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_iRamax_200_cpu.log
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt iRamax fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+mpfr512,iRamax,inc1,200,cpu,4.8462e-05,0,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_iRamax_200_gpu.log
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iRamax fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+mpfr512,iRamax,inc1,200,gpu,5.83680011e-05,0,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_iRamax_64_cpu.log
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_opt iRamax fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+mpfr512,iRamax,inc1,64,cpu,1.045e-05,0,3
+
+exit=0
+
+exit receipt: 0
+
+### mpfr512_iRamax_64_gpu.log
+$ /tmp/factor01-cmake/benchmark/Rkernel_bench.mpfr_cuda_resident iRamax fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+mpfr512,iRamax,inc1,64,gpu,4.19839993e-05,0,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_Cdotc_200_cpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt Cdotc fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+qd,Cdotc,inc1,200,cpu,6.8881e-05,0.0232284665,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_Cdotc_200_gpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_cuda_kernel Cdotc fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+qd,Cdotc,inc1,200,gpu,4.30079997e-05,0.0372023812,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_Cdotc_64_cpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt Cdotc fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+qd,Cdotc,inc1,64,cpu,2.5628e-05,0.0199781489,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_Cdotc_64_gpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_cuda_kernel Cdotc fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+qd,Cdotc,inc1,64,gpu,3.07199992e-05,0.0166666671,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_Cdotu_200_cpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt Cdotu fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+qd,Cdotu,inc1,200,cpu,7.0535e-05,0.022683774,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_Cdotu_200_gpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_cuda_kernel Cdotu fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+qd,Cdotu,inc1,200,gpu,4.30079997e-05,0.0372023812,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_Cdotu_64_cpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt Cdotu fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+qd,Cdotu,inc1,64,cpu,2.6481e-05,0.0193346173,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_Cdotu_64_gpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_cuda_kernel Cdotu fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+qd,Cdotu,inc1,64,gpu,3.07199992e-05,0.0166666671,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_Ctbsv_200_cpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt Ctbsv fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+qd,Ctbsv,UNN_k64,200,cpu,0.00185697,0.0466135694,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_Ctbsv_200_gpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_cuda_kernel Ctbsv fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+qd,Ctbsv,UNN_k64,200,gpu,0.00370483208,0.0233640819,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_Ctbsv_64_cpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt Ctbsv fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+qd,Ctbsv,UNN_k64,64,cpu,0.000366298,0.0447286089,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_Ctbsv_64_gpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_cuda_kernel Ctbsv fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+qd,Ctbsv,UNN_k64,64,gpu,0.00116326404,0.0140845066,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_Ctpsv_200_cpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt Ctpsv fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+qd,Ctpsv,UNN_k64,200,cpu,0.003338314,0.0479283854,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_Ctpsv_200_gpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_cuda_kernel Ctpsv fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+qd,Ctpsv,UNN_k64,200,gpu,0.00380006409,0.0421045531,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_Ctpsv_64_cpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt Ctpsv fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+qd,Ctpsv,UNN_k64,64,cpu,0.000363142,0.045117337,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_Ctpsv_64_gpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_cuda_kernel Ctpsv fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+qd,Ctpsv,UNN_k64,64,gpu,0.00116633606,0.0140474093,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_Ctrsv_200_cpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt Ctrsv fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+qd,Ctrsv,UNN_k64,200,cpu,0.001093415,0.146330533,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_Ctrsv_200_gpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_cuda_kernel Ctrsv fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+qd,Ctrsv,UNN_k64,200,gpu,0.00379494405,0.0421613594,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_Ctrsv_64_cpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt Ctrsv fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+qd,Ctrsv,UNN_k64,64,cpu,0.00036177,0.0452884429,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_Ctrsv_64_gpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_cuda_kernel Ctrsv fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+qd,Ctrsv,UNN_k64,64,gpu,0.00116428804,0.0140721191,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_RCasum_200_cpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt RCasum fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+qd,RCasum,inc1,200,cpu,2.9125e-05,0.0137339056,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_RCasum_200_gpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_cuda_kernel RCasum fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+qd,RCasum,inc1,200,gpu,4.0959999e-05,0.00976562525,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_RCasum_64_cpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt RCasum fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+qd,RCasum,inc1,64,cpu,1.4027e-05,0.00912525843,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_RCasum_64_gpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_cuda_kernel RCasum fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+qd,RCasum,inc1,64,gpu,2.96960007e-05,0.00431034472,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_RCnrm2_200_cpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt RCnrm2 fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+qd,RCnrm2,inc1,200,cpu,0.000328367,0.00243629841,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_RCnrm2_200_gpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_cuda_kernel RCnrm2 fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+qd,RCnrm2,inc1,200,gpu,0.000137216002,0.00583022381,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_RCnrm2_64_cpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt RCnrm2 fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+qd,RCnrm2,inc1,64,cpu,0.000111673,0.0022924073,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_RCnrm2_64_gpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_cuda_kernel RCnrm2 fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+qd,RCnrm2,inc1,64,gpu,9.93279964e-05,0.00257731968,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_Rasum_200_cpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt Rasum fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+qd,Rasum,inc1,200,cpu,2.3795e-05,0.00840512713,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_Rasum_200_gpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_cuda_kernel Rasum fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+qd,Rasum,inc1,200,gpu,4.0959999e-05,0.00488281262,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_Rasum_64_cpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt Rasum fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+qd,Rasum,inc1,64,cpu,1.1392e-05,0.00561797753,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_Rasum_64_gpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_cuda_kernel Rasum fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+qd,Rasum,inc1,64,gpu,2.86720004e-05,0.00223214283,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_Raxpy_200_cpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt Raxpy fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+qd,Raxpy,inc1,200,cpu,8.176e-06,0.0489236791,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_Raxpy_200_gpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_cuda_kernel Raxpy fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+qd,Raxpy,inc1,200,gpu,6.14400022e-06,0.0651041644,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_Raxpy_64_cpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt Raxpy fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+qd,Raxpy,inc1,64,cpu,7.494e-06,0.0170803309,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_Raxpy_64_gpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_cuda_kernel Raxpy fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+qd,Raxpy,inc1,64,gpu,7.1680001e-06,0.0178571426,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_Rcopy_200_cpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt Rcopy fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+qd,Rcopy,inc1,200,cpu,6.482e-06,0,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_Rcopy_200_gpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_cuda_kernel Rcopy fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+qd,Rcopy,inc1,200,gpu,5.11999987e-06,0,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_Rcopy_64_cpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt Rcopy fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+qd,Rcopy,inc1,64,cpu,6.423e-06,0,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_Rcopy_64_gpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_cuda_kernel Rcopy fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+qd,Rcopy,inc1,64,gpu,5.11999987e-06,0,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_Rdot_200_cpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt Rdot fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+qd,Rdot,inc1,200,cpu,3.0859e-05,0.0129621828,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_Rdot_200_gpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_cuda_kernel Rdot fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+qd,Rdot,inc1,200,gpu,4.0959999e-05,0.00976562525,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_Rdot_64_cpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt Rdot fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+qd,Rdot,inc1,64,cpu,1.3756e-05,0.00930503053,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_Rdot_64_gpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_cuda_kernel Rdot fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+qd,Rdot,inc1,64,gpu,2.96960007e-05,0.00431034472,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_Rnrm2_200_cpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt Rnrm2 fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+qd,Rnrm2,inc1,200,cpu,0.000166518,0.00240214271,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_Rnrm2_200_gpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_cuda_kernel Rnrm2 fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+qd,Rnrm2,inc1,200,gpu,0.000116736002,0.00342653502,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_Rnrm2_64_cpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt Rnrm2 fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+qd,Rnrm2,inc1,64,cpu,5.8812e-05,0.00217642658,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_Rnrm2_64_gpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_cuda_kernel Rnrm2 fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+qd,Rnrm2,inc1,64,gpu,8.8064e-05,0.00145348837,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_Rtbsv_200_cpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt Rtbsv fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+qd,Rtbsv,UNN_k64,200,cpu,0.000505574,0.042802834,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_Rtbsv_200_gpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_cuda_kernel Rtbsv fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+qd,Rtbsv,UNN_k64,200,gpu,0.00202137589,0.0107055793,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_Rtbsv_64_cpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt Rtbsv fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+qd,Rtbsv,UNN_k64,64,cpu,0.000102756,0.0398614193,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_Rtbsv_64_gpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_cuda_kernel Rtbsv fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+qd,Rtbsv,UNN_k64,64,gpu,0.000645120025,0.00634920611,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_Rtpsv_200_cpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt Rtpsv fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+qd,Rtpsv,UNN_k64,200,cpu,0.000898122,0.0445373791,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_Rtpsv_200_gpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_cuda_kernel Rtpsv fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+qd,Rtpsv,UNN_k64,200,gpu,0.00206745601,0.0193474492,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_Rtpsv_64_cpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt Rtpsv fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+qd,Rtpsv,UNN_k64,64,cpu,0.000158642,0.02581914,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_Rtpsv_64_gpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_cuda_kernel Rtpsv fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+qd,Rtpsv,UNN_k64,64,gpu,0.000633855999,0.00646203556,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_Rtrsv_200_cpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt Rtrsv fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+qd,Rtrsv,UNN_k64,200,cpu,0.000299841,0.133404037,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_Rtrsv_200_gpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_cuda_kernel Rtrsv fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+qd,Rtrsv,UNN_k64,200,gpu,0.00204902411,0.0195214883,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_Rtrsv_64_cpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt Rtrsv fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+qd,Rtrsv,UNN_k64,64,cpu,0.000102386,0.0400054695,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_Rtrsv_64_gpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_cuda_kernel Rtrsv fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+qd,Rtrsv,UNN_k64,64,gpu,0.000642048001,0.00637958531,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_iCamax_200_cpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt iCamax fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+qd,iCamax,inc1,200,cpu,1.6972e-05,0,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_iCamax_200_gpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_cuda_kernel iCamax fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+qd,iCamax,inc1,200,gpu,4.19839993e-05,0,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_iCamax_64_cpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt iCamax fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+qd,iCamax,inc1,64,cpu,5.581e-06,0,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_iCamax_64_gpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_cuda_kernel iCamax fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+qd,iCamax,inc1,64,gpu,2.96960007e-05,0,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_iRamax_200_cpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt iRamax fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+qd,iRamax,inc1,200,cpu,9.969e-06,0,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_iRamax_200_gpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_cuda_kernel iRamax fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+qd,iRamax,inc1,200,gpu,4.0959999e-05,0,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_iRamax_64_cpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_opt iRamax fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+qd,iRamax,inc1,64,cpu,3.106e-06,0,3
+
+exit=0
+
+exit receipt: 0
+
+### qd_iRamax_64_gpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.qd_cuda_kernel iRamax fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+qd,iRamax,inc1,64,gpu,2.96960007e-05,0,3
+
+exit=0
+
+exit receipt: 0
+
+### td_Cdotc_200_cpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.td_opt Cdotc fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+td,Cdotc,inc1,200,cpu,4.3002e-05,0.0372075717,3
+
+exit=0
+
+exit receipt: 0
+
+### td_Cdotc_200_gpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.td_cuda_kernel Cdotc fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+td,Cdotc,inc1,200,gpu,3.78880017e-05,0.0422297279,3
+
+exit=0
+
+exit receipt: 0
+
+### td_Cdotc_64_cpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.td_opt Cdotc fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+td,Cdotc,inc1,64,cpu,1.8014e-05,0.0284223382,3
+
+exit=0
+
+exit receipt: 0
+
+### td_Cdotc_64_gpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.td_cuda_kernel Cdotc fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+td,Cdotc,inc1,64,gpu,2.86720004e-05,0.0178571426,3
+
+exit=0
+
+exit receipt: 0
+
+### td_Cdotu_200_cpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.td_opt Cdotu fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+td,Cdotu,inc1,200,cpu,4.207e-05,0.0380318517,3
+
+exit=0
+
+exit receipt: 0
+
+### td_Cdotu_200_gpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.td_cuda_kernel Cdotu fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+td,Cdotu,inc1,200,gpu,3.78880017e-05,0.0422297279,3
+
+exit=0
+
+exit receipt: 0
+
+### td_Cdotu_64_cpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.td_opt Cdotu fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+td,Cdotu,inc1,64,cpu,1.8515e-05,0.0276532541,3
+
+exit=0
+
+exit receipt: 0
+
+### td_Cdotu_64_gpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.td_cuda_kernel Cdotu fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+td,Cdotu,inc1,64,gpu,2.86720004e-05,0.0178571426,3
+
+exit=0
+
+exit receipt: 0
+
+### td_Ctbsv_200_cpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.td_opt Ctbsv fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+td,Ctbsv,UNN_k64,200,cpu,0.00102811,0.0841933256,3
+
+exit=0
+
+exit receipt: 0
+
+### td_Ctbsv_200_gpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.td_cuda_kernel Ctbsv fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+td,Ctbsv,UNN_k64,200,gpu,0.00241561604,0.0358335094,3
+
+exit=0
+
+exit receipt: 0
+
+### td_Ctbsv_64_cpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.td_opt Ctbsv fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+td,Ctbsv,UNN_k64,64,cpu,0.000318637,0.0514190129,3
+
+exit=0
+
+exit receipt: 0
+
+### td_Ctbsv_64_gpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.td_cuda_kernel Ctbsv fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+td,Ctbsv,UNN_k64,64,gpu,0.000782335997,0.0209424085,3
+
+exit=0
+
+exit receipt: 0
+
+### td_Ctpsv_200_cpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.td_opt Ctpsv fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+td,Ctpsv,UNN_k64,200,cpu,0.001867571,0.0856727803,3
+
+exit=0
+
+exit receipt: 0
+
+### td_Ctpsv_200_gpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.td_cuda_kernel Ctpsv fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+td,Ctpsv,UNN_k64,200,gpu,0.00252415991,0.0633874262,3
+
+exit=0
+
+exit receipt: 0
+
+### td_Ctpsv_64_cpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.td_opt Ctpsv fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+td,Ctpsv,UNN_k64,64,cpu,0.000238955,0.068565211,3
+
+exit=0
+
+exit receipt: 0
+
+### td_Ctpsv_64_gpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.td_cuda_kernel Ctpsv fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+td,Ctpsv,UNN_k64,64,gpu,0.000763903975,0.0214477219,3
+
+exit=0
+
+exit receipt: 0
+
+### td_Ctrsv_200_cpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.td_opt Ctrsv fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+td,Ctrsv,UNN_k64,200,cpu,0.000792401,0.201917968,3
+
+exit=0
+
+exit receipt: 0
+
+### td_Ctrsv_200_gpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.td_cuda_kernel Ctrsv fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+td,Ctrsv,UNN_k64,200,gpu,0.00252415991,0.0633874262,3
+
+exit=0
+
+exit receipt: 0
+
+### td_Ctrsv_64_cpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.td_opt Ctrsv fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+td,Ctrsv,UNN_k64,64,cpu,0.000199971,0.0819318801,3
+
+exit=0
+
+exit receipt: 0
+
+### td_Ctrsv_64_gpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.td_cuda_kernel Ctrsv fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+td,Ctrsv,UNN_k64,64,gpu,0.000780287981,0.0209973758,3
+
+exit=0
+
+exit receipt: 0
+
+### td_RCasum_200_cpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.td_opt RCasum fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+td,RCasum,inc1,200,cpu,2.1411e-05,0.0186819859,3
+
+exit=0
+
+exit receipt: 0
+
+### td_RCasum_200_gpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.td_cuda_kernel RCasum fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+td,RCasum,inc1,200,gpu,3.68640013e-05,0.0108506941,3
+
+exit=0
+
+exit receipt: 0
+
+### td_RCasum_64_cpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.td_opt RCasum fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+td,RCasum,inc1,64,cpu,1.037e-05,0.012343298,3
+
+exit=0
+
+exit receipt: 0
+
+### td_RCasum_64_gpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.td_cuda_kernel RCasum fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+td,RCasum,inc1,64,gpu,2.7648e-05,0.00462962962,3
+
+exit=0
+
+exit receipt: 0
+
+### td_RCnrm2_200_cpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.td_opt RCnrm2 fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+td,RCnrm2,inc1,200,cpu,0.000100462,0.00796320997,3
+
+exit=0
+
+exit receipt: 0
+
+### td_RCnrm2_200_gpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.td_cuda_kernel RCnrm2 fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+td,RCnrm2,inc1,200,gpu,9.01120007e-05,0.00887784084,3
+
+exit=0
+
+exit receipt: 0
+
+### td_RCnrm2_64_cpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.td_opt RCnrm2 fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+td,RCnrm2,inc1,64,cpu,5.8913e-05,0.00434539066,3
+
+exit=0
+
+exit receipt: 0
+
+### td_RCnrm2_64_gpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.td_cuda_kernel RCnrm2 fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+td,RCnrm2,inc1,64,gpu,6.96320012e-05,0.00367647052,3
+
+exit=0
+
+exit receipt: 0
+
+### td_Rasum_200_cpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.td_opt Rasum fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+td,Rasum,inc1,200,cpu,1.7062e-05,0.0117219552,3
+
+exit=0
+
+exit receipt: 0
+
+### td_Rasum_200_gpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.td_cuda_kernel Rasum fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+td,Rasum,inc1,200,gpu,3.68640013e-05,0.00542534703,3
+
+exit=0
+
+exit receipt: 0
+
+### td_Rasum_64_cpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.td_opt Rasum fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+td,Rasum,inc1,64,cpu,9.388e-06,0.00681721346,3
+
+exit=0
+
+exit receipt: 0
+
+### td_Rasum_64_gpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.td_cuda_kernel Rasum fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+td,Rasum,inc1,64,gpu,2.66239997e-05,0.00240384618,3
+
+exit=0
+
+exit receipt: 0
+
+### td_Raxpy_200_cpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.td_opt Raxpy fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+td,Raxpy,inc1,200,cpu,8.396e-06,0.0476417342,3
+
+exit=0
+
+exit receipt: 0
+
+### td_Raxpy_200_gpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.td_cuda_kernel Raxpy fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+td,Raxpy,inc1,200,gpu,6.14400022e-06,0.0651041644,3
+
+exit=0
+
+exit receipt: 0
+
+### td_Raxpy_64_cpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.td_opt Raxpy fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+td,Raxpy,inc1,64,cpu,7.004e-06,0.0182752713,3
+
+exit=0
+
+exit receipt: 0
+
+### td_Raxpy_64_gpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.td_cuda_kernel Raxpy fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+td,Raxpy,inc1,64,gpu,5.11999987e-06,0.0250000006,3
+
+exit=0
+
+exit receipt: 0
+
+### td_Rcopy_200_cpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.td_opt Rcopy fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+td,Rcopy,inc1,200,cpu,8.006e-06,0,3
+
+exit=0
+
+exit receipt: 0
+
+### td_Rcopy_200_gpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.td_cuda_kernel Rcopy fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+td,Rcopy,inc1,200,gpu,5.11999987e-06,0,3
+
+exit=0
+
+exit receipt: 0
+
+### td_Rcopy_64_cpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.td_opt Rcopy fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+td,Rcopy,inc1,64,cpu,7.224e-06,0,3
+
+exit=0
+
+exit receipt: 0
+
+### td_Rcopy_64_gpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.td_cuda_kernel Rcopy fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+td,Rcopy,inc1,64,gpu,5.11999987e-06,0,3
+
+exit=0
+
+exit receipt: 0
+
+### td_Rdot_200_cpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.td_opt Rdot fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+td,Rdot,inc1,200,cpu,2.3004e-05,0.0173882803,3
+
+exit=0
+
+exit receipt: 0
+
+### td_Rdot_200_gpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.td_cuda_kernel Rdot fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+td,Rdot,inc1,200,gpu,3.68640013e-05,0.0108506941,3
+
+exit=0
+
+exit receipt: 0
+
+### td_Rdot_64_cpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.td_opt Rdot fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+td,Rdot,inc1,64,cpu,1.042e-05,0.0122840691,3
+
+exit=0
+
+exit receipt: 0
+
+### td_Rdot_64_gpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.td_cuda_kernel Rdot fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+td,Rdot,inc1,64,gpu,2.66239997e-05,0.00480769236,3
+
+exit=0
+
+exit receipt: 0
+
+### td_Rnrm2_200_cpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.td_opt Rnrm2 fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+td,Rnrm2,inc1,200,cpu,8.8017e-05,0.00454457662,3
+
+exit=0
+
+exit receipt: 0
+
+### td_Rnrm2_200_gpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.td_cuda_kernel Rnrm2 fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+td,Rnrm2,inc1,200,gpu,7.98719972e-05,0.00500801299,3
+
+exit=0
+
+exit receipt: 0
+
+### td_Rnrm2_64_cpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.td_opt Rnrm2 fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+td,Rnrm2,inc1,64,cpu,3.2211e-05,0.00397379777,3
+
+exit=0
+
+exit receipt: 0
+
+### td_Rnrm2_64_gpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.td_cuda_kernel Rnrm2 fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+td,Rnrm2,inc1,64,gpu,5.83680011e-05,0.00219298241,3
+
+exit=0
+
+exit receipt: 0
+
+### td_Rtbsv_200_cpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.td_opt Rtbsv fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+td,Rtbsv,UNN_k64,200,cpu,0.000258162,0.0838233357,3
+
+exit=0
+
+exit receipt: 0
+
+### td_Rtbsv_200_gpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.td_cuda_kernel Rtbsv fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+td,Rtbsv,UNN_k64,200,gpu,0.00162918401,0.0132827231,3
+
+exit=0
+
+exit receipt: 0
+
+### td_Rtbsv_64_cpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.td_opt Rtbsv fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+td,Rtbsv,UNN_k64,64,cpu,5.2219e-05,0.0784388824,3
+
+exit=0
+
+exit receipt: 0
+
+### td_Rtbsv_64_gpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.td_cuda_kernel Rtbsv fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+td,Rtbsv,UNN_k64,64,gpu,0.00051404798,0.0079681278,3
+
+exit=0
+
+exit receipt: 0
+
+### td_Rtpsv_200_cpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.td_opt Rtpsv fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+td,Rtpsv,UNN_k64,200,cpu,0.000460609,0.0868415511,3
+
+exit=0
+
+exit receipt: 0
+
+### td_Rtpsv_200_gpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.td_cuda_kernel Rtpsv fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+td,Rtpsv,UNN_k64,200,gpu,0.00163737595,0.0244293316,3
+
+exit=0
+
+exit receipt: 0
+
+### td_Rtpsv_64_cpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.td_opt Rtpsv fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+td,Rtpsv,UNN_k64,64,cpu,5.204e-05,0.0787086856,3
+
+exit=0
+
+exit receipt: 0
+
+### td_Rtpsv_64_gpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.td_cuda_kernel Rtpsv fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+td,Rtpsv,UNN_k64,64,gpu,0.000513023973,0.00798403236,3
+
+exit=0
+
+exit receipt: 0
+
+### td_Rtrsv_200_cpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.td_opt Rtrsv fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+td,Rtrsv,UNN_k64,200,cpu,0.000180845,0.221183887,3
+
+exit=0
+
+exit receipt: 0
+
+### td_Rtrsv_200_gpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.td_cuda_kernel Rtrsv fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+td,Rtrsv,UNN_k64,200,gpu,0.00162816,0.0245676101,3
+
+exit=0
+
+exit receipt: 0
+
+### td_Rtrsv_64_cpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.td_opt Rtrsv fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+td,Rtrsv,UNN_k64,64,cpu,5.2139e-05,0.0785592359,3
+
+exit=0
+
+exit receipt: 0
+
+### td_Rtrsv_64_gpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.td_cuda_kernel Rtrsv fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+td,Rtrsv,UNN_k64,64,gpu,0.000512000024,0.00799999962,3
+
+exit=0
+
+exit receipt: 0
+
+### td_iCamax_200_cpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.td_opt iCamax fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+td,iCamax,inc1,200,cpu,9.889e-06,0,3
+
+exit=0
+
+exit receipt: 0
+
+### td_iCamax_200_gpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.td_cuda_kernel iCamax fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+td,iCamax,inc1,200,gpu,3.89119983e-05,0,3
+
+exit=0
+
+exit receipt: 0
+
+### td_iCamax_64_cpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.td_opt iCamax fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+td,iCamax,inc1,64,cpu,3.437e-06,0,3
+
+exit=0
+
+exit receipt: 0
+
+### td_iCamax_64_gpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.td_cuda_kernel iCamax fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+td,iCamax,inc1,64,gpu,2.86720004e-05,0,3
+
+exit=0
+
+exit receipt: 0
+
+### td_iRamax_200_cpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.td_opt iRamax fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+td,iRamax,inc1,200,cpu,3.737e-06,0,3
+
+exit=0
+
+exit receipt: 0
+
+### td_iRamax_200_gpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.td_cuda_kernel iRamax fast 200 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+td,iRamax,inc1,200,gpu,3.89119983e-05,0,3
+
+exit=0
+
+exit receipt: 0
+
+### td_iRamax_64_cpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.td_opt iRamax fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/cpu
+td,iRamax,inc1,64,cpu,1.372e-06,0,3
+
+exit=0
+
+exit receipt: 0
+
+### td_iRamax_64_gpu.log
+$ /tmp/factor04-cmake/benchmark/Rkernel_bench.td_cuda_kernel iRamax fast 64 --reps 3 --warmup 1 --dump /tmp/tmp9y23c2jp/gpu
+td,iRamax,inc1,64,gpu,2.7648e-05,0,3
+
+exit=0
+
+exit receipt: 0
