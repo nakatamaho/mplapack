@@ -373,6 +373,11 @@ template<class E> class factor_context {
         using U=typename E::Update;
         value_gemm_job<U,Nota,false> t{u.e,u.g,E::shift(u.constants,1),u.constants,u.a,u.b,u.b,u.c};
 #ifndef MPLAPACK_MPFR_CUDA_HOST_EMULATION
+        if constexpr(!E::runtime && value_gemm_lockstep_fits<typename U::V>()) if(value_gemm_lockstep_shape<typename U::V>(u.g)) {
+            value_gemm_job<U,Nota,false,true> w{u.e,u.g,E::shift(u.constants,1),u.constants,u.a,u.b,u.b,u.c};
+            error=value_gemm_device(w,stream(),failed.p);
+            return;
+        }
         error=value_gemm_device(t,stream(),failed.p);
 #else
         error=value_gemm_host(t);

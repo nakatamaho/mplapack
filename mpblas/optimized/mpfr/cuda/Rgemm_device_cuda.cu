@@ -228,7 +228,20 @@ template <int PB> int gemm(const gemm_shape &s, const real_t<PB> &alpha, const r
     const size_t bytesA = sizeof(F) * (size_t)nrowa * ncola;
     const size_t bytesB = sizeof(F) * (size_t)nrowb * ncolb;
     const size_t bytesC = sizeof(F) * (size_t)s.m * s.n;
-    const size_t bytesAB = s.nota ? sizeof(F) * (size_t)s.k * s.n : 0;
+    // Volta (Rgemm_tiled_cuda.h): every form through the Lockstep layout,
+    // which forms alpha*op(B) as it loads the tiles (one kernel, no AB).
+    // Below its size threshold the default tiled layout, also one kernel for
+    // NoTrans A: there the original two-kernel path runs at half the speed
+    // of the tiled transposed form.
+    bool lockstep = false, small = false;
+    if constexpr (PB == 256 || PB == 512 || PB == 768) {
+        static_assert(value_gemm_lockstep_fits<F>(), "Lockstep tiles exceed static shared memory");
+        if (s.k > 0 && value_gemm_lockstep()) {
+            lockstep = value_gemm_lockstep_shape<F>(s);
+            small = !lockstep;
+        }
+    }
+    const size_t bytesAB = s.nota && !lockstep && !small ? sizeof(F) * (size_t)s.k * s.n : 0;
 
     device_buffer dA, dB, dC, dAB;
     if (failed(dA.allocate(bytesA), "cudaMalloc A") || failed(dB.allocate(bytesB), "cudaMalloc B") || failed(dC.allocate(bytesC), "cudaMalloc C") || failed(dAB.allocate(bytesAB), "cudaMalloc alpha*op(B)"))
@@ -238,7 +251,7 @@ template <int PB> int gemm(const gemm_shape &s, const real_t<PB> &alpha, const r
     if (!s.beta_zero && failed(cudaMemcpy(dC.get<F>(), C, bytesC, cudaMemcpyHostToDevice), "copy C"))
         return 3;
 
-    if (s.nota && s.k > 0) {
+    if (s.nota && s.k > 0 && !lockstep && !small) {
         long total = s.k * s.n;
         long blocks = (total + BLOCK_1D - 1) / BLOCK_1D;
         if (blocks > 65535)
@@ -254,7 +267,18 @@ template <int PB> int gemm(const gemm_shape &s, const real_t<PB> &alpha, const r
     dim3 grid((unsigned)gx, (unsigned)gy), block(BLOCK_X, BLOCK_Y);
     cudaError_t launch_error=cudaSuccess;
     bool tiled=false;
-    if constexpr(PB==256 || PB==512 || PB==1024) {
+    if constexpr(PB==256 || PB==512 || PB==768) {
+        if(lockstep) {
+            if(s.nota) launch_error=(cudaError_t)value_gemm_device(make_value_gemm_job<PB,true,true,false>(s,alpha,beta,dA.get<F>(),dB.get<F>(),dAB.get<F>(),dC.get<F>()),0);
+            else launch_error=(cudaError_t)value_gemm_device(make_value_gemm_job<PB,false,true>(s,alpha,beta,dA.get<F>(),dB.get<F>(),dAB.get<F>(),dC.get<F>()),0);
+            tiled=true;
+        } else if(small) {
+            if(s.nota) launch_error=(cudaError_t)value_gemm_device(make_value_gemm_job<PB,true,false,false>(s,alpha,beta,dA.get<F>(),dB.get<F>(),dAB.get<F>(),dC.get<F>()),0);
+            else launch_error=(cudaError_t)value_gemm_device(make_value_gemm_job<PB,false>(s,alpha,beta,dA.get<F>(),dB.get<F>(),dAB.get<F>(),dC.get<F>()),0);
+            tiled=true;
+        }
+    }
+    if constexpr(PB==256 || PB==512 || PB==1024) if(!tiled) {
         // Shared loads alone do not improve 256/512-bit NoTrans; retain the
         // original kernel there and at the untuned precisions.
         if(s.k>0 && (PB==1024 || !s.nota)) {
