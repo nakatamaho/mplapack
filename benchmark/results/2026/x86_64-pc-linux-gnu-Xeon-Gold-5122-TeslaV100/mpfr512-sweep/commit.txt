@@ -1,0 +1,4 @@
+282a9955b23636b2ffd72a66ac3b586d1b2ae597
+ benchmark/Rkernel_bench.cpp                 | 13 +++++++++++--
+ mpblas/optimized/common/Rgemm_simd_common.h | 19 ++++++++++++++-----
+ 2 files changed, 25 insertions(+), 7 deletions(-)
