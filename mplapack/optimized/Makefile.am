@@ -11,7 +11,7 @@ common/inverse_dev/Rgemm_dev.h common/inverse_dev/Rsyrk_dev.h common/inverse_dev
 common/inverse_dev/Rtrti2_dev.h common/inverse_dev/Ctrti2_dev.h \
 common/inverse_dev/Rlauu2_dev.h common/inverse_dev/Clauu2_dev.h \
 common/Rpotrf_gpu_common.cuh common/Rpotrf_small_common.cuh common/Rpotrf_right_common.cuh common/Rpotrf_cuda_entry.cuh \
-common/Rgetrf_gpu_common.cuh common/Rgetrf_cuda_entry.cuh \
+common/Rgetrf_gpu_common.cuh common/Rgetrf_cuda_entry.cuh common/Rgetrf_multi_gpu.cuh common/Rpotrf_multi_gpu.cuh \
 common/Rsolver_cuda_entry.cuh common/Rsolver_entries.h common/Rsolver_cpu_fallback.h common/Rsolver_cpu_factor_fallback.h common/Rfactor_cpu_blas.h common/Rsolver_cuda.md \
 common/test/Rsolver_gpu_test.cpp common/test/Rsolver_gpu_device_test.cu \
 common/test/Rsolver_copy_delay.cpp common/test/Rsolver_constant_publication_test.cpp common/test/Rsolver_fallback_test.cpp \

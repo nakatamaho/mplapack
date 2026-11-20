@@ -55,10 +55,10 @@ template int run_bf<OPS,true>(const shape &,const DC *,DC *);
 }
 
 namespace mplapack_gemm {
-template int gemm_cuda<qd_ops>(const shape &, int, long, const ozaki_plan *, const gpu_scalars<qd_ops::F> &, const qd_ops::F *, const qd_ops::F *, qd_ops::F *);
-template int gemm_cuda<sloppy_ops<qd_ops, true, false> >(const shape &, int, long, const ozaki_plan *, const gpu_scalars<qd_ops::F> &, const qd_ops::F *, const qd_ops::F *, qd_ops::F *);
-template int gemm_cuda<sloppy_ops<qd_ops, false, true> >(const shape &, int, long, const ozaki_plan *, const gpu_scalars<qd_ops::F> &, const qd_ops::F *, const qd_ops::F *, qd_ops::F *);
-template int gemm_cuda<sloppy_ops<qd_ops, true, true> >(const shape &, int, long, const ozaki_plan *, const gpu_scalars<qd_ops::F> &, const qd_ops::F *, const qd_ops::F *, qd_ops::F *);
+template int gemm_cuda<qd_ops>(const shape &, int, long, const ozaki_plan *, const gpu_scalars<qd_ops::F> &, const qd_ops::F *, const qd_ops::F *, qd_ops::F *, int);
+template int gemm_cuda<sloppy_ops<qd_ops, true, false> >(const shape &, int, long, const ozaki_plan *, const gpu_scalars<qd_ops::F> &, const qd_ops::F *, const qd_ops::F *, qd_ops::F *, int);
+template int gemm_cuda<sloppy_ops<qd_ops, false, true> >(const shape &, int, long, const ozaki_plan *, const gpu_scalars<qd_ops::F> &, const qd_ops::F *, const qd_ops::F *, qd_ops::F *, int);
+template int gemm_cuda<sloppy_ops<qd_ops, true, true> >(const shape &, int, long, const ozaki_plan *, const gpu_scalars<qd_ops::F> &, const qd_ops::F *, const qd_ops::F *, qd_ops::F *, int);
 template int gpu_device_count<qd_ops>();
 } // namespace mplapack_gemm
 
@@ -68,6 +68,9 @@ template int blas_gpu<mplapack_gemm::qd_ops>(const blas_shape &, const mplapack_
 
 namespace mplapack_blas_dev {
 typedef mplapack_gemm::qd_ops OPS;
+template <> struct cgpu_multi<OPS> {
+    static constexpr const char *prefix = "MPLAPACK_QD";
+};
 template int cgpu_run<job_Cgemm<OPS> >(job_Cgemm<OPS>, const mplapack_blas::gpu_operand<job_Cgemm<OPS>::E> *, int);
 template int cgpu_run<job_Csymm<OPS> >(job_Csymm<OPS>, const mplapack_blas::gpu_operand<job_Csymm<OPS>::E> *, int);
 template int cgpu_run<job_Chemm<OPS> >(job_Chemm<OPS>, const mplapack_blas::gpu_operand<job_Chemm<OPS>::E> *, int);

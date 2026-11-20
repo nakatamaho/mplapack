@@ -36,7 +36,9 @@ template<class E,class R> struct lu_scale {
     }
 };
 #if defined(__CUDACC__)
-template<class E,class R> __global__ void k_lu_leaf(E *a,long m,long *piv,long *status,E *reciprocal,R sfmin) {
+// status: [0] this column is singular, [1] scale by the reciprocal, [2] the
+// first singular column (1-based, 0: none) of the factorization.
+template<class E,class R> __global__ void k_lu_leaf(E *a,long m,long *piv,long *status,E *reciprocal,R sfmin,long col) {
     __shared__ long idx[256];
     const int t=threadIdx.x;
     if(m>1) {
@@ -50,6 +52,7 @@ template<class E,class R> __global__ void k_lu_leaf(E *a,long m,long *piv,long *
     if(t==0) {
         *piv=m==1?1:idx[0]+1;
         lu_base<E>{a,piv,status,m==1}(0);
+        if(status[0] && !status[2]) status[2]=col;
         if(m>1 && !status[0]) lu_reciprocal<E,R>{a,reciprocal,sfmin,status+1}(0);
     }
 }
@@ -134,49 +137,56 @@ template<class Blas,class R> class lu_context : public Blas {
     R sfmin;
   public:
     lu_context(long n,long nb,R safe):Blas(n,nb),sfmin(safe) {
-        if(!this->error) this->error=status.allocate(2);
+        if(!this->error) this->error=status.allocate(3);
         if(!this->error) this->error=reciprocal.allocate(1);
     }
     ~lu_context() { this->finish(); }
     void swap(long n,E *a,long ld,long k1,long k2,const long *piv) {
         this->launch(swaps<E>{a,ld,k1,k2,1,piv},n);
     }
-    long recursive(long m,long n,E *a,long ld,long *piv) {
-        if(this->error || !m || !n) return 0;
+    // The first singular column is recorded on the device (status[2]),
+    // read once by info(): no round trip per column.
+    void reset_info() {
+        long zero=0;
+        if(!this->error) this->error=transfer(status.data()+2,&zero,1,false);
+    }
+    long info() { return this->feedback(status.data()+2); }
+    // col: the column of a in the whole factorization (0-based).
+    void recursive(long m,long n,E *a,long ld,long *piv,long col) {
+        if(this->error || !m || !n) return;
         if(m==1 || n==1) {
 #if defined(__CUDACC__)
-            k_lu_leaf<<<1,256,0,this->stream()>>>(a,m,piv,status.data(),reciprocal.data(),sfmin);
+            k_lu_leaf<<<1,256,0,this->stream()>>>(a,m,piv,status.data(),reciprocal.data(),sfmin,col+1);
             this->error=cudaGetLastError();
 #else
             if(m>1) this->error=iamax(a,m,piv);
             lu_base<E>{a,piv,status.data(),m==1}(0);
+            if(status.data()[0] && !status.data()[2]) status.data()[2]=col+1;
             if(m>1 && !status.data()[0]) lu_reciprocal<E,R>{a,reciprocal.data(),sfmin,status.data()+1}(0);
 #endif
-            // Queue scaling before feedback, but never scale a singular column.
+            // Never scale a singular column.
             if(m>1) this->launch(lu_scale<E,R>{a,reciprocal.data(),status.data()+1,status.data()},m-1);
-            return this->feedback(status.data());
+            return;
         }
         long n1=std::min(m,n)/2,n2=n-n1;
-        long info=recursive(m,n1,a,ld,piv);
+        recursive(m,n1,a,ld,piv,col);
         swap(n2,a+n1*ld,ld,1,n1,piv);
         this->solve(n1,n2,a,a+n1*ld,ld);
         this->update(m-n1,n2,n1,a+n1,a+n1*ld,a+n1+n1*ld,ld);
-        long i=recursive(m-n1,n2,a+n1+n1*ld,ld,piv+n1);
-        if(!info && i) info=i+n1;
+        recursive(m-n1,n2,a+n1+n1*ld,ld,piv+n1,col+n1);
         this->launch(adjust_pivots{piv+n1,n1},std::min(m,n)-n1);
         swap(n1,a,ld,n1+1,std::min(m,n),piv);
-        return info;
     }
 };
 template<class Context> static long lu(Context &ctx,long m,long n,long nb,typename Context::E *a,long ld,long *piv) {
-    long mn=std::min(m,n),info=0;
+    long mn=std::min(m,n);
+    ctx.reset_info();
     if(nb<=1 || nb>=mn) {
-        info=ctx.recursive(m,n,a,ld,piv); ctx.finish(); return info;
+        ctx.recursive(m,n,a,ld,piv,0); long info=ctx.info(); ctx.finish(); return info;
     }
     for(long j=0;j<mn;j+=nb) {
         long jb=std::min(nb,mn-j);
-        long i=ctx.recursive(m-j,jb,a+j+j*ld,ld,piv+j);
-        if(!info && i) info=j+i;
+        ctx.recursive(m-j,jb,a+j+j*ld,ld,piv+j,j);
         // The previous far update reads the current panel's left block.
         // Join before its row interchanges; panel arithmetic is independent.
         ctx.join_update();
@@ -196,6 +206,7 @@ template<class Context> static long lu(Context &ctx,long m,long n,long nb,typena
         ctx.far=false;
         if(ctx.error) break;
     }
+    long info=ctx.info();
     ctx.finish(); return info;
 }
 }

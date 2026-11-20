@@ -39,6 +39,7 @@
  *   <P>_CUDA_OZAKI_SLICES=S       number of Ozaki slices
  *   <P>_CUDA_SLOPPY_MUL=1         sloppy multiplication (off)
  *   <P>_CUDA_SLOPPY_ADD=1         sloppy addition and subtraction (off)
+ *   <P>_CUDA_NGPUS=N              at most N devices (all; cuda_multi_gpu.h)
  *   <P>_CUDA_VERBOSE=1            report CUDA errors that cause a CPU fallback
  *
  * The sloppy variants (Rgemm_qd_ops_common.h: x_real::sloppy_add,
@@ -58,6 +59,7 @@
 #include <cstring>
 #include <string>
 #include "Rgemm_cuda_ops_common.h"
+#include "cuda_multi_gpu.h"
 
 namespace mplapack_gemm {
 
@@ -95,17 +97,18 @@ template <class T, class Ops> bool gemm_cuda_bridge(const char *prefix, const sh
     if (s.k > 0 && env_long((P + "_CUDA_OZAKI").c_str(), 0) > 0 && ozaki_split(s, A, B, (int)env_long((P + "_CUDA_OZAKI_SLICES").c_str(), 0), plan))
         algo = GPU_OZAKI;
 
+    const int max_gpus = mplapack_cuda_multi::env_gpus(prefix);
     const bool sloppy_mul = env_long((P + "_CUDA_SLOPPY_MUL").c_str(), 0) > 0;
     const bool sloppy_add = env_long((P + "_CUDA_SLOPPY_ADD").c_str(), 0) > 0;
     int rc;
     if (sloppy_mul && sloppy_add)
-        rc = gemm_cuda<sloppy_ops<Ops, true, true> >(s, algo, cutoff, &plan, sc, dA, dB, dC);
+        rc = gemm_cuda<sloppy_ops<Ops, true, true> >(s, algo, cutoff, &plan, sc, dA, dB, dC, max_gpus);
     else if (sloppy_mul)
-        rc = gemm_cuda<sloppy_ops<Ops, true, false> >(s, algo, cutoff, &plan, sc, dA, dB, dC);
+        rc = gemm_cuda<sloppy_ops<Ops, true, false> >(s, algo, cutoff, &plan, sc, dA, dB, dC, max_gpus);
     else if (sloppy_add)
-        rc = gemm_cuda<sloppy_ops<Ops, false, true> >(s, algo, cutoff, &plan, sc, dA, dB, dC);
+        rc = gemm_cuda<sloppy_ops<Ops, false, true> >(s, algo, cutoff, &plan, sc, dA, dB, dC, max_gpus);
     else
-        rc = gemm_cuda<Ops>(s, algo, cutoff, &plan, sc, dA, dB, dC);
+        rc = gemm_cuda<Ops>(s, algo, cutoff, &plan, sc, dA, dB, dC, max_gpus);
     if (rc != 0 && verbose)
         std::fprintf(stderr, "%s Rgemm: GPU error %d, computing on the CPU\n", prefix, rc);
     return rc == 0;

@@ -1,6 +1,7 @@
 // MPFR-only real device-resident factorizations, fixed-precision engine.
 #include "Rfactor_device_body.cuh"
 #include "Rsolver_device_body.cuh"
+#include "Rfactor_multi_gpu.cuh"
 namespace mplapack_mpfr_cuda {
 namespace {
 template<int PB> struct factor_fixed_update : l3_fixed_engine<PB,true> {
@@ -61,6 +62,24 @@ template<int PB> int factor_fixed(const factor_shape &s,real_t<PB> *a,const real
     using E=factor_fixed_engine<PB>; using V=real_t<PB>;
     using Clock=std::chrono::steady_clock;
     size_t count=(size_t)s.m*(s.n+s.nrhs);
+#ifndef MPLAPACK_MPFR_CUDA_HOST_EMULATION
+    // Several devices (MPLAPACK_MPFR_CUDA_NGPUS, Rfactor_multi_gpu.cuh) for
+    // the factorizations with min(m, n) >= MPLAPACK_MPFR_LAPACK_CUDA_MULTI_MIN
+    // (512): the same factors, pivots and info as on one.
+    if(!s.nrhs && s.factorize && s.nb>1 && s.nb<std::min(s.m,s.n)) {
+        using namespace mplapack_cuda_multi;
+        long multi_min=512;
+        if(const char *v=std::getenv("MPLAPACK_MPFR_LAPACK_CUDA_MULTI_MIN")) { char *end=nullptr; long x=std::strtol(v,&end,10); if(end!=v && !*end && x>=0) multi_min=x; }
+        const int G=(int)std::min<long>(devices(env_gpus("MPLAPACK_MPFR")),(s.n+s.nb-1)/s.nb);
+        if(G>1 && std::min(s.m,s.n)>=multi_min) {
+            auto start=Clock::now();
+            if(int e=factor_multi<E>(G,s,a,safe,piv,info,factor_stack_bytes(PB,false))) return e;
+            times.upload=0; times.download=0;
+            times.factor=std::chrono::duration<double>(Clock::now()-start).count();
+            return 0;
+        }
+    }
+#endif
 #ifndef MPLAPACK_MPFR_CUDA_HOST_EMULATION
     int ndev=0;
     if(cudaGetDeviceCount(&ndev)!=cudaSuccess || !ndev) return 1;

@@ -734,7 +734,9 @@ template <class T> struct runner {
                 return mplapack_blas::blas_device<Ops>(g);
             }
             if (k == "getrf2") { // the panel of the device LU (lu() calls recursive())
-                info = lu->recursive(op.cm, op.cn, dc.real(), dc.ld(), dpiv);
+                lu->reset_info();
+                lu->recursive(op.cm, op.cn, dc.real(), dc.ld(), dpiv, 0);
+                info = lu->info();
                 lu->finish();
                 return lu->error;
             }
