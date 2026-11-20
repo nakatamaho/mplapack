@@ -28,17 +28,26 @@
 
 /*
  * On x86-64 ELF targets, functions marked MPLAPACK_GEMM_CLONES are compiled
- * for AVX2+FMA (x86-64-v3) and for the baseline, and the variant is selected
- * at load time (GNU ifunc).  AVX-512 is deliberately not targeted.  Define
- * MPLAPACK_GEMM_NO_TARGET_CLONES to compile only for the target given on the
- * command line.  Loops marked MPLAPACK_GEMM_SIMD are vectorized.
+ * for AVX-512 (x86-64-v4), for AVX2+FMA (x86-64-v3) and for the baseline,
+ * and the variant is selected at load time (GNU ifunc).  GCC 11 has no
+ * dispatcher for arch=x86-64-v3/v4, nor for avx512vl/bw/dq/cd, so it gets
+ * the ISA lists "avx512f,avx2,fma" and "avx2,fma" instead (arch=haswell
+ * would dispatch on the CPU model, not on its features).  32-bit x86 is not
+ * cloned: its baseline computes on the x87 with excess precision, and the
+ * result must not depend on the CPU.  Define MPLAPACK_GEMM_NO_TARGET_CLONES
+ * to compile only for the target given on the command line.  Loops marked
+ * MPLAPACK_GEMM_SIMD are vectorized.
  */
 
 #ifndef _MPLAPACK_RGEMM_SIMD_COMMON_H_
 #define _MPLAPACK_RGEMM_SIMD_COMMON_H_
 
 #if defined(__x86_64__) && defined(__ELF__) && defined(__GNUC__) && !defined(__INTEL_COMPILER) && !defined(__NVCC__) && !defined(MPLAPACK_GEMM_NO_TARGET_CLONES)
-#define MPLAPACK_GEMM_CLONES __attribute__((target_clones("arch=x86-64-v3", "default")))
+#if defined(__clang__) || __GNUC__ >= 12
+#define MPLAPACK_GEMM_CLONES __attribute__((target_clones("arch=x86-64-v4", "arch=x86-64-v3", "default")))
+#else
+#define MPLAPACK_GEMM_CLONES __attribute__((target_clones("avx512f,avx2,fma", "avx2,fma", "default")))
+#endif
 #else
 #define MPLAPACK_GEMM_CLONES
 #endif

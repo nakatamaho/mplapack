@@ -366,7 +366,16 @@ double flops(const spec &s, long n) {
 // ---- timing of one call ----
 
 #if defined(KERNEL_BENCH_MPFR_CUDA)
-// CUPTI: span of the kernels of a call.
+// CUPTI: span of the kernels of a call.  Only start and end of the kernel
+// record are read; they sit at the same offsets in every record version.
+// CUDA 12.6 (CUPTI API 24) has records up to CUpti_ActivityKernel9, CUDA 13
+// has CUpti_ActivityKernel11.
+#if CUPTI_API_VERSION <= 24
+typedef CUpti_ActivityKernel9 kernel_record_t;
+#else
+typedef CUpti_ActivityKernel11 kernel_record_t;
+#endif
+static_assert(offsetof(kernel_record_t, start) == 16 && offsetof(kernel_record_t, end) == 24, "CUPTI kernel record layout");
 uint64_t kernel_first = UINT64_MAX, kernel_last = 0;
 long kernel_count = 0;
 void CUPTIAPI buffer_requested(uint8_t **buffer, size_t *size, size_t *max_records) {
@@ -378,7 +387,7 @@ void CUPTIAPI buffer_completed(CUcontext, uint32_t, uint8_t *buffer, size_t, siz
     CUpti_Activity *record = NULL;
     while (cuptiActivityGetNextRecord(buffer, valid, &record) == CUPTI_SUCCESS) {
         if (record->kind == CUPTI_ACTIVITY_KIND_CONCURRENT_KERNEL || record->kind == CUPTI_ACTIVITY_KIND_KERNEL) {
-            const CUpti_ActivityKernel11 *k = reinterpret_cast<const CUpti_ActivityKernel11 *>(record);
+            const kernel_record_t *k = reinterpret_cast<const kernel_record_t *>(record);
             kernel_first = std::min<uint64_t>(kernel_first, k->start);
             kernel_last = std::max<uint64_t>(kernel_last, k->end);
             kernel_count++;
