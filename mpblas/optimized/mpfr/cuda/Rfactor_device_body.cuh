@@ -224,7 +224,10 @@ template<class E> __global__ void factor_chol_leaf_kernel(factor_job<E> j,bool u
     j.e.thread(0); factor_chol_leaf(j,upper,n);
     if(!j.e.ok) atomicExch(failed,1);
 }
-template<class E> __global__ void factor_lu_leaf_kernel(factor_job<E> j,int *failed) {
+template<class E> __global__ void factor_lu_leaf_kernel(factor_job<E> j,int *failed,long skip) {
+    // skip: physical threads (whole blocks) left to the other devices'
+    // arena slabs (Rfactor_multi_gpu.cuh); they do nothing.
+    if((long)blockIdx.x*blockDim.x<skip) return;
     j.e.thread(threadIdx.x);
     if(j.m>1) {
         j.op=2;
@@ -239,25 +242,28 @@ template<class E> __global__ void factor_lu_leaf_kernel(factor_job<E> j,int *fai
     }
     if(!j.e.ok) atomicExch(failed,1);
 }
-template<class Job> __global__ void factor_kernel(Job job,long units,int *failed,long offset) {
-    long tid=(long)blockIdx.x*blockDim.x+threadIdx.x;
+template<class Job> __global__ void factor_kernel(Job job,long units,int *failed,long offset,long skip) {
+    long tid=(long)blockIdx.x*blockDim.x+threadIdx.x-skip;
     if(tid<offset) return;
     // libmpc_cuda indexes its arena by the physical CUDA thread index. Far
     // updates occupy a disjoint index range, without changing arena globals
     // while either stream is running. The skipped blocks do no arithmetic.
+    // skip: the slabs of the other devices (Rfactor_multi_gpu.cuh).
     job.e.thread(tid);
-    for(long lane=tid-offset;lane<units;lane+=(long)gridDim.x*blockDim.x-offset) job(lane);
+    for(long lane=tid-offset;lane<units;lane+=(long)gridDim.x*blockDim.x-offset-skip) job(lane);
     if(!job.e.ok) atomicExch(failed,1);
 }
 // Block-cooperative variant of factor_kernel: block b handles units
 // grid-strided, the threads of the block cooperate through the job's
 // block_run (shared memory reductions).  The physical thread id stays within
 // factor_pool, which the arena indexing requires.
-template<class Job> __global__ void factor_block_kernel(Job job,long units,char staged,int *failed) {
+template<class Job> __global__ void factor_block_kernel(Job job,long units,char staged,int *failed,long skip) {
     extern __shared__ unsigned char mplapack_factor_block_sh[];
-    const long tid=(long)blockIdx.x*blockDim.x+threadIdx.x;
+    const long block=(long)blockIdx.x-skip/blockDim.x;
+    if(block<0) return;
+    const long tid=block*blockDim.x+threadIdx.x;
     job.e.thread(tid);
-    for(long u=blockIdx.x;u<units;u+=gridDim.x)
+    for(long u=block;u<units;u+=gridDim.x-skip/blockDim.x)
         job.block_run((int)threadIdx.x,(int)blockDim.x,u,staged?reinterpret_cast<char *>(mplapack_factor_block_sh):nullptr);
     if(!job.e.ok) atomicExch(failed,1);
 }
@@ -285,6 +291,9 @@ template<class E> class factor_context {
     factor_buffer<long> status,candidates,pivots;
     factor_buffer<int> failed;
     int error=0; bool far=false;
+    // Physical CUDA threads below this device's arena slabs (a multiple of
+    // every block size; 0 on one device, Rfactor_multi_gpu.cuh).
+    long skip=0;
 #ifndef MPLAPACK_MPFR_CUDA_HOST_EMULATION
     cudaStream_t streams[2]{}; cudaEvent_t ready{},done{};
     cudaStream_t stream() const { return streams[far?1:0]; }
@@ -338,7 +347,7 @@ template<class E> class factor_context {
         // Fixed updates expose every output lane to the GPU, as GEMM does.
         if(E::runtime) blocks=std::min(factor_blocks,blocks);
         long offset=E::runtime && far?factor_pool:0;
-        factor_kernel<<<(unsigned)(blocks+offset/factor_threads),factor_threads,0,stream()>>>(j,units,failed.p,offset);
+        factor_kernel<<<(unsigned)(blocks+(offset+skip)/factor_threads),factor_threads,0,stream()>>>(j,units,failed.p,offset,skip);
         error=cudaGetLastError();
 #else
         j.e.thread(0);
@@ -357,7 +366,8 @@ template<class E> class factor_context {
         if(blocks<1) { error=1;return 1; }
         if(smem>48*1024 && cudaFuncSetAttribute(factor_block_kernel<Job>,cudaFuncAttributeMaxDynamicSharedMemorySize,(int)smem)!=cudaSuccess) { error=1;return 1; }
         const char st=staged?(char)1:(char)0;
-        factor_block_kernel<Job><<<(unsigned)blocks,(unsigned)T,(unsigned)smem,stream()>>>(j,units,st,failed.p);
+        if(skip%T) { error=1;return 1; }
+        factor_block_kernel<Job><<<(unsigned)(blocks+skip/T),(unsigned)T,(unsigned)smem,stream()>>>(j,units,st,failed.p,skip);
         error=cudaGetLastError();
         return error?1:0;
 #else
@@ -408,7 +418,7 @@ template<class E> class factor_context {
                 const long lanes=j.s.left?j.s.n:j.s.m;
                 const long chunk=(factor_pool/128)*(trsm_dot_shape(j.s)?2:j.s.left?4:16);
                 for(long base=0;base<lanes && !error;base+=chunk) {
-                    trsm_team_args<E> t{}; t.e=j.e; t.s=j.s;
+                    trsm_team_args<E> t{}; t.e=j.e; t.s=j.s; t.skip=skip;
                     t.x.a=j.a; t.x.c=E::shift(j.c,j.s.left?base*j.c.ld:base); t.x.al=j.constants;
                     if(j.s.left) t.s.n=std::min(chunk,lanes-base);
                     else t.s.m=std::min(chunk,lanes-base);
@@ -532,7 +542,7 @@ template<class E> class factor_context {
             bool fused=false;
             if constexpr(fuse_leaf) {
                 if(!far) {
-                    factor_lu_leaf_kernel<<<1,factor_threads,0,stream()>>>(j,failed.p);
+                    factor_lu_leaf_kernel<<<(unsigned)(1+skip/factor_threads),factor_threads,0,stream()>>>(j,failed.p,skip);
                     error=cudaGetLastError(); fused=true;
                 }
             }

@@ -18,6 +18,9 @@ MPLAPACK_BLAS_HD inline bool trsm_team_shape(const blas_shape &s) {
 template<class E> struct trsm_team_args {
     E e; blas_shape s; blas_mats<E> x;
     const typename E::V *reciprocal=nullptr;
+    // Physical CUDA threads before the first block (a multiple of the block
+    // size), left to the other devices' MPFR arena slabs; they do nothing.
+    long skip=0;
 };
 template<class E> struct trsm_team_shared {
     typename E::V pivot[16];
@@ -103,7 +106,9 @@ template<class E,bool Conjugate=false,bool Checked=false,bool Local=false> __dev
     const int coord=g.s.left?threadIdx.x:threadIdx.y;
     const int width=g.s.left?blockDim.y:blockDim.x;
     const int stride=g.s.left?blockDim.x:blockDim.y;
-    long lane=(long)blockIdx.x*width+slot;
+    const long block=(long)blockIdx.x-g.skip/(blockDim.x*blockDim.y);
+    if(block<0) return;
+    long lane=block*width+slot;
     const long global_lane=lane;
     const long lanes=g.s.left?g.s.n:g.s.m;
     const long order=g.s.left?g.s.m:g.s.n;
@@ -115,7 +120,7 @@ template<class E,bool Conjugate=false,bool Checked=false,bool Local=false> __dev
         if(global_lane<lanes) for(long u=coord;u<order;u+=stride)
             g.e.set(matrix[g.s.left?u+slot*order:slot+u*width],g.s.left?g.e.at(original,u,global_lane):g.e.at(original,global_lane,u));
         g.x.c.p=matrix; g.x.c.ld=g.s.left?order:width;
-        const long remaining=lanes-(long)blockIdx.x*width;
+        const long remaining=lanes-block*width;
         if(g.s.left) g.s.n=remaining<width?remaining:width;
         else g.s.m=remaining<width?remaining:width;
         lane=slot;
@@ -145,7 +150,9 @@ template<class E,bool Conjugate,bool Checked> __device__ void trsm_dot_body(trsm
     using V=typename E::V;
     __shared__ __align__(16) unsigned char storage[2*sizeof(V)];
     auto *pivot=reinterpret_cast<V*>(storage);
-    const long i=threadIdx.x,j=2L*blockIdx.x+threadIdx.y;
+    const long block=(long)blockIdx.x-g.skip/128;
+    if(block<0) return;
+    const long i=threadIdx.x,j=2L*block+threadIdx.y;
     const bool mine=i<g.s.m && j<g.s.n;
     auto value=g.e.reg(0),term=g.e.reg(1);
     // Unlike NoTrans, the reference multiplies alpha even when it equals one.
@@ -176,18 +183,18 @@ template<class E,bool Conjugate=false,bool Checked=false> static int trsm_team_p
     const long lanes=g.s.left?g.s.n:g.s.m;
     if(!lanes || !g.s.m || !g.s.n) return 0;
     if(trsm_dot_shape(g.s)) {
-        k_trsm_dot<E,Conjugate,Checked><<<(unsigned)((g.s.n+1)/2),dim3(64,2),0,stream>>>(g,failed);
+        k_trsm_dot<E,Conjugate,Checked><<<(unsigned)((g.s.n+1)/2+g.skip/128),dim3(64,2),0,stream>>>(g,failed);
         return cudaGetLastError();
     }
     const int width=trsm_team_width<E>(g.s.left);
     const dim3 threads=g.s.left?dim3(32,width):dim3(width,128/width);
     if constexpr(sizeof(typename E::V)<=64) {
         if((g.s.left?g.s.m:g.s.n)<=64) {
-            k_trsm_team<E,Conjugate,Checked,true><<<(unsigned)((lanes+width-1)/width),threads,0,stream>>>(g,failed);
+            k_trsm_team<E,Conjugate,Checked,true><<<(unsigned)((lanes+width-1)/width+g.skip/(threads.x*threads.y)),threads,0,stream>>>(g,failed);
             return cudaGetLastError();
         }
     }
-    k_trsm_team<E,Conjugate,Checked><<<(unsigned)((lanes+width-1)/width),threads,0,stream>>>(g,failed);
+    k_trsm_team<E,Conjugate,Checked><<<(unsigned)((lanes+width-1)/width+g.skip/(threads.x*threads.y)),threads,0,stream>>>(g,failed);
     return cudaGetLastError();
 }
 #else

@@ -28,9 +28,8 @@
 
 /*
  * factor_context::lu() and factor_context::chol() (Rfactor_device_body.cuh)
- * on several devices, for the fixed-precision real engine (the runtime and
- * complex engines index process-wide __managed__ arenas and stay on one
- * device).  The scheme of the dd/td/qd ones
+ * on several devices, for every engine: fixed-precision real and complex,
+ * runtime-precision real and complex.  The scheme of the dd/td/qd ones
  * (mplapack/optimized/common/Rgetrf_multi_gpu.cuh, Rpotrf_multi_gpu.cuh):
  *
  * The column blocks of width nb are dealt out cyclically (block b on device
@@ -44,6 +43,15 @@
  * block columns it receives (the owner factors the diagonal block and
  * solves the panel below it), and updates its blocks one by one.  Each
  * device keeps the two-stream lookahead of factor_context.
+ *
+ * The engines that call MPFR/MPC on the device (E::runtime) take their
+ * temporaries from libmpc_cuda's arena, whose base, slab size and offsets
+ * are process-wide __managed__ variables indexed by the physical CUDA
+ * thread index.  One arena of G * 2 * factor_pool slabs is installed for
+ * the call, the slabs of device d resident on d, and the kernels of device
+ * d start d * 2 * factor_pool threads late (factor_context::skip), so the
+ * devices use disjoint slabs.  Upper Cholesky stays on one device for
+ * these engines (factor_multi returns -1): it measured no faster on two.
  *
  * Every element goes through the same operations in the same order as on
  * one device, with the same kernels, so the factors, the pivots and info
@@ -61,14 +69,32 @@
 namespace mplapack_mpfr_cuda {
 namespace {
 
-template <class E> struct factor_device {
+// Storage of one-value-per-element engines (E::M = {V *p, long ld}).
+template <class E> struct value_store {
     using V = typename E::V;
+    using M = typename E::M;
+    using host = V *;
+    struct buffer {
+        factor_buffer<V> b;
+    };
+    int allocate(buffer &d, size_t n) const { return d.b.allocate(n); }
+    M view(const buffer &d, size_t offset, long ld) const { return M{d.b.p + offset, ld}; }
+    int upload(buffer &d, size_t offset, host h, size_t hoffset, size_t n) const { return cudaMemcpy(d.b.p + offset, h + hoffset, n * sizeof(V), cudaMemcpyHostToDevice); }
+    int download(host h, size_t hoffset, const buffer &d, size_t offset, size_t n) const { return cudaMemcpy(h + hoffset, d.b.p + offset, n * sizeof(V), cudaMemcpyDeviceToHost); }
+    int peer(buffer &d, int dd, size_t doffset, const buffer &s, int sd, size_t soffset, size_t n, cudaStream_t stream) const {
+        return cudaMemcpyPeerAsync(d.b.p + doffset, dd, s.b.p + soffset, sd, n * sizeof(V), stream);
+    }
+};
+
+template <class E, class S> struct factor_device {
     std::unique_ptr<factor_stack_guard> stack;
-    factor_buffer<V> constants, local, panel[2];
+    typename S::buffer constants, local, panel[2];
+    factor_buffer<char> scratch; // engine-owned per-device memory (Init)
     std::unique_ptr<factor_context<E>> ctx;
     cudaEvent_t ready{}, consumed{};
     long cols = 0;
     ~factor_device() {
+        ctx.reset();
         if (ready)
             cudaEventDestroy(ready);
         if (consumed)
@@ -76,14 +102,66 @@ template <class E> struct factor_device {
     }
 };
 
+// The arena of the E::runtime engines: device d's slabs and offsets
+// resident on d.  Managed memory, so one base pointer spans the devices.
+struct factor_multi_arena {
+    char *base = nullptr;
+    size_t *top = nullptr;
+    ~factor_multi_arena() {
+        cudaFree(base);
+        cudaFree(top);
+    }
+    int allocate(int G, size_t slab) {
+        const size_t P = 2 * factor_pool;
+        for (int d = 0; d < G; ++d) {
+            int managed = 0;
+            if (cudaDeviceGetAttribute(&managed, cudaDevAttrConcurrentManagedAccess, d) || !managed)
+                return -1;
+        }
+        if (int e = cudaMallocManaged(&base, G * P * slab))
+            return e;
+        if (int e = cudaMallocManaged(&top, G * P * sizeof(size_t)))
+            return e;
+        for (int d = 0; d < G; ++d) {
+            char *b = base + d * P * slab;
+            size_t *t = top + d * P;
+            int e = cudaSetDevice(d);
+            if (!e)
+                e = cudaMemAdvise(b, P * slab, cudaMemAdviseSetPreferredLocation, d);
+            if (!e)
+                e = cudaMemAdvise(t, P * sizeof(size_t), cudaMemAdviseSetPreferredLocation, d);
+            if (!e)
+                e = cudaMemPrefetchAsync(b, P * slab, d, nullptr);
+            if (!e)
+                e = cudaMemsetAsync(t, 0, P * sizeof(size_t), nullptr);
+            if (!e)
+                e = cudaDeviceSynchronize();
+            if (e)
+                return e;
+        }
+        return 0;
+    }
+};
+
 // a: the m x n matrix (ld = m, host), overwritten as by factor(); piv
-// (LU, min(m, n)) and info likewise.  stack_bytes: the device stack the
-// engine needs (raised on every device).  Returns 0, or a nonzero code (a and piv
-// are then undefined).
-template <class E> static int factor_multi(int G, const factor_shape &s, typename E::V *a, const typename E::V &safe, long *piv, long &info, size_t stack_bytes) {
-    using V = typename E::V;
+// (LU, min(m, n)) and info likewise.  st: the storage (value_store or the
+// runtime pack store).  stack_bytes: the device stack the engine needs
+// (raised on every device).  slab: the arena slab size of the E::runtime
+// engines.  init(d, engine, constants, scratch), on device d: sets up the
+// engine and the four constants (one, minus one, sfmin, zero; st.allocate).
+// install(base, slab, top): installs the arena (the caller restores it).
+// Returns 0; -1 when the devices cannot share the arena (nothing done, use
+// one device); or another nonzero code (a and piv are then undefined).
+template <class E, class S, class Init, class Install>
+static int factor_multi(int G, const factor_shape &s, const S &st, typename S::host a, long *piv, long &info, size_t stack_bytes, size_t slab, Init init, Install install) {
     using M = typename E::M;
     using namespace mplapack_cuda_multi;
+    // Upper Cholesky with the MPC-arena engines (E::runtime): their solves
+    // join both streams, so the owner's panel serialises every step and two
+    // devices measured slower than one (complex 512 bits, n = 4096: 62.1 s
+    // vs 64.9 s).  The caller keeps it on one device.
+    if (E::runtime && s.chol && s.upper)
+        return -1;
     device_restore restore;
     const long m = s.m, n = s.n, nb = s.nb, mn = std::min(m, n), ld = m;
     const long blocks = (n + nb - 1) / nb;
@@ -93,8 +171,14 @@ template <class E> static int factor_multi(int G, const factor_shape &s, typenam
     // Column of block b in its device's storage.
     auto lcol = [&](long b) { return whole ? b * nb : (b / G) * nb; };
     auto owned_before = [&](int d, long b) { return b / G + (d < b % G ? 1 : 0); }; // blocks < b on d
+    factor_multi_arena arena;
+    if (E::runtime) {
+        if (int e = arena.allocate(G, slab))
+            return e;
+        install(arena.base, slab, arena.top);
+    }
     enable_peer_access(G);
-    std::vector<factor_device<E>> dev(G);
+    std::vector<factor_device<E, S>> dev(G);
     for (int d = 0; d < G; ++d) {
         if (int e = cudaSetDevice(d))
             return e;
@@ -103,21 +187,21 @@ template <class E> static int factor_multi(int G, const factor_shape &s, typenam
             x.cols += width(b);
         x.stack.reset(new factor_stack_guard(stack_bytes));
         int e = x.stack->error;
-        V c[4] = {V::from_double(1), V::from_double(-1), safe, V::from_double(0)};
+        E engine{};
         if (!e)
-            e = x.constants.allocate(4);
+            e = init(d, engine, x.constants, x.scratch);
         if (!e)
-            e = x.constants.upload(c, 4);
-        if (!e)
-            e = x.local.allocate((size_t)ld * (whole ? n : std::max(1L, x.cols)));
+            e = st.allocate(x.local, (size_t)ld * (whole ? n : std::max(1L, x.cols)));
         if (!e && !whole)
-            e = x.panel[0].allocate((size_t)ld * nb);
+            e = st.allocate(x.panel[0], (size_t)ld * nb);
         if (!e && !whole)
-            e = x.panel[1].allocate((size_t)ld * nb);
+            e = st.allocate(x.panel[1], (size_t)ld * nb);
         if (!e)
-            x.ctx.reset(new factor_context<E>(E{}, M{x.constants.p, 4}, m, n));
+            x.ctx.reset(new factor_context<E>(engine, st.view(x.constants, 0, 4), m, n));
         if (!e)
             e = x.ctx->error;
+        if (!e && E::runtime)
+            x.ctx->skip = d * 2 * factor_pool;
         if (!e)
             e = cudaEventCreateWithFlags(&x.ready, cudaEventDisableTiming);
         if (!e)
@@ -125,6 +209,7 @@ template <class E> static int factor_multi(int G, const factor_shape &s, typenam
         if (e)
             return e;
     }
+    auto view = [&](int d, long col) { return st.view(dev[d].local, (size_t)col * ld, ld); };
     std::vector<int> rc(G, 0);
     auto each = [&](auto f) {
         std::vector<std::thread> t;
@@ -143,7 +228,7 @@ template <class E> static int factor_multi(int G, const factor_shape &s, typenam
         return 0;
     };
     if (int e = each([&](int d, long b) {
-            int e = cudaMemcpy(dev[d].local.p + lcol(b) * ld, a + b * nb * ld, sizeof(V) * ld * width(b), cudaMemcpyHostToDevice);
+            int e = st.upload(dev[d].local, (size_t)lcol(b) * ld, a, (size_t)b * nb * ld, (size_t)ld * width(b));
             // The nonblocking streams must not race the default-stream upload.
             return e ? e : (int)cudaStreamSynchronize(nullptr);
         }))
@@ -160,13 +245,12 @@ template <class E> static int factor_multi(int G, const factor_shape &s, typenam
     auto send = [&](long b) {
         const int o = owner(b);
         auto &own = *dev[o].ctx;
-        V *src = dev[o].local.p + lcol(b) * ld;
         for (int d = 0; d < G && !own.error; ++d) {
             if (d == o)
                 continue;
             int e = whole ? 0 : cudaStreamWaitEvent(own.streams[0], dev[d].consumed, 0);
             if (!e)
-                e = cudaMemcpyPeerAsync(whole ? dev[d].local.p + lcol(b) * ld : dev[d].panel[b % 2].p, d, src, o, sizeof(V) * ld * width(b), own.streams[0]);
+                e = st.peer(whole ? dev[d].local : dev[d].panel[b % 2], d, whole ? (size_t)lcol(b) * ld : 0, dev[o].local, o, (size_t)lcol(b) * ld, (size_t)ld * width(b), own.streams[0]);
             if (!e && !s.chol && width(b))
                 e = cudaMemcpyPeerAsync(dev[d].ctx->pivots.p + b * nb, d, own.pivots.p + b * nb, o, sizeof(long) * std::min(nb, mn - b * nb), own.streams[0]);
             if (e)
@@ -194,7 +278,7 @@ template <class E> static int factor_multi(int G, const factor_shape &s, typenam
         const int o = owner(b);
         auto &own = *dev[o].ctx;
         cudaSetDevice(o);
-        M block{dev[o].local.p + lcol(b) * ld, ld};
+        M block = view(o, lcol(b));
         if (!s.chol) {
             const long i = own.lu_recursive(m - j, jb, E::shift(block, j), own.pivots.p + j);
             if (!info && i)
@@ -229,7 +313,7 @@ template <class E> static int factor_multi(int G, const factor_shape &s, typenam
             auto &ctx = *x.ctx;
             cudaSetDevice(d);
             receive(d, b);
-            M p = d == o || whole ? M{x.local.p + lcol(b) * ld, ld} : M{x.panel[b % 2].p, ld};
+            M p = d == o || whole ? view(d, lcol(b)) : st.view(x.panel[b % 2], 0, ld);
             const bool next_here = next_here_any && owner(b + 1) == d;
             if (whole) {
                 // Lower Cholesky (factor_context::chol): join, release, the
@@ -241,7 +325,7 @@ template <class E> static int factor_multi(int G, const factor_shape &s, typenam
                     if (owner(c) != d)
                         continue;
                     ctx.far = c != b + 1;
-                    ctx.right(n, nb, j, jb, c * nb, width(c), M{x.local.p, ld});
+                    ctx.right(n, nb, j, jb, c * nb, width(c), view(d, 0));
                 }
                 ctx.far = false;
                 continue;
@@ -249,13 +333,13 @@ template <class E> static int factor_multi(int G, const factor_shape &s, typenam
             const long left = owned_before(d, b) * nb;
             const long first = left + (d == o ? (s.chol ? width(b) : jb) : 0), cols = x.cols - first;
             if (!s.chol && left)
-                ctx.swap(left, M{x.local.p, ld}, j, j + jb, ctx.pivots.p);
+                ctx.swap(left, view(d, 0), j, j + jb, ctx.pivots.p);
             const long near = next_here ? width(b + 1) : 0;
             for (int part = 0; part < 2; ++part) {
                 const long c = first + (part ? near : 0), w = part ? cols - near : near;
                 ctx.far = part != 0;
                 if (w > 0) {
-                    M C{x.local.p + c * ld, ld};
+                    M C = view(d, c);
                     if (!s.chol) {
                         ctx.swap(w, C, j, j + jb, ctx.pivots.p);
                         M right = E::shift(C, j);
@@ -297,7 +381,7 @@ template <class E> static int factor_multi(int G, const factor_shape &s, typenam
         if (dev[0].ctx->pivots.download(piv, mn))
             return 1;
     }
-    int e = each([&](int d, long b) { return (int)cudaMemcpy(a + b * nb * ld, dev[d].local.p + lcol(b) * ld, sizeof(V) * ld * width(b), cudaMemcpyDeviceToHost); });
+    int e = each([&](int d, long b) { return st.download(a, (size_t)b * nb * ld, dev[d].local, (size_t)lcol(b) * ld, (size_t)ld * width(b)); });
     for (int d = 0; d < G; ++d) {
         cudaSetDevice(d);
         dev[d].stack->restore();

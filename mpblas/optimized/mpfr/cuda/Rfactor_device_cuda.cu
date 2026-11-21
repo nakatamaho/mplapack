@@ -73,10 +73,17 @@ template<int PB> int factor_fixed(const factor_shape &s,real_t<PB> *a,const real
         const int G=(int)std::min<long>(devices(env_gpus("MPLAPACK_MPFR")),(s.n+s.nb-1)/s.nb);
         if(G>1 && std::min(s.m,s.n)>=multi_min) {
             auto start=Clock::now();
-            if(int e=factor_multi<E>(G,s,a,safe,piv,info,factor_stack_bytes(PB,false))) return e;
-            times.upload=0; times.download=0;
-            times.factor=std::chrono::duration<double>(Clock::now()-start).count();
-            return 0;
+            auto init=[&](int,E &,typename value_store<E>::buffer &c,factor_buffer<char> &) {
+                V v[4]={V::from_double(1),V::from_double(-1),safe,V::from_double(0)};
+                int e=c.b.allocate(4); return e?e:c.b.upload(v,4);
+            };
+            int e=factor_multi<E>(G,s,value_store<E>{},a,piv,info,factor_stack_bytes(PB,false),0,init,[](char *,size_t,size_t *) {});
+            if(e!=-1) {
+                if(e) return e;
+                times.upload=0; times.download=0;
+                times.factor=std::chrono::duration<double>(Clock::now()-start).count();
+                return 0;
+            }
         }
     }
 #endif
