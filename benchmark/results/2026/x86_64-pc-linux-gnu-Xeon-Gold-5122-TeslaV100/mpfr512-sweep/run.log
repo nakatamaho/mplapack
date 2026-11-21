@@ -1,0 +1,15 @@
+2026-11-20T00:09:13 gemm NN start load=2.74 2.40 2.35 gpu_procs=0
+2026-11-20T01:30:58 gemm NN end rc=0 load=1.05 1.17 1.14 gpu_procs=0
+2026-11-20T01:30:58 gemm NT start load=1.05 1.17 1.14 gpu_procs=0
+2026-11-20T02:52:40 gemm NT end rc=0 load=1.30 1.14 1.09 gpu_procs=0
+2026-11-20T02:52:40 gemm TN start load=1.30 1.14 1.09 gpu_procs=0
+2026-11-20T04:15:11 gemm TN end rc=0 load=1.11 1.14 1.10 gpu_procs=0
+2026-11-20T04:15:11 gemm TT start load=1.11 1.14 1.10 gpu_procs=0
+2026-11-20T05:37:38 gemm TT end rc=0 load=1.02 1.09 1.09 gpu_procs=0
+2026-11-20T05:37:38 getrf start load=1.02 1.09 1.09 gpu_procs=0
+2026-11-20T06:13:47 getrf end rc=0 load=1.01 1.11 1.11 gpu_procs=0
+2026-11-20T06:13:47 potrf L start load=1.01 1.11 1.11 gpu_procs=0
+2026-11-20T06:43:59 potrf L end rc=0 load=1.17 1.16 1.13 gpu_procs=0
+2026-11-20T06:43:59 potrf U start load=1.17 1.16 1.13 gpu_procs=0
+2026-11-20T07:21:52 potrf U end rc=0 load=1.11 1.14 1.10 gpu_procs=0
+2026-11-20T07:21:52 done load=1.11 1.14 1.10 gpu_procs=0

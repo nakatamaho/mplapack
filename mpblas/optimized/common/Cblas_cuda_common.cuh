@@ -44,6 +44,7 @@
 #include <vector>
 #include "blas_dev/blas_dev.h"
 #include "Rblas_gpu_operand_common.h"
+#include "cuda_multi_gpu.h"
 
 // MPLAPACK_GEMM_CUDA_HOST_EMULATION (dd/td/qd) or
 // MPLAPACK_MPFR_CUDA_HOST_EMULATION (MPFR): the jobs run on the host.
@@ -438,7 +439,7 @@ template <class Ops> int cgemm_tiled_run(job_Cgemm<Ops> job, const gpu_operand<t
 #endif
 }
 
-template <class Job> int cgpu_run(Job job, const mplapack_blas::gpu_operand<typename Job::E> *ops, int nops)
+template <class Job> static int cgpu_run_one(Job job, const mplapack_blas::gpu_operand<typename Job::E> *ops, int nops)
 {
     if constexpr (cgpu_is_cgemm<Job>::value) {
         typedef typename Job::DC DC;
@@ -446,6 +447,43 @@ template <class Job> int cgpu_run(Job job, const mplapack_blas::gpu_operand<type
             return cgemm_tiled_run(job, ops, nops);
     }
     return run_job<typename Job::E>(job, job.units(), ops, nops);
+}
+
+// Any Cgemm job (cgpu_is_cgemm: only those of the tiled form).
+template <class Job> struct cgpu_cgemm_ops {
+    static const bool value = false;
+    typedef void type;
+};
+template <class Ops> struct cgpu_cgemm_ops<job_Cgemm<Ops> > {
+    static const bool value = true;
+    typedef Ops type;
+};
+
+template <class Job> int cgpu_run(Job job, const mplapack_blas::gpu_operand<typename Job::E> *ops, int nops)
+{
+#if MPLAPACK_CBLAS_CUDA_DEVICE
+    // Cgemm: the columns of C (and op(B)) cut over the devices; each element
+    // is computed as on one device.
+    if constexpr (cgpu_cgemm_ops<Job>::value) {
+        {
+            typedef typename Job::E E;
+            if (const char *prefix = mplapack_cuda_multi::prefix_of<typename cgpu_cgemm_ops<Job>::type>::value) {
+                using namespace mplapack_cuda_multi;
+                const int nb = nops == 3 && job.k > 0 && mplapack_blas::gpu_operand_partable(ops[1]) && mplapack_blas::gpu_operand_partable(ops[2]) ? blocks(job.n, devices(env_gpus(prefix)), 128) : 1;
+                if (nb > 1) {
+                    const bool notb = lsame(job.tb, "N");
+                    return for_column_blocks(job.n, nb, CG_TILE, [&](long j0, long j1) {
+                        Job t = job;
+                        t.n = j1 - j0;
+                        const gpu_operand<E> o[3] = {ops[0], mplapack_blas::gpu_operand_part(ops[1], notb, j0, j1), mplapack_blas::gpu_operand_part(ops[2], true, j0, j1)};
+                        return cgpu_run_one(t, o, 3);
+                    });
+                }
+            }
+        }
+    }
+#endif
+    return cgpu_run_one(job, ops, nops);
 }
 
 } // namespace mplapack_blas_dev

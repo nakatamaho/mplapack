@@ -20,6 +20,7 @@
 #endif
 #pragma GCC visibility push(hidden)
 #include "Rpotrf_gpu_common.cuh"
+#include "Rpotrf_multi_gpu.cuh"
 #pragma GCC visibility pop
 
 namespace {
@@ -83,6 +84,29 @@ template<class Context,class Host> static bool potrf_call(const char *name,const
     try {
         const long nb=iMlaenv(1,name,uplo,n,-1,-1,-1);
         const long workspace=std::max(1L,std::min((long)n,nb));
+#if defined(__CUDACC__)
+        // Several devices (<P>_CUDA_NGPUS, <P>_LAPACK_CUDA_MULTI_MIN; Rpotrf_multi_gpu.cuh): the same
+        // factor and info as on one.
+        if(nb>1 && nb<n) {
+            using namespace mplapack_cuda_multi;
+            // Below about 2048 the second device costs more than it gives
+            // (V100); <P>_LAPACK_CUDA_MULTI_MIN overrides.
+            long multi_min=2048;
+            if(const char *v=potrf_env("_LAPACK_CUDA_MULTI_MIN")) { char *end=nullptr; long x=std::strtol(v,&end,10); if(end!=v && !*end && x>=0) multi_min=x; }
+            const int G=(int)std::min<long>(devices(env_gpus(potrf_prefix)),(n+nb-1)/nb);
+            if(G>1 && n>=multi_min) {
+                std::vector<E> staging((size_t)n*n);
+                for(long j=0;j<n;++j) for(long i=0;i<n;++i)
+                    if(upper?i<=j:i>=j) staging[i+j*n]=potrf_pack(a[i+j*lda]);
+                long result=0;
+                if(cholesky_multi<Context>(G,upper,n,nb,staging.data(),result)) return false;
+                for(long j=0;j<n;++j) for(long i=0;i<n;++i)
+                    if((upper?i<=j:i>=j) && potrf_output(upper,n,nb,result,i,j)) potrf_unpack(staging[i+j*n],a[i+j*lda]);
+                info=result;
+                return true;
+            }
+        }
+#endif
         matrix<E> device;
         if(device.allocate(n,n)) return false;
         Context ctx(n,workspace);

@@ -159,8 +159,10 @@ template <class F> struct gpu_scalars {
 // out as in Rgemm; cutoff is the Winograd cutoff (GPU_WINOGRAD) and plan the
 // Ozaki splitting (GPU_OZAKI).  Returns 0 on success, otherwise a
 // cudaError_t / cublasStatus_t code, C unchanged.  Instantiated in the
-// libraries' Rgemm_gpu_cuda.cu.
-template <class Ops> int gemm_cuda(const shape &s, int algo, long cutoff, const ozaki_plan *plan, const gpu_scalars<typename Ops::F> &sc, const typename Ops::F *A, const typename Ops::F *B, typename Ops::F *C);
+// libraries' Rgemm_gpu_cuda.cu.  The conventional kernels (GPU_TILED,
+// GPU_NAIVE) cut the columns of C over up to max_gpus devices (0: all;
+// cuda_multi_gpu.h), with the same result.
+template <class Ops> int gemm_cuda(const shape &s, int algo, long cutoff, const ozaki_plan *plan, const gpu_scalars<typename Ops::F> &sc, const typename Ops::F *A, const typename Ops::F *B, typename Ops::F *C, int max_gpus);
 
 // Number of CUDA devices (0 when the runtime reports an error).
 template <class Ops> int gpu_device_count();

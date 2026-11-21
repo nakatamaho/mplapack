@@ -61,24 +61,28 @@ template<class E> static trsm_team_args<E> trsm_diagonal_args(trsm_team_args<E> 
 }
 #if defined(__CUDACC__) && !defined(MPLAPACK_MPFR_CUDA_HOST_EMULATION) && !defined(MPLAPACK_GEMM_CUDA_HOST_EMULATION)
 template<class E,bool Checked> __global__ void k_trsm_scale(trsm_team_args<E> g,long i0,long j0,long rows,long cols,int *failed) {
-    long u=(long)blockIdx.x*blockDim.x+threadIdx.x;
-    if(u<rows*cols) trsm_scale_element(g,i0+u%rows,j0+u/rows);
+    long u=(long)blockIdx.x*blockDim.x+threadIdx.x-g.skip;
+    if(u>=0 && u<rows*cols) trsm_scale_element(g,i0+u%rows,j0+u/rows);
     if constexpr(Checked) if(!g.e.ok) atomicExch(failed,1);
 }
 template<class E,bool Conjugate,bool Checked> __global__ void k_trsm_reciprocal(trsm_team_args<E> g,typename E::V *r,int *failed) {
     // Bounded physical indices also fit the resident complex MPC arena.
-    for(long k=(long)blockIdx.x*blockDim.x+threadIdx.x;k<g.s.n;k+=(long)blockDim.x*gridDim.x)
+    for(long k=(long)blockIdx.x*blockDim.x+threadIdx.x-g.skip;k>=0 && k<g.s.n;k+=(long)blockDim.x*gridDim.x-g.skip)
         trsm_reciprocal_element<E,Conjugate>(g,r,k);
     if constexpr(Checked) if(!g.e.ok) atomicExch(failed,1);
 }
 template<class E,bool Conjugate,bool Checked> __global__ void k_trsm_update(trsm_team_args<E> g,
     long ioff,long joff,long rows,long cols,long start,long end,int *failed) {
     constexpr int T=trsm_tile_size<E>::value;
+    // One-dimensional grid of the tiles (x fastest), after g.skip threads.
+    const long tile=(long)blockIdx.x-g.skip/(T*T),tiles=(rows+T-1)/T;
+    if(tile<0) return;
+    const long bx=tile%tiles,by=tile/tiles;
     __shared__ __align__(16) unsigned char storage[sizeof(trsm_update_shared<E>)];
     auto &sh=*reinterpret_cast<trsm_update_shared<E>*>(storage);
     const int ti=threadIdx.x,tj=threadIdx.y;
-    const long ri=(long)blockIdx.x*T+ti,cj=(long)blockIdx.y*T+tj;
-    const long i0=ioff+(long)blockIdx.x*T,j0=joff+(long)blockIdx.y*T;
+    const long ri=bx*T+ti,cj=by*T+tj;
+    const long i0=ioff+bx*T,j0=joff+by*T;
     const bool inside=ri<rows && cj<cols;
     auto acc=g.e.reg(0);
     if(inside) g.e.set(acc,g.e.at(g.x.c,ioff+ri,joff+cj));
@@ -108,7 +112,7 @@ template<class E,bool Conjugate=false,bool Checked=false> static int trsm_team_d
             error=cudaMalloc(&reciprocal,size_t(order)*sizeof(typename E::V));
             if(error) return error;
             const unsigned blocks=(unsigned)((order+63)/64<128?(order+63)/64:128);
-            k_trsm_reciprocal<E,Conjugate,Checked><<<blocks,64,0,stream>>>(g,reciprocal,failed);
+            k_trsm_reciprocal<E,Conjugate,Checked><<<blocks+(unsigned)(g.skip/64),64,0,stream>>>(g,reciprocal,failed);
             error=cudaGetLastError(); g.reciprocal=reciprocal;
         }
         if(!error && order<=64) {
@@ -120,7 +124,7 @@ template<class E,bool Conjugate=false,bool Checked=false> static int trsm_team_d
             return error;
         }
         if(!error && g.s.left && !g.s.alpha_one) {
-            k_trsm_scale<E,Checked><<<(unsigned)((g.s.m*g.s.n+255)/256),256,0,stream>>>(g,0,0,g.s.m,g.s.n,failed);
+            k_trsm_scale<E,Checked><<<(unsigned)((g.s.m*g.s.n+255)/256+g.skip/256),256,0,stream>>>(g,0,0,g.s.m,g.s.n,failed);
             error=cudaGetLastError();
         }
         for(long done=0;done<order && !error;done+=NB) {
@@ -130,12 +134,12 @@ template<class E,bool Conjugate=false,bool Checked=false> static int trsm_team_d
             const long remain=g.s.upper?start:order-end,offset=g.s.upper?0:end;
             const long rows=g.s.left?remain:g.s.m,cols=g.s.left?g.s.n:remain;
             if(!error && rows && cols) {
-                k_trsm_update<E,Conjugate,Checked><<<dim3((unsigned)((rows+T-1)/T),(unsigned)((cols+T-1)/T)),dim3(T,T),0,stream>>>(
+                k_trsm_update<E,Conjugate,Checked><<<(unsigned)(((rows+T-1)/T)*((cols+T-1)/T)+g.skip/(T*T)),dim3(T,T),0,stream>>>(
                     g,g.s.left?offset:0,g.s.left?0:offset,rows,cols,start,end,failed);
                 error=cudaGetLastError();
             }
             if(!error && !g.s.left && !g.s.alpha_one) {
-                k_trsm_scale<E,Checked><<<(unsigned)((g.s.m*count+255)/256),256,0,stream>>>(g,0,start,g.s.m,count,failed);
+                k_trsm_scale<E,Checked><<<(unsigned)((g.s.m*count+255)/256+g.skip/256),256,0,stream>>>(g,0,start,g.s.m,count,failed);
                 error=cudaGetLastError();
             }
         }

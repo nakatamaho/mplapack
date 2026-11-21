@@ -63,6 +63,7 @@
 #include <cmath>
 #include <vector>
 #include "Rgemm_cuda_ops_common.h"
+#include "cuda_multi_gpu.h"
 #include "Rgemm_blocked_common.h"
 #include "Rgemm_winograd_common.h"
 #include "Rgemm_ozaki_common.h"
@@ -358,7 +359,7 @@ template <class F> inline cudaError_t gpu_copy_mat(F *dst, const F *src, long r,
     return cudaMemcpy2D(dst, (size_t)ld * sizeof(F), src, (size_t)ld * sizeof(F), (size_t)r * sizeof(F), (size_t)c, kind);
 }
 
-template <class Ops> int gemm_cuda(const shape &s, int algo, long cutoff, const ozaki_plan *plan, const gpu_scalars<typename Ops::F> &sc, const typename Ops::F *A, const typename Ops::F *B, typename Ops::F *C) {
+template <class Ops> static int gemm_cuda_one(const shape &s, int algo, long cutoff, const ozaki_plan *plan, const gpu_scalars<typename Ops::F> &sc, const typename Ops::F *A, const typename Ops::F *B, typename Ops::F *C) {
     typedef typename Ops::F F;
     gpu_session g;
     const long m = s.m, n = s.n, k = s.k;
@@ -462,6 +463,21 @@ template <class Ops> int gemm_cuda(const shape &s, int algo, long cutoff, const 
     return g.ok() ? 0 : (int)g.error();
 }
 
+// Smallest column block per device: below it one device is faster.
+const long GPU_MIN_COLUMNS = 128;
+
+template <class Ops> int gemm_cuda(const shape &s, int algo, long cutoff, const ozaki_plan *plan, const gpu_scalars<typename Ops::F> &sc, const typename Ops::F *A, const typename Ops::F *B, typename Ops::F *C, int max_gpus) {
+    using namespace mplapack_cuda_multi;
+    const bool split = (algo == GPU_TILED || algo == GPU_NAIVE) && s.k > 0;
+    const int nb = split ? blocks(s.n, devices(max_gpus), GPU_MIN_COLUMNS) : 1;
+    // Columns j0..j1-1 of C and op(B); every leading dimension stays.
+    return for_column_blocks(s.n, nb, GPU_TILE, [&](long j0, long j1) {
+        shape t = s;
+        t.n = j1 - j0;
+        return gemm_cuda_one<Ops>(t, algo, cutoff, plan, sc, A, s.notb ? B + j0 * s.ldb : B + j0, C + j0 * s.ldc);
+    });
+}
+
 template <class Ops> int gpu_device_count() {
     int count = 0;
     if (cudaGetDeviceCount(&count) != cudaSuccess)
@@ -505,7 +521,7 @@ template <class Ops> class winograd_emul_backend {
     }
 };
 
-template <class Ops> int gemm_cuda(const shape &s, int algo, long cutoff, const ozaki_plan *plan, const gpu_scalars<typename Ops::F> &sc, const typename Ops::F *A, const typename Ops::F *B, typename Ops::F *C) {
+template <class Ops> int gemm_cuda(const shape &s, int algo, long cutoff, const ozaki_plan *plan, const gpu_scalars<typename Ops::F> &sc, const typename Ops::F *A, const typename Ops::F *B, typename Ops::F *C, int) {
     typedef typename Ops::F F;
     const long m = s.m, n = s.n, k = s.k;
     if (algo == GPU_OZAKI) {

@@ -9,6 +9,7 @@
 #include "Rsolver_device_body.cuh"
 #undef MPLAPACK_MPFR_FACTOR_COMPLEX
 #include "../../common/blas_dev/blas_dev.h"
+#include "Rfactor_multi_gpu.cuh"
 namespace mplapack_mpfr_cuda {
 namespace {
 using namespace mplapack_blas_dev;
@@ -212,9 +213,58 @@ template<class Tag> int factor_complex(const factor_shape &s,long prec,typename 
     bool fixed=std::is_same<Tag,factor_fixed_tag<256>>::value || std::is_same<Tag,factor_fixed_tag<512>>::value ||
                std::is_same<Tag,factor_fixed_tag<768>>::value || std::is_same<Tag,factor_fixed_tag<1024>>::value ||
                std::is_same<Tag,factor_fixed_tag<2048>>::value;
-    factor_stack_guard stack(fixed?complex_fixed_stack_bytes(prec):complex_runtime_stack_bytes(prec)); if(stack.error) return stack.error;
+    const size_t stack_bytes=fixed?complex_fixed_stack_bytes(prec):complex_runtime_stack_bytes(prec);
+    const size_t slab=16384*((prec+1023)/1024);
+    // Several devices (MPLAPACK_MPFR_CUDA_NGPUS, Rfactor_multi_gpu.cuh) for
+    // the factorizations with min(m, n) >= MPLAPACK_MPFR_LAPACK_CUDA_MULTI_MIN
+    // (512): the same factors, pivots and info as on one.
+    if(!s.nrhs && s.factorize && s.nb>1 && s.nb<std::min(s.m,s.n)) {
+        using namespace mplapack_cuda_multi;
+        long multi_min=512;
+        if(const char *v=std::getenv("MPLAPACK_MPFR_LAPACK_CUDA_MULTI_MIN")) { char *end=nullptr; long x=std::strtol(v,&end,10); if(end!=v && !*end && x>=0) multi_min=x; }
+        const int G=(int)std::min<long>(devices(env_gpus("MPLAPACK_MPFR")),(s.n+s.nb-1)/s.nb);
+        if(G>1 && std::min(s.m,s.n)>=multi_min) {
+            device_restore restore_device;
+            // The precision of the runtime MPC values, on every device; the
+            // process-wide arena (installed by factor_multi).
+            char *base=mpc_cuda_arena_base; size_t old_slab=mpc_cuda_arena_slab; size_t *top=mpc_cuda_arena_top;
+            const long host_precision=mplapack_mpfr_rt_prec_h;
+            std::vector<long> device_precision(G,0); std::vector<char> known(G,0);
+            int e=0;
+            for(int d=0;d<G && !e;++d) {
+                e=cudaSetDevice(d);
+                if(!e) e=cudaMemcpyFromSymbol(&device_precision[d],mplapack_mpfr_rt_prec_d,sizeof(long));
+                if(!e) known[d]=1;
+                if(!e) e=cudaMemcpyToSymbol(mplapack_mpfr_rt_prec_d,&prec,sizeof(long));
+            }
+            mplapack_mpfr_rt_prec_h=prec;
+            auto start=Clock::now();
+            if(!e) {
+                const V c[4]={E::Traits::host_one(1,prec),E::Traits::host_one(-1,prec),safe,V()};
+                auto init=[&](int,E &,typename value_store<E>::buffer &b,factor_buffer<char> &) {
+                    int r=b.b.allocate(4); return r?r:b.b.upload(c,4);
+                };
+                auto install=[](char *b,size_t sl,size_t *t) { mpc_cuda_arena_base=b; mpc_cuda_arena_slab=sl; mpc_cuda_arena_top=t; };
+                e=factor_multi<E>(G,s,value_store<E>{},a,piv,info,stack_bytes,slab,init,install);
+            }
+            mpc_cuda_arena_base=base; mpc_cuda_arena_slab=old_slab; mpc_cuda_arena_top=top;
+            mplapack_mpfr_rt_prec_h=host_precision;
+            for(int d=0;d<G;++d) if(known[d]) {
+                int r=cudaSetDevice(d);
+                if(!r) r=cudaMemcpyToSymbol(mplapack_mpfr_rt_prec_d,&device_precision[d],sizeof(long));
+                if(r && (!e || e==-1)) e=r;
+            }
+            if(e!=-1) {
+                if(e) return e;
+                times.upload=0; times.download=0;
+                times.factor=std::chrono::duration<double>(Clock::now()-start).count();
+                return 0;
+            }
+        }
+    }
+    factor_stack_guard stack(stack_bytes); if(stack.error) return stack.error;
     factor_buffer<char> arena; factor_buffer<size_t> tops;
-    size_t slab=16384*((prec+1023)/1024),pool=2*factor_pool;
+    size_t pool=2*factor_pool;
     if(arena.allocate(pool*slab) || tops.allocate(pool) || cudaMemset(tops.p,0,pool*sizeof(size_t))) return 1;
     complex_arena_guard guard(arena.p,slab,tops.p,prec); if(guard.error) return guard.error;
 #else

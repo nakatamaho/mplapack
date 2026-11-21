@@ -20,6 +20,7 @@
 #endif
 #pragma GCC visibility push(hidden)
 #include "Rgetrf_gpu_common.cuh"
+#include "Rgetrf_multi_gpu.cuh"
 #pragma GCC visibility pop
 namespace {
 #if defined(MPLAPACK_BUILD_WITH_DD)
@@ -75,6 +76,36 @@ template<class Blas,class Host> static bool lu_call(const char *name,INTEGER m,I
     try {
         long nb=iMlaenv(1,name," ",m,n,-1,-1);
         long workspace=std::max(1L,std::min((long)std::min(m,n),nb));
+#if defined(__CUDACC__)
+        // Several devices (<P>_CUDA_NGPUS, <P>_LAPACK_CUDA_MULTI_MIN; Rgetrf_multi_gpu.cuh): the same
+        // factors, pivots and info as on one.
+        if(nb>1 && nb<std::min(m,n)) {
+            using namespace mplapack_cuda_multi;
+            // Below about 2048 the second device costs more than it gives
+            // (V100); <P>_LAPACK_CUDA_MULTI_MIN overrides.
+            long multi_min=2048;
+            if(const char *v=lu_env("_LAPACK_CUDA_MULTI_MIN")) { char *end=nullptr; long x=std::strtol(v,&end,10); if(end!=v && !*end && x>=0) multi_min=x; }
+            const int G=(int)std::min<long>(devices(env_gpus(lu_prefix)),(n+nb-1)/nb);
+            if(G>1 && std::min(m,n)>=multi_min) {
+                std::vector<E> staging((size_t)m*n);
+                std::vector<long> host_piv(std::min(m,n));
+                for(long j=0;j<n;++j) for(long i=0;i<m;++i) staging[i+j*m]=lu_pack(a[i+j*lda]);
+                long result=0;
+                using Clock=std::chrono::steady_clock;
+                auto start=Clock::now();
+                if(lu_multi<Blas,LuReal>(G,m,n,nb,lu_pack(Rlamch("S")),staging.data(),host_piv.data(),result)) return false;
+                auto factored=Clock::now();
+                for(long j=0;j<n;++j) for(long i=0;i<m;++i) lu_unpack(staging[i+j*m],a[i+j*lda]);
+                for(size_t i=0;i<host_piv.size();++i) ipiv[i]=host_piv[i];
+                info=result;
+                const char *verbose=lu_env("_CUDA_VERBOSE");
+                if(verbose && std::strcmp(verbose,"0"))
+                    std::fprintf(stderr,"%s %s CUDA m=%ld n=%ld devices=%d nb=%ld upload+factor+download=%.9g\n",name,lu_prefix,(long)m,(long)n,G,nb,
+                        std::chrono::duration<double>(factored-start).count());
+                return true;
+            }
+        }
+#endif
         matrix<E> device;
         if(device.allocate(m,n)) return false;
         lu_context<Blas,LuReal> ctx(std::max(m,n),workspace,lu_pack(Rlamch("S")));

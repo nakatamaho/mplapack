@@ -39,6 +39,7 @@
 #include "Rgemm_kernel_cuda.h"
 #include "Rgemm_tiled_cuda.h"
 #include "Rgemm_winograd_cuda.h"
+#include "../../common/cuda_multi_gpu.h"
 
 namespace mplapack_mpfr_cuda {
 
@@ -216,29 +217,42 @@ template <int PB> int gemm_winograd(const gemm_shape &s, const real_t<PB> &alpha
     return 0;
 }
 
-template <int PB> int gemm(const gemm_shape &s, const real_t<PB> &alpha, const real_t<PB> &beta, const real_t<PB> *A, const real_t<PB> *B, real_t<PB> *C)
+// One device (the current one): C = alpha op(A) op(B) + beta C for the
+// shape s, whose leading dimensions are those of the packed device copies
+// (rows of A, B and C).  The host operands have the leading dimensions
+// hlda, hldb, hldc (a column block of a larger matrix).
+template <int PB> static int gemm_one(const gemm_shape &s, const real_t<PB> &alpha, const real_t<PB> &beta, const real_t<PB> *A, long hlda, const real_t<PB> *B, long hldb, real_t<PB> *C, long hldc)
 {
     typedef real_t<PB> F;
-    int ndev = 0;
-    if (failed(cudaGetDeviceCount(&ndev), "cudaGetDeviceCount") || ndev == 0)
-        return 1;
-
     const long nrowa = s.nota ? s.m : s.k, ncola = s.nota ? s.k : s.m;
     const long nrowb = s.notb ? s.k : s.n, ncolb = s.notb ? s.n : s.k;
     const size_t bytesA = sizeof(F) * (size_t)nrowa * ncola;
     const size_t bytesB = sizeof(F) * (size_t)nrowb * ncolb;
     const size_t bytesC = sizeof(F) * (size_t)s.m * s.n;
-    const size_t bytesAB = s.nota ? sizeof(F) * (size_t)s.k * s.n : 0;
+    // Volta (Rgemm_tiled_cuda.h): every form through the Lockstep layout,
+    // which forms alpha*op(B) as it loads the tiles (one kernel, no AB).
+    // Below its size threshold the default tiled layout, also one kernel for
+    // NoTrans A: there the original two-kernel path runs at half the speed
+    // of the tiled transposed form.
+    bool lockstep = false, small = false;
+    if constexpr (PB == 256 || PB == 512 || PB == 768) {
+        static_assert(value_gemm_lockstep_fits<F>(), "Lockstep tiles exceed static shared memory");
+        if (s.k > 0 && value_gemm_lockstep()) {
+            lockstep = value_gemm_lockstep_shape<F>(s);
+            small = !lockstep;
+        }
+    }
+    const size_t bytesAB = s.nota && !lockstep && !small ? sizeof(F) * (size_t)s.k * s.n : 0;
 
     device_buffer dA, dB, dC, dAB;
     if (failed(dA.allocate(bytesA), "cudaMalloc A") || failed(dB.allocate(bytesB), "cudaMalloc B") || failed(dC.allocate(bytesC), "cudaMalloc C") || failed(dAB.allocate(bytesAB), "cudaMalloc alpha*op(B)"))
         return 2;
-    if (failed(cudaMemcpy(dA.get<F>(), A, bytesA, cudaMemcpyHostToDevice), "copy A") || failed(cudaMemcpy(dB.get<F>(), B, bytesB, cudaMemcpyHostToDevice), "copy B"))
+    if (failed(cudaMemcpy2D(dA.get<F>(), sizeof(F) * nrowa, A, sizeof(F) * hlda, sizeof(F) * nrowa, ncola, cudaMemcpyHostToDevice), "copy A") || failed(cudaMemcpy2D(dB.get<F>(), sizeof(F) * nrowb, B, sizeof(F) * hldb, sizeof(F) * nrowb, ncolb, cudaMemcpyHostToDevice), "copy B"))
         return 3;
-    if (!s.beta_zero && failed(cudaMemcpy(dC.get<F>(), C, bytesC, cudaMemcpyHostToDevice), "copy C"))
+    if (!s.beta_zero && failed(cudaMemcpy2D(dC.get<F>(), sizeof(F) * s.m, C, sizeof(F) * hldc, sizeof(F) * s.m, s.n, cudaMemcpyHostToDevice), "copy C"))
         return 3;
 
-    if (s.nota && s.k > 0) {
+    if (s.nota && s.k > 0 && !lockstep && !small) {
         long total = s.k * s.n;
         long blocks = (total + BLOCK_1D - 1) / BLOCK_1D;
         if (blocks > 65535)
@@ -254,7 +268,18 @@ template <int PB> int gemm(const gemm_shape &s, const real_t<PB> &alpha, const r
     dim3 grid((unsigned)gx, (unsigned)gy), block(BLOCK_X, BLOCK_Y);
     cudaError_t launch_error=cudaSuccess;
     bool tiled=false;
-    if constexpr(PB==256 || PB==512 || PB==1024) {
+    if constexpr(PB==256 || PB==512 || PB==768) {
+        if(lockstep) {
+            if(s.nota) launch_error=(cudaError_t)value_gemm_device(make_value_gemm_job<PB,true,true,false>(s,alpha,beta,dA.get<F>(),dB.get<F>(),dAB.get<F>(),dC.get<F>()),0);
+            else launch_error=(cudaError_t)value_gemm_device(make_value_gemm_job<PB,false,true>(s,alpha,beta,dA.get<F>(),dB.get<F>(),dAB.get<F>(),dC.get<F>()),0);
+            tiled=true;
+        } else if(small) {
+            if(s.nota) launch_error=(cudaError_t)value_gemm_device(make_value_gemm_job<PB,true,false,false>(s,alpha,beta,dA.get<F>(),dB.get<F>(),dAB.get<F>(),dC.get<F>()),0);
+            else launch_error=(cudaError_t)value_gemm_device(make_value_gemm_job<PB,false>(s,alpha,beta,dA.get<F>(),dB.get<F>(),dAB.get<F>(),dC.get<F>()),0);
+            tiled=true;
+        }
+    }
+    if constexpr(PB==256 || PB==512 || PB==1024) if(!tiled) {
         // Shared loads alone do not improve 256/512-bit NoTrans; retain the
         // original kernel there and at the untuned precisions.
         if(s.k>0 && (PB==1024 || !s.nota)) {
@@ -271,9 +296,31 @@ template <int PB> int gemm(const gemm_shape &s, const real_t<PB> &alpha, const r
     }
     if (failed(launch_error, "gemm_kernel launch") || failed(cudaDeviceSynchronize(), "gemm_kernel"))
         return 4;
-    if (failed(cudaMemcpy(C, dC.get<F>(), bytesC, cudaMemcpyDeviceToHost), "copy C back"))
+    if (failed(cudaMemcpy2D(C, sizeof(F) * hldc, dC.get<F>(), sizeof(F) * s.m, sizeof(F) * s.m, s.n, cudaMemcpyDeviceToHost), "copy C back"))
         return 5;
     return 0;
+}
+
+// The columns of C (and op(B)) are cut over the devices
+// (../../common/cuda_multi_gpu.h, MPLAPACK_MPFR_CUDA_NGPUS); every element is
+// computed as on one device, so the result does not depend on their number.
+// A block keeps at least 128 columns, so small calls stay on one device.
+template <int PB> int gemm(const gemm_shape &s, const real_t<PB> &alpha, const real_t<PB> &beta, const real_t<PB> *A, const real_t<PB> *B, real_t<PB> *C)
+{
+    using namespace mplapack_cuda_multi;
+    const int ndev = devices(env_gpus("MPLAPACK_MPFR"));
+    if (ndev == 0) {
+        failed(cudaErrorNoDevice, "cudaGetDeviceCount");
+        return 1;
+    }
+    const int nb = s.k > 0 ? blocks(s.n, ndev, 128) : 1;
+    return for_column_blocks(s.n, nb, 16, [&](long j0, long j1) {
+        gemm_shape t = s;
+        t.n = j1 - j0;
+        t.ldb = s.notb ? s.k : t.n;
+        t.ldc = s.m;
+        return gemm_one<PB>(t, alpha, beta, A, s.lda, s.notb ? B + j0 * s.ldb : B + j0, s.ldb, C + j0 * s.ldc, s.ldc);
+    });
 }
 
 int device_count()

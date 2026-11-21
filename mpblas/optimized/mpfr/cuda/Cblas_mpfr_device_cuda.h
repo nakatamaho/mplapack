@@ -103,6 +103,14 @@ template<int PB> struct ctrsm_constants<job_Ctrsm<mpfr_fixed<PB>>> {
     }
 };
 
+// Fixed precisions on several devices (Cgemm: cgemm_tiled_run).  The runtime
+// precisions keep one device: their precision is a per-device variable.
+} // namespace mplapack_blas_dev
+template <int PB> struct mplapack_cuda_multi::prefix_of<mplapack_blas_dev::mpfr_fixed<PB> > {
+    static constexpr const char *value = "MPLAPACK_MPFR";
+};
+namespace mplapack_blas_dev {
+
 // Runtime precision (mpfr_rt<NL>): the precision of the call is set before
 // the launch (the variables are defined in Cblas_mpfr_device_cuda.cu).
 template <class Job> int cgpu_run_rt(Job job, const mplapack_blas::gpu_operand<typename Job::E> *ops, int nops, long prec)

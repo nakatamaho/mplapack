@@ -3,6 +3,7 @@
 #define MPLAPACK_MPFR_FACTOR_RT_BODY_CUH
 #include "Rfactor_device_body.cuh"
 #include "Rsolver_device_body.cuh"
+#include "Rfactor_multi_gpu.cuh"
 namespace mplapack_mpfr_cuda {
 namespace {
 struct factor_runtime_engine : l3_rt_engine {
@@ -52,9 +53,11 @@ RT_HD void runtime_dot_update(factor_job<factor_runtime_engine> &j,long i,long c
     j.e.put(j.c,i,col,v);
 }
 #ifndef MPLAPACK_MPFR_CUDA_HOST_EMULATION
-__global__ void runtime_dot_kernel(factor_job<factor_runtime_engine> j,long first,long cols,int *failed) {
-    const long i=threadIdx.x,c=2L*blockIdx.x+threadIdx.y,col=first+c;
-    const long tid=128L*blockIdx.x+threadIdx.x+64*threadIdx.y;
+__global__ void runtime_dot_kernel(factor_job<factor_runtime_engine> j,long first,long cols,int *failed,long skip) {
+    const long block=(long)blockIdx.x-skip/128;
+    if(block<0) return;
+    const long i=threadIdx.x,c=2L*block+threadIdx.y,col=first+c;
+    const long tid=128L*block+threadIdx.x+64*threadIdx.y;
     j.e.thread(tid);
     const bool mine=i<j.s.m && c<cols;
     if(mine) runtime_dot_init(j,i,col);
@@ -78,7 +81,7 @@ template<> void factor_context<factor_runtime_engine>::launch(factor_job<factor_
         for(long first=0;first<j.s.n && !error;first+=chunk) {
             const long cols=std::min(chunk,j.s.n-first);
 #ifndef MPLAPACK_MPFR_CUDA_HOST_EMULATION
-            runtime_dot_kernel<<<(unsigned)((cols+1)/2),dim3(64,2),0,stream()>>>(j,first,cols,failed.p);
+            runtime_dot_kernel<<<(unsigned)((cols+1)/2+skip/128),dim3(64,2),0,stream()>>>(j,first,cols,failed.p,skip);
             error=cudaGetLastError();
 #else
             j.e.thread(0);
@@ -109,6 +112,36 @@ struct factor_arena_guard {
     }
     ~factor_arena_guard() { mpc_cuda_arena_base=base; mpc_cuda_arena_slab=slab; mpc_cuda_arena_top=top; }
 };
+// Storage of the runtime engine for Rfactor_multi_gpu.cuh: nl limbs, an
+// exponent and a kind per element, in three arrays.
+struct factor_pack_store {
+    using M=factor_runtime_engine::M;
+    using host=rt_pack;
+    int nl;
+    struct buffer { device_pack p; };
+    int allocate(buffer &d,size_t n) const { return d.p.allocate(n,nl)?0:1; }
+    M view(const buffer &d,size_t offset,long ld) const {
+        return M{dpack{d.p.d.L+offset*nl,d.p.d.E+offset,d.p.d.K+offset},ld,nl};
+    }
+    int upload(buffer &d,size_t offset,host h,size_t hoffset,size_t n) const {
+        int e=cudaMemcpy(d.p.d.L+offset*nl,h.limbs+hoffset*nl,n*nl*sizeof(cu_mp_limb_t),cudaMemcpyHostToDevice);
+        if(!e) e=cudaMemcpy(d.p.d.E+offset,h.exp+hoffset,n*sizeof(long),cudaMemcpyHostToDevice);
+        if(!e) e=cudaMemcpy(d.p.d.K+offset,h.kind+hoffset,n,cudaMemcpyHostToDevice);
+        return e;
+    }
+    int download(host h,size_t hoffset,const buffer &d,size_t offset,size_t n) const {
+        int e=cudaMemcpy(h.limbs+hoffset*nl,d.p.d.L+offset*nl,n*nl*sizeof(cu_mp_limb_t),cudaMemcpyDeviceToHost);
+        if(!e) e=cudaMemcpy(h.exp+hoffset,d.p.d.E+offset,n*sizeof(long),cudaMemcpyDeviceToHost);
+        if(!e) e=cudaMemcpy(h.kind+hoffset,d.p.d.K+offset,n,cudaMemcpyDeviceToHost);
+        return e;
+    }
+    int peer(buffer &d,int dd,size_t doffset,const buffer &s,int sd,size_t soffset,size_t n,cudaStream_t stream) const {
+        int e=cudaMemcpyPeerAsync(d.p.d.L+doffset*nl,dd,s.p.d.L+soffset*nl,sd,n*nl*sizeof(cu_mp_limb_t),stream);
+        if(!e) e=cudaMemcpyPeerAsync(d.p.d.E+doffset,dd,s.p.d.E+soffset,sd,n*sizeof(long),stream);
+        if(!e) e=cudaMemcpyPeerAsync(d.p.d.K+doffset,dd,s.p.d.K+soffset,sd,n,stream);
+        return e;
+    }
+};
 #endif
 }
 int factor_runtime(const factor_shape &s,long prec,rt_pack &a,const rt_pack &safe,long *piv,long &info,factor_times &times) {
@@ -121,25 +154,6 @@ int factor_runtime(const factor_shape &s,long prec,rt_pack &a,const rt_pack &saf
     long exps[4]{}; signed char kinds[4]{};
     dpack mat{(cu_mp_limb_t*)a.limbs,a.exp,a.kind}, c{limbs.data(),exps,kinds};
     e.W=work.data();
-#else
-    int ndev=0;
-    if(cudaGetDeviceCount(&ndev)!=cudaSuccess || !ndev) return 1;
-    factor_stack_guard stack(factor_stack_bytes(prec,true));
-    if(stack.error) return stack.error;
-    const size_t pool=2*factor_pool,slab=16384*((prec+1023)/1024);
-    size_t available=0,total=0;
-    size_t extra=pool*(slab+sizeof(size_t)+8*nl*sizeof(cu_mp_limb_t))+1048576;
-    if(cudaMemGetInfo(&available,&total)!=cudaSuccess || available<extra ||
-       count>(available-extra)/(nl*sizeof(cu_mp_limb_t)+sizeof(long)+1)) return 1;
-    device_pack matrix,constants;
-    factor_buffer<cu_mp_limb_t> work;
-    factor_buffer<char> arena; factor_buffer<size_t> top;
-    if(!matrix.allocate(count,nl) || !constants.allocate(4,nl) ||
-       work.allocate(pool*8*nl) || arena.allocate(pool*slab) || top.allocate(pool)) return 1;
-    if(cudaMemset(top.p,0,pool*sizeof(size_t))!=cudaSuccess) return 1;
-    factor_arena_guard guard(arena.p,slab,top.p);
-    e.W=work.p;
-    dpack mat=matrix.d,c=constants.d;
 #endif
     // Four constants: one, minus one, sfmin, panel reciprocal. Initialize
     // with the same MPFR engine (no conversion of matrix elements here).
@@ -155,6 +169,59 @@ int factor_runtime(const factor_shape &s,long prec,rt_pack &a,const rt_pack &saf
 #endif
     hc.K[2]=safe.kind[0]; hc.E[2]=safe.exp[0]; hc.K[3]=CU_MPFR_ZERO_KIND;
     for(int i=0;i<nl;++i) hc.L[2*nl+i]=safe.limbs[i];
+#ifndef MPLAPACK_MPFR_CUDA_HOST_EMULATION
+    const size_t pool=2*factor_pool,slab=16384*((prec+1023)/1024);
+    // Several devices (MPLAPACK_MPFR_CUDA_NGPUS, Rfactor_multi_gpu.cuh) for
+    // the factorizations with min(m, n) >= MPLAPACK_MPFR_LAPACK_CUDA_MULTI_MIN
+    // (512): the same factors, pivots and info as on one.
+    if(!s.nrhs && s.factorize && s.nb>1 && s.nb<std::min(s.m,s.n)) {
+        using namespace mplapack_cuda_multi;
+        long multi_min=512;
+        if(const char *v=std::getenv("MPLAPACK_MPFR_LAPACK_CUDA_MULTI_MIN")) { char *end=nullptr; long x=std::strtol(v,&end,10); if(end!=v && !*end && x>=0) multi_min=x; }
+        const int G=(int)std::min<long>(devices(env_gpus("MPLAPACK_MPFR")),(s.n+s.nb-1)/s.nb);
+        if(G>1 && std::min(s.m,s.n)>=multi_min) {
+            factor_arena_guard restore_arena(mpc_cuda_arena_base,mpc_cuda_arena_slab,mpc_cuda_arena_top);
+            factor_pack_store st{nl};
+            rt_pack packed{(unsigned long long*)hc.L,hc.E,hc.K};
+            auto init=[&](int,E &engine,factor_pack_store::buffer &c,factor_buffer<char> &scratch) {
+                engine.prec=prec; engine.nl=nl;
+                int r=scratch.allocate(pool*8*nl*sizeof(cu_mp_limb_t));
+                if(!r) r=st.allocate(c,4);
+                if(!r) r=c.p.upload(packed,4,nl)?0:1;
+                engine.W=reinterpret_cast<cu_mp_limb_t*>(scratch.p);
+                return r;
+            };
+            auto install=[](char *b,size_t sl,size_t *t) { mpc_cuda_arena_base=b; mpc_cuda_arena_slab=sl; mpc_cuda_arena_top=t; };
+            auto start=Clock::now();
+            const int e=factor_multi<E>(G,s,st,a,piv,info,factor_stack_bytes(prec,true),slab,init,install);
+            if(e!=-1) {
+                if(e) return e;
+                times.upload=0; times.download=0;
+                times.factor=std::chrono::duration<double>(Clock::now()-start).count();
+                return 0;
+            }
+        }
+    }
+#endif
+#ifndef MPLAPACK_MPFR_CUDA_HOST_EMULATION
+    int ndev=0;
+    if(cudaGetDeviceCount(&ndev)!=cudaSuccess || !ndev) return 1;
+    factor_stack_guard stack(factor_stack_bytes(prec,true));
+    if(stack.error) return stack.error;
+    size_t available=0,total=0;
+    size_t extra=pool*(slab+sizeof(size_t)+8*nl*sizeof(cu_mp_limb_t))+1048576;
+    if(cudaMemGetInfo(&available,&total)!=cudaSuccess || available<extra ||
+       count>(available-extra)/(nl*sizeof(cu_mp_limb_t)+sizeof(long)+1)) return 1;
+    device_pack matrix,constants;
+    factor_buffer<cu_mp_limb_t> work;
+    factor_buffer<char> arena; factor_buffer<size_t> top;
+    if(!matrix.allocate(count,nl) || !constants.allocate(4,nl) ||
+       work.allocate(pool*8*nl) || arena.allocate(pool*slab) || top.allocate(pool)) return 1;
+    if(cudaMemset(top.p,0,pool*sizeof(size_t))!=cudaSuccess) return 1;
+    factor_arena_guard guard(arena.p,slab,top.p);
+    e.W=work.p;
+    dpack mat=matrix.d,c=constants.d;
+#endif
 #ifdef MPLAPACK_MPFR_CUDA_HOST_EMULATION
     std::copy_n(hc.L,4*nl,c.L); std::copy_n(hc.E,4,c.E); std::copy_n(hc.K,4,c.K);
 #else

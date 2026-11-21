@@ -37,6 +37,10 @@
 #include "../../common/Rblas_dev_types.h"
 #include "../../common/Cblas_cuda_common.cuh"
 #include "../../common/Rblas1_cuda_common.cuh"
+// Several devices for Rgemm, Cgemm and the Level 3 BLAS (cuda_multi_gpu.h).
+template <> struct mplapack_cuda_multi::prefix_of<mplapack_gemm::qd_ops> {
+    static constexpr const char *value = "MPLAPACK_QD";
+};
 namespace mplapack_blas1 {
 using OPS=mplapack_gemm::qd_ops;
 using DR=mplapack_blas_dev::cgpu_types<OPS>::DR;
@@ -55,10 +59,10 @@ template int run_bf<OPS,true>(const shape &,const DC *,DC *);
 }
 
 namespace mplapack_gemm {
-template int gemm_cuda<qd_ops>(const shape &, int, long, const ozaki_plan *, const gpu_scalars<qd_ops::F> &, const qd_ops::F *, const qd_ops::F *, qd_ops::F *);
-template int gemm_cuda<sloppy_ops<qd_ops, true, false> >(const shape &, int, long, const ozaki_plan *, const gpu_scalars<qd_ops::F> &, const qd_ops::F *, const qd_ops::F *, qd_ops::F *);
-template int gemm_cuda<sloppy_ops<qd_ops, false, true> >(const shape &, int, long, const ozaki_plan *, const gpu_scalars<qd_ops::F> &, const qd_ops::F *, const qd_ops::F *, qd_ops::F *);
-template int gemm_cuda<sloppy_ops<qd_ops, true, true> >(const shape &, int, long, const ozaki_plan *, const gpu_scalars<qd_ops::F> &, const qd_ops::F *, const qd_ops::F *, qd_ops::F *);
+template int gemm_cuda<qd_ops>(const shape &, int, long, const ozaki_plan *, const gpu_scalars<qd_ops::F> &, const qd_ops::F *, const qd_ops::F *, qd_ops::F *, int);
+template int gemm_cuda<sloppy_ops<qd_ops, true, false> >(const shape &, int, long, const ozaki_plan *, const gpu_scalars<qd_ops::F> &, const qd_ops::F *, const qd_ops::F *, qd_ops::F *, int);
+template int gemm_cuda<sloppy_ops<qd_ops, false, true> >(const shape &, int, long, const ozaki_plan *, const gpu_scalars<qd_ops::F> &, const qd_ops::F *, const qd_ops::F *, qd_ops::F *, int);
+template int gemm_cuda<sloppy_ops<qd_ops, true, true> >(const shape &, int, long, const ozaki_plan *, const gpu_scalars<qd_ops::F> &, const qd_ops::F *, const qd_ops::F *, qd_ops::F *, int);
 template int gpu_device_count<qd_ops>();
 } // namespace mplapack_gemm
 
