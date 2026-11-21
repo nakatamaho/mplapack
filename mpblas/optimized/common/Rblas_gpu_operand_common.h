@@ -85,6 +85,18 @@ template <class F> inline void gpu_operand_rows(const gpu_operand<F> &o, long j,
         i1 = i0;
 }
 
+// Columns [j0, j1) (rows when !cols) of a dense operand (gpu_operand_partable).
+template <class F> inline gpu_operand<F> gpu_operand_part(gpu_operand<F> o, bool cols, long j0, long j1)
+{
+    if (cols)
+        o.host += j0 * o.ld, o.cols = j1 - j0;
+    else
+        o.host += j0, o.rows = j1 - j0;
+    o.count = o.rows <= 0 || o.cols <= 0 ? 0 : o.ld * (o.cols - 1) + o.rows;
+    return o;
+}
+template <class F> inline bool gpu_operand_partable(const gpu_operand<F> &o) { return o.region == REGION_ALL && o.lo == 0 && o.ld >= o.rows && o.rows > 0 && o.cols > 0; }
+
 // True when the referenced elements are the whole span (one block copy).
 template <class F> inline bool gpu_operand_dense(const gpu_operand<F> &o)
 {

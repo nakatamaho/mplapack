@@ -46,6 +46,7 @@
 #include "Rblas_lanes_common.h"
 #include "Rtrsm_team_common.h"
 #include "Rblas_gpu_operand_common.h"
+#include "cuda_multi_gpu.h"
 
 #if defined(__CUDACC__)
 #include <cuda_runtime.h>
@@ -291,7 +292,7 @@ template <class F> class gpu_span {
     gpu_span &operator=(const gpu_span &);
 };
 
-template <class Ops> int blas_gpu(const blas_shape &s, const typename Ops::F &alpha, const typename Ops::F &beta, const gpu_operand<typename Ops::F> &a, const gpu_operand<typename Ops::F> &b, const gpu_operand<typename Ops::F> &c)
+template <class Ops> static int blas_gpu_one(const blas_shape &s, const typename Ops::F &alpha, const typename Ops::F &beta, const gpu_operand<typename Ops::F> &a, const gpu_operand<typename Ops::F> &b, const gpu_operand<typename Ops::F> &c)
 {
     typedef typename Ops::F F;
     gpu_operand<F> sc[2];
@@ -319,6 +320,30 @@ template <class Ops> int blas_gpu(const blas_shape &s, const typename Ops::F &al
     if (e == cudaSuccess)
         e = da.down();
     return (int)e;
+}
+
+// Rsymm, Rtrmm, Rtrsm on several devices (cuda_multi_gpu.h): every column
+// (left side) or row (right side) of the result is its own lane, computed
+// as on one device; B and C are cut into one block per device, A is whole.
+template <class Ops> int blas_gpu(const blas_shape &s, const typename Ops::F &alpha, const typename Ops::F &beta, const gpu_operand<typename Ops::F> &a, const gpu_operand<typename Ops::F> &b, const gpu_operand<typename Ops::F> &c)
+{
+    if (const char *prefix = mplapack_cuda_multi::prefix_of<Ops>::value) {
+        using namespace mplapack_cuda_multi;
+        const bool l3 = s.op == L3_SYMM || s.op == L3_TRMM || s.op == L3_TRSM;
+        const bool has_b = b.host && b.rows > 0 && b.cols > 0;
+        if (l3 && gpu_operand_partable(c) && (!has_b || gpu_operand_partable(b))) {
+            const bool cols = s.left != 0;
+            const long len = cols ? s.n : s.m;
+            const int nb = blocks(len, devices(env_gpus(prefix)), 128);
+            if (nb > 1)
+                return for_column_blocks(len, nb, 16, [&](long j0, long j1) {
+                    blas_shape t = s;
+                    (cols ? t.n : t.m) = j1 - j0;
+                    return blas_gpu_one<Ops>(t, alpha, beta, a, has_b ? gpu_operand_part(b, cols, j0, j1) : b, gpu_operand_part(c, cols, j0, j1));
+                });
+        }
+    }
+    return blas_gpu_one<Ops>(s, alpha, beta, a, b, c);
 }
 
 // No allocation or operand transfers. Scalars and matrices are device pointers.

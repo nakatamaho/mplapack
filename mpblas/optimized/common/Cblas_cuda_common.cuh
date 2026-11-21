@@ -439,25 +439,6 @@ template <class Ops> int cgemm_tiled_run(job_Cgemm<Ops> job, const gpu_operand<t
 #endif
 }
 
-// Several devices (../common/cuda_multi_gpu.h) for the element types whose
-// libraries specialize this with their environment prefix; nullptr keeps
-// one device.
-template <class Ops> struct cgpu_multi {
-    static constexpr const char *prefix = nullptr;
-};
-
-// Columns [j0, j1) (rows when !cols) of a dense host operand.
-template <class F> inline gpu_operand<F> gpu_operand_part(gpu_operand<F> o, bool cols, long j0, long j1)
-{
-    if (cols)
-        o.host += j0 * o.ld, o.cols = j1 - j0;
-    else
-        o.host += j0, o.rows = j1 - j0;
-    o.count = o.rows <= 0 || o.cols <= 0 ? 0 : o.ld * (o.cols - 1) + o.rows;
-    return o;
-}
-template <class F> inline bool gpu_operand_partable(const gpu_operand<F> &o) { return o.region == mplapack_blas::REGION_ALL && o.lo == 0 && o.ld >= o.rows; }
-
 template <class Job> static int cgpu_run_one(Job job, const mplapack_blas::gpu_operand<typename Job::E> *ops, int nops)
 {
     if constexpr (cgpu_is_cgemm<Job>::value) {
@@ -486,15 +467,15 @@ template <class Job> int cgpu_run(Job job, const mplapack_blas::gpu_operand<type
     if constexpr (cgpu_cgemm_ops<Job>::value) {
         {
             typedef typename Job::E E;
-            if (const char *prefix = cgpu_multi<typename cgpu_cgemm_ops<Job>::type>::prefix) {
+            if (const char *prefix = mplapack_cuda_multi::prefix_of<typename cgpu_cgemm_ops<Job>::type>::value) {
                 using namespace mplapack_cuda_multi;
-                const int nb = nops == 3 && job.k > 0 && gpu_operand_partable(ops[1]) && gpu_operand_partable(ops[2]) ? blocks(job.n, devices(env_gpus(prefix)), 128) : 1;
+                const int nb = nops == 3 && job.k > 0 && mplapack_blas::gpu_operand_partable(ops[1]) && mplapack_blas::gpu_operand_partable(ops[2]) ? blocks(job.n, devices(env_gpus(prefix)), 128) : 1;
                 if (nb > 1) {
                     const bool notb = lsame(job.tb, "N");
                     return for_column_blocks(job.n, nb, CG_TILE, [&](long j0, long j1) {
                         Job t = job;
                         t.n = j1 - j0;
-                        const gpu_operand<E> o[3] = {ops[0], gpu_operand_part(ops[1], notb, j0, j1), gpu_operand_part(ops[2], true, j0, j1)};
+                        const gpu_operand<E> o[3] = {ops[0], mplapack_blas::gpu_operand_part(ops[1], notb, j0, j1), mplapack_blas::gpu_operand_part(ops[2], true, j0, j1)};
                         return cgpu_run_one(t, o, 3);
                     });
                 }

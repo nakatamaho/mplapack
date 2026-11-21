@@ -49,6 +49,12 @@
 
 namespace mplapack_cuda_multi {
 
+// The environment prefix of an element type whose library may use several
+// devices (specialized by the libraries); nullptr keeps one device.
+template <class Ops> struct prefix_of {
+    static constexpr const char *value = nullptr;
+};
+
 // The <prefix>_CUDA_NGPUS limit, 0 when unset or invalid (all devices).
 inline int env_gpus(const char *prefix) {
     const char *v = std::getenv((std::string(prefix) + "_CUDA_NGPUS").c_str());

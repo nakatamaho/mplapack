@@ -37,6 +37,10 @@
 #include "../../common/Rblas_dev_types.h"
 #include "../../common/Cblas_cuda_common.cuh"
 #include "../../common/Rblas1_cuda_common.cuh"
+// Several devices for Rgemm, Cgemm and the Level 3 BLAS (cuda_multi_gpu.h).
+template <> struct mplapack_cuda_multi::prefix_of<mplapack_gemm::dd_ops> {
+    static constexpr const char *value = "MPLAPACK_DD";
+};
 namespace mplapack_blas1 {
 using OPS=mplapack_gemm::dd_ops;
 using DR=mplapack_blas_dev::cgpu_types<OPS>::DR;
@@ -68,9 +72,6 @@ template int blas_gpu<mplapack_gemm::dd_ops>(const blas_shape &, const mplapack_
 
 namespace mplapack_blas_dev {
 typedef mplapack_gemm::dd_ops OPS;
-template <> struct cgpu_multi<OPS> {
-    static constexpr const char *prefix = "MPLAPACK_DD";
-};
 template int cgpu_run<job_Cgemm<OPS> >(job_Cgemm<OPS>, const mplapack_blas::gpu_operand<job_Cgemm<OPS>::E> *, int);
 template int cgpu_run<job_Csymm<OPS> >(job_Csymm<OPS>, const mplapack_blas::gpu_operand<job_Csymm<OPS>::E> *, int);
 template int cgpu_run<job_Chemm<OPS> >(job_Chemm<OPS>, const mplapack_blas::gpu_operand<job_Chemm<OPS>::E> *, int);
