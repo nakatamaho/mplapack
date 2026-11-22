@@ -211,6 +211,7 @@ Environment variables:
 | `MPLAPACK_MPFR_CUDA_RUNTIME=0` | no GPU for precisions other than 256/512/768/1024/2048 |
 | `MPLAPACK_MPFR_CUDA_FORCE_RUNTIME=1` | use the `cu_mpfr` kernels for 256/512/768/1024/2048 bits too |
 | `MPLAPACK_MPFR_CUDA_WINOGRAD_CUTOFF=N` | Winograd/Strassen for the fixed precisions when `min(m,n,k) > N` (default 0: off) |
+| `MPLAPACK_MPFR_CUDA_WINOGRAD_MULTI_MIN=N` | Winograd on several GPUs only when `min(m,n,k) >= N` (default 384; one GPU below) |
 | `MPLAPACK_MPFR_CUDA_RT_BLOCKS`, `MPLAPACK_MPFR_CUDA_RT_THREADS` | thread pool of the `cu_mpfr` kernels (default 256 x 32) |
 | `MPLAPACK_MPFR_CUDA_VERBOSE=1` | print CUDA errors that cause a CPU fallback |
 | `MPLAPACK_MPFR_CUDA_STACK_RESTORE=1` | restore the original device stack limit after each call that raised it; read per call, only exact `1` enables restoration; unset, `0`, or any other value retain the raised limit (default) |

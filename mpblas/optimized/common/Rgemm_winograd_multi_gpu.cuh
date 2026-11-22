@@ -40,7 +40,8 @@
  * B[d]: op(A) (m x k, ld m) and op(B) (k x n, ld k) on device d; C (m x n,
  * ld m) on device 0.  rec(backend, m, n, k, A, lda, B, ldb, C, ldc) runs the
  * one-device recursion with the caller's cutoff.  Only for m, n, k whose
- * even parts exceed the cutoff (winograd_multi_applies).  Returns 0 or a
+ * even parts exceed the cutoff and that reach WINOGRAD_MULTI_MIN
+ * (winograd_multi_applies).  Returns 0 or a
  * CUDA error code; the backends' failed() is checked by the caller as well.
  */
 
@@ -48,13 +49,29 @@
 #define _MPLAPACK_RGEMM_WINOGRAD_MULTI_GPU_CUH_
 
 #include <cuda_runtime.h>
+#include <cstdlib>
+#include <string>
 #include <thread>
 #include <vector>
 
 namespace mplapack_gemm {
 
-inline bool winograd_multi_applies(long m, long n, long k, long cutoff) {
-    return cutoff > 0 && (m & ~1L) > cutoff && (n & ~1L) > cutoff && (k & ~1L) > cutoff;
+// Smallest m, n and k for several devices: below it one is faster (V100,
+// 2 devices: slower up to about 300).  <prefix>_CUDA_WINOGRAD_MULTI_MIN
+// overrides it (0: no limit).
+const long WINOGRAD_MULTI_MIN = 384;
+inline long winograd_multi_min(const char *prefix) {
+    if (prefix) {
+        const char *v = std::getenv((std::string(prefix) + "_CUDA_WINOGRAD_MULTI_MIN").c_str());
+        char *end = nullptr;
+        const long x = v ? std::strtol(v, &end, 10) : -1;
+        if (v && end != v && !*end && x >= 0)
+            return x;
+    }
+    return WINOGRAD_MULTI_MIN;
+}
+inline bool winograd_multi_applies(long m, long n, long k, long cutoff, long min_mnk) {
+    return cutoff > 0 && (m & ~1L) > cutoff && (n & ~1L) > cutoff && (k & ~1L) > cutoff && m >= min_mnk && n >= min_mnk && k >= min_mnk;
 }
 
 template <class F, class Backend, class Rec> int winograd_multi(int G, Backend *const *be, long m, long n, long k, const F *const *A, const F *const *B, F *C, Rec rec) {

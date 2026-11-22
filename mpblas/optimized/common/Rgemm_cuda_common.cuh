@@ -568,7 +568,7 @@ template <class Ops> int gemm_cuda(const shape &s, int algo, long cutoff, const 
     using namespace mplapack_cuda_multi;
     if (algo == GPU_WINOGRAD) {
         const int G = devices(max_gpus) < 7 ? devices(max_gpus) : 7;
-        if (G > 1 && winograd_multi_applies(s.m, s.n, s.k, cutoff))
+        if (G > 1 && winograd_multi_applies(s.m, s.n, s.k, cutoff, winograd_multi_min(prefix_of<Ops>::value)))
             return gemm_winograd_multi<Ops>(s, cutoff, sc, A, B, C, G);
     }
     const bool split = (algo == GPU_TILED || algo == GPU_NAIVE || algo == GPU_OZAKI) && s.k > 0;

@@ -355,6 +355,7 @@ GPU run fails, uses the CPU code above.
 | `<P>_CUDA_MIN_MNK=N` | smallest `m*n*k` sent to the GPU (default 32768) |
 | `<P>_CUDA_KERNEL=naive` | one thread per element, no shared memory (default: `tiled`, 16 x 16 shared-memory tiles) |
 | `<P>_CUDA_WINOGRAD_CUTOFF=N` | Winograd when `min(m,n,k) > N`, temporaries on the GPU, tiled leaves |
+| `<P>_CUDA_WINOGRAD_MULTI_MIN=N` | Winograd on several GPUs only when `min(m,n,k) >= N` (default 384; one GPU below) |
 | `<P>_CUDA_OZAKI=1` | Ozaki: slices made on the host, products by cuBLAS DGEMM, sums on the GPU |
 | `<P>_CUDA_OZAKI_SLICES=S` | number of slices |
 | `<P>_CUDA_SLOPPY_MUL=1` | sloppy multiplication: dd the SLOPPY_MUL `dd_mul` of the former kernels (fma, no renormalization), td the libQD3 multiplication without `QD_BF_MUL`, qd `qd_real::sloppy_mul` |

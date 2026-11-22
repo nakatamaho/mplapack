@@ -265,7 +265,7 @@ template <int PB> int gemm_winograd(const gemm_shape &s, const real_t<PB> &alpha
         int G = devices(env_gpus("MPLAPACK_MPFR"));
         if (G > 7)
             G = 7;
-        if (G > 1 && mplapack_gemm::winograd_multi_applies(s.m, s.n, s.k, cutoff))
+        if (G > 1 && mplapack_gemm::winograd_multi_applies(s.m, s.n, s.k, cutoff, mplapack_gemm::winograd_multi_min("MPLAPACK_MPFR")))
             return gemm_winograd_multi<PB>(s, alpha, beta, A, B, C, cutoff, G);
     }
     const size_t bytesA = sizeof(F) * (size_t)s.m * s.k, bytesB = sizeof(F) * (size_t)s.k * s.n, bytesC = sizeof(F) * (size_t)s.m * s.n;
