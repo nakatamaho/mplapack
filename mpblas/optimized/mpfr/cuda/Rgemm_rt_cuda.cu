@@ -89,6 +89,8 @@ typedef mpfr_exp_t cu_mpfr_exp_t;
 #else
 #include <cuda_runtime.h>
 #include <mpc_cuda.cuh>
+#include "mpc_arena_multi.cuh"
+#include "../../common/cuda_multi_gpu.h"
 #define RT_HD __host__ __device__
 #endif
 
@@ -297,19 +299,25 @@ int run(const gemm_shape &s, long prec, int nl, const dpack &alpha, const dpack 
 #endif // !MPLAPACK_MPFR_FACTOR_RT_ONLY
 #else
 #ifndef MPLAPACK_MPFR_FACTOR_RT_ONLY
-__global__ void alpha_opB_kernel(gemm_shape s, long prec, int nl, dpack alpha, dpack B, dpack AB, cu_mp_limb_t *work)
+// skip: the physical threads before the first working one (several
+// devices sharing the arena, mpc_arena_multi.cuh); they return at once.
+__global__ void alpha_opB_kernel(gemm_shape s, long prec, int nl, dpack alpha, dpack B, dpack AB, cu_mp_limb_t *work, long skip)
 {
-    const long tid = (long)blockIdx.x * blockDim.x + threadIdx.x;
-    const long stride = (long)gridDim.x * blockDim.x;
+    const long tid = (long)blockIdx.x * blockDim.x + threadIdx.x - skip;
+    const long stride = (long)gridDim.x * blockDim.x - skip;
+    if (tid < 0)
+        return;
     cu_mp_limb_t *W = work + (size_t)tid * 3 * nl;
     for (long e = tid; e < s.k * s.n; e += stride)
         rt_alpha_opB(s, prec, nl, alpha, B, AB, e % s.k, e / s.k, W);
 }
 
-__global__ void gemm_kernel(gemm_shape s, long prec, int nl, dpack alpha, dpack beta, dpack A, dpack B, dpack AB, dpack C, cu_mp_limb_t *work)
+__global__ void gemm_kernel(gemm_shape s, long prec, int nl, dpack alpha, dpack beta, dpack A, dpack B, dpack AB, dpack C, cu_mp_limb_t *work, long skip)
 {
-    const long tid = (long)blockIdx.x * blockDim.x + threadIdx.x;
-    const long stride = (long)gridDim.x * blockDim.x;
+    const long tid = (long)blockIdx.x * blockDim.x + threadIdx.x - skip;
+    const long stride = (long)gridDim.x * blockDim.x - skip;
+    if (tid < 0)
+        return;
     cu_mp_limb_t *W = work + (size_t)tid * 3 * nl;
     for (long e = tid; e < s.m * s.n; e += stride)
         rt_element(s, prec, nl, alpha, beta, A, B, AB, C, e % s.m, e / s.m, W);
@@ -405,6 +413,40 @@ struct limit_guard {
 } // namespace
 
 #ifndef MPLAPACK_MPFR_FACTOR_RT_ONLY
+#if !defined(MPLAPACK_MPFR_CUDA_HOST_EMULATION)
+namespace {
+// gemm_rt on the current device with the arena installed; countC elements
+// of C (ld s.ldc).  skip: as for gemm_kernel.
+int gemm_rt_one(const gemm_shape &s, long prec, int nl, const rt_pack &alpha, const rt_pack &beta, const rt_pack &A, size_t countA, const rt_pack &B, size_t countB, rt_pack &C, size_t countC, long blocks, long threads, long skip)
+{
+    const size_t pool = (size_t)blocks * threads;
+    const size_t countAB = s.nota ? (size_t)s.k * s.n : 0;
+    limit_guard heap(cudaLimitMallocHeapSize, (size_t)64 * 1024 * 1024);
+    device_pack dal, dbe, dA, dB, dC, dAB;
+    device_mem work;
+    if (!dal.allocate(1, nl) || !dbe.allocate(1, nl) || !dA.allocate(countA, nl) || !dB.allocate(countB, nl) || !dC.allocate(countC, nl) || !dAB.allocate(countAB, nl))
+        return 2;
+    if (failed(cudaMalloc(&work.p, pool * 3 * nl * sizeof(cu_mp_limb_t)), "cudaMalloc workspace"))
+        return 2;
+    if (!dal.upload(alpha, 1, nl) || !dbe.upload(beta, 1, nl) || !dA.upload(A, countA, nl) || !dB.upload(B, countB, nl) || (!s.beta_zero && !dC.upload(C, countC, nl)))
+        return 3;
+    cu_mp_limb_t *W = static_cast<cu_mp_limb_t *>(work.p);
+    const unsigned grid = (unsigned)(blocks + skip / threads);
+    if (s.nota && s.k > 0) {
+        alpha_opB_kernel<<<grid, (unsigned)threads>>>(s, prec, nl, dal.d, dB.d, dAB.d, W, skip);
+        if (failed(cudaGetLastError(), "alpha_opB_kernel launch") || failed(cudaDeviceSynchronize(), "alpha_opB_kernel"))
+            return 4;
+    }
+    gemm_kernel<<<grid, (unsigned)threads>>>(s, prec, nl, dal.d, dbe.d, dA.d, dB.d, dAB.d, dC.d, W, skip);
+    if (failed(cudaGetLastError(), "gemm_kernel launch") || failed(cudaDeviceSynchronize(), "gemm_kernel"))
+        return 4;
+    if (!dC.download(C, countC, nl))
+        return 5;
+    return 0;
+}
+} // namespace
+#endif
+
 int gemm_rt(const gemm_shape &s, long prec, const rt_pack &alpha, const rt_pack &beta, const rt_pack &A, size_t countA, const rt_pack &B, size_t countB, rt_pack &C)
 {
     const int nl = (int)((prec + 63) / 64);
@@ -421,6 +463,7 @@ int gemm_rt(const gemm_shape &s, long prec, const rt_pack &alpha, const rt_pack 
     dpack dC = {(cu_mp_limb_t *)C.limbs, C.exp, C.kind}, dAB = {abL.data(), abE.data(), abK.data()};
     return run(s, prec, nl, dal, dbe, dA, dB, dAB, dC);
 #else
+    (void)countAB;
     int ndev = 0;
     if (failed(cudaGetDeviceCount(&ndev), "cudaGetDeviceCount") || ndev == 0)
         return 1;
@@ -436,46 +479,65 @@ int gemm_rt(const gemm_shape &s, long prec, const rt_pack &alpha, const rt_pack 
     // then computes on the CPU; this device entry never falls back itself.
     mpfr_stack_guard stack(64 * 1024);
     if (stack.error) return stack.error;
-    limit_guard heap(cudaLimitMallocHeapSize, (size_t)64 * 1024 * 1024);
 
-    device_pack dal, dbe, dA, dB, dC, dAB;
-    device_mem arena, top, work;
-    if (!dal.allocate(1, nl) || !dbe.allocate(1, nl) || !dA.allocate(countA, nl) || !dB.allocate(countB, nl) || !dC.allocate(countC, nl) || !dAB.allocate(countAB, nl))
-        return 2;
-    if (failed(cudaMalloc(&arena.p, pool * slab), "cudaMalloc arena") || failed(cudaMalloc(&top.p, pool * sizeof(size_t)), "cudaMalloc arena tops") || failed(cudaMalloc(&work.p, pool * 3 * nl * sizeof(cu_mp_limb_t)), "cudaMalloc workspace"))
+    // Several devices (MPLAPACK_MPFR_CUDA_NGPUS): the columns of C and op(B)
+    // cut over them, at least 128 per device, every element computed as on
+    // one; the arena is shared (mpc_arena_multi.cuh).
+    {
+        using namespace mplapack_cuda_multi;
+        const int G = s.k > 0 ? mplapack_cuda_multi::blocks(s.n, devices(env_gpus("MPLAPACK_MPFR")), 128) : 1;
+        if (G > 1) {
+            device_restore restore;
+            mpc_arena_multi shared;
+            int e = shared.allocate(G, pool, slab);
+            if (e > 0)
+                return 2;
+            if (e == 0) {
+                char *saved_base = mpc_cuda_arena_base;
+                size_t saved_slab = mpc_cuda_arena_slab;
+                size_t *saved_top = mpc_cuda_arena_top;
+                mpc_cuda_arena_base = shared.base;
+                mpc_cuda_arena_slab = slab;
+                mpc_cuda_arena_top = shared.top;
+                const int rc = for_column_blocks(s.n, G, 1, [&](long j0, long j1) {
+                    int d = 0;
+                    if (failed(cudaGetDevice(&d), "cudaGetDevice"))
+                        return 1;
+                    gemm_shape t = s;
+                    t.n = j1 - j0;
+                    t.ldc = s.m;
+                    // op(B) column j0 onward: B + j0 ldb (B) or B + j0 (B^T),
+                    // through its last element; C: columns j0 .. j1 - 1.
+                    const size_t offB = s.notb ? (size_t)j0 * s.ldb : (size_t)j0;
+                    const size_t cntB = s.notb ? (size_t)s.ldb * (t.n - 1) + s.k : (size_t)s.ldb * (s.k - 1) + t.n;
+                    const size_t offC = (size_t)j0 * s.ldc;
+                    const rt_pack b = {B.limbs + offB * nl, B.exp + offB, B.kind + offB};
+                    rt_pack c = {C.limbs + offC * nl, C.exp + offC, C.kind + offC};
+                    return gemm_rt_one(t, prec, nl, alpha, beta, A, countA, b, cntB, c, (size_t)s.m * t.n, blocks, threads, (long)d * (long)pool);
+                });
+                mpc_cuda_arena_base = saved_base;
+                mpc_cuda_arena_slab = saved_slab;
+                mpc_cuda_arena_top = saved_top;
+                return rc;
+            }
+        }
+    }
+    device_mem arena, top;
+    if (failed(cudaMalloc(&arena.p, pool * slab), "cudaMalloc arena") || failed(cudaMalloc(&top.p, pool * sizeof(size_t)), "cudaMalloc arena tops"))
         return 2;
     if (failed(cudaMemset(top.p, 0, pool * sizeof(size_t)), "clear arena tops"))
         return 2;
-    if (!dal.upload(alpha, 1, nl) || !dbe.upload(beta, 1, nl) || !dA.upload(A, countA, nl) || !dB.upload(B, countB, nl) || (!s.beta_zero && !dC.upload(C, countC, nl)))
-        return 3;
-
     char *saved_base = mpc_cuda_arena_base;
     size_t saved_slab = mpc_cuda_arena_slab;
     size_t *saved_top = mpc_cuda_arena_top;
     mpc_cuda_arena_base = static_cast<char *>(arena.p);
     mpc_cuda_arena_slab = slab;
     mpc_cuda_arena_top = static_cast<size_t *>(top.p);
-
-    cu_mp_limb_t *W = static_cast<cu_mp_limb_t *>(work.p);
-    int rc = 0;
-    if (s.nota && s.k > 0) {
-        alpha_opB_kernel<<<(unsigned)blocks, (unsigned)threads>>>(s, prec, nl, dal.d, dB.d, dAB.d, W);
-        if (failed(cudaGetLastError(), "alpha_opB_kernel launch") || failed(cudaDeviceSynchronize(), "alpha_opB_kernel"))
-            rc = 4;
-    }
-    if (rc == 0) {
-        gemm_kernel<<<(unsigned)blocks, (unsigned)threads>>>(s, prec, nl, dal.d, dbe.d, dA.d, dB.d, dAB.d, dC.d, W);
-        if (failed(cudaGetLastError(), "gemm_kernel launch") || failed(cudaDeviceSynchronize(), "gemm_kernel"))
-            rc = 4;
-    }
+    const int rc = gemm_rt_one(s, prec, nl, alpha, beta, A, countA, B, countB, C, countC, blocks, threads, 0);
     mpc_cuda_arena_base = saved_base;
     mpc_cuda_arena_slab = saved_slab;
     mpc_cuda_arena_top = saved_top;
-    if (rc != 0)
-        return rc;
-    if (!dC.download(C, countC, nl))
-        return 5;
-    return 0;
+    return rc;
 #endif
 }
 

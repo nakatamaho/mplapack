@@ -72,7 +72,7 @@ common/blas_dev/blas_dev.h \
 common/test/Cblas_gpu_test.cpp \
 common/blas/Rgemmtr_columns.h common/blas/Csyrk_columns.h common/blas/Cherk_columns.h common/blas/Csyr2k_columns.h common/blas/Cher2k_columns.h common/blas/Cgemmtr_columns.h common/blas/Cher_columns.h common/blas/Cher2_columns.h \
 common/Rgemm_blocked_common.h common/Rgemm_cpu_common.h \
-common/Rgemm_cuda_bridge_common.h common/Rgemm_cuda_common.cuh common/cuda_multi_gpu.h \
+common/Rgemm_cuda_bridge_common.h common/Rgemm_cuda_common.cuh common/cuda_multi_gpu.h common/Rgemm_winograd_multi_gpu.cuh \
 common/Rgemm_cuda_ops_common.h common/Rgemm_ozaki_common.h \
 common/Rgemm_qd_ops_common.h common/Rgemm_simd_common.h \
 common/Rblas_block_common.h common/Rgemm_winograd_common.h \

@@ -40,6 +40,9 @@
 #include "Rgemm_tiled_cuda.h"
 #include "Rgemm_winograd_cuda.h"
 #include "../../common/cuda_multi_gpu.h"
+#include "../../common/Rgemm_winograd_multi_gpu.cuh"
+#include <memory>
+#include <vector>
 
 namespace mplapack_mpfr_cuda {
 
@@ -147,10 +150,13 @@ template <int PB> class winograd_device_backend {
   public:
     typedef real_t<PB> F;
     winograd_device_backend() : failed_(false) {}
+    // Stream-ordered allocations from the device's pool: the recursion
+    // allocates at every node, and cudaMalloc/cudaFree would serialize the
+    // devices of a multi-device call.
     F *alloc(size_t count)
     {
         void *p = NULL;
-        if (failed_ || mplapack_mpfr_cuda::failed(cudaMalloc(&p, sizeof(F) * (count ? count : 1)), "cudaMalloc (Winograd)")) {
+        if (failed_ || mplapack_mpfr_cuda::failed(cudaMallocAsync(&p, sizeof(F) * (count ? count : 1), 0), "cudaMallocAsync (Winograd)")) {
             failed_ = true;
             return NULL;
         }
@@ -159,7 +165,7 @@ template <int PB> class winograd_device_backend {
     void release(F *p)
     {
         if (p)
-            cudaFree(p);
+            cudaFreeAsync(p, 0);
     }
     bool failed() const { return failed_; }
     void zero(long r, long c, F *X, long ldx) { elementwise(WG_ZERO, r, c, X, ldx, NULL, 0, NULL, 0); }
@@ -191,12 +197,77 @@ template <int PB> class winograd_device_backend {
 
 } // namespace
 
+// Winograd with the seven top-level products over G devices
+// (../../common/Rgemm_winograd_multi_gpu.cuh); the same result as on one.
+template <int PB> static int gemm_winograd_multi(const gemm_shape &s, const real_t<PB> &alpha, const real_t<PB> &beta, const real_t<PB> *A, const real_t<PB> *B, real_t<PB> *C, long cutoff, int G)
+{
+    typedef real_t<PB> F;
+    typedef winograd_device_backend<PB> Backend;
+    using namespace mplapack_cuda_multi;
+    device_restore restore;
+    const size_t bytesA = sizeof(F) * (size_t)s.m * s.k, bytesB = sizeof(F) * (size_t)s.k * s.n, bytesC = sizeof(F) * (size_t)s.m * s.n;
+    enable_peer_access(G);
+    std::vector<std::unique_ptr<device_buffer> > dA((size_t)G), dB((size_t)G);
+    std::vector<std::unique_ptr<Backend> > be((size_t)G);
+    std::vector<Backend *> bp((size_t)G);
+    std::vector<const F *> pA((size_t)G), pB((size_t)G);
+    device_buffer dC, dP;
+    int rc = 0;
+    for (int d = 0; d < G && !rc; d++) {
+        if (failed(cudaSetDevice(d), "cudaSetDevice")) {
+            rc = 1;
+            break;
+        }
+        dA[d].reset(new device_buffer);
+        dB[d].reset(new device_buffer);
+        be[d].reset(new Backend);
+        bp[d] = be[d].get();
+        if (failed(dA[d]->allocate(bytesA), "cudaMalloc A") || failed(dB[d]->allocate(bytesB), "cudaMalloc B"))
+            rc = 2;
+        else if (failed(cudaMemcpy(dA[d]->get<F>(), A, bytesA, cudaMemcpyHostToDevice), "copy A") || failed(cudaMemcpy(dB[d]->get<F>(), B, bytesB, cudaMemcpyHostToDevice), "copy B"))
+            rc = 3;
+        else
+            pA[d] = dA[d]->get<F>(), pB[d] = dB[d]->get<F>();
+    }
+    if (!rc && failed(cudaSetDevice(0), "cudaSetDevice"))
+        rc = 1;
+    if (!rc && (failed(dC.allocate(bytesC), "cudaMalloc C") || failed(dP.allocate(bytesC), "cudaMalloc P")))
+        rc = 2;
+    if (!rc && !s.beta_zero && failed(cudaMemcpy(dC.get<F>(), C, bytesC, cudaMemcpyHostToDevice), "copy C"))
+        rc = 3;
+    if (!rc && mplapack_gemm::winograd_multi<F>(G, bp.data(), s.m, s.n, s.k, pA.data(), pB.data(), dP.get<F>(), [cutoff](Backend &b, long m, long n, long k, const F *a, long lda, const F *bb, long ldb, F *c, long ldc) { winograd<PB>(b, m, n, k, a, lda, bb, ldb, c, ldc, cutoff); }))
+        rc = 4;
+    if (!rc) {
+        cudaSetDevice(0);
+        wg_combine_kernel<PB><<<grid_for(s.m, s.n), dim3(BLOCK_X, BLOCK_Y)>>>(s, alpha, beta, dP.get<F>(), dC.get<F>());
+        if (failed(cudaGetLastError(), "wg_combine_kernel launch") || failed(cudaDeviceSynchronize(), "Winograd kernels"))
+            rc = 4;
+        else if (failed(cudaMemcpy(C, dC.get<F>(), bytesC, cudaMemcpyDeviceToHost), "copy C back"))
+            rc = 5;
+    }
+    for (int d = 0; d < G; d++) {
+        cudaSetDevice(d);
+        dA[d].reset();
+        dB[d].reset();
+    }
+    cudaSetDevice(0);
+    return rc;
+}
+
 template <int PB> int gemm_winograd(const gemm_shape &s, const real_t<PB> &alpha, const real_t<PB> &beta, const real_t<PB> *A, const real_t<PB> *B, real_t<PB> *C, long cutoff)
 {
     typedef real_t<PB> F;
     int ndev = 0;
     if (failed(cudaGetDeviceCount(&ndev), "cudaGetDeviceCount") || ndev == 0)
         return 1;
+    {
+        using namespace mplapack_cuda_multi;
+        int G = devices(env_gpus("MPLAPACK_MPFR"));
+        if (G > 7)
+            G = 7;
+        if (G > 1 && mplapack_gemm::winograd_multi_applies(s.m, s.n, s.k, cutoff))
+            return gemm_winograd_multi<PB>(s, alpha, beta, A, B, C, cutoff, G);
+    }
     const size_t bytesA = sizeof(F) * (size_t)s.m * s.k, bytesB = sizeof(F) * (size_t)s.k * s.n, bytesC = sizeof(F) * (size_t)s.m * s.n;
     device_buffer dA, dB, dC, dP;
     if (failed(dA.allocate(bytesA), "cudaMalloc A") || failed(dB.allocate(bytesB), "cudaMalloc B") || failed(dC.allocate(bytesC), "cudaMalloc C") || failed(dP.allocate(bytesC), "cudaMalloc P"))
