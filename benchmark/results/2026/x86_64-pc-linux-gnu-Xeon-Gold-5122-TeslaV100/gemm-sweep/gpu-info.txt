@@ -1,0 +1,3 @@
+index, name, driver_version, clocks.max.sm [MHz], memory.total [MiB]
+0, Tesla V100-PCIE-32GB, 580.196.07, 1380 MHz, 32768 MiB
+1, Tesla V100-PCIE-32GB, 580.196.07, 1380 MHz, 32768 MiB

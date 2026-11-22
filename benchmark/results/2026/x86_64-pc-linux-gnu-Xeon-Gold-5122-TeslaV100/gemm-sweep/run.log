@@ -1,0 +1,25 @@
+2026-11-22T18:40:25 dd NN start load=1.25 0.80 0.55 gpu_procs=0
+2026-11-22T18:44:20 dd NN end rc=0 load=1.12 0.98 0.69 gpu_procs=0
+2026-11-22T18:44:20 dd NT start load=1.12 0.98 0.69 gpu_procs=0
+2026-11-22T18:48:14 dd NT end rc=0 load=1.05 1.05 0.80 gpu_procs=0
+2026-11-22T18:48:14 dd TN start load=1.05 1.05 0.80 gpu_procs=0
+2026-11-22T18:52:08 dd TN end rc=0 load=1.10 1.07 0.87 gpu_procs=0
+2026-11-22T18:52:08 dd TT start load=1.10 1.07 0.87 gpu_procs=0
+2026-11-22T18:56:02 dd TT end rc=0 load=1.17 1.12 0.95 gpu_procs=0
+2026-11-22T18:56:02 td NN start load=1.17 1.12 0.95 gpu_procs=0
+2026-11-22T19:05:28 td NN end rc=0 load=1.17 1.13 1.03 gpu_procs=0
+2026-11-22T19:05:28 td NT start load=1.17 1.13 1.03 gpu_procs=0
+2026-11-22T19:14:54 td NT end rc=0 load=1.00 1.07 1.05 gpu_procs=0
+2026-11-22T19:14:54 td TN start load=1.00 1.07 1.05 gpu_procs=0
+2026-11-22T19:24:16 td TN end rc=0 load=1.02 1.09 1.08 gpu_procs=0
+2026-11-22T19:24:16 td TT start load=1.02 1.09 1.08 gpu_procs=0
+2026-11-22T19:33:38 td TT end rc=0 load=1.16 1.14 1.10 gpu_procs=0
+2026-11-22T19:33:38 qd NN start load=1.16 1.14 1.10 gpu_procs=0
+2026-11-22T19:51:37 qd NN end rc=0 load=1.02 1.07 1.08 gpu_procs=0
+2026-11-22T19:51:37 qd NT start load=1.02 1.07 1.08 gpu_procs=0
+2026-11-22T20:09:36 qd NT end rc=0 load=1.31 1.19 1.12 gpu_procs=0
+2026-11-22T20:09:36 qd TN start load=1.31 1.19 1.12 gpu_procs=0
+2026-11-22T20:27:34 qd TN end rc=0 load=1.18 1.16 1.11 gpu_procs=0
+2026-11-22T20:27:34 qd TT start load=1.18 1.16 1.11 gpu_procs=0
+2026-11-22T20:45:32 qd TT end rc=0 load=1.32 1.20 1.12 gpu_procs=0
+2026-11-22T20:45:32 done load=1.32 1.20 1.12 gpu_procs=0
