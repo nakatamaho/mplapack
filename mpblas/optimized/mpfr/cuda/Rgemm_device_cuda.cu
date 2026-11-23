@@ -40,6 +40,9 @@
 #include "Rgemm_tiled_cuda.h"
 #include "Rgemm_winograd_cuda.h"
 #include "../../common/cuda_multi_gpu.h"
+#include "../../common/Rgemm_winograd_multi_gpu.cuh"
+#include <memory>
+#include <vector>
 
 namespace mplapack_mpfr_cuda {
 
@@ -64,6 +67,79 @@ template <int PB> __global__ void gemm_kernel(gemm_shape s, real_t<PB> alpha, re
     for (long j = (long)blockIdx.y * blockDim.y + threadIdx.y; j < s.n; j += (long)gridDim.y * blockDim.y) {
         gemm_element<PB>(s, alpha, beta, A, B, AB, C, i, j);
     }
+}
+
+// Few output elements (m*n small): a block owns SMALL_E elements of C and,
+// for every SMALL_KR steps of k, its SMALL_E*SMALL_KR threads form the
+// products of those steps in parallel into shared memory; then the owner of
+// each element adds them in order.  Every product and every sum is the one
+// of gemm_engine_element, in the same order, so the result is the same; but
+// the sequential chain of an element holds only the additions, from shared
+// memory (with one thread per element the chain of products and sums, with
+// its loads, leaves the device mostly idle).  Without operand reuse it loses
+// to the tiled kernels once m*n fills the device (small_gemm_max_mn).
+const int SMALL_E = 32;
+const int SMALL_KR = 4;
+template <int PB, bool Nota> __global__ void __launch_bounds__(SMALL_E *SMALL_KR) small_gemm_kernel(gemm_shape s, real_t<PB> alpha, real_t<PB> beta, const real_t<PB> *A, const real_t<PB> *B, const real_t<PB> *AB, real_t<PB> *C) {
+    typedef real_t<PB> F;
+    __shared__ __align__(16) unsigned char storage[sizeof(F) * SMALL_KR * SMALL_E];
+    F *sh = reinterpret_cast<F *>(storage); // sh[l * SMALL_E + e]
+    const int e = threadIdx.x % SMALL_E, l = threadIdx.x / SMALL_E;
+    const long g = (long)blockIdx.x * SMALL_E + e;
+    const bool in = g < s.m * s.n, owner = in && l == 0;
+    const long i = in ? g % s.m : 0, j = in ? g / s.m : 0;
+    F v;
+    v.set_zero();
+    // op(A) = A: C(i,j) = beta*C(i,j), then += AB(l,j) * A(i,l)
+    if (Nota && owner) {
+        if (s.beta_one)
+            v = C[i + j * s.ldc];
+        else if (!s.beta_zero)
+            v = beta * C[i + j * s.ldc];
+    }
+    for (long q = 0; q < s.k; q += SMALL_KR) {
+        const int count = s.k - q < SMALL_KR ? (int)(s.k - q) : SMALL_KR;
+        if (in && l < count) {
+            // no zero skip, as the reference
+            if (Nota)
+                sh[l * SMALL_E + e] = AB[(q + l) + j * s.k] * A[i + (q + l) * s.lda];
+            else
+                sh[l * SMALL_E + e] = A[(q + l) + i * s.lda] * gemm_opB<PB>(s, B, q + l, j);
+        }
+        __syncthreads();
+        if (owner)
+            for (int u = 0; u < count; ++u)
+                v = v + sh[u * SMALL_E + e];
+        __syncthreads();
+    }
+    if (!owner)
+        return;
+    if (Nota) {
+        C[i + j * s.ldc] = v;
+    } else {
+        // op(A) = A': C(i,j) = beta*C(i,j) + alpha*temp
+        const F z = alpha * v;
+        F c0;
+        if (s.beta_zero)
+            c0.set_zero();
+        else if (s.beta_one)
+            c0 = C[i + j * s.ldc];
+        else
+            c0 = beta * C[i + j * s.ldc];
+        C[i + j * s.ldc] = c0 + z;
+    }
+}
+// Largest m*n for small_gemm_kernel: where it was faster than the tiled
+// kernels on the V100 (m = n = k sweep: 1.3-2.1 times below these sizes);
+// MPLAPACK_MPFR_CUDA_GEMM_SMALL_MN=N overrides it (0: never).
+template <int PB> long small_gemm_max_mn() {
+    if (const char *v = std::getenv("MPLAPACK_MPFR_CUDA_GEMM_SMALL_MN")) {
+        char *end = nullptr;
+        const long x = std::strtol(v, &end, 10);
+        if (end != v && !*end && x >= 0)
+            return x;
+    }
+    return PB == 256 ? 128L * 128 : PB == 512 ? 96L * 96 : PB == 1024 ? 112L * 112 : 0;
 }
 
 bool report_errors()
@@ -147,10 +223,13 @@ template <int PB> class winograd_device_backend {
   public:
     typedef real_t<PB> F;
     winograd_device_backend() : failed_(false) {}
+    // Stream-ordered allocations from the device's pool: the recursion
+    // allocates at every node, and cudaMalloc/cudaFree would serialize the
+    // devices of a multi-device call.
     F *alloc(size_t count)
     {
         void *p = NULL;
-        if (failed_ || mplapack_mpfr_cuda::failed(cudaMalloc(&p, sizeof(F) * (count ? count : 1)), "cudaMalloc (Winograd)")) {
+        if (failed_ || mplapack_mpfr_cuda::failed(cudaMallocAsync(&p, sizeof(F) * (count ? count : 1), 0), "cudaMallocAsync (Winograd)")) {
             failed_ = true;
             return NULL;
         }
@@ -159,7 +238,7 @@ template <int PB> class winograd_device_backend {
     void release(F *p)
     {
         if (p)
-            cudaFree(p);
+            cudaFreeAsync(p, 0);
     }
     bool failed() const { return failed_; }
     void zero(long r, long c, F *X, long ldx) { elementwise(WG_ZERO, r, c, X, ldx, NULL, 0, NULL, 0); }
@@ -191,12 +270,77 @@ template <int PB> class winograd_device_backend {
 
 } // namespace
 
+// Winograd with the seven top-level products over G devices
+// (../../common/Rgemm_winograd_multi_gpu.cuh); the same result as on one.
+template <int PB> static int gemm_winograd_multi(const gemm_shape &s, const real_t<PB> &alpha, const real_t<PB> &beta, const real_t<PB> *A, const real_t<PB> *B, real_t<PB> *C, long cutoff, int G)
+{
+    typedef real_t<PB> F;
+    typedef winograd_device_backend<PB> Backend;
+    using namespace mplapack_cuda_multi;
+    device_restore restore;
+    const size_t bytesA = sizeof(F) * (size_t)s.m * s.k, bytesB = sizeof(F) * (size_t)s.k * s.n, bytesC = sizeof(F) * (size_t)s.m * s.n;
+    enable_peer_access(G);
+    std::vector<std::unique_ptr<device_buffer> > dA((size_t)G), dB((size_t)G);
+    std::vector<std::unique_ptr<Backend> > be((size_t)G);
+    std::vector<Backend *> bp((size_t)G);
+    std::vector<const F *> pA((size_t)G), pB((size_t)G);
+    device_buffer dC, dP;
+    int rc = 0;
+    for (int d = 0; d < G && !rc; d++) {
+        if (failed(cudaSetDevice(d), "cudaSetDevice")) {
+            rc = 1;
+            break;
+        }
+        dA[d].reset(new device_buffer);
+        dB[d].reset(new device_buffer);
+        be[d].reset(new Backend);
+        bp[d] = be[d].get();
+        if (failed(dA[d]->allocate(bytesA), "cudaMalloc A") || failed(dB[d]->allocate(bytesB), "cudaMalloc B"))
+            rc = 2;
+        else if (failed(cudaMemcpy(dA[d]->get<F>(), A, bytesA, cudaMemcpyHostToDevice), "copy A") || failed(cudaMemcpy(dB[d]->get<F>(), B, bytesB, cudaMemcpyHostToDevice), "copy B"))
+            rc = 3;
+        else
+            pA[d] = dA[d]->get<F>(), pB[d] = dB[d]->get<F>();
+    }
+    if (!rc && failed(cudaSetDevice(0), "cudaSetDevice"))
+        rc = 1;
+    if (!rc && (failed(dC.allocate(bytesC), "cudaMalloc C") || failed(dP.allocate(bytesC), "cudaMalloc P")))
+        rc = 2;
+    if (!rc && !s.beta_zero && failed(cudaMemcpy(dC.get<F>(), C, bytesC, cudaMemcpyHostToDevice), "copy C"))
+        rc = 3;
+    if (!rc && mplapack_gemm::winograd_multi<F>(G, bp.data(), s.m, s.n, s.k, pA.data(), pB.data(), dP.get<F>(), [cutoff](Backend &b, long m, long n, long k, const F *a, long lda, const F *bb, long ldb, F *c, long ldc) { winograd<PB>(b, m, n, k, a, lda, bb, ldb, c, ldc, cutoff); }))
+        rc = 4;
+    if (!rc) {
+        cudaSetDevice(0);
+        wg_combine_kernel<PB><<<grid_for(s.m, s.n), dim3(BLOCK_X, BLOCK_Y)>>>(s, alpha, beta, dP.get<F>(), dC.get<F>());
+        if (failed(cudaGetLastError(), "wg_combine_kernel launch") || failed(cudaDeviceSynchronize(), "Winograd kernels"))
+            rc = 4;
+        else if (failed(cudaMemcpy(C, dC.get<F>(), bytesC, cudaMemcpyDeviceToHost), "copy C back"))
+            rc = 5;
+    }
+    for (int d = 0; d < G; d++) {
+        cudaSetDevice(d);
+        dA[d].reset();
+        dB[d].reset();
+    }
+    cudaSetDevice(0);
+    return rc;
+}
+
 template <int PB> int gemm_winograd(const gemm_shape &s, const real_t<PB> &alpha, const real_t<PB> &beta, const real_t<PB> *A, const real_t<PB> *B, real_t<PB> *C, long cutoff)
 {
     typedef real_t<PB> F;
     int ndev = 0;
     if (failed(cudaGetDeviceCount(&ndev), "cudaGetDeviceCount") || ndev == 0)
         return 1;
+    {
+        using namespace mplapack_cuda_multi;
+        int G = devices(env_gpus("MPLAPACK_MPFR"));
+        if (G > 7)
+            G = 7;
+        if (G > 1 && mplapack_gemm::winograd_multi_applies(s.m, s.n, s.k, cutoff, mplapack_gemm::winograd_multi_min("MPLAPACK_MPFR")))
+            return gemm_winograd_multi<PB>(s, alpha, beta, A, B, C, cutoff, G);
+    }
     const size_t bytesA = sizeof(F) * (size_t)s.m * s.k, bytesB = sizeof(F) * (size_t)s.k * s.n, bytesC = sizeof(F) * (size_t)s.m * s.n;
     device_buffer dA, dB, dC, dP;
     if (failed(dA.allocate(bytesA), "cudaMalloc A") || failed(dB.allocate(bytesB), "cudaMalloc B") || failed(dC.allocate(bytesC), "cudaMalloc C") || failed(dP.allocate(bytesC), "cudaMalloc P"))
@@ -235,6 +379,7 @@ template <int PB> static int gemm_one(const gemm_shape &s, const real_t<PB> &alp
     // NoTrans A: there the original two-kernel path runs at half the speed
     // of the tiled transposed form.
     bool lockstep = false, small = false;
+    const bool few = s.k > 0 && s.m * s.n <= small_gemm_max_mn<PB>();
     if constexpr (PB == 256 || PB == 512 || PB == 768) {
         static_assert(value_gemm_lockstep_fits<F>(), "Lockstep tiles exceed static shared memory");
         if (s.k > 0 && value_gemm_lockstep()) {
@@ -242,6 +387,8 @@ template <int PB> static int gemm_one(const gemm_shape &s, const real_t<PB> &alp
             small = !lockstep;
         }
     }
+    if (few)
+        lockstep = small = false;
     const size_t bytesAB = s.nota && !lockstep && !small ? sizeof(F) * (size_t)s.k * s.n : 0;
 
     device_buffer dA, dB, dC, dAB;
@@ -268,7 +415,14 @@ template <int PB> static int gemm_one(const gemm_shape &s, const real_t<PB> &alp
     dim3 grid((unsigned)gx, (unsigned)gy), block(BLOCK_X, BLOCK_Y);
     cudaError_t launch_error=cudaSuccess;
     bool tiled=false;
-    if constexpr(PB==256 || PB==512 || PB==768) {
+    if(few) {
+        const unsigned nblk=(unsigned)((s.m*s.n+SMALL_E-1)/SMALL_E);
+        if(s.nota) small_gemm_kernel<PB,true><<<nblk,SMALL_E*SMALL_KR>>>(s,alpha,beta,dA.get<F>(),dB.get<F>(),dAB.get<F>(),dC.get<F>());
+        else small_gemm_kernel<PB,false><<<nblk,SMALL_E*SMALL_KR>>>(s,alpha,beta,dA.get<F>(),dB.get<F>(),dAB.get<F>(),dC.get<F>());
+        launch_error=cudaGetLastError();
+        tiled=true;
+    }
+    if constexpr(PB==256 || PB==512 || PB==768) if(!tiled) {
         if(lockstep) {
             if(s.nota) launch_error=(cudaError_t)value_gemm_device(make_value_gemm_job<PB,true,true,false>(s,alpha,beta,dA.get<F>(),dB.get<F>(),dAB.get<F>(),dC.get<F>()),0);
             else launch_error=(cudaError_t)value_gemm_device(make_value_gemm_job<PB,false,true>(s,alpha,beta,dA.get<F>(),dB.get<F>(),dAB.get<F>(),dC.get<F>()),0);

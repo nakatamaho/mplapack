@@ -35,6 +35,9 @@
 #define Rgbmv Rgbmv_reference_cpu
 #include "../../../reference/Rgbmv.cpp"
 #undef Rgbmv
+#if defined(MPLAPACK_BUILD_WITH_MPFR) && !defined(MPLAPACK_FREAL_INSTANCE)
+#include "../../mpfr/openmp/Rfreal_blas.h"
+#endif
 
 #include <algorithm>
 #include <vector>
@@ -93,6 +96,11 @@ void Rgbmv_rows(const char *trans, INTEGER const m, INTEGER const n, INTEGER con
 
 bool Rgbmv_omp(const char *trans, INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku, REAL const alpha, REAL *a, INTEGER const lda, REAL *x, INTEGER const incx, REAL const beta, REAL *y, INTEGER const incy)
 {
+#if defined(MPLAPACK_BUILD_WITH_MPFR) && !defined(MPLAPACK_FREAL_INSTANCE)
+    // the fixed-precision kernels (../../mpfr/openmp/Rfreal_blas.h)
+    if (Rgbmv_freal(trans, m, n, kl, ku, alpha, a, lda, x, incx, beta, y, incy))
+        return true;
+#endif
     using namespace mplapack_blas;
     const REAL zero = 0.0;
     if ((!ls(trans, "N") && !ls(trans, "T") && !ls(trans, "C")) || m <= 0 || n <= 0 || kl < 0 || ku < 0 || lda < kl + ku + 1 || incx != 1 || incy != 1 || alpha == zero) // alpha == 0: only y = beta y

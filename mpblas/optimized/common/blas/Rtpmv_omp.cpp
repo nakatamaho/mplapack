@@ -35,6 +35,9 @@
 #define Rtpmv Rtpmv_reference_cpu
 #include "../../../reference/Rtpmv.cpp"
 #undef Rtpmv
+#if defined(MPLAPACK_BUILD_WITH_MPFR) && !defined(MPLAPACK_FREAL_INSTANCE)
+#include "../../mpfr/openmp/Rfreal_blas.h"
+#endif
 
 #include <algorithm>
 #include <vector>
@@ -113,6 +116,11 @@ void Rtpmv_rows(const char *uplo, const char *trans, const char *diag, INTEGER c
 
 bool Rtpmv_omp(const char *uplo, const char *trans, const char *diag, INTEGER const n, REAL *ap, REAL *x, INTEGER const incx)
 {
+#if defined(MPLAPACK_BUILD_WITH_MPFR) && !defined(MPLAPACK_FREAL_INSTANCE)
+    // the fixed-precision kernels (../../mpfr/openmp/Rfreal_blas.h)
+    if (Rtpmv_freal(uplo, trans, diag, n, ap, x, incx))
+        return true;
+#endif
     using namespace mplapack_blas;
     if ((!ls(uplo, "U") && !ls(uplo, "L")) || (!ls(trans, "N") && !ls(trans, "T") && !ls(trans, "C")) || (!ls(diag, "U") && !ls(diag, "N")) || n <= 0 || incx != 1)
         return false;

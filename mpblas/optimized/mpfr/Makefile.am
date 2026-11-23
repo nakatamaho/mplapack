@@ -18,7 +18,8 @@ libmplapack_mpfr_opt_la_CPPFLAGS = $(GMPFRXX_MKII_CPPFLAGS) -I$(top_srcdir)/incl
 libmplapack_mpfr_opt_la_SOURCES = \
 Rcopy.cpp Rcopy_ref.cpp openmp/Rcopy_omp.cpp \
 Rdot.cpp  Rdot_ref.cpp  openmp/Rdot_omp.cpp \
-Rgemm.cpp Rgemm_ref.cpp openmp/Rgemm_NN_omp.cpp openmp/Rgemm_NT_omp.cpp openmp/Rgemm_TN_omp.cpp openmp/Rgemm_TT_omp.cpp \
+Rgemm.cpp Rgemm_ref.cpp openmp/Rgemm_freal_omp.cpp openmp/Rgemm_freal_x86.cpp openmp/Rgemm_freal_generic.cpp \
+openmp/Rfreal_blas.cpp openmp/Rfreal_blas_128.cpp openmp/Rfreal_blas_192.cpp openmp/Rfreal_blas_256.cpp openmp/Rfreal_blas_320.cpp openmp/Rfreal_blas_384.cpp openmp/Rfreal_blas_448.cpp openmp/Rfreal_blas_512.cpp openmp/Rfreal_blas_576.cpp openmp/Rfreal_blas_640.cpp openmp/Rfreal_blas_704.cpp openmp/Rfreal_blas_768.cpp openmp/Rfreal_blas_832.cpp openmp/Rfreal_blas_896.cpp openmp/Rfreal_blas_960.cpp openmp/Rfreal_blas_1024.cpp openmp/Rfreal_blas_1536.cpp openmp/Rfreal_blas_2048.cpp openmp/Rgemm_NN_omp.cpp openmp/Rgemm_NT_omp.cpp openmp/Rgemm_TN_omp.cpp openmp/Rgemm_TT_omp.cpp \
 Raxpy.cpp Raxpy_ref.cpp openmp/Raxpy_omp.cpp \
 ../common/blas/Rdot_par.cpp \
 ../common/blas/Rgemm_blocked_omp.cpp \
@@ -122,7 +123,7 @@ endif
 
 # Parallel Level 1/2/3 BLAS (../common/blas), real and complex:
 # bit-identical to the reference routines.
-check_PROGRAMS = Rblas1_fast_test_mpfr Rblas_omp_test_mpfr Cblas_omp_test_mpfr Rlapack_omp_test_mpfr Rgemm_winograd_omp_test_mpfr
+check_PROGRAMS = Rblas1_fast_test_mpfr Rblas_omp_test_mpfr Cblas_omp_test_mpfr Rlapack_omp_test_mpfr Rgemm_winograd_omp_test_mpfr Rgemm_freal_test Rfreal_blas_test
 Rblas_omp_test_mpfr_SOURCES = ../common/test/Rblas_omp_test.cpp
 Rblas_omp_test_mpfr_CPPFLAGS = $(libmplapack_mpfr_opt_la_CPPFLAGS)
 Rblas_omp_test_mpfr_LDFLAGS = -static
@@ -141,12 +142,24 @@ Rgemm_winograd_omp_test_mpfr_SOURCES = ../common/test/Rgemm_winograd_omp_test.cp
 Rgemm_winograd_omp_test_mpfr_CPPFLAGS = $(libmplapack_mpfr_opt_la_CPPFLAGS)
 Rgemm_winograd_omp_test_mpfr_LDFLAGS = -static
 Rgemm_winograd_omp_test_mpfr_LDADD = libmplapack_mpfr_opt.la $(libmplapack_mpfr_opt_la_LIBADD)
+# The fixed-precision Rgemm kernels (openmp/Rgemm_freal_*.cpp) against
+# openmp/Rgemm_*_omp.cpp, bit for bit.
+Rgemm_freal_test_SOURCES = test/Rgemm_freal_test.cpp
+Rgemm_freal_test_CPPFLAGS = $(libmplapack_mpfr_opt_la_CPPFLAGS)
+Rgemm_freal_test_LDFLAGS = -static
+Rgemm_freal_test_LDADD = libmplapack_mpfr_opt.la $(libmplapack_mpfr_opt_la_LIBADD)
+# The fixed-precision BLAS (openmp/Rfreal_blas*.cpp) against the reference
+# code, bit for bit, for every routine.
+Rfreal_blas_test_SOURCES = test/Rfreal_blas_test.cpp
+Rfreal_blas_test_CPPFLAGS = $(libmplapack_mpfr_opt_la_CPPFLAGS)
+Rfreal_blas_test_LDFLAGS = -static
+Rfreal_blas_test_LDADD = libmplapack_mpfr_opt.la $(libmplapack_mpfr_opt_la_LIBADD)
 Rblas1_fast_test_mpfr_SOURCES = ../common/test/Rblas1_fast_test.cpp
 Rblas1_fast_test_mpfr_CPPFLAGS = $(libmplapack_mpfr_opt_la_CPPFLAGS)
 Rblas1_fast_test_mpfr_CXXFLAGS = $(DD_CXXFLAGS)
 Rblas1_fast_test_mpfr_LDFLAGS = -static
 Rblas1_fast_test_mpfr_LDADD = libmplapack_mpfr_opt.la $(libmplapack_mpfr_opt_la_LIBADD)
-TESTS = Rblas1_fast_test_mpfr Rblas_omp_test_mpfr Cblas_omp_test_mpfr Rlapack_omp_test_mpfr Rgemm_winograd_omp_test_mpfr
+TESTS = Rblas1_fast_test_mpfr Rblas_omp_test_mpfr Cblas_omp_test_mpfr Rlapack_omp_test_mpfr Rgemm_winograd_omp_test_mpfr Rgemm_freal_test Rfreal_blas_test
 
 # Shared LU / Cholesky verification gates (default mode; also run with
 # MPLAPACK_LAPACK_FAST=1 to check the opt-in algorithm).

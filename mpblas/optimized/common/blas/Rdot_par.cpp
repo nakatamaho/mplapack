@@ -35,6 +35,9 @@
 #define Rdot Rdot_reference_cpu
 #include "../../../reference/Rdot.cpp"
 #undef Rdot
+#if defined(MPLAPACK_BUILD_WITH_MPFR) && !defined(MPLAPACK_FREAL_INSTANCE)
+#include "../../mpfr/openmp/Rfreal_blas.h"
+#endif
 
 #include <vector>
 #include "../Rblas_split_common.h"
@@ -42,6 +45,11 @@
 
 bool Rdot_par(INTEGER const n, REAL *dx, INTEGER const incx, REAL *dy, INTEGER const incy, REAL &result)
 {
+#if defined(MPLAPACK_BUILD_WITH_MPFR) && !defined(MPLAPACK_FREAL_INSTANCE)
+    // the fixed-precision kernels (../../mpfr/openmp/Rfreal_blas.h)
+    if (Rdot_freal(n, dx, incx, dy, incy, result))
+        return true;
+#endif
     REAL ignored;
     if (mplapack_blas1::fast<REAL, REAL, false>(mplapack_blas1::dot, n, dx, incx, dy, incy, ignored, result))
         return true;

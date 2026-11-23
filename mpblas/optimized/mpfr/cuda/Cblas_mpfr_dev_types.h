@@ -293,6 +293,31 @@ template <int NL> struct rreal {
     MPLAPACK_DEV_HD rreal &operator*=(const rreal &a);
 };
 
+// The scratch of one MPFR/MPC call: with libmpc_cuda's arena installed, the
+// thread's slab is returned to where it was before the call (the values
+// keep their limbs in rreal), so a pool thread never runs out of slab.
+#if defined(MPLAPACK_MPFR_CDIV_DEVICE) && defined(__CUDA_ARCH__)
+struct rt_scratch {
+    size_t *top = nullptr, mark = 0;
+    __device__ rt_scratch() {
+        if (mpc_cuda_arena_base) {
+            // the slot of libmpc_cuda's mpc_cuda_tid
+            const unsigned long bid = blockIdx.x + (unsigned long)gridDim.x * blockIdx.y + (unsigned long)gridDim.x * gridDim.y * blockIdx.z;
+            const unsigned long tib = threadIdx.x + (unsigned long)blockDim.x * threadIdx.y + (unsigned long)blockDim.x * blockDim.y * threadIdx.z;
+            top = mpc_cuda_arena_top + bid * ((unsigned long)blockDim.x * blockDim.y * blockDim.z) + tib;
+            mark = *top;
+        }
+    }
+    __device__ ~rt_scratch() {
+        if (top)
+            *top = mark;
+    }
+};
+#define MPLAPACK_RT_SCRATCH rt_scratch scratch_
+#else
+#define MPLAPACK_RT_SCRATCH
+#endif
+
 #ifdef MPLAPACK_RT_ACTIVE
 #define MPLAPACK_RT_VIEW(v, x) MPLAPACK_RT(mpfr_custom_init_set)(v, (x).kind, (x).exp, rt_prec(), const_cast<mplapack_rt_limb *>((x).m))
 #define MPLAPACK_RT_DECL(v) MPLAPACK_RT(mpfr_t) v
@@ -303,6 +328,7 @@ template <int NL> struct rreal {
 template <int NL> MPLAPACK_MPFR_DEV_OP void rt_set_d(rreal<NL> &r, double d)
 {
 #ifdef MPLAPACK_RT_ACTIVE
+    MPLAPACK_RT_SCRATCH;
     MPLAPACK_RT_DECL(v);
     MPLAPACK_RT(mpfr_custom_init_set)(v, MPLAPACK_RTU(MPFR_ZERO_KIND), 0, rt_prec(), r.m);
     MPLAPACK_RT(mpfr_set_d)(v, d, MPLAPACK_RTU(MPFR_RNDN));
@@ -316,6 +342,7 @@ template <int NL> MPLAPACK_MPFR_DEV_OP void rt_set_d(rreal<NL> &r, double d)
 template <int NL> MPLAPACK_MPFR_DEV_OP void rt_op(rreal<NL> &r, const rreal<NL> &a, const rreal<NL> &b, int op)
 {
 #ifdef MPLAPACK_RT_ACTIVE
+    MPLAPACK_RT_SCRATCH;
     MPLAPACK_RT_DECL(va);
     MPLAPACK_RT_DECL(vb);
     MPLAPACK_RT_DECL(vr);
@@ -339,6 +366,7 @@ template <int NL> MPLAPACK_MPFR_DEV_OP void rt_op(rreal<NL> &r, const rreal<NL> 
 template <int NL> MPLAPACK_MPFR_DEV_OP int rt_cmp(const rreal<NL> &a, const rreal<NL> &b)
 {
 #ifdef MPLAPACK_RT_ACTIVE
+    MPLAPACK_RT_SCRATCH;
     MPLAPACK_RT_DECL(va);
     MPLAPACK_RT_DECL(vb);
     MPLAPACK_RT_VIEW(va, a);
@@ -397,6 +425,7 @@ template <int NL> struct rcomplex {
 template <int NL> MPLAPACK_MPFR_DEV_OP void rt_cop(rcomplex<NL> &r, const rcomplex<NL> &a, const rcomplex<NL> &b, int op)
 {
 #ifdef MPLAPACK_RT_ACTIVE
+    MPLAPACK_RT_SCRATCH;
     MPLAPACK_RT(mpc_t) za, zb, zr;
     rcomplex<NL> t;
     MPLAPACK_RT_VIEW(MPLAPACK_RT(mpc_realref)(za), a.re_);
@@ -424,6 +453,7 @@ template <int NL> MPLAPACK_MPFR_DEV_OP void rt_cop(rcomplex<NL> &r, const rcompl
 template <int NL> MPLAPACK_MPFR_DEV_OP int rt_ccmp(const rcomplex<NL> &a, const rcomplex<NL> &b)
 {
 #ifdef MPLAPACK_RT_ACTIVE
+    MPLAPACK_RT_SCRATCH;
     MPLAPACK_RT(mpc_t) za, zb;
     MPLAPACK_RT_VIEW(MPLAPACK_RT(mpc_realref)(za), a.re_);
     MPLAPACK_RT_VIEW(MPLAPACK_RT(mpc_imagref)(za), a.im_);

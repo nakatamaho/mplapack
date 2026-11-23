@@ -55,6 +55,12 @@
  * (Rgemm_winograd_cuda.h), recursing down to blocks of size N.  The result
  * then differs from the CPU Rgemm within a normwise error bound.  It is off
  * by default.
+ *
+ * Every visible device is used (MPLAPACK_MPFR_CUDA_NGPUS=N: at most N;
+ * ../../common/cuda_multi_gpu.h): the conventional kernels of both engines
+ * cut the columns of C over the devices (at least 128 each), Winograd deals
+ * out its seven top-level products (../../common/Rgemm_winograd_multi_gpu.cuh).
+ * The result does not depend on the number of devices.
  */
 
 #include <mpblas_mpfr_cuda.h>

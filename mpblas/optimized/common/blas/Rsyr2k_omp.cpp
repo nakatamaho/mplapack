@@ -32,6 +32,9 @@
 #define Rsyr2k Rsyr2k_reference_cpu
 #include "../../../reference/Rsyr2k.cpp"
 #undef Rsyr2k
+#if defined(MPLAPACK_BUILD_WITH_MPFR) && !defined(MPLAPACK_FREAL_INSTANCE)
+#include "../../mpfr/openmp/Rfreal_blas.h"
+#endif
 
 #include "../Rblas_cpu_common.h"
 
@@ -41,6 +44,11 @@ bool ls(const char *a, const char *b) { return Mlsame(a, b) != 0; }
 
 bool Rsyr2k_omp(const char *uplo, const char *trans, INTEGER const n, INTEGER const k, REAL const alpha, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL const beta, REAL *cc, INTEGER const ldc)
 {
+#if defined(MPLAPACK_BUILD_WITH_MPFR) && !defined(MPLAPACK_FREAL_INSTANCE)
+    // the fixed-precision kernels (../../mpfr/openmp/Rfreal_blas.h)
+    if (Rsyr2k_freal(uplo, trans, n, k, alpha, a, lda, b, ldb, beta, cc, ldc))
+        return true;
+#endif
     using namespace mplapack_blas;
     blas_call<REAL> c;
     if (!make_syrk<REAL>(c, ls, true, uplo, trans, n, k, alpha, a, lda, b, ldb, beta, cc, ldc))

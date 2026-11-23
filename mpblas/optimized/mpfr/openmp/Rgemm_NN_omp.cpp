@@ -32,6 +32,7 @@
 #ifdef _OPENMP
 #include <omp.h>
 #endif
+#include "../../common/Rblas_cpu_common.h"
 
 void Rgemm_NN_omp(mplapackint m, mplapackint n, mplapackint k, mpfr_class alpha, mpfr_class *A, mplapackint lda, mpfr_class *B, mplapackint ldb, mpfr_class beta,
 	      mpfr_class *C, mplapackint ldc)
@@ -52,8 +53,17 @@ void Rgemm_NN_omp(mplapackint m, mplapackint n, mplapackint k, mpfr_class alpha,
 	}
     }
 //main loop
+    // Every thread computes with the caller's precision (the private temp
+    // and the temporaries of the expressions are made in the threads).
+    const mplapack_blas::blas_thread_context ctx;
 #ifdef _OPENMP
-#pragma omp parallel for private(i, j, l, temp)
+#pragma omp parallel private(i, j, l)
+#endif
+    {
+    const mplapack_blas::blas_thread_context::scope sc(ctx);
+    mpfr_class temp;
+#ifdef _OPENMP
+#pragma omp for
 #endif
     for (j = 0; j < n; j++) {
 	for (l = 0; l < k; l++) {
@@ -62,6 +72,7 @@ void Rgemm_NN_omp(mplapackint m, mplapackint n, mplapackint k, mpfr_class alpha,
 		C[i + j * ldc] += temp * A[i + l * lda];
 	    }
 	}
+    }
     }
     return;
 }

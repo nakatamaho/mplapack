@@ -62,6 +62,7 @@
 #ifndef MPLAPACK_MPFR_CUDA_HOST_EMULATION
 #include "Rfactor_device_body.cuh"
 #include "../../common/cuda_multi_gpu.h"
+#include "mpc_arena_multi.cuh"
 #include <memory>
 #include <thread>
 #include <vector>
@@ -102,47 +103,6 @@ template <class E, class S> struct factor_device {
     }
 };
 
-// The arena of the E::runtime engines: device d's slabs and offsets
-// resident on d.  Managed memory, so one base pointer spans the devices.
-struct factor_multi_arena {
-    char *base = nullptr;
-    size_t *top = nullptr;
-    ~factor_multi_arena() {
-        cudaFree(base);
-        cudaFree(top);
-    }
-    int allocate(int G, size_t slab) {
-        const size_t P = 2 * factor_pool;
-        for (int d = 0; d < G; ++d) {
-            int managed = 0;
-            if (cudaDeviceGetAttribute(&managed, cudaDevAttrConcurrentManagedAccess, d) || !managed)
-                return -1;
-        }
-        if (int e = cudaMallocManaged(&base, G * P * slab))
-            return e;
-        if (int e = cudaMallocManaged(&top, G * P * sizeof(size_t)))
-            return e;
-        for (int d = 0; d < G; ++d) {
-            char *b = base + d * P * slab;
-            size_t *t = top + d * P;
-            int e = cudaSetDevice(d);
-            if (!e)
-                e = cudaMemAdvise(b, P * slab, cudaMemAdviseSetPreferredLocation, d);
-            if (!e)
-                e = cudaMemAdvise(t, P * sizeof(size_t), cudaMemAdviseSetPreferredLocation, d);
-            if (!e)
-                e = cudaMemPrefetchAsync(b, P * slab, d, nullptr);
-            if (!e)
-                e = cudaMemsetAsync(t, 0, P * sizeof(size_t), nullptr);
-            if (!e)
-                e = cudaDeviceSynchronize();
-            if (e)
-                return e;
-        }
-        return 0;
-    }
-};
-
 // a: the m x n matrix (ld = m, host), overwritten as by factor(); piv
 // (LU, min(m, n)) and info likewise.  st: the storage (value_store or the
 // runtime pack store).  stack_bytes: the device stack the engine needs
@@ -171,9 +131,9 @@ static int factor_multi(int G, const factor_shape &s, const S &st, typename S::h
     // Column of block b in its device's storage.
     auto lcol = [&](long b) { return whole ? b * nb : (b / G) * nb; };
     auto owned_before = [&](int d, long b) { return b / G + (d < b % G ? 1 : 0); }; // blocks < b on d
-    factor_multi_arena arena;
+    mpc_arena_multi arena;
     if (E::runtime) {
-        if (int e = arena.allocate(G, slab))
+        if (int e = arena.allocate(G, 2 * factor_pool, slab))
             return e;
         install(arena.base, slab, arena.top);
     }

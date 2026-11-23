@@ -34,6 +34,9 @@
 #define Csyrk Csyrk_reference_cpu
 #include "../../../reference/Csyrk.cpp"
 #undef Csyrk
+#if defined(MPLAPACK_BUILD_WITH_MPFR) && !defined(MPLAPACK_FREAL_INSTANCE)
+#include "../../mpfr/openmp/Rfreal_blas.h"
+#endif
 
 #include "Csyrk_columns.h"
 
@@ -50,6 +53,11 @@ bool ls(const char *a, const char *b) { return Mlsame(a, b) != 0; }
 
 bool Csyrk_omp(const char *uplo, const char *trans, INTEGER const n, INTEGER const k, COMPLEX const alpha, COMPLEX *a, INTEGER const lda, COMPLEX const beta, COMPLEX *c, INTEGER const ldc)
 {
+#if defined(MPLAPACK_BUILD_WITH_MPFR) && !defined(MPLAPACK_FREAL_INSTANCE)
+    // the fixed-precision kernels (../../mpfr/openmp/Rfreal_blas.h)
+    if (Csyrk_freal(uplo, trans, n, k, alpha, a, lda, beta, c, ldc))
+        return true;
+#endif
     using namespace mplapack_blas;
     const bool notr = ls(trans, "N");
     if ((!ls(uplo, "U") && !ls(uplo, "L")) || (!notr && !ls(trans, "T")) || n <= 0 || k < 0 || lda < std::max((INTEGER)1, notr ? n : k) || ldc < std::max((INTEGER)1, n))

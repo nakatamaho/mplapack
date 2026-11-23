@@ -32,6 +32,9 @@
 #define Rsymm Rsymm_reference_cpu
 #include "../../../reference/Rsymm.cpp"
 #undef Rsymm
+#if defined(MPLAPACK_BUILD_WITH_MPFR) && !defined(MPLAPACK_FREAL_INSTANCE)
+#include "../../mpfr/openmp/Rfreal_blas.h"
+#endif
 
 #include "../Rblas_cpu_common.h"
 
@@ -41,6 +44,11 @@ bool ls(const char *a, const char *b) { return Mlsame(a, b) != 0; }
 
 bool Rsymm_omp(const char *side, const char *uplo, INTEGER const m, INTEGER const n, REAL const alpha, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL const beta, REAL *cc, INTEGER const ldc)
 {
+#if defined(MPLAPACK_BUILD_WITH_MPFR) && !defined(MPLAPACK_FREAL_INSTANCE)
+    // the fixed-precision kernels (../../mpfr/openmp/Rfreal_blas.h)
+    if (Rsymm_freal(side, uplo, m, n, alpha, a, lda, b, ldb, beta, cc, ldc))
+        return true;
+#endif
     using namespace mplapack_blas;
     blas_call<REAL> c;
     if (!make_symm<REAL>(c, ls, side, uplo, m, n, alpha, a, lda, b, ldb, beta, cc, ldc))

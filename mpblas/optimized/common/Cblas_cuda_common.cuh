@@ -147,6 +147,23 @@ template<class Ops> static int ctrsm_team_device(job_Ctrsm<Ops> j,cudaStream_t s
 }
 #endif
 
+// Element types whose arithmetic takes its scratch from a per-thread arena
+// (MPFR runtime precision: libmpc_cuda's, Cblas_mpfr_device_cuda.h).  Their
+// generic jobs run on a fixed pool of threads, each with its slab; session(G)
+// installs an arena for G devices (pool threads each, one or more devices'
+// pools in one arena: the kernels of device d skip d * pool threads) and
+// removes it when destroyed.  error -1: no arena for G devices (run on one).
+template <class E> struct cgpu_arena {
+    static constexpr bool pooled = false;
+    struct session {
+        int error = 0;
+        long pool = 0, threads = 64;
+        explicit session(int) {}
+    };
+};
+// pool and the threads skipped by the kernels of a device
+struct cgpu_pool { long skip, pool, threads; };
+
 #if MPLAPACK_CBLAS_CUDA_DEVICE
 // The job is read from device memory: its scalars may exceed the size of the
 // kernel parameters (MPFR runtime precision).
@@ -156,16 +173,51 @@ template <class Job> __global__ void k_job(const Job *job, long units)
     if (u < units)
         (*job)(u);
 }
+// On a pool of threads (cgpu_arena): the first skip threads return at once,
+// thread t runs t, t + pool, t + 2 pool, ...
+template <class Job> __global__ void k_job_pool(const Job *job, long units, long skip, long pool)
+{
+    long u = (long)blockIdx.x * blockDim.x + threadIdx.x - skip;
+    if (u < 0)
+        return;
+    for (; u < units; u += pool)
+        (*job)(u);
+}
+template <class Job> static cudaError_t job_pool_launch(const Job *job, long units, const cgpu_pool &p)
+{
+    k_job_pool<Job><<<(unsigned)((p.skip + p.pool) / p.threads), (unsigned)p.threads>>>(job, units, p.skip, p.pool);
+    return cudaGetLastError();
+}
 #endif
 
 // Bound device pointers; scratch belongs to the caller (one Job on device).
 // This shares k_job with the host-copy wrapper, without transferring operands.
-template<class Job> static int job_device(Job job, long units, Job *scratch)
+// pool: the pool of an arena session already open (cgpu_arena), or null.
+template<class Job> static int job_device(Job job, long units, Job *scratch, const cgpu_pool *pool = nullptr)
 {
 #if MPLAPACK_CBLAS_CUDA_DEVICE
     if (units <= 0) return 0;
     cudaError_t e=cudaMemcpy(scratch,&job,sizeof(Job),cudaMemcpyHostToDevice);
     if(e==cudaSuccess) {
+        bool special=false;
+        if constexpr(cgpu_is_herk<Job>::value) special=herk_tiled_eligible(job);
+        if constexpr(cgpu_is_ctrsm<Job>::value) special=mplapack_blas::trsm_team_shape(ctrsm_args(job).s) && !ctrsm_constants<Job>::zero(job.alpha);
+        if constexpr(cgpu_arena<typename Job::E>::pooled) {
+            if(!special) {
+                if(pool) e=job_pool_launch(scratch,units,*pool);
+                else {
+                    typename cgpu_arena<typename Job::E>::session arena(1);
+                    if(arena.error) e=(cudaError_t)arena.error;
+                    else {
+                        const cgpu_pool p={0,arena.pool,arena.threads};
+                        e=job_pool_launch(scratch,units,p);
+                        // the arena is removed only after the kernel
+                        if(e==cudaSuccess) e=cudaDeviceSynchronize();
+                    }
+                }
+                return (int)(e==cudaSuccess ? cudaDeviceSynchronize() : e);
+            }
+        }
         if constexpr(cgpu_is_herk<Job>::value) {
             if(herk_tiled_eligible(job)) e=(cudaError_t)herk_tiled_device(job,scratch);
             else k_job<Job><<<(unsigned)((units+63)/64),64>>>(scratch,units);
@@ -197,7 +249,7 @@ template<class Job> static int job_device(Job job, long units, Job *scratch)
 // Uploads the operands (their referenced elements, Rblas_gpu_operand_common.h),
 // runs job(u) for u < units, downloads the written ones.  ops[q].host is the logical element (0, 0); bind() gets the
 // device addresses of these elements.
-template <class E, class Job> int run_job(Job job, long units, const gpu_operand<E> *ops, int nops)
+template <class E, class Job> int run_job(Job job, long units, const gpu_operand<E> *ops, int nops, const cgpu_pool *pool = nullptr)
 {
     E *dev[4] = {0, 0, 0, 0};
 #if MPLAPACK_CBLAS_CUDA_DEVICE
@@ -215,7 +267,7 @@ template <class E, class Job> int run_job(Job job, long units, const gpu_operand
         job.bind(dev);
         e = cudaMalloc(&djob, sizeof(Job));
         if (e == cudaSuccess)
-            e = (cudaError_t)job_device(job, units, djob);
+            e = (cudaError_t)job_device(job, units, djob, pool);
     }
     cudaFree(djob);
     for (int q = 0; q < nops && e == cudaSuccess; q++)
@@ -231,6 +283,7 @@ template <class E, class Job> int run_job(Job job, long units, const gpu_operand
             gpu_operand_gather(ops[q], buf[q].data());
         dev[q] = buf[q].data() - ops[q].lo;
     }
+    (void)pool;
     job.bind(dev);
     job_device(job,units,static_cast<Job*>(nullptr));
     for (int q = 0; q < nops; q++)
@@ -439,14 +492,15 @@ template <class Ops> int cgemm_tiled_run(job_Cgemm<Ops> job, const gpu_operand<t
 #endif
 }
 
-template <class Job> static int cgpu_run_one(Job job, const mplapack_blas::gpu_operand<typename Job::E> *ops, int nops)
+template <class Job> static int cgpu_run_one(Job job, const mplapack_blas::gpu_operand<typename Job::E> *ops, int nops, const cgpu_pool *pool = nullptr)
 {
-    if constexpr (cgpu_is_cgemm<Job>::value) {
+    // the arena types run every element on the pool (k_job_pool)
+    if constexpr (cgpu_is_cgemm<Job>::value && !cgpu_arena<typename Job::E>::pooled) {
         typedef typename Job::DC DC;
         if (job.m > 0 && job.n > 0 && job.k > 0 && !(job.alpha == DC(0.0, 0.0)))
             return cgemm_tiled_run(job, ops, nops);
     }
-    return run_job<typename Job::E>(job, job.units(), ops, nops);
+    return run_job<typename Job::E>(job, job.units(), ops, nops, pool);
 }
 
 // Any Cgemm job (cgpu_is_cgemm: only those of the tiled form).
@@ -472,12 +526,20 @@ template <class Job> int cgpu_run(Job job, const mplapack_blas::gpu_operand<type
                 const int nb = nops == 3 && job.k > 0 && mplapack_blas::gpu_operand_partable(ops[1]) && mplapack_blas::gpu_operand_partable(ops[2]) ? blocks(job.n, devices(env_gpus(prefix)), 128) : 1;
                 if (nb > 1) {
                     const bool notb = lsame(job.tb, "N");
-                    return for_column_blocks(job.n, nb, CG_TILE, [&](long j0, long j1) {
-                        Job t = job;
-                        t.n = j1 - j0;
-                        const gpu_operand<E> o[3] = {ops[0], mplapack_blas::gpu_operand_part(ops[1], notb, j0, j1), mplapack_blas::gpu_operand_part(ops[2], true, j0, j1)};
-                        return cgpu_run_one(t, o, 3);
-                    });
+                    // one arena for all the devices (cgpu_arena)
+                    typename cgpu_arena<E>::session arena(cgpu_arena<E>::pooled ? nb : 0);
+                    if (arena.error && arena.error != -1)
+                        return arena.error;
+                    if (!arena.error)
+                        return for_column_blocks(job.n, nb, CG_TILE, [&](long j0, long j1) {
+                            Job t = job;
+                            t.n = j1 - j0;
+                            const gpu_operand<E> o[3] = {ops[0], mplapack_blas::gpu_operand_part(ops[1], notb, j0, j1), mplapack_blas::gpu_operand_part(ops[2], true, j0, j1)};
+                            int d = 0;
+                            cudaGetDevice(&d);
+                            const cgpu_pool p = {(long)d * arena.pool, arena.pool, arena.threads};
+                            return cgpu_run_one(t, o, 3, cgpu_arena<E>::pooled ? &p : nullptr);
+                        });
                 }
             }
         }

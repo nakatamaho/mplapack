@@ -35,6 +35,9 @@
 #define Chemv Chemv_reference_cpu
 #include "../../../reference/Chemv.cpp"
 #undef Chemv
+#if defined(MPLAPACK_BUILD_WITH_MPFR) && !defined(MPLAPACK_FREAL_INSTANCE)
+#include "../../mpfr/openmp/Rfreal_blas.h"
+#endif
 
 #include <algorithm>
 #include <vector>
@@ -106,6 +109,11 @@ void Chemv_rows(const char *uplo, INTEGER const n, COMPLEX const alpha, COMPLEX 
 
 bool Chemv_omp(const char *uplo, INTEGER const n, COMPLEX const alpha, COMPLEX *a, INTEGER const lda, COMPLEX *x, INTEGER const incx, COMPLEX const beta, COMPLEX *y, INTEGER const incy)
 {
+#if defined(MPLAPACK_BUILD_WITH_MPFR) && !defined(MPLAPACK_FREAL_INSTANCE)
+    // the fixed-precision kernels (../../mpfr/openmp/Rfreal_blas.h)
+    if (Chemv_freal(uplo, n, alpha, a, lda, x, incx, beta, y, incy))
+        return true;
+#endif
     using namespace mplapack_blas;
     const COMPLEX zero = COMPLEX(0.0, 0.0);
     if ((!ls(uplo, "U") && !ls(uplo, "L")) || n <= 0 || lda < imax(1, n) || incx != 1 || incy != 1 || alpha == zero) // alpha == 0: only y = beta y

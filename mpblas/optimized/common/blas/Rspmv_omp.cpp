@@ -35,6 +35,9 @@
 #define Rspmv Rspmv_reference_cpu
 #include "../../../reference/Rspmv.cpp"
 #undef Rspmv
+#if defined(MPLAPACK_BUILD_WITH_MPFR) && !defined(MPLAPACK_FREAL_INSTANCE)
+#include "../../mpfr/openmp/Rfreal_blas.h"
+#endif
 
 #include <algorithm>
 #include <vector>
@@ -106,6 +109,11 @@ void Rspmv_rows(const char *uplo, INTEGER const n, REAL const alpha, REAL *ap, R
 
 bool Rspmv_omp(const char *uplo, INTEGER const n, REAL const alpha, REAL *ap, REAL *x, INTEGER const incx, REAL const beta, REAL *y, INTEGER const incy)
 {
+#if defined(MPLAPACK_BUILD_WITH_MPFR) && !defined(MPLAPACK_FREAL_INSTANCE)
+    // the fixed-precision kernels (../../mpfr/openmp/Rfreal_blas.h)
+    if (Rspmv_freal(uplo, n, alpha, ap, x, incx, beta, y, incy))
+        return true;
+#endif
     using namespace mplapack_blas;
     const REAL zero = 0.0;
     if ((!ls(uplo, "U") && !ls(uplo, "L")) || n <= 0 || incx != 1 || incy != 1 || alpha == zero) // alpha == 0: only y = beta y

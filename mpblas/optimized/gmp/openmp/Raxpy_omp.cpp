@@ -72,6 +72,7 @@ Based on http://www.netlib.org/blas/daxpy.f
 */
 
 #include <mpblas_gmp.h>
+#include "../../common/Rblas_cpu_common.h"
 #ifdef _OPENMP
 #include <omp.h>
 #endif
@@ -91,11 +92,18 @@ void Raxpy_omp(mplapackint n, mpf_class da, mpf_class * dx, mplapackint incx, mp
     if (incy < 0) iy = (-n + 1) * incy;
 
     if (incx == 1 && incy == 1 ) {
+      const mplapack_blas::blas_thread_context ctx; // the caller's precision in every thread
 #ifdef _OPENMP
-#pragma omp parallel for
+#pragma omp parallel private(i)
+#endif
+      {
+      const mplapack_blas::blas_thread_context::scope sc(ctx);
+#ifdef _OPENMP
+#pragma omp for
 #endif
       for (i = 0; i < n; i++) {
 	dy[i] += da * dx[i];
+      }
       }
       return; 
     }

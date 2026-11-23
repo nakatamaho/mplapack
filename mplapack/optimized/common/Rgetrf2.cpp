@@ -20,8 +20,16 @@ struct real_lu_ops {
     { Rgemm("N", "N", m, n, k, -REAL(1.0), a, ld, b, ld, REAL(1.0), c, ld); }
 };
 }
+#if defined(MPLAPACK_BUILD_WITH_MPFR) && !defined(MPLAPACK_FREAL_INSTANCE)
+#include "../../../mpblas/optimized/mpfr/openmp/Rfreal_blas.h"
+#endif
 void Rgetrf2(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, INTEGER *ipiv, INTEGER &info)
 {
+#if defined(MPLAPACK_BUILD_WITH_MPFR) && !defined(MPLAPACK_FREAL_INSTANCE)
+    // the fixed-precision kernels (mpblas/optimized/mpfr/openmp/Rfreal_blas.h)
+    if (Rgetrf2_freal(m, n, a, lda, ipiv, info))
+        return;
+#endif
     if (m <= 0 || n <= 0 || lda < std::max(INTEGER(1), m)) {
         Rgetrf2_reference_cpu(m, n, a, lda, ipiv, info);
         return;

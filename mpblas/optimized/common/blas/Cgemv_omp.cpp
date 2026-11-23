@@ -33,6 +33,9 @@
 #define Cgemv Cgemv_reference_cpu
 #include "../../../reference/Cgemv.cpp"
 #undef Cgemv
+#if defined(MPLAPACK_BUILD_WITH_MPFR) && !defined(MPLAPACK_FREAL_INSTANCE)
+#include "../../mpfr/openmp/Rfreal_blas.h"
+#endif
 
 #include <algorithm>
 #include "../Rblas_split_common.h"
@@ -46,6 +49,11 @@ bool ls(const char *a, const char *b) { return Mlsame(a, b) != 0; }
 
 bool Cgemv_omp(const char *trans, INTEGER const m, INTEGER const n, COMPLEX const alpha, COMPLEX *a, INTEGER const lda, COMPLEX *x, INTEGER const incx, COMPLEX const beta, COMPLEX *y, INTEGER const incy)
 {
+#if defined(MPLAPACK_BUILD_WITH_MPFR) && !defined(MPLAPACK_FREAL_INSTANCE)
+    // the fixed-precision kernels (../../mpfr/openmp/Rfreal_blas.h)
+    if (Cgemv_freal(trans, m, n, alpha, a, lda, x, incx, beta, y, incy))
+        return true;
+#endif
     using namespace mplapack_blas;
     const bool notr = ls(trans, "N");
     if ((!notr && !ls(trans, "T") && !ls(trans, "C")) || m <= 0 || n <= 0 || lda < std::max((INTEGER)1, m) || incx == 0 || incy <= 0)

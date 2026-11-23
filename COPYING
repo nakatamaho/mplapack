@@ -1,6 +1,12 @@
 There are two licencing terms in the MPLAPACK since
 MPLAPACK code base is based on LAPACK and BLAS.
 
+In addition, the files in mpblas/optimized/mpfr/lgpl/ are licensed under
+the GNU Lesser General Public License, version 3 or (at your option) any
+later version (see mpblas/optimized/mpfr/lgpl/README.md, COPYING.LESSER and
+COPYING there).  They are compiled into libmplapack_mpfr_opt and
+libmplapack_mpfr_opt_cuda only.
+
 The MPLAPACK licence is following:
 
 Copyright (c) 2008-2025

@@ -47,6 +47,11 @@
  * (gemm_ozaki_cpu) with the same slices.  WINOGRAD differs from the
  * conventional result in rounding (normwise error bound).
  *
+ * Several devices (cuda_multi_gpu.h, <P>_CUDA_NGPUS): NAIVE, TILED and OZAKI
+ * cut the columns of C over them, WINOGRAD deals out its seven top-level
+ * products (Rgemm_winograd_multi_gpu.cuh); the result does not depend on the
+ * number of devices.
+ *
  * When compiled without nvcc and with MPLAPACK_GEMM_CUDA_HOST_EMULATION
  * defined, the same element code runs in host loops and the DGEMM of the
  * Ozaki scheme is ozaki_dgemm; this is what the GPU-less tests run.
@@ -71,6 +76,8 @@
 #if defined(__CUDACC__)
 #include <cuda_runtime.h>
 #include <cublas_v2.h>
+#include <memory>
+#include "Rgemm_winograd_multi_gpu.cuh"
 #define MPLAPACK_GEMM_GLOBAL __global__
 #elif defined(MPLAPACK_GEMM_CUDA_HOST_EMULATION)
 #define MPLAPACK_GEMM_GLOBAL
@@ -311,8 +318,20 @@ template <class Ops> class winograd_gpu_backend {
   public:
     typedef typename Ops::F F;
     explicit winograd_gpu_backend(gpu_session &g) : g_(g) {}
-    F *alloc(size_t count) { return g_.alloc<F>(count); }
-    void release(F *p) { g_.release(p); }
+    // The recursion allocates and frees its temporaries at every node:
+    // stream-ordered allocations from the device's pool (cudaMalloc and
+    // cudaFree would dominate the time and serialize the devices).
+    F *alloc(size_t count) {
+        void *p = NULL;
+        if (!g_.ok())
+            return NULL;
+        g_.check(cudaMallocAsync(&p, (count ? count : 1) * sizeof(F), 0));
+        return g_.ok() ? (F *)p : NULL;
+    }
+    void release(F *p) {
+        if (p)
+            cudaFreeAsync(p, 0);
+    }
     bool failed() const { return !g_.ok(); }
     void zero(long r, long c, F *X, long ldx) {
         if (r > 0 && c > 0)
@@ -359,7 +378,9 @@ template <class F> inline cudaError_t gpu_copy_mat(F *dst, const F *src, long r,
     return cudaMemcpy2D(dst, (size_t)ld * sizeof(F), src, (size_t)ld * sizeof(F), (size_t)r * sizeof(F), (size_t)c, kind);
 }
 
-template <class Ops> static int gemm_cuda_one(const shape &s, int algo, long cutoff, const ozaki_plan *plan, const gpu_scalars<typename Ops::F> &sc, const typename Ops::F *A, const typename Ops::F *B, typename Ops::F *C) {
+// pj0: the first column of the block in the Ozaki plan (whose columns are
+// those of the whole call).
+template <class Ops> static int gemm_cuda_one(const shape &s, int algo, long cutoff, const ozaki_plan *plan, const gpu_scalars<typename Ops::F> &sc, const typename Ops::F *A, const typename Ops::F *B, typename Ops::F *C, long pj0 = 0) {
     typedef typename Ops::F F;
     gpu_session g;
     const long m = s.m, n = s.n, k = s.k;
@@ -378,11 +399,13 @@ template <class Ops> static int gemm_cuda_one(const shape &s, int algo, long cut
             g.check(cudaMemcpy(di, plan->ad.data(), (size_t)S * m * k * sizeof(int32_t), cudaMemcpyHostToDevice));
             if (S * m * k > 0)
                 k_i32_to_double<<<gpu_grid1((size_t)S * m * k), 256>>>(di, dA, (size_t)S * m * k);
-            g.check(cudaMemcpy(di, plan->bd.data(), (size_t)S * k * n * sizeof(int32_t), cudaMemcpyHostToDevice));
+            // columns pj0 .. pj0 + n - 1 of every slice of op(B)
+            if (S * k * n > 0)
+                g.check(cudaMemcpy2D(di, (size_t)k * n * sizeof(int32_t), plan->bd.data() + (size_t)pj0 * k, (size_t)k * plan->n * sizeof(int32_t), (size_t)k * n * sizeof(int32_t), (size_t)S, cudaMemcpyHostToDevice));
             if (S * k * n > 0)
                 k_i32_to_double<<<gpu_grid1((size_t)S * k * n), 256>>>(di, dB, (size_t)S * k * n);
             g.check(cudaMemcpy(dea, plan->ea.data(), m * sizeof(int), cudaMemcpyHostToDevice));
-            g.check(cudaMemcpy(dfb, plan->fb.data(), n * sizeof(int), cudaMemcpyHostToDevice));
+            g.check(cudaMemcpy(dfb, plan->fb.data() + pj0, n * sizeof(int), cudaMemcpyHostToDevice));
             k_zero<Ops><<<gpu_grid2(m, n), dim3(GPU_TILE, GPU_TILE)>>>(m, n, dacc, m);
             g.check_launch();
         }
@@ -463,18 +486,98 @@ template <class Ops> static int gemm_cuda_one(const shape &s, int algo, long cut
     return g.ok() ? 0 : (int)g.error();
 }
 
+// Winograd with the seven top-level products over G devices
+// (Rgemm_winograd_multi_gpu.cuh); the same result as gemm_cuda_one.
+template <class Ops> static int gemm_winograd_multi(const shape &s, long cutoff, const gpu_scalars<typename Ops::F> &sc, const typename Ops::F *A, const typename Ops::F *B, typename Ops::F *C, int G) {
+    typedef typename Ops::F F;
+    typedef winograd_gpu_backend<Ops> Backend;
+    using namespace mplapack_cuda_multi;
+    device_restore restore;
+    const long m = s.m, n = s.n, k = s.k;
+    // op(A) and op(B) copied element by element, as in gemm_cuda_one
+    std::vector<F> hA((size_t)m * k), hB((size_t)k * n);
+    for (long l = 0; l < k; l++)
+        for (long i = 0; i < m; i++)
+            hA[i + l * m] = s.nota ? A[i + l * s.lda] : A[l + i * s.lda];
+    for (long j = 0; j < n; j++)
+        for (long l = 0; l < k; l++)
+            hB[l + j * k] = s.notb ? B[l + j * s.ldb] : B[j + l * s.ldb];
+    enable_peer_access(G);
+    std::vector<std::unique_ptr<gpu_session> > g((size_t)G);
+    std::vector<std::unique_ptr<Backend> > be((size_t)G);
+    std::vector<Backend *> bp((size_t)G);
+    std::vector<const F *> dA((size_t)G), dB((size_t)G);
+    int err = 0;
+    for (int d = 0; d < G && !err; d++) {
+        err = (int)cudaSetDevice(d);
+        if (err)
+            break;
+        g[d].reset(new gpu_session);
+        F *a = g[d]->alloc<F>(hA.size()), *b = g[d]->alloc<F>(hB.size());
+        if (g[d]->ok()) {
+            g[d]->check(cudaMemcpy(a, hA.data(), hA.size() * sizeof(F), cudaMemcpyHostToDevice));
+            g[d]->check(cudaMemcpy(b, hB.data(), hB.size() * sizeof(F), cudaMemcpyHostToDevice));
+        }
+        dA[d] = a, dB[d] = b;
+        be[d].reset(new Backend(*g[d]));
+        bp[d] = be[d].get();
+        if (!g[d]->ok())
+            err = (int)g[d]->error();
+    }
+    F *dC = NULL, *dP = NULL;
+    if (!err && !(err = (int)cudaSetDevice(0))) {
+        dC = g[0]->alloc<F>(gpu_span(m, n, s.ldc));
+        dP = g[0]->alloc<F>((size_t)m * n);
+        if (g[0]->ok())
+            g[0]->check(gpu_copy_mat(dC, C, m, n, s.ldc, cudaMemcpyHostToDevice));
+        if (!g[0]->ok())
+            err = (int)g[0]->error();
+    }
+    if (!err)
+        err = winograd_multi<F>(G, bp.data(), m, n, k, dA.data(), dB.data(), dP, [cutoff](Backend &b, long mm, long nn, long kk, const F *a, long lda, const F *bb, long ldb, F *c, long ldc) { winograd<F>(b, mm, nn, kk, a, lda, bb, ldb, c, ldc, cutoff); });
+    if (!err && !(err = (int)cudaSetDevice(0))) {
+        gpu_session &g0 = *g[0];
+        if (g0.ok()) {
+            k_combine<Ops><<<gpu_grid2(m, n), dim3(GPU_TILE, GPU_TILE)>>>(s, sc, dP, dC);
+            g0.check_launch();
+        }
+        if (g0.ok())
+            g0.check(cudaDeviceSynchronize());
+        if (g0.ok())
+            g0.check(gpu_copy_mat(C, dC, m, n, s.ldc, cudaMemcpyDeviceToHost));
+        if (!g0.ok())
+            err = (int)g0.error();
+    }
+    for (int d = 0; d < G; d++)
+        if (g[d]) {
+            cudaSetDevice(d);
+            be[d].reset();
+            g[d].reset();
+        }
+    return err;
+}
+
 // Smallest column block per device: below it one device is faster.
 const long GPU_MIN_COLUMNS = 128;
 
+// Tiled, naive and Ozaki: the columns of C and op(B) cut over the devices
+// (Ozaki: every element of a block is the exact sum of the same slice
+// products, so the result does not depend on the cut).  Winograd: the
+// top-level products over the devices.
 template <class Ops> int gemm_cuda(const shape &s, int algo, long cutoff, const ozaki_plan *plan, const gpu_scalars<typename Ops::F> &sc, const typename Ops::F *A, const typename Ops::F *B, typename Ops::F *C, int max_gpus) {
     using namespace mplapack_cuda_multi;
-    const bool split = (algo == GPU_TILED || algo == GPU_NAIVE) && s.k > 0;
+    if (algo == GPU_WINOGRAD) {
+        const int G = devices(max_gpus) < 7 ? devices(max_gpus) : 7;
+        if (G > 1 && winograd_multi_applies(s.m, s.n, s.k, cutoff, winograd_multi_min(prefix_of<Ops>::value)))
+            return gemm_winograd_multi<Ops>(s, cutoff, sc, A, B, C, G);
+    }
+    const bool split = (algo == GPU_TILED || algo == GPU_NAIVE || algo == GPU_OZAKI) && s.k > 0;
     const int nb = split ? blocks(s.n, devices(max_gpus), GPU_MIN_COLUMNS) : 1;
     // Columns j0..j1-1 of C and op(B); every leading dimension stays.
     return for_column_blocks(s.n, nb, GPU_TILE, [&](long j0, long j1) {
         shape t = s;
         t.n = j1 - j0;
-        return gemm_cuda_one<Ops>(t, algo, cutoff, plan, sc, A, s.notb ? B + j0 * s.ldb : B + j0, C + j0 * s.ldc);
+        return gemm_cuda_one<Ops>(t, algo, cutoff, plan, sc, A, s.notb ? B + j0 * s.ldb : B + j0, C + j0 * s.ldc, j0);
     });
 }
 

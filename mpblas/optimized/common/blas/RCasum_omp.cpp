@@ -34,6 +34,9 @@
 #define RCasum RCasum_reference_cpu
 #include "../../../reference/RCasum.cpp"
 #undef RCasum
+#if defined(MPLAPACK_BUILD_WITH_MPFR) && !defined(MPLAPACK_FREAL_INSTANCE)
+#include "../../mpfr/openmp/Rfreal_blas.h"
+#endif
 
 #include <vector>
 #include "../Rblas_split_common.h"
@@ -41,6 +44,11 @@
 
 bool RCasum_omp(INTEGER const n, COMPLEX *zx, INTEGER const incx, REAL &result)
 {
+#if defined(MPLAPACK_BUILD_WITH_MPFR) && !defined(MPLAPACK_FREAL_INSTANCE)
+    // the fixed-precision kernels (../../mpfr/openmp/Rfreal_blas.h)
+    if (RCasum_freal(n, zx, incx, result))
+        return true;
+#endif
     COMPLEX ignored;
     if (mplapack_blas1::fast<REAL, COMPLEX, true>(mplapack_blas1::asum, n, zx, incx, static_cast<COMPLEX *>(nullptr), 1, result, ignored))
         return true;

@@ -78,12 +78,20 @@ void potrf_diagonal(const char *uplo, INTEGER n, COMPLEX *a, INTEGER ld, INTEGER
 #undef Cpotrf
 } // namespace
 
+#if defined(MPLAPACK_BUILD_WITH_MPFR) && !defined(MPLAPACK_FREAL_INSTANCE)
+#include "../../../mpblas/optimized/mpfr/openmp/Rfreal_blas.h"
+#endif
 #ifdef MPLAPACK_POTRF_CPU_DISPATCH
 static void potrf_cpu(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, INTEGER &info)
 #else
 void Cpotrf(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, INTEGER &info)
 #endif
 {
+#if defined(MPLAPACK_BUILD_WITH_MPFR) && !defined(MPLAPACK_FREAL_INSTANCE)
+    // the fixed-precision kernels (mpblas/optimized/mpfr/openmp/Rfreal_blas.h)
+    if (Cpotrf_freal(uplo, n, a, lda, info))
+        return;
+#endif
     const bool upper = Mlsame(uplo, "U");
     if ((!upper && !Mlsame(uplo, "L")) || n <= 0 || lda < std::max((INTEGER)1, n)) {
         Cpotrf_reference_cpu(uplo, n, a, lda, info);

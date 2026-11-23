@@ -34,6 +34,9 @@
 #define Rgemmtr Rgemmtr_reference_cpu
 #include "../../../reference/Rgemmtr.cpp"
 #undef Rgemmtr
+#if defined(MPLAPACK_BUILD_WITH_MPFR) && !defined(MPLAPACK_FREAL_INSTANCE)
+#include "../../mpfr/openmp/Rfreal_blas.h"
+#endif
 
 #include "Rgemmtr_columns.h"
 
@@ -46,6 +49,11 @@ bool ls(const char *a, const char *b) { return Mlsame(a, b) != 0; }
 
 bool Rgemmtr_omp(const char *uplo, const char *transa, const char *transb, INTEGER const n, INTEGER const k, REAL const alpha, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL const beta, REAL *c, INTEGER const ldc)
 {
+#if defined(MPLAPACK_BUILD_WITH_MPFR) && !defined(MPLAPACK_FREAL_INSTANCE)
+    // the fixed-precision kernels (../../mpfr/openmp/Rfreal_blas.h)
+    if (Rgemmtr_freal(uplo, transa, transb, n, k, alpha, a, lda, b, ldb, beta, c, ldc))
+        return true;
+#endif
     using namespace mplapack_blas;
     const bool nota = ls(transa, "N"), notb = ls(transb, "N");
     if ((!ls(uplo, "U") && !ls(uplo, "L")) || (!nota && !ls(transa, "T") && !ls(transa, "C")) || (!notb && !ls(transb, "T") && !ls(transb, "C")) || n <= 0 || k < 0)

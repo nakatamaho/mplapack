@@ -29,6 +29,7 @@
  */
 
 #include <mpblas_mpfr.h>
+#include "openmp/Rfreal_blas.h"
 
 void Raxpy_omp(mplapackint n, mpfr_class da, mpfr_class * dx, mplapackint incx, mpfr_class * dy, mplapackint incy);
 void Raxpy_ref(mplapackint n, mpfr_class da, mpfr_class * dx, mplapackint incx, mpfr_class * dy, mplapackint incy);
@@ -42,6 +43,8 @@ void Raxpy(mplapackint const n, mpfr_class const da, mpfr_class *dx, mplapackint
 
     if (n <= 0)	return;
     if (da == Zero) return;
+    // the fixed-precision kernels (openmp/Rfreal_blas.h)
+    if (Raxpy_freal(n, da, dx, incx, dy, incy)) return;
 
     if (0) { Raxpy_ref(n, da, dx, incx, dy, incy); }
     else { Raxpy_omp(n, da, dx, incx, dy, incy); }

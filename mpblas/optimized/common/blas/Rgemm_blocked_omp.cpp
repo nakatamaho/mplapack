@@ -31,11 +31,15 @@
 // <type>/openmp/Rgemm_{NN,NT,TN,TT}_omp.cpp, so the result is theirs bit for
 // bit; for dd, td, qd and binary128 also the opt-in Winograd and Ozaki
 // variants (../Rgemm_cpu_common.h), for the other libraries the opt-in
-// Winograd variant (<P>_GEMM_WINOGRAD_CUTOFF, leaves by Rgemm).  Returns false
+// Winograd variant (<P>_GEMM_WINOGRAD_CUTOFF, leaves by Rgemm) and for MPFR
+// the fixed-precision kernels (mpfr/openmp/Rgemm_freal.h).  Returns false
 // when the caller is to run its own code (small calls, MPLAPACK_BLAS_BLOCK=0).
 
 #include <mpblas.h>
 #include "../Rblas_cpu_common.h"
+#if defined(MPLAPACK_BUILD_WITH_MPFR)
+#include "../../mpfr/openmp/Rgemm_freal.h"
+#endif
 
 #if defined(MPLAPACK_BUILD_WITH_DD) || defined(MPLAPACK_BUILD_WITH_TD) || defined(MPLAPACK_BUILD_WITH_QD) || defined(MPLAPACK_BUILD_WITH_BINARY128)
 #include "../Rgemm_cpu_common.h"
@@ -105,6 +109,12 @@ bool Rgemm_blocked_omp(bool nota, bool notb, INTEGER m, INTEGER n, INTEGER k, RE
     const mplapack_gemm::shape s = {nota, notb, (long)m, (long)n, (long)k, (long)lda, (long)ldb, (long)ldc};
     rgemm_leaf leaf;
     if (mplapack_gemm::gemm_winograd_env<REAL>(MPLAPACK_GEMM_WINOGRAD_PREFIX, "_GEMM_WINOGRAD_CUTOFF", s, alpha, beta, A, B, C, leaf, REAL(0.0), REAL(1.0)))
+        return true;
+#endif
+#if defined(MPLAPACK_BUILD_WITH_MPFR)
+    // fixed-precision kernels (../../mpfr/openmp/Rgemm_freal_*.cpp), bit for
+    // bit the result of the operations below
+    if (Rgemm_freal_cpu(nota, notb, (long)m, (long)n, (long)k, alpha, A, (long)lda, B, (long)ldb, beta, C, (long)ldc))
         return true;
 #endif
     return mplapack_blas::blk_gemm<mplapack_blas::blas_thread_context>(nota, notb, (long)m, (long)n, (long)k, alpha, A, (long)lda, B, (long)ldb, beta, C, (long)ldc);

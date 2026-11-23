@@ -214,6 +214,85 @@ Winograd and Ozaki are opt-in. Their results differ
 from the conventional ones in rounding, and their errors are bounded normwise,
 not elementwise.
 
+## MPFR fixed-precision kernels (CPU)
+
+`mpfr/openmp/Rgemm_freal_*.cpp` compute the MPFR `Rgemm` with
+`cu_freal<PB>`, a fixed-precision real whose every operation is rounded to
+nearest-even bit for bit as MPFR (`mpfr/lgpl/Rfreal_host.h`, generated from
+`cu_freal.cuh` of mpc_cuda by `misc/gen_freal_host.py`; **LGPL-3.0-or-later**,
+see `mpfr/lgpl/README.md`). The elements are copied tile by tile (C in 32 x 32
+tiles, OpenMP over the tiles, l in panels that keep the packed A and B in the
+L2 cache) and every operation of `mpfr/openmp/Rgemm_{NN,NT,TN,TT}_omp.cpp`
+is done in the same order, so the result is theirs bit for bit, signed zeros
+included (`mpfr/test/Rgemm_freal_test`). They are used by `Rgemm` of
+`libmplapack_mpfr_opt` (after the opt-in Winograd) and by the CPU path of
+`libmplapack_mpfr_opt_cuda` for 128-1024 bits in steps of 64, 1536 and 2048
+bits, unless an operand has another precision or is NaN or Inf, the rounding
+mode is not `MPFR_RNDN`, the exponents could leave [emin, emax], or m n k is
+below `MPLAPACK_MPFR_CPU_FREAL_MIN` (512). `MPLAPACK_MPFR_CPU_FREAL=0` turns
+them off, `=2` takes the portable kernel. On x86-64 the kernel with the
+mulx/adcx/adox multiply (compiled for BMI2 + ADX and -O3 whatever the flags)
+runs when the CPU has both; otherwise the portable one (-O3).
+
+| Rgemm NN, Xeon Gold 5122 | 256 bits | 512 bits | 1024 bits | 2048 bits |
+|---|---|---|---|---|
+| 1 thread, n = 200: `Rgemm_*_omp` / freal (s) | 1.11 / 0.34 (3.2x) | 1.58 / 0.66 (2.4x) | 2.51 / 1.31 (1.9x) | 6.37 / 3.48 (1.8x) |
+| 4 threads, n = 400 (s) | 2.12 / 0.72 (3.0x) | 2.71 / 1.10 (2.5x) | 5.14 / 2.21 (2.3x) | 11.0 / 6.66 (1.7x) |
+
+TN, NT, TT at 512 bits, 1 thread: 2.3-2.9x.
+
+The other routines (`mpfr/openmp/Rfreal_blas.h`: Level 3 `Rsyrk`, `Rsyr2k`,
+`Rsymm`, `Rtrmm`, `Rtrsm`, `Rgemmtr` and their complex counterparts with
+`Cgemm`, `Chemm`, `Cherk`, `Cher2k`; every Level 2 routine; `Rscal`, `Rrot`,
+`Rasum`, `Rdot`, `Raxpy`, `Caxpy`, `Cscal`, `CRscal`, `CRrot`, `Cdotc`,
+`Cdotu`, `RCasum`) run the library's own code -- `common/blas/<name>_omp.cpp`
+with the reference code, compiled again in `mpfr/openmp/Rfreal_blas_<PB>.cpp`
+with REAL and COMPLEX replaced by `fr<PB>` and `fc<PB>`
+(`mpfr/openmp/Rfreal_types.h`) -- on copies of the operands, so the result is
+the MPFR/MPC result bit for bit, signed zeros included. `fr` is
+`cu_freal<PB>` with MPFR's zero rules and the correctly rounded division and
+square root of `cu_fround.cuh`; `fc` multiplies with the correctly rounded
+parts of `cu_fcomplex.cuh` and the zero rules of `mpc_mul` (a real operand is
+(x, +0), as in the `mpc_class` expressions). `<name>_omp` calls
+`<name>_freal` first; it declines (and the MPFR code runs) for the cases of
+`Rgemm` above, overlapping operands (blocks of one matrix are fine), a
+result that leaves [emin, emax] or a complex division (the solves with diag
+= N), found while running; Level 1 and 2 run only up to
+`MPLAPACK_MPFR_CPU_FREAL_L12_PREC` bits (512: their copies cost about as much
+as their operations) and Level 1 only on one thread. Not here: `Rcopy`,
+`Rswap`, `Ccopy`, `Cswap`, `iRamax`, `iCamax` (no arithmetic), `Rnrm2`,
+`RCnrm2` (MPFR's arithmetic parameters). The complex division and modulus
+(diagonal elements, pivots) are `mpc_div` and `mpc_abs` themselves.
+
+The optimized LAPACK routines (`mplapack/optimized/common`: `Rgetrf`,
+`Rgetrf2`, `Rpotrf`, `Rtrtri`, `Rlauum` and the complex ones) run entirely in
+`fr` / `fc` from one copy of the matrix: the same files are compiled in the
+instance with their BLAS calls going to the BLAS of `fr` / `fc` (`Rgemm`: the
+tiled kernel on the `fr` arrays when the exponent bound holds, else the
+reference code), `Rlamch` converted from MPFR; the routines made of them
+(`Rgesv`, `Rgetri`, `Rposv`, `Rpotri`, ...) follow. With
+`MPLAPACK_MPFR_GEMM_WINOGRAD_CUTOFF` set they are left to MPFR (the opt-in
+Winograd `Rgemm` has other rounding). Over the BLAS kernels this saves the
+copies of every call (n = 300: 0-10%).
+
+`mpfr/test/Rfreal_blas_test` checks every routine against the reference code;
+`misc/gen_freal_blas.py` generates the drivers and the per-precision files.
+
+| Xeon Gold 5122, MPFR / freal (s) | 256 bits | 512 bits | 1024 bits |
+|---|---|---|---|
+| Rgetrf n = 300, 1 thread | 1.16 / 0.42 (2.7x) | 1.54 / 0.65 (2.4x) | 2.81 / 1.30 (2.2x) |
+| Rpotrf n = 300, 1 thread | 0.59 / 0.25 (2.4x) | 0.80 / 0.38 (2.1x) | 1.44 / 0.75 (1.9x) |
+| Cgetrf n = 300, 1 thread | 5.13 / 2.04 (2.5x) | 6.87 / 3.03 (2.3x) | 12.2 / 5.93 (2.1x) |
+| Rgetrf n = 300, 4 threads | 0.33 / 0.15 (2.3x) | 0.44 / 0.22 (2.0x) | 0.81 / 0.44 (1.8x) |
+| Rpotrf n = 300, 4 threads | 0.17 / 0.09 (1.9x) | 0.23 / 0.13 (1.7x) | 0.43 / 0.27 (1.6x) |
+| Cgetrf n = 300, 4 threads | 1.57 / 0.61 (2.6x) | 2.00 / 0.92 (2.2x) | 3.75 / 1.75 (2.1x) |
+| Rsyrk, Rsymm, Rtrmm n = 120, 1 thread | 2.4-2.5x | 2.1x | 2.0x |
+| Rtrsm n = 120, 1 thread | 2.0x | 1.8x | 1.7x |
+| Cgemm, Cherk, Ctrsm n = 120, 1 thread | 2.3-2.5x | 2.1-2.2x | 1.9-2.0x |
+| Rgemv, Cgemv, Chemv n = 600, 1 thread | 1.9-2.9x | 1.7-2.3x | (MPFR) |
+| Rgemv, Cgemv, Chemv n = 600, 4 threads | 1.3-1.9x | 1.0-1.6x | (MPFR) |
+| Rdot, Raxpy n = 10^5, 1 thread | 1.3-1.7x | 1.1-1.5x | (MPFR) |
+
 ## Winograd (every CPU type, real and complex)
 
 `Rgemm_winograd_common.h` is the Winograd variant of Strassen's algorithm
@@ -355,6 +434,7 @@ GPU run fails, uses the CPU code above.
 | `<P>_CUDA_MIN_MNK=N` | smallest `m*n*k` sent to the GPU (default 32768) |
 | `<P>_CUDA_KERNEL=naive` | one thread per element, no shared memory (default: `tiled`, 16 x 16 shared-memory tiles) |
 | `<P>_CUDA_WINOGRAD_CUTOFF=N` | Winograd when `min(m,n,k) > N`, temporaries on the GPU, tiled leaves |
+| `<P>_CUDA_WINOGRAD_MULTI_MIN=N` | Winograd on several GPUs only when `min(m,n,k) >= N` (default 384; one GPU below) |
 | `<P>_CUDA_OZAKI=1` | Ozaki: slices made on the host, products by cuBLAS DGEMM, sums on the GPU |
 | `<P>_CUDA_OZAKI_SLICES=S` | number of slices |
 | `<P>_CUDA_SLOPPY_MUL=1` | sloppy multiplication: dd the SLOPPY_MUL `dd_mul` of the former kernels (fma, no renormalization), td the libQD3 multiplication without `QD_BF_MUL`, qd `qd_real::sloppy_mul` |

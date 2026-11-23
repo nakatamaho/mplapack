@@ -60,6 +60,7 @@
 #endif
 #if defined(MPLAPACK_BUILD_WITH_MPFR)
 #include <mplapack_mpfr_precision.h>
+#include "../mpfr/openmp/Rfreal_state.h"
 #endif
 #include "Rblas_block_common.h"
 
@@ -92,19 +93,23 @@ struct blas_thread_context {
     mpfr_prec_t prec;
     mpfr_rnd_t rnd;
     mpfr_exp_t emin, emax;
-    blas_thread_context() : prec(mpfrxx::default_precision_bits()), rnd(mpfr_get_default_rounding_mode()), emin(mpfr_get_emin()), emax(mpfr_get_emax()) {}
+    mplapack_freal_state freal; // the fixed-precision kernels (../mpfr/openmp/Rfreal_state.h)
+    blas_thread_context() : prec(mpfrxx::default_precision_bits()), rnd(mpfr_get_default_rounding_mode()), emin(mpfr_get_emin()), emax(mpfr_get_emax()), freal(mplapack_freal_tls) {}
     struct scope {
         MplapackMpfrPrecisionScope p;
         mpfr_rnd_t old_rnd;
         mpfr_exp_t old_emin, old_emax;
-        explicit scope(const blas_thread_context &c) : p(c.prec), old_rnd(mpfr_get_default_rounding_mode()), old_emin(mpfr_get_emin()), old_emax(mpfr_get_emax())
+        mplapack_freal_state old_freal;
+        explicit scope(const blas_thread_context &c) : p(c.prec), old_rnd(mpfr_get_default_rounding_mode()), old_emin(mpfr_get_emin()), old_emax(mpfr_get_emax()), old_freal(mplapack_freal_tls)
         {
             mpfr_set_default_rounding_mode(c.rnd);
             mpfr_set_emin(c.emin);
             mpfr_set_emax(c.emax);
+            mplapack_freal_tls = c.freal;
         }
         ~scope()
         {
+            mplapack_freal_tls = old_freal;
             mpfr_set_emin(old_emin);
             mpfr_set_emax(old_emax);
             mpfr_set_default_rounding_mode(old_rnd);

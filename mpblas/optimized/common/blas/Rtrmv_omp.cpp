@@ -32,6 +32,9 @@
 #define Rtrmv Rtrmv_reference_cpu
 #include "../../../reference/Rtrmv.cpp"
 #undef Rtrmv
+#if defined(MPLAPACK_BUILD_WITH_MPFR) && !defined(MPLAPACK_FREAL_INSTANCE)
+#include "../../mpfr/openmp/Rfreal_blas.h"
+#endif
 
 #include "../Rblas_cpu_common.h"
 
@@ -41,6 +44,11 @@ bool ls(const char *a, const char *b) { return Mlsame(a, b) != 0; }
 
 bool Rtrmv_omp(const char *uplo, const char *trans, const char *diag, INTEGER const n, REAL *a, INTEGER const lda, REAL *x, INTEGER const incx)
 {
+#if defined(MPLAPACK_BUILD_WITH_MPFR) && !defined(MPLAPACK_FREAL_INSTANCE)
+    // the fixed-precision kernels (../../mpfr/openmp/Rfreal_blas.h)
+    if (Rtrmv_freal(uplo, trans, diag, n, a, lda, x, incx))
+        return true;
+#endif
     using namespace mplapack_blas;
     blas_call<REAL> c;
     if (!make_trmv<REAL>(c, ls, uplo, trans, diag, n, a, lda, x, incx))

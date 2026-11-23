@@ -35,6 +35,9 @@
 #define Chpr Chpr_reference_cpu
 #include "../../../reference/Chpr.cpp"
 #undef Chpr
+#if defined(MPLAPACK_BUILD_WITH_MPFR) && !defined(MPLAPACK_FREAL_INSTANCE)
+#include "../../mpfr/openmp/Rfreal_blas.h"
+#endif
 
 #include <algorithm>
 #include <vector>
@@ -93,6 +96,11 @@ void Chpr_rows(const char *uplo, INTEGER const n, REAL const alpha, COMPLEX *x, 
 
 bool Chpr_omp(const char *uplo, INTEGER const n, REAL const alpha, COMPLEX *x, INTEGER const incx, COMPLEX *ap)
 {
+#if defined(MPLAPACK_BUILD_WITH_MPFR) && !defined(MPLAPACK_FREAL_INSTANCE)
+    // the fixed-precision kernels (../../mpfr/openmp/Rfreal_blas.h)
+    if (Chpr_freal(uplo, n, alpha, x, incx, ap))
+        return true;
+#endif
     using namespace mplapack_blas;
     const COMPLEX zero = COMPLEX(0.0, 0.0);
     if ((!ls(uplo, "U") && !ls(uplo, "L")) || n <= 0 || alpha == zero.real() || incx != 1)

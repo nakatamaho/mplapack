@@ -32,6 +32,9 @@
 #define Rger Rger_reference_cpu
 #include "../../../reference/Rger.cpp"
 #undef Rger
+#if defined(MPLAPACK_BUILD_WITH_MPFR) && !defined(MPLAPACK_FREAL_INSTANCE)
+#include "../../mpfr/openmp/Rfreal_blas.h"
+#endif
 
 #include "../Rblas_cpu_common.h"
 
@@ -41,6 +44,11 @@ bool ls(const char *a, const char *b) { return Mlsame(a, b) != 0; }
 
 bool Rger_omp(INTEGER const m, INTEGER const n, REAL const alpha, REAL *x, INTEGER const incx, REAL *y, INTEGER const incy, REAL *a, INTEGER const lda)
 {
+#if defined(MPLAPACK_BUILD_WITH_MPFR) && !defined(MPLAPACK_FREAL_INSTANCE)
+    // the fixed-precision kernels (../../mpfr/openmp/Rfreal_blas.h)
+    if (Rger_freal(m, n, alpha, x, incx, y, incy, a, lda))
+        return true;
+#endif
     using namespace mplapack_blas;
     blas_call<REAL> c;
     if (!make_rank<REAL>(c, ls, 0, "U", m, n, alpha, x, incx, y, incy, a, lda))
