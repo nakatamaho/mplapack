@@ -28,6 +28,7 @@
  *
  */
 #include <mpblas_gmp.h>
+#include "../../common/Rblas_cpu_common.h"
 
 void Rgemm_TT_omp(mplapackint m, mplapackint n, mplapackint k, mpf_class alpha, mpf_class *A, mplapackint lda, mpf_class *B, mplapackint ldb, mpf_class beta,
 	      mpf_class *C, mplapackint ldc)
@@ -47,8 +48,17 @@ void Rgemm_TT_omp(mplapackint m, mplapackint n, mplapackint k, mpf_class alpha, 
 	}
     }
 //main loop
+    // Every thread computes with the caller's precision (the private temp
+    // and the temporaries of the expressions are made in the threads).
+    const mplapack_blas::blas_thread_context ctx;
 #ifdef _OPENMP
-#pragma omp parallel for private(i, j, l, temp)
+#pragma omp parallel private(i, j, l)
+#endif
+    {
+    const mplapack_blas::blas_thread_context::scope sc(ctx);
+    mpf_class temp;
+#ifdef _OPENMP
+#pragma omp for
 #endif
     for (j = 0; j < n; j++) {
         for (i = 0; i < m; i++) {
@@ -58,6 +68,7 @@ void Rgemm_TT_omp(mplapackint m, mplapackint n, mplapackint k, mpf_class alpha, 
 	    }
 	    C[i + j * ldc] += alpha * temp;
 	}
+    }
     }
     return;
 }

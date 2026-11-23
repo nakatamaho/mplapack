@@ -73,6 +73,7 @@ Rdot forms the dot product of two vectors.
 */
 
 #include <mpblas_mpfr.h>
+#include "../../common/Rblas_cpu_common.h"
 #ifdef _OPENMP
 #include <omp.h>
 #endif
@@ -94,10 +95,14 @@ mpfr_class Rdot_omp(mplapackint n, mpfr_class * dx, mplapackint incx, mpfr_class
     temp = 0.0;
     if (incx == 1 && incy == 1) {
 //no reduction for multiple precision
+	const mplapack_blas::blas_thread_context ctx;
 #ifdef _OPENMP
-#pragma omp parallel private (i, templ) shared(temp, dx, dy, n)
+#pragma omp parallel private (i) shared(temp, dx, dy, n)
 #endif
 	{
+	    // the caller's precision in every thread
+	    const mplapack_blas::blas_thread_context::scope sc(ctx);
+	    mpfr_class templ;
 	    templ = 0.0;
 #ifdef _OPENMP
 #pragma omp for
