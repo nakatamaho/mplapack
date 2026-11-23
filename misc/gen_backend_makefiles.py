@@ -40,6 +40,7 @@ CONF_KEYS = {
     "accelerator", "smoke_check_only", "smoke_extra", "compare_tolerance",
     "compare_rlamch_per_abi", "compare_test_env", "bench_quadmath_conditional",
     "bench_note", "opt_nofma", "rgemm_opt", "rgemm_gpu_host_test", "qd_ops_test",
+    "freal",
 }
 
 # Sources of mpblas/optimized/common/blas_cuda (the dd/td/qd CUDA BLAS).
@@ -114,6 +115,9 @@ def values(name, traits, conf):
     # (the blocked Rgemm itself, ../common/blas/Rgemm_blocked_omp.cpp, is in
     # every optimized library)
     v["opt_rgemm_sources"] = ""
+    freal = c.get("freal", "no") == "yes"
+    if freal:
+        v["opt_rgemm_sources"] = " openmp/Rgemm_freal_omp.cpp openmp/Rgemm_freal_x86.cpp openmp/Rgemm_freal_generic.cpp"
     # Program names carry the backend: their objects of ../common/test/*.cpp
     # are built in that shared directory.
     programs = ["Rblas1_fast_test_%%b%%", "Rblas_omp_test_%%b%%", "Cblas_omp_test_%%b%%", "Rlapack_omp_test_%%b%%", "Rgemm_winograd_omp_test_%%b%%"]
@@ -138,6 +142,14 @@ def values(name, traits, conf):
              "Rgemm_winograd_omp_test_%%b%%_CPPFLAGS = $(libmplapack_%%b%%_opt_la_CPPFLAGS)",
              "Rgemm_winograd_omp_test_%%b%%_LDFLAGS = -static" + (" $(QD_RPATH_LDFLAGS)" if qd else ""),
              "Rgemm_winograd_omp_test_%%b%%_LDADD = libmplapack_%%b%%_opt.la $(libmplapack_%%b%%_opt_la_LIBADD)"]
+    if freal:
+        programs.append("Rgemm_freal_test")
+        tests += ["# The fixed-precision Rgemm kernels (openmp/Rgemm_freal_*.cpp) against",
+                  "# openmp/Rgemm_*_omp.cpp, bit for bit.",
+                  "Rgemm_freal_test_SOURCES = test/Rgemm_freal_test.cpp",
+                  "Rgemm_freal_test_CPPFLAGS = $(libmplapack_%%b%%_opt_la_CPPFLAGS)",
+                  "Rgemm_freal_test_LDFLAGS = -static",
+                  "Rgemm_freal_test_LDADD = libmplapack_%%b%%_opt.la $(libmplapack_%%b%%_opt_la_LIBADD)"]
     if c.get("qd_ops_test", "no") == "yes":
         programs.append("Rqd_ops_test")
         tests += ["# The dd/td/qd arithmetic of the SIMD and GPU kernels against libQD3's",

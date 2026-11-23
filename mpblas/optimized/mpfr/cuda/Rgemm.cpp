@@ -29,6 +29,7 @@
  */
 
 #include <mpblas_mpfr_cuda.h>
+#include "../openmp/Rgemm_freal.h"
 
 void Rgemm_NN_omp(mplapackint m, mplapackint n, mplapackint k, mpfr_class alpha, mpfr_class * A, mplapackint lda, mpfr_class * B, mplapackint ldb, mpfr_class beta, mpfr_class * C, mplapackint ldc);
 void Rgemm_TN_omp(mplapackint m, mplapackint n, mplapackint k, mpfr_class alpha, mpfr_class * A, mplapackint lda, mpfr_class * B, mplapackint ldb, mpfr_class beta, mpfr_class * C, mplapackint ldc);
@@ -109,6 +110,9 @@ void Rgemm(const char *transa, const char *transb, mplapackint const m, mplapack
     }
 //Start the operations.
     if (Rgemm_mpfr_cuda(transa, transb, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc))
+	return;
+    // the CPU: fixed-precision kernels (../openmp/Rgemm_freal.h), else the OpenMP loops
+    if (Rgemm_freal_cpu(nota != 0, notb != 0, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc))
 	return;
     if (notb) {
 	if (nota) {

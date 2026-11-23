@@ -214,6 +214,33 @@ Winograd and Ozaki are opt-in. Their results differ
 from the conventional ones in rounding, and their errors are bounded normwise,
 not elementwise.
 
+## MPFR fixed-precision kernels (CPU)
+
+`mpfr/openmp/Rgemm_freal_*.cpp` compute the MPFR `Rgemm` with
+`cu_freal<PB>`, a fixed-precision real whose every operation is rounded to
+nearest-even bit for bit as MPFR (`mpfr/lgpl/Rfreal_host.h`, generated from
+`cu_freal.cuh` of mpc_cuda by `misc/gen_freal_host.py`; **LGPL-3.0-or-later**,
+see `mpfr/lgpl/README.md`). The elements are copied tile by tile (C in 32 x 32
+tiles, OpenMP over the tiles, l in panels that keep the packed A and B in the
+L2 cache) and every operation of `mpfr/openmp/Rgemm_{NN,NT,TN,TT}_omp.cpp`
+is done in the same order, so the result is theirs bit for bit, signed zeros
+included (`mpfr/test/Rgemm_freal_test`). They are used by `Rgemm` of
+`libmplapack_mpfr_opt` (after the opt-in Winograd) and by the CPU path of
+`libmplapack_mpfr_opt_cuda` for 128-1024 bits in steps of 64, 1536 and 2048
+bits, unless an operand has another precision or is NaN or Inf, the rounding
+mode is not `MPFR_RNDN`, the exponents could leave [emin, emax], or m n k is
+below `MPLAPACK_MPFR_CPU_FREAL_MIN` (512). `MPLAPACK_MPFR_CPU_FREAL=0` turns
+them off, `=2` takes the portable kernel. On x86-64 the kernel with the
+mulx/adcx/adox multiply (compiled for BMI2 + ADX and -O3 whatever the flags)
+runs when the CPU has both; otherwise the portable one (-O3).
+
+| Rgemm NN, Xeon Gold 5122 | 256 bits | 512 bits | 1024 bits | 2048 bits |
+|---|---|---|---|---|
+| 1 thread, n = 200: `Rgemm_*_omp` / freal (s) | 1.11 / 0.34 (3.2x) | 1.58 / 0.66 (2.4x) | 2.51 / 1.31 (1.9x) | 6.37 / 3.48 (1.8x) |
+| 4 threads, n = 400 (s) | 2.12 / 0.72 (3.0x) | 2.71 / 1.10 (2.5x) | 5.14 / 2.21 (2.3x) | 11.0 / 6.66 (1.7x) |
+
+TN, NT, TT at 512 bits, 1 thread: 2.3-2.9x.
+
 ## Winograd (every CPU type, real and complex)
 
 `Rgemm_winograd_common.h` is the Winograd variant of Strassen's algorithm

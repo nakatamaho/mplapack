@@ -45,6 +45,7 @@ libmplapack_mpfr_opt_cuda_la_SOURCES = \
 ../../common/blas_cuda/Rdot.cpp ../Rdot_ref.cpp  ../openmp/Rdot_omp.cpp \
 ../../common/blas/Rdot_par.cpp \
 ../Rgemm_ref.cpp ../openmp/Rgemm_NN_omp.cpp ../openmp/Rgemm_NT_omp.cpp ../openmp/Rgemm_TN_omp.cpp ../openmp/Rgemm_TT_omp.cpp \
+../openmp/Rgemm_freal_omp.cpp ../openmp/Rgemm_freal_x86.cpp ../openmp/Rgemm_freal_generic.cpp \
 ../../common/blas_cuda/Raxpy.cpp ../Raxpy_ref.cpp ../openmp/Raxpy_omp.cpp \
 ../../common/blas/Rsyrk_omp.cpp \
 ../../common/blas/Rsyr2k_omp.cpp \
