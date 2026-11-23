@@ -33,6 +33,9 @@
 #define Ctrmm Ctrmm_reference_cpu
 #include "../../../reference/Ctrmm.cpp"
 #undef Ctrmm
+#if defined(MPLAPACK_BUILD_WITH_MPFR) && !defined(MPLAPACK_FREAL_INSTANCE)
+#include "../../mpfr/openmp/Rfreal_blas.h"
+#endif
 
 #include <algorithm>
 #include "../Rblas_split_common.h"
@@ -47,6 +50,11 @@ bool ls(const char *a, const char *b) { return Mlsame(a, b) != 0; }
 
 bool Ctrmm_omp(const char *side, const char *uplo, const char *transa, const char *diag, INTEGER const m, INTEGER const n, COMPLEX const alpha, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb)
 {
+#if defined(MPLAPACK_BUILD_WITH_MPFR) && !defined(MPLAPACK_FREAL_INSTANCE)
+    // the fixed-precision kernels (../../mpfr/openmp/Rfreal_blas.h)
+    if (Ctrmm_freal(side, uplo, transa, diag, m, n, alpha, a, lda, b, ldb))
+        return true;
+#endif
     using namespace mplapack_blas;
     const bool left = ls(side, "L");
     if ((!left && !ls(side, "R")) || (!ls(uplo, "U") && !ls(uplo, "L")) || (!ls(transa, "N") && !ls(transa, "T") && !ls(transa, "C")) || (!ls(diag, "U") && !ls(diag, "N")) || m <= 0 || n <= 0)

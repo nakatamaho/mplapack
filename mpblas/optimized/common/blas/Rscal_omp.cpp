@@ -32,6 +32,9 @@
 #define Rscal Rscal_reference_cpu
 #include "../../../reference/Rscal.cpp"
 #undef Rscal
+#if defined(MPLAPACK_BUILD_WITH_MPFR) && !defined(MPLAPACK_FREAL_INSTANCE)
+#include "../../mpfr/openmp/Rfreal_blas.h"
+#endif
 
 #include "../Rblas_cpu_common.h"
 
@@ -41,6 +44,11 @@ bool ls(const char *a, const char *b) { return Mlsame(a, b) != 0; }
 
 bool Rscal_omp(INTEGER const n, REAL const da, REAL *dx, INTEGER const incx)
 {
+#if defined(MPLAPACK_BUILD_WITH_MPFR) && !defined(MPLAPACK_FREAL_INSTANCE)
+    // the fixed-precision kernels (../../mpfr/openmp/Rfreal_blas.h)
+    if (Rscal_freal(n, da, dx, incx))
+        return true;
+#endif
     using namespace mplapack_blas;
     blas_call<REAL> c;
     if (!make_level1<REAL>(c, L1_SCAL, n, da, REAL(0.0), dx, incx, (REAL *)0, 1))

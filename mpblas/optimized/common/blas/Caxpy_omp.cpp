@@ -33,12 +33,20 @@
 #define Caxpy Caxpy_reference_cpu
 #include "../../../reference/Caxpy.cpp"
 #undef Caxpy
+#if defined(MPLAPACK_BUILD_WITH_MPFR) && !defined(MPLAPACK_FREAL_INSTANCE)
+#include "../../mpfr/openmp/Rfreal_blas.h"
+#endif
 
 #include <algorithm>
 #include "../Rblas_split_common.h"
 
 bool Caxpy_omp(INTEGER const n, COMPLEX const za, COMPLEX *zx, INTEGER const incx, COMPLEX *zy, INTEGER const incy)
 {
+#if defined(MPLAPACK_BUILD_WITH_MPFR) && !defined(MPLAPACK_FREAL_INSTANCE)
+    // the fixed-precision kernels (../../mpfr/openmp/Rfreal_blas.h)
+    if (Caxpy_freal(n, za, zx, incx, zy, incy))
+        return true;
+#endif
     using namespace mplapack_blas;
     if (n <= 0 || !(incx > 0 && incy > 0))
         return false;

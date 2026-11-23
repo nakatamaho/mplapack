@@ -35,6 +35,9 @@
 #define Cgbmv Cgbmv_reference_cpu
 #include "../../../reference/Cgbmv.cpp"
 #undef Cgbmv
+#if defined(MPLAPACK_BUILD_WITH_MPFR) && !defined(MPLAPACK_FREAL_INSTANCE)
+#include "../../mpfr/openmp/Rfreal_blas.h"
+#endif
 
 #include <algorithm>
 #include <vector>
@@ -100,6 +103,11 @@ void Cgbmv_rows(const char *trans, INTEGER const m, INTEGER const n, INTEGER con
 
 bool Cgbmv_omp(const char *trans, INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku, COMPLEX const alpha, COMPLEX *a, INTEGER const lda, COMPLEX *x, INTEGER const incx, COMPLEX const beta, COMPLEX *y, INTEGER const incy)
 {
+#if defined(MPLAPACK_BUILD_WITH_MPFR) && !defined(MPLAPACK_FREAL_INSTANCE)
+    // the fixed-precision kernels (../../mpfr/openmp/Rfreal_blas.h)
+    if (Cgbmv_freal(trans, m, n, kl, ku, alpha, a, lda, x, incx, beta, y, incy))
+        return true;
+#endif
     using namespace mplapack_blas;
     const COMPLEX zero = COMPLEX(0.0, 0.0);
     if ((!ls(trans, "N") && !ls(trans, "T") && !ls(trans, "C")) || m <= 0 || n <= 0 || kl < 0 || ku < 0 || lda < kl + ku + 1 || incx != 1 || incy != 1 || alpha == zero) // alpha == 0: only y = beta y

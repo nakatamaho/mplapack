@@ -33,12 +33,20 @@
 #define CRscal CRscal_reference_cpu
 #include "../../../reference/CRscal.cpp"
 #undef CRscal
+#if defined(MPLAPACK_BUILD_WITH_MPFR) && !defined(MPLAPACK_FREAL_INSTANCE)
+#include "../../mpfr/openmp/Rfreal_blas.h"
+#endif
 
 #include <algorithm>
 #include "../Rblas_split_common.h"
 
 bool CRscal_omp(INTEGER const n, REAL const da, COMPLEX *zx, INTEGER const incx)
 {
+#if defined(MPLAPACK_BUILD_WITH_MPFR) && !defined(MPLAPACK_FREAL_INSTANCE)
+    // the fixed-precision kernels (../../mpfr/openmp/Rfreal_blas.h)
+    if (CRscal_freal(n, da, zx, incx))
+        return true;
+#endif
     using namespace mplapack_blas;
     if (n <= 0 || !(incx > 0))
         return false;

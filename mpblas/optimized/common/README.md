@@ -241,6 +241,44 @@ runs when the CPU has both; otherwise the portable one (-O3).
 
 TN, NT, TT at 512 bits, 1 thread: 2.3-2.9x.
 
+The other routines (`mpfr/openmp/Rfreal_blas.h`: Level 3 `Rsyrk`, `Rsyr2k`,
+`Rsymm`, `Rtrmm`, `Rtrsm`, `Rgemmtr` and their complex counterparts with
+`Cgemm`, `Chemm`, `Cherk`, `Cher2k`; every Level 2 routine; `Rscal`, `Rrot`,
+`Rasum`, `Rdot`, `Raxpy`, `Caxpy`, `Cscal`, `CRscal`, `CRrot`, `Cdotc`,
+`Cdotu`, `RCasum`) run the library's own code -- `common/blas/<name>_omp.cpp`
+with the reference code, compiled again in `mpfr/openmp/Rfreal_blas_<PB>.cpp`
+with REAL and COMPLEX replaced by `fr<PB>` and `fc<PB>`
+(`mpfr/openmp/Rfreal_types.h`) -- on copies of the operands, so the result is
+the MPFR/MPC result bit for bit, signed zeros included. `fr` is
+`cu_freal<PB>` with MPFR's zero rules and the correctly rounded division and
+square root of `cu_fround.cuh`; `fc` multiplies with the correctly rounded
+parts of `cu_fcomplex.cuh` and the zero rules of `mpc_mul` (a real operand is
+(x, +0), as in the `mpc_class` expressions). `<name>_omp` calls
+`<name>_freal` first; it declines (and the MPFR code runs) for the cases of
+`Rgemm` above, overlapping operands (blocks of one matrix are fine), a
+result that leaves [emin, emax] or a complex division (the solves with diag
+= N), found while running; Level 1 and 2 run only up to
+`MPLAPACK_MPFR_CPU_FREAL_L12_PREC` bits (512: their copies cost about as much
+as their operations) and Level 1 only on one thread. Not here: `Rcopy`,
+`Rswap`, `Ccopy`, `Cswap`, `iRamax`, `iCamax` (no arithmetic), `Rnrm2`,
+`RCnrm2` (MPFR's arithmetic parameters). `mpfr/test/Rfreal_blas_test` checks
+every routine against the reference code; `misc/gen_freal_blas.py` generates
+the drivers and the per-precision files.
+
+| Xeon Gold 5122, MPFR / freal (s) | 256 bits | 512 bits | 1024 bits |
+|---|---|---|---|
+| Rgetrf n = 300, 1 thread | 1.16 / 0.44 (2.6x) | 1.76 / 0.68 (2.6x) | 2.81 / 1.32 (2.1x) |
+| Rpotrf n = 300, 1 thread | 0.59 / 0.25 (2.4x) | 0.90 / 0.38 (2.4x) | 1.44 / 0.74 (1.9x) |
+| Cgetrf n = 300, 1 thread | 5.13 / 2.10 (2.4x) | 6.69 / 3.11 (2.2x) | 12.2 / 6.12 (2.0x) |
+| Rgetrf n = 300, 4 threads | 0.34 / 0.16 (2.1x) | 0.45 / 0.25 (1.8x) | 0.81 / 0.45 (1.8x) |
+| Cgetrf n = 300, 4 threads | 1.54 / 0.70 (2.2x) | 2.06 / 1.03 (2.0x) | 3.63 / 1.97 (1.8x) |
+| Rsyrk, Rsymm, Rtrmm n = 120, 1 thread | 2.4-2.5x | 2.1x | 2.0x |
+| Rtrsm n = 120, 1 thread | 2.0x | 1.8x | 1.7x |
+| Cgemm, Cherk, Ctrsm n = 120, 1 thread | 2.3-2.5x | 2.1-2.2x | 1.9-2.0x |
+| Rgemv, Cgemv, Chemv n = 600, 1 thread | 1.9-2.9x | 1.7-2.3x | (MPFR) |
+| Rgemv, Cgemv, Chemv n = 600, 4 threads | 1.3-1.9x | 1.0-1.6x | (MPFR) |
+| Rdot, Raxpy n = 10^5, 1 thread | 1.3-1.7x | 1.1-1.5x | (MPFR) |
+
 ## Winograd (every CPU type, real and complex)
 
 `Rgemm_winograd_common.h` is the Winograd variant of Strassen's algorithm

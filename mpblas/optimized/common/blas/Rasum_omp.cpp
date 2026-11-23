@@ -34,6 +34,9 @@
 #define Rasum Rasum_reference_cpu
 #include "../../../reference/Rasum.cpp"
 #undef Rasum
+#if defined(MPLAPACK_BUILD_WITH_MPFR) && !defined(MPLAPACK_FREAL_INSTANCE)
+#include "../../mpfr/openmp/Rfreal_blas.h"
+#endif
 
 #include <vector>
 #include "../Rblas_split_common.h"
@@ -41,6 +44,11 @@
 
 bool Rasum_omp(INTEGER const n, REAL *dx, INTEGER const incx, REAL &result)
 {
+#if defined(MPLAPACK_BUILD_WITH_MPFR) && !defined(MPLAPACK_FREAL_INSTANCE)
+    // the fixed-precision kernels (../../mpfr/openmp/Rfreal_blas.h)
+    if (Rasum_freal(n, dx, incx, result))
+        return true;
+#endif
     REAL ignored;
     if (mplapack_blas1::fast<REAL, REAL, false>(mplapack_blas1::asum, n, dx, incx, static_cast<REAL *>(nullptr), 1, result, ignored))
         return true;

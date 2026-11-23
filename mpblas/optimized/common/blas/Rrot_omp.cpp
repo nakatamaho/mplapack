@@ -32,6 +32,9 @@
 #define Rrot Rrot_reference_cpu
 #include "../../../reference/Rrot.cpp"
 #undef Rrot
+#if defined(MPLAPACK_BUILD_WITH_MPFR) && !defined(MPLAPACK_FREAL_INSTANCE)
+#include "../../mpfr/openmp/Rfreal_blas.h"
+#endif
 
 #include "../Rblas_cpu_common.h"
 
@@ -41,6 +44,11 @@ bool ls(const char *a, const char *b) { return Mlsame(a, b) != 0; }
 
 bool Rrot_omp(INTEGER const n, REAL *dx, INTEGER const incx, REAL *dy, INTEGER const incy, REAL const c_, REAL const s)
 {
+#if defined(MPLAPACK_BUILD_WITH_MPFR) && !defined(MPLAPACK_FREAL_INSTANCE)
+    // the fixed-precision kernels (../../mpfr/openmp/Rfreal_blas.h)
+    if (Rrot_freal(n, dx, incx, dy, incy, c_, s))
+        return true;
+#endif
     using namespace mplapack_blas;
     blas_call<REAL> call;
     if (!make_level1<REAL>(call, L1_ROT, n, c_, s, dx, incx, dy, incy))

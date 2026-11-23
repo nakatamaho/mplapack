@@ -36,6 +36,9 @@
 #define Ctpsv Ctpsv_reference_cpu
 #include "../../../reference/Ctpsv.cpp"
 #undef Ctpsv
+#if defined(MPLAPACK_BUILD_WITH_MPFR) && !defined(MPLAPACK_FREAL_INSTANCE)
+#include "../../mpfr/openmp/Rfreal_blas.h"
+#endif
 
 #include <algorithm>
 #include <vector>
@@ -45,6 +48,11 @@
 
 bool Ctpsv_omp(const char *uplo, const char *trans, const char *diag, INTEGER const n, COMPLEX *ap, COMPLEX *x, INTEGER const incx)
 {
+#if defined(MPLAPACK_BUILD_WITH_MPFR) && !defined(MPLAPACK_FREAL_INSTANCE)
+    // the fixed-precision kernels (../../mpfr/openmp/Rfreal_blas.h)
+    if (Ctpsv_freal(uplo, trans, diag, n, ap, x, incx))
+        return true;
+#endif
 #ifdef MPLAPACK_CBLAS_SIMD_AVAILABLE
     using namespace mplapack_blas;
     const bool upper = Mlsame(uplo, "U"), nounit = Mlsame(diag, "N"), notr = Mlsame(trans, "N");

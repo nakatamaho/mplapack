@@ -35,6 +35,9 @@
 #define Rspr Rspr_reference_cpu
 #include "../../../reference/Rspr.cpp"
 #undef Rspr
+#if defined(MPLAPACK_BUILD_WITH_MPFR) && !defined(MPLAPACK_FREAL_INSTANCE)
+#include "../../mpfr/openmp/Rfreal_blas.h"
+#endif
 
 #include <algorithm>
 #include <vector>
@@ -87,6 +90,11 @@ void Rspr_rows(const char *uplo, INTEGER const n, REAL const alpha, REAL *x, INT
 
 bool Rspr_omp(const char *uplo, INTEGER const n, REAL const alpha, REAL *x, INTEGER const incx, REAL *ap)
 {
+#if defined(MPLAPACK_BUILD_WITH_MPFR) && !defined(MPLAPACK_FREAL_INSTANCE)
+    // the fixed-precision kernels (../../mpfr/openmp/Rfreal_blas.h)
+    if (Rspr_freal(uplo, n, alpha, x, incx, ap))
+        return true;
+#endif
     using namespace mplapack_blas;
     const REAL zero = 0.0;
     if ((!ls(uplo, "U") && !ls(uplo, "L")) || n <= 0 || alpha == zero || incx != 1)

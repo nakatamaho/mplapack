@@ -33,6 +33,9 @@
 #define Cgerc Cgerc_reference_cpu
 #include "../../../reference/Cgerc.cpp"
 #undef Cgerc
+#if defined(MPLAPACK_BUILD_WITH_MPFR) && !defined(MPLAPACK_FREAL_INSTANCE)
+#include "../../mpfr/openmp/Rfreal_blas.h"
+#endif
 
 #include <algorithm>
 #include "../Rblas_split_common.h"
@@ -42,6 +45,11 @@
 
 bool Cgerc_omp(INTEGER const m, INTEGER const n, COMPLEX const alpha, COMPLEX *x, INTEGER const incx, COMPLEX *y, INTEGER const incy, COMPLEX *a, INTEGER const lda)
 {
+#if defined(MPLAPACK_BUILD_WITH_MPFR) && !defined(MPLAPACK_FREAL_INSTANCE)
+    // the fixed-precision kernels (../../mpfr/openmp/Rfreal_blas.h)
+    if (Cgerc_freal(m, n, alpha, x, incx, y, incy, a, lda))
+        return true;
+#endif
     using namespace mplapack_blas;
     if (m <= 0 || n <= 0 || incx == 0 || incy <= 0 || lda < std::max((INTEGER)1, m))
         return false;

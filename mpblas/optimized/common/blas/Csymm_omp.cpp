@@ -33,6 +33,9 @@
 #define Csymm Csymm_reference_cpu
 #include "../../../reference/Csymm.cpp"
 #undef Csymm
+#if defined(MPLAPACK_BUILD_WITH_MPFR) && !defined(MPLAPACK_FREAL_INSTANCE)
+#include "../../mpfr/openmp/Rfreal_blas.h"
+#endif
 
 #include <algorithm>
 #include "../Rblas_split_common.h"
@@ -44,6 +47,11 @@ bool ls(const char *a, const char *b) { return Mlsame(a, b) != 0; }
 
 bool Csymm_omp(const char *side, const char *uplo, INTEGER const m, INTEGER const n, COMPLEX const alpha, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, COMPLEX const beta, COMPLEX *c, INTEGER const ldc)
 {
+#if defined(MPLAPACK_BUILD_WITH_MPFR) && !defined(MPLAPACK_FREAL_INSTANCE)
+    // the fixed-precision kernels (../../mpfr/openmp/Rfreal_blas.h)
+    if (Csymm_freal(side, uplo, m, n, alpha, a, lda, b, ldb, beta, c, ldc))
+        return true;
+#endif
     using namespace mplapack_blas;
     const bool left = ls(side, "L"), upper = ls(uplo, "U");
     if ((!left && !ls(side, "R")) || (!upper && !ls(uplo, "L")) || m <= 0 || n <= 0)

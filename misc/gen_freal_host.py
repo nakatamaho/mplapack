@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
-# Generates mpblas/optimized/mpfr/lgpl/Rfreal_host.h, the host-only copy of
-# cu_freal.cuh of mpc_cuda (fixed-precision real, bit-exact with MPFR RNDN),
-# for the CPU MPFR Rgemm (mpblas/optimized/mpfr/openmp/Rgemm_freal_*.cpp):
+# Generates mpblas/optimized/mpfr/lgpl/R*_host.h, the host-only copies of
+# cu_freal.cuh (fixed-precision real, bit-exact with MPFR RNDN), cu_fmath.cuh,
+# cu_fround.cuh (correctly rounded division) and cu_fcomplex.cuh (complex,
+# bit-exact with MPC RNDNN for +, -, *) of mpc_cuda, for the CPU MPFR BLAS
+# (mpblas/optimized/mpfr/openmp/R*_freal*.cpp):
 #   - the device (__CUDA_ARCH__ / __CUDACC__) branches are removed,
 #   - the namespace is MPFREAL_NS (set by the includer) and the macros are
 #     MPFREAL_* instead of CU_FP_*, so that it never clashes with cu_freal,
@@ -9,9 +11,8 @@
 #     MPFREAL_FORCE_X86_MULX (a file compiled without -mbmi2 -madx that is
 #     only called after a run-time CPU check).
 # The output is LGPL-3.0-or-later like its source (mpblas/optimized/mpfr/lgpl/README.md).
-#   usage: misc/gen_freal_host.py <mpc_cuda>/include/mpc_cuda/cu_freal.cuh > mpblas/optimized/mpfr/lgpl/Rfreal_host.h
-import re, sys
-src = open(sys.argv[1]).read().split('\n')
+#   usage: misc/gen_freal_host.py <mpc_cuda>/include/mpc_cuda mpblas/optimized/mpfr/lgpl
+import re, sys, os
 def simp(c):
     c = c.strip()
     c = re.sub(r'/\*.*?\*/', '', c).strip()
@@ -22,77 +23,61 @@ def simp(c):
     if c in ('!defined(__CUDA_ARCH__)', '!defined(__CUDACC__)'): return '1'
     assert '__CUDA' not in c, c
     return c
-out = []
-# stack entries: kind 'keep' (directive emitted) or 'const' (resolved here);
-# cur: 'keep', 'take' (branch kept, directive dropped) or 'skip'
-stack = []
-def active(): return all(e['cur'] != 'skip' for e in stack)
-for line in src:
-    m = re.match(r'\s*#\s*(if|ifdef|ifndef|elif|else|endif)\b(.*)', line)
-    if not m:
-        if active(): out.append(line)
-        continue
-    d, rest = m.group(1), m.group(2)
-    if d in ('ifdef', 'ifndef'):
-        stack.append({'kind': 'keep', 'cur': 'keep'}); 
-        if active() or len(stack) and all(e['cur'] != 'skip' for e in stack[:-1]): out.append(line)
-        continue
-    if d == 'if':
-        par = active()
-        c = simp(rest)
-        if c == '0': stack.append({'kind': 'const', 'cur': 'skip', 'done': False, 'par': par})
-        elif c == '1': stack.append({'kind': 'const', 'cur': 'take', 'done': True, 'par': par})
-        else:
-            stack.append({'kind': 'keep', 'cur': 'keep', 'par': par})
-            if par: out.append(re.sub(r'(#\s*if\s).*', r'\g<1>' + c, line) if '__CUDA' in rest else line)
-        continue
-    e = stack[-1]
-    par = all(x['cur'] != 'skip' for x in stack[:-1])
-    if d == 'elif':
-        c = simp(rest)
-        if e['kind'] == 'keep':
-            assert c not in ('0', '1'), line
-            if par: out.append(re.sub(r'(#\s*elif\s).*', r'\g<1>' + c, line) if '__CUDA' in rest else line)
-        else:
-            if e['done']: e['cur'] = 'skip'
-            elif c == '0': e['cur'] = 'skip'
-            elif c == '1': e['cur'] = 'take'; e['done'] = True
-            else:  # first live branch: becomes a kept #if
-                e['kind'] = 'keep'; e['cur'] = 'keep'
-                if par: out.append(re.sub(r'#\s*elif\s.*', '#if ' + c, line))
-        continue
-    if d == 'else':
-        if e['kind'] == 'keep':
-            e['cur'] = 'keep'
-            if par: out.append(line)
-        else:
-            e['cur'] = 'skip' if e['done'] else 'take'; e['done'] = True
-        continue
-    if d == 'endif':
-        stack.pop()
-        if e['kind'] == 'keep' and par: out.append(line)
-        continue
-assert not stack
-txt = '\n'.join(out)
-txt = txt.replace('__host__ __device__ ', '')
+def unifdef(src):
+    out = []
+    # stack entries: kind 'keep' (directive emitted) or 'const' (resolved here);
+    # cur: 'keep', 'take' (branch kept, directive dropped) or 'skip'
+    stack = []
+    def active(): return all(e['cur'] != 'skip' for e in stack)
+    for line in src:
+        m = re.match(r'\s*#\s*(if|ifdef|ifndef|elif|else|endif)\b(.*)', line)
+        if not m:
+            if active(): out.append(line)
+            continue
+        d, rest = m.group(1), m.group(2)
+        if d in ('ifdef', 'ifndef'):
+            stack.append({'kind': 'keep', 'cur': 'keep'}); 
+            if active() or len(stack) and all(e['cur'] != 'skip' for e in stack[:-1]): out.append(line)
+            continue
+        if d == 'if':
+            par = active()
+            c = simp(rest)
+            if c == '0': stack.append({'kind': 'const', 'cur': 'skip', 'done': False, 'par': par})
+            elif c == '1': stack.append({'kind': 'const', 'cur': 'take', 'done': True, 'par': par})
+            else:
+                stack.append({'kind': 'keep', 'cur': 'keep', 'par': par})
+                if par: out.append(re.sub(r'(#\s*if\s).*', r'\g<1>' + c, line) if '__CUDA' in rest else line)
+            continue
+        e = stack[-1]
+        par = all(x['cur'] != 'skip' for x in stack[:-1])
+        if d == 'elif':
+            c = simp(rest)
+            if e['kind'] == 'keep':
+                assert c not in ('0', '1'), line
+                if par: out.append(re.sub(r'(#\s*elif\s).*', r'\g<1>' + c, line) if '__CUDA' in rest else line)
+            else:
+                if e['done']: e['cur'] = 'skip'
+                elif c == '0': e['cur'] = 'skip'
+                elif c == '1': e['cur'] = 'take'; e['done'] = True
+                else:  # first live branch: becomes a kept #if
+                    e['kind'] = 'keep'; e['cur'] = 'keep'
+                    if par: out.append(re.sub(r'#\s*elif\s.*', '#if ' + c, line))
+            continue
+        if d == 'else':
+            if e['kind'] == 'keep':
+                e['cur'] = 'keep'
+                if par: out.append(line)
+            else:
+                e['cur'] = 'skip' if e['done'] else 'take'; e['done'] = True
+            continue
+        if d == 'endif':
+            stack.pop()
+            if e['kind'] == 'keep' and par: out.append(line)
+            continue
+    assert not stack
+    return '\n'.join(out).replace('__host__ __device__ ', '')
 
-t = txt
-t = re.sub(r'/\* Usable from plain host C\+\+ too.*?#  endif\n#  ifndef __device__\n#    define __device__\n#  endif\n\n', '', t, flags=re.S)
-t = re.sub(r'/\* Device range \(limbs\) of the mulhigh.*?CU_FP_DEV_CMUL_FAST_MIN_N 1000000\n#endif\n', '', t, flags=re.S)
-t = re.sub(r'/\* By-value selection only while.*?#  define CU_FP_DEV_SEL_MAX_LIMBS 128\n#endif\n', '', t, flags=re.S)
-assert 'CU_FP_DEV' not in t and '__device__' not in t, [l for l in t.split('\n') if 'DEV' in l or '__device__' in l]
-t = t.replace('CU_FP_', 'MPFREAL_').replace('CU_FREAL_ZERO_EXP', 'MPFREAL_ZERO_EXP').replace('CU_MPC_CUDA_FREAL_CUH', 'MPFREAL_NS_GUARD')
-t = t.replace('namespace cu_fp {', 'namespace MPFREAL_NS {').replace('} /* namespace cu_fp */', '} /* namespace MPFREAL_NS */')
-
-old = "#if defined(__x86_64__) && defined(__BMI2__) && defined(__ADX__) \\"
-assert old in t
-t = t.replace(old, "#if defined(__x86_64__) && ((defined(__BMI2__) && defined(__ADX__)) || defined(MPFREAL_FORCE_X86_MULX)) \\")
-head = t.index('#ifndef MPFREAL_NS_GUARD')
-t = """/* Rfreal_host.h -- GENERATED by misc/gen_freal_host.py from
- * include/mpc_cuda/cu_freal.cuh of mpc_cuda (https://github.com/tkouya/mpc_cuda,
- * maintainer Tomonori Kouya); do not edit, regenerate.
- *
- * Copyright the mpc_cuda authors.
+LICENCE = """ * Copyright the mpc_cuda authors.
  *
  * This file is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -102,7 +87,31 @@ t = """/* Rfreal_host.h -- GENERATED by misc/gen_freal_host.py from
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See COPYING.LESSER
  * and COPYING in this directory.  Unlike the rest of MPLAPACK (BSD), this
  * file is LGPL-3.0-or-later; see README.md in this directory.
- *
+"""
+
+def banner(name, src):
+    return ("/* %s -- GENERATED by misc/gen_freal_host.py from\n"
+            " * include/mpc_cuda/%s of mpc_cuda (https://github.com/tkouya/mpc_cuda,\n"
+            " * maintainer Tomonori Kouya); do not edit, regenerate.\n *\n" % (name, src)) + LICENCE
+
+def common(t):
+    t = t.replace('CU_FP_', 'MPFREAL_').replace('CU_FREAL_ZERO_EXP', 'MPFREAL_ZERO_EXP').replace('CU_FGUARD', 'MPFREAL_FGUARD')
+    t = t.replace('namespace cu_fp {', 'namespace MPFREAL_NS {').replace('} /* namespace cu_fp */', '} /* namespace MPFREAL_NS */')
+    t = t.replace('#include "mpc_cuda/cu_freal.cuh"', '#include "Rfreal_host.h"').replace('#include "mpc_cuda/cu_fmath.cuh"', '#include "Rfmath_host.h"')
+    assert '__device__' not in t and '__CUDA' not in t and 'CU_' not in t.replace('MPFREAL_', ''), [l for l in t.split('\n') if '__device__' in l or 'CU_' in l]
+    return t
+
+def freal(t):
+    t = re.sub(r'/\* Usable from plain host C\+\+ too.*?#  endif\n#  ifndef __device__\n#    define __device__\n#  endif\n\n', '', t, flags=re.S)
+    t = re.sub(r'/\* Device range \(limbs\) of the mulhigh.*?CU_FP_DEV_CMUL_FAST_MIN_N 1000000\n#endif\n', '', t, flags=re.S)
+    t = re.sub(r'/\* By-value selection only while.*?#  define CU_FP_DEV_SEL_MAX_LIMBS 128\n#endif\n', '', t, flags=re.S)
+    assert 'CU_FP_DEV' not in t
+    t = common(t.replace('CU_MPC_CUDA_FREAL_CUH', 'MPFREAL_NS_GUARD'))
+    old = "#if defined(__x86_64__) && defined(__BMI2__) && defined(__ADX__) \\"
+    assert old in t
+    t = t.replace(old, "#if defined(__x86_64__) && ((defined(__BMI2__) && defined(__ADX__)) || defined(MPFREAL_FORCE_X86_MULX)) \\")
+    head = t.index('#ifndef MPFREAL_NS_GUARD')
+    return banner('Rfreal_host.h', 'cu_freal.cuh') + """ *
  * Host-only fixed-precision binary floating-point real: cu_freal<PB> with
  * the precision PB (bits, a multiple of 32) a compile-time parameter and
  * every operation rounded to nearest-even, bit for bit the same as MPFR
@@ -120,4 +129,20 @@ t = """/* Rfreal_host.h -- GENERATED by misc/gen_freal_host.py from
 #error "define MPFREAL_NS before including Rfreal_host.h"
 #endif
 """ + t[head:]
-sys.stdout.write(t)
+
+def other(name, src, guard):
+    def f(t):
+        t = common(t.replace(guard, 'MPFREAL_NS_' + name.split('_')[0][1:].upper() + '_GUARD'))
+        # the original comment block (up to the guard) stays, after the banner
+        assert t.startswith('/*')
+        return banner(name, src) + ' *\n * ' + t[2:].lstrip(' \n')
+    return f
+
+FILES = [('cu_freal.cuh', 'Rfreal_host.h', freal),
+         ('cu_fmath.cuh', 'Rfmath_host.h', other('Rfmath_host.h', 'cu_fmath.cuh', 'CU_MPC_CUDA_FMATH_CUH')),
+         ('cu_fround.cuh', 'Rfround_host.h', other('Rfround_host.h', 'cu_fround.cuh', 'CU_MPC_CUDA_FROUND_CUH')),
+         ('cu_fcomplex.cuh', 'Rfcomplex_host.h', other('Rfcomplex_host.h', 'cu_fcomplex.cuh', 'CU_MPC_CUDA_FCOMPLEX_CUH'))]
+
+for src, dst, conv in FILES:
+    t = conv(unifdef(open(os.path.join(sys.argv[1], src)).read().split('\n')))
+    open(os.path.join(sys.argv[2], dst), 'w').write(t)

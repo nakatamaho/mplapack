@@ -33,6 +33,9 @@
 #define Cgemm Cgemm_reference_cpu
 #include "../../../reference/Cgemm.cpp"
 #undef Cgemm
+#if defined(MPLAPACK_BUILD_WITH_MPFR) && !defined(MPLAPACK_FREAL_INSTANCE)
+#include "../../mpfr/openmp/Rfreal_blas.h"
+#endif
 
 #include <algorithm>
 #include "../Rblas_split_common.h"
@@ -84,6 +87,11 @@ struct cgemm_leaf {
 
 bool Cgemm_omp(const char *transa, const char *transb, INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX const alpha, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, COMPLEX const beta, COMPLEX *c, INTEGER const ldc)
 {
+#if defined(MPLAPACK_BUILD_WITH_MPFR) && !defined(MPLAPACK_FREAL_INSTANCE)
+    // the fixed-precision kernels (../../mpfr/openmp/Rfreal_blas.h)
+    if (Cgemm_freal(transa, transb, m, n, k, alpha, a, lda, b, ldb, beta, c, ldc))
+        return true;
+#endif
     using namespace mplapack_blas;
     const bool nota = ls(transa, "N"), notb = ls(transb, "N");
     if ((!nota && !ls(transa, "T") && !ls(transa, "C")) || (!notb && !ls(transb, "T") && !ls(transb, "C")) || m <= 0 || n <= 0 || k < 0)

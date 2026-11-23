@@ -33,12 +33,20 @@
 #define Cscal Cscal_reference_cpu
 #include "../../../reference/Cscal.cpp"
 #undef Cscal
+#if defined(MPLAPACK_BUILD_WITH_MPFR) && !defined(MPLAPACK_FREAL_INSTANCE)
+#include "../../mpfr/openmp/Rfreal_blas.h"
+#endif
 
 #include <algorithm>
 #include "../Rblas_split_common.h"
 
 bool Cscal_omp(INTEGER const n, COMPLEX const za, COMPLEX *zx, INTEGER const incx)
 {
+#if defined(MPLAPACK_BUILD_WITH_MPFR) && !defined(MPLAPACK_FREAL_INSTANCE)
+    // the fixed-precision kernels (../../mpfr/openmp/Rfreal_blas.h)
+    if (Cscal_freal(n, za, zx, incx))
+        return true;
+#endif
     using namespace mplapack_blas;
     if (n <= 0 || !(incx > 0))
         return false;

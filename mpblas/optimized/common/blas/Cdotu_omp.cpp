@@ -34,6 +34,9 @@
 #define Cdotu Cdotu_reference_cpu
 #include "../../../reference/Cdotu.cpp"
 #undef Cdotu
+#if defined(MPLAPACK_BUILD_WITH_MPFR) && !defined(MPLAPACK_FREAL_INSTANCE)
+#include "../../mpfr/openmp/Rfreal_blas.h"
+#endif
 
 #include <vector>
 #include "../Rblas_split_common.h"
@@ -41,6 +44,11 @@
 
 bool Cdotu_omp(INTEGER const n, COMPLEX *zx, INTEGER const incx, COMPLEX *zy, INTEGER const incy, COMPLEX &result)
 {
+#if defined(MPLAPACK_BUILD_WITH_MPFR) && !defined(MPLAPACK_FREAL_INSTANCE)
+    // the fixed-precision kernels (../../mpfr/openmp/Rfreal_blas.h)
+    if (Cdotu_freal(n, zx, incx, zy, incy, result))
+        return true;
+#endif
     REAL ignored;
     if (mplapack_blas1::fast<REAL, COMPLEX, true>(mplapack_blas1::dotu, n, zx, incx, zy, incy, ignored, result))
         return true;

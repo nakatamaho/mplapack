@@ -35,6 +35,9 @@
 #define Ctrmv Ctrmv_reference_cpu
 #include "../../../reference/Ctrmv.cpp"
 #undef Ctrmv
+#if defined(MPLAPACK_BUILD_WITH_MPFR) && !defined(MPLAPACK_FREAL_INSTANCE)
+#include "../../mpfr/openmp/Rfreal_blas.h"
+#endif
 
 #include <algorithm>
 #include <vector>
@@ -132,6 +135,11 @@ void Ctrmv_rows(const char *uplo, const char *trans, const char *diag, INTEGER c
 
 bool Ctrmv_omp(const char *uplo, const char *trans, const char *diag, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *x, INTEGER const incx)
 {
+#if defined(MPLAPACK_BUILD_WITH_MPFR) && !defined(MPLAPACK_FREAL_INSTANCE)
+    // the fixed-precision kernels (../../mpfr/openmp/Rfreal_blas.h)
+    if (Ctrmv_freal(uplo, trans, diag, n, a, lda, x, incx))
+        return true;
+#endif
     using namespace mplapack_blas;
     if ((!ls(uplo, "U") && !ls(uplo, "L")) || (!ls(trans, "N") && !ls(trans, "T") && !ls(trans, "C")) || (!ls(diag, "U") && !ls(diag, "N")) || n <= 0 || lda < imax(1, n) || incx != 1)
         return false;

@@ -36,6 +36,9 @@
 #define Rtpsv Rtpsv_reference_cpu
 #include "../../../reference/Rtpsv.cpp"
 #undef Rtpsv
+#if defined(MPLAPACK_BUILD_WITH_MPFR) && !defined(MPLAPACK_FREAL_INSTANCE)
+#include "../../mpfr/openmp/Rfreal_blas.h"
+#endif
 
 #include <algorithm>
 #include <vector>
@@ -45,6 +48,11 @@
 
 bool Rtpsv_omp(const char *uplo, const char *trans, const char *diag, INTEGER const n, REAL *ap, REAL *x, INTEGER const incx)
 {
+#if defined(MPLAPACK_BUILD_WITH_MPFR) && !defined(MPLAPACK_FREAL_INSTANCE)
+    // the fixed-precision kernels (../../mpfr/openmp/Rfreal_blas.h)
+    if (Rtpsv_freal(uplo, trans, diag, n, ap, x, incx))
+        return true;
+#endif
 #ifdef MPLAPACK_BLAS_SIMD_AVAILABLE
     using namespace mplapack_blas;
     const bool upper = Mlsame(uplo, "U"), nounit = Mlsame(diag, "N"), notr = Mlsame(trans, "N");

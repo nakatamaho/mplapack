@@ -46,6 +46,7 @@ libmplapack_mpfr_opt_cuda_la_SOURCES = \
 ../../common/blas/Rdot_par.cpp \
 ../Rgemm_ref.cpp ../openmp/Rgemm_NN_omp.cpp ../openmp/Rgemm_NT_omp.cpp ../openmp/Rgemm_TN_omp.cpp ../openmp/Rgemm_TT_omp.cpp \
 ../openmp/Rgemm_freal_omp.cpp ../openmp/Rgemm_freal_x86.cpp ../openmp/Rgemm_freal_generic.cpp \
+../openmp/Rfreal_blas.cpp ../openmp/Rfreal_blas_128.cpp ../openmp/Rfreal_blas_192.cpp ../openmp/Rfreal_blas_256.cpp ../openmp/Rfreal_blas_320.cpp ../openmp/Rfreal_blas_384.cpp ../openmp/Rfreal_blas_448.cpp ../openmp/Rfreal_blas_512.cpp ../openmp/Rfreal_blas_576.cpp ../openmp/Rfreal_blas_640.cpp ../openmp/Rfreal_blas_704.cpp ../openmp/Rfreal_blas_768.cpp ../openmp/Rfreal_blas_832.cpp ../openmp/Rfreal_blas_896.cpp ../openmp/Rfreal_blas_960.cpp ../openmp/Rfreal_blas_1024.cpp ../openmp/Rfreal_blas_1536.cpp ../openmp/Rfreal_blas_2048.cpp \
 ../../common/blas_cuda/Raxpy.cpp ../Raxpy_ref.cpp ../openmp/Raxpy_omp.cpp \
 ../../common/blas/Rsyrk_omp.cpp \
 ../../common/blas/Rsyr2k_omp.cpp \

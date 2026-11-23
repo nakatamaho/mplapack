@@ -35,6 +35,9 @@
 #define Ctbmv Ctbmv_reference_cpu
 #include "../../../reference/Ctbmv.cpp"
 #undef Ctbmv
+#if defined(MPLAPACK_BUILD_WITH_MPFR) && !defined(MPLAPACK_FREAL_INSTANCE)
+#include "../../mpfr/openmp/Rfreal_blas.h"
+#endif
 
 #include <algorithm>
 #include <vector>
@@ -138,6 +141,11 @@ void Ctbmv_rows(const char *uplo, const char *trans, const char *diag, INTEGER c
 
 bool Ctbmv_omp(const char *uplo, const char *trans, const char *diag, INTEGER const n, INTEGER const k, COMPLEX *a, INTEGER const lda, COMPLEX *x, INTEGER const incx)
 {
+#if defined(MPLAPACK_BUILD_WITH_MPFR) && !defined(MPLAPACK_FREAL_INSTANCE)
+    // the fixed-precision kernels (../../mpfr/openmp/Rfreal_blas.h)
+    if (Ctbmv_freal(uplo, trans, diag, n, k, a, lda, x, incx))
+        return true;
+#endif
     using namespace mplapack_blas;
     if ((!ls(uplo, "U") && !ls(uplo, "L")) || (!ls(trans, "N") && !ls(trans, "T") && !ls(trans, "C")) || (!ls(diag, "U") && !ls(diag, "N")) || n <= 0 || k < 0 || lda < k + 1 || incx != 1)
         return false;
