@@ -47,12 +47,20 @@ void Rgetrf2_reference_cpu(INTEGER, INTEGER, REAL *, INTEGER, INTEGER *, INTEGER
 
 #include "Rgetrf_common.h"
 
+#if defined(MPLAPACK_BUILD_WITH_MPFR) && !defined(MPLAPACK_FREAL_INSTANCE)
+#include "../../../mpblas/optimized/mpfr/openmp/Rfreal_blas.h"
+#endif
 #ifdef MPLAPACK_GETRF_CPU_DISPATCH
 static void getrf_cpu(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, INTEGER *ipiv, INTEGER &info)
 #else
 void Rgetrf(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, INTEGER *ipiv, INTEGER &info)
 #endif
 {
+#if defined(MPLAPACK_BUILD_WITH_MPFR) && !defined(MPLAPACK_FREAL_INSTANCE)
+    // the fixed-precision kernels (mpblas/optimized/mpfr/openmp/Rfreal_blas.h)
+    if (Rgetrf_freal(m, n, a, lda, ipiv, info))
+        return;
+#endif
     if (m <= 0 || n <= 0 || lda < std::max((INTEGER)1, m)) {
         Rgetrf_reference_cpu(m, n, a, lda, ipiv, info);
         return;

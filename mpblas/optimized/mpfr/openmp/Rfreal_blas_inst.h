@@ -56,6 +56,8 @@
 #include "../../common/Rgemm_cpu_common.h"
 #include "Rgemm_freal.h"
 #include "Rfreal_blas.h"
+#include <mplapack.h>
+#include "../../../../mplapack/optimized/common/Rlookahead_common.h"
 
 #if defined(__x86_64__) && (defined(__GNUC__) || defined(__clang__))
 #pragma GCC optimize("O3")
@@ -90,6 +92,12 @@ inline void freal_xerbla(const char *, int) { mplapack_freal_fail(); }
 
 namespace FRB_NS {
 #include "../../../reference/RCabs1.cpp"
+// Riamax_chunks_common.h uses REAL: its namespace mplapack_blas here, with
+// the rest of mplapack_blas visible
+namespace mplapack_blas {
+using namespace ::mplapack_blas;
+}
+#include "../../common/Riamax_chunks_common.h"
 namespace Rsyrk_ns {
 #include "../../common/blas/Rsyrk_omp.cpp"
 }
@@ -275,8 +283,213 @@ namespace Cdotu_ns {
 namespace RCasum_ns {
 #include "../../common/blas/RCasum_omp.cpp"
 }
+namespace Rswap_ns {
+#include "../../common/blas/Rswap_omp.cpp"
+}
+namespace Cswap_ns {
+#include "../../common/blas/Cswap_omp.cpp"
+}
+namespace Ccopy_ns {
+#include "../../common/blas/Ccopy_omp.cpp"
+}
+namespace iRamax_ns {
+#include "../../common/blas/iRamax_omp.cpp"
+}
+namespace iCamax_ns {
+#include "../../common/blas/iCamax_omp.cpp"
+}
+namespace Rcopy_ns {
+#define Rcopy Rcopy_reference_cpu
+#include "../../../reference/Rcopy.cpp"
+#undef Rcopy
+}
+namespace Rgemm_ns {
+#define Rgemm Rgemm_reference_cpu
+#include "../../../reference/Rgemm.cpp"
+#undef Rgemm
+}
 } // namespace FRB_NS
 
+// ---- the fixed-precision LAPACK: the BLAS of REAL / COMPLEX under their
+// names, then the optimized LAPACK code (mplapack/optimized/common) ----
+
+#include "Rfreal_blas_names.h"
+#include "Rgemm_freal_engine.h"
+
+namespace FRB_NS {
+inline void Rswap(INTEGER const n, REAL *dx, INTEGER const incx, REAL *dy, INTEGER const incy)
+{
+    if (!Rswap_ns::Rswap_omp(n, dx, incx, dy, incy))
+        Rswap_ns::Rswap_reference_cpu(n, dx, incx, dy, incy);
+}
+inline void Cswap(INTEGER const n, COMPLEX *zx, INTEGER const incx, COMPLEX *zy, INTEGER const incy)
+{
+    if (!Cswap_ns::Cswap_omp(n, zx, incx, zy, incy))
+        Cswap_ns::Cswap_reference_cpu(n, zx, incx, zy, incy);
+}
+inline void Ccopy(INTEGER const n, COMPLEX *zx, INTEGER const incx, COMPLEX *zy, INTEGER const incy)
+{
+    if (!Ccopy_ns::Ccopy_omp(n, zx, incx, zy, incy))
+        Ccopy_ns::Ccopy_reference_cpu(n, zx, incx, zy, incy);
+}
+inline void Rcopy(INTEGER const n, REAL *dx, INTEGER const incx, REAL *dy, INTEGER const incy) { Rcopy_ns::Rcopy_reference_cpu(n, dx, incx, dy, incy); }
+inline INTEGER iRamax(INTEGER const n, REAL *dx, INTEGER const incx)
+{
+    INTEGER r;
+    if (!iRamax_ns::iRamax_omp(n, dx, incx, r))
+        r = iRamax_ns::iRamax_reference_cpu(n, dx, incx);
+    return r;
+}
+inline INTEGER iCamax(INTEGER const n, COMPLEX *zx, INTEGER const incx)
+{
+    INTEGER r;
+    if (!iCamax_ns::iCamax_omp(n, zx, incx, r))
+        r = iCamax_ns::iCamax_reference_cpu(n, zx, incx);
+    return r;
+}
+
+// Rgemm: the tiled kernel of Rgemm_freal_engine.h on the fr arrays when no
+// product or sum can leave the exponent range (the bound of
+// Rgemm_freal_omp.cpp), else the reference code (with the checked
+// operators); the MPFR Rgemm gives the reference result bit for bit.
+inline bool freal_gemm_fast(bool nota, bool notb, long m, long n, long k, const REAL &alpha, const REAL *A, long lda, const REAL *B, long ldb, const REAL &beta, REAL *C,
+                            long ldc)
+{
+    if (m < 1 || n < 1 || k < 1 || alpha.is_zero() || lda < std::max(1L, nota ? m : k) || ldb < std::max(1L, notb ? k : n) || ldc < std::max(1L, m))
+        return false;
+    long lo = 0, hi = 0;
+    auto scan = [&](const REAL &x) {
+        if (x.is_zero())
+            return;
+        lo = std::min(lo, x.v.exp), hi = std::max(hi, x.v.exp);
+    };
+    scan(alpha), scan(beta);
+    for (long j = 0; j < (nota ? k : m); j++)
+        for (long i = 0; i < (nota ? m : k); i++)
+            scan(A[i + j * lda]);
+    for (long j = 0; j < (notb ? n : k); j++)
+        for (long i = 0; i < (notb ? k : n); i++)
+            scan(B[i + j * ldb]);
+    const int beta_kind = beta.is_zero() ? 0 : beta == REAL(1.0) ? 1 : 2;
+    if (beta_kind != 0)
+        for (long j = 0; j < n; j++)
+            for (long i = 0; i < m; i++)
+                scan(C[i + j * ldc]);
+    const double top = 3.0 * (double)hi + 128.0, bottom = 3.0 * (double)lo - 2.0 * FRB_PB - 128.0;
+    if (top > (double)mplapack_freal_tls.emax || bottom < (double)mplapack_freal_tls.emin)
+        return false;
+#ifdef _OPENMP
+    const bool parallel = omp_get_max_threads() >= 2 && (double)m * n * k >= (double)mplapack_blas::blas_env_long("MPLAPACK_BLAS_OMP_MIN", 32768) && !omp_in_parallel();
+#else
+    const bool parallel = false;
+#endif
+    freal_gemm<FRB_PB>::run<REAL>(nota, notb, m, n, k, alpha, A, lda, B, ldb, beta, beta_kind, C, ldc, parallel);
+    return true;
+}
+inline void Rgemm(const char *transa, const char *transb, INTEGER const m, INTEGER const n, INTEGER const k, REAL const alpha, REAL *a, INTEGER const lda, REAL *b,
+                  INTEGER const ldb, REAL const beta, REAL *c, INTEGER const ldc)
+{
+    const bool nota = Mlsame(transa, "N"), notb = Mlsame(transb, "N");
+    const bool ok = (nota || Mlsame(transa, "T") || Mlsame(transa, "C")) && (notb || Mlsame(transb, "T") || Mlsame(transb, "C"));
+    if (!ok || !freal_gemm_fast(nota, notb, m, n, k, alpha, a, lda, b, ldb, beta, c, ldc))
+        Rgemm_ns::Rgemm_reference_cpu(transa, transb, m, n, k, alpha, a, lda, b, ldb, beta, c, ldc);
+}
+
+// the LAPACK helpers: no NaN here; the machine parameters of MPFR
+inline bool Risnan(const REAL &) { return false; }
+inline REAL freal_rlamch(const char *cmach)
+{
+    const mpfr_class v = Rlamch_mpfr(cmach);
+    if (mpfr_get_prec(v.get_mpfr_t()) != FRB_PB) {
+        mplapack_freal_fail();
+        return REAL();
+    }
+    return fr_from_mpfr<FRB_PB>(v.get_mpfr_t());
+}
+} // namespace FRB_NS
+
+#undef Rlamch
+#define Rlamch FRB_NS::freal_rlamch
+#ifdef MPLAPACK_ACCELERATOR_LIBRARY // the CPU code of the CUDA library: the same results
+#define FRB_ACCELERATOR_LIBRARY MPLAPACK_ACCELERATOR_LIBRARY
+#undef MPLAPACK_ACCELERATOR_LIBRARY
+#endif
+
+namespace FRB_NS {
+namespace Clacgv_ns {
+#include "../../../../mplapack/reference/Clacgv.cpp"
+}
+using Clacgv_ns::Clacgv;
+// the panels and the unblocked inverses (reference code)
+namespace Rpotrf2_ns {
+#include "../../../../mplapack/reference/Rpotrf2.cpp"
+}
+using Rpotrf2_ns::Rpotrf2;
+namespace Cpotrf2_ns {
+#include "../../../../mplapack/reference/Cpotrf2.cpp"
+}
+using Cpotrf2_ns::Cpotrf2;
+namespace Rtrti2_ns {
+#include "../../../../mplapack/reference/Rtrti2.cpp"
+}
+using Rtrti2_ns::Rtrti2;
+namespace Ctrti2_ns {
+#include "../../../../mplapack/reference/Ctrti2.cpp"
+}
+using Ctrti2_ns::Ctrti2;
+namespace Rlauu2_ns {
+#include "../../../../mplapack/reference/Rlauu2.cpp"
+}
+using Rlauu2_ns::Rlauu2;
+namespace Clauu2_ns {
+#include "../../../../mplapack/reference/Clauu2.cpp"
+}
+using Clauu2_ns::Clauu2;
+namespace Rlaswp_ns {
+#include "../../../../mplapack/optimized/common/Rlaswp.cpp"
+}
+using Rlaswp_ns::Rlaswp;
+namespace Claswp_ns {
+#include "../../../../mplapack/optimized/common/Claswp.cpp"
+}
+using Claswp_ns::Claswp;
+// the schedules of the optimized code (generic in REAL / COMPLEX)
+#include "../../../../mplapack/optimized/common/Rgetrf_common.h"
+#include "../../../../mplapack/optimized/common/Rpotrf_common.h"
+#include "../../../../mplapack/optimized/common/Rinverse_cpu_common.h"
+namespace Rgetrf_ns {
+#include "../../../../mplapack/optimized/common/Rgetrf2.cpp"
+#include "../../../../mplapack/optimized/common/Rgetrf.cpp"
+}
+namespace Cgetrf_ns {
+#include "../../../../mplapack/optimized/common/Cgetrf2.cpp"
+#include "../../../../mplapack/optimized/common/Cgetrf.cpp"
+}
+namespace Rpotrf_ns {
+#include "../../../../mplapack/optimized/common/Rpotrf.cpp"
+}
+namespace Cpotrf_ns {
+#include "../../../../mplapack/optimized/common/Cpotrf.cpp"
+}
+namespace Rtrtri_ns {
+#include "../../../../mplapack/optimized/common/Rtrtri.cpp"
+}
+namespace Ctrtri_ns {
+#include "../../../../mplapack/optimized/common/Ctrtri.cpp"
+}
+namespace Rlauum_ns {
+#include "../../../../mplapack/optimized/common/Rlauum.cpp"
+}
+namespace Clauum_ns {
+#include "../../../../mplapack/optimized/common/Clauum.cpp"
+}
+} // namespace FRB_NS
+
+#ifdef FRB_ACCELERATOR_LIBRARY
+#define MPLAPACK_ACCELERATOR_LIBRARY FRB_ACCELERATOR_LIBRARY
+#endif
+#undef Rlamch
+#define Rlamch Rlamch_mpfr
 #undef Mxerbla
 #define Mxerbla Mxerbla_mpfr
 

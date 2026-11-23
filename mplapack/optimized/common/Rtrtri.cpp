@@ -8,12 +8,20 @@
 #include "../../reference/Rtrtri.cpp"
 #undef Rtrtri
 #include "Rinverse_cpu_common.h"
+#if defined(MPLAPACK_BUILD_WITH_MPFR) && !defined(MPLAPACK_FREAL_INSTANCE)
+#include "../../../mpblas/optimized/mpfr/openmp/Rfreal_blas.h"
+#endif
 #ifdef MPLAPACK_TRTRI_CPU_DISPATCH
 static void trtri_cpu(const char *uplo,const char *diag,INTEGER n,REAL *a,INTEGER lda,INTEGER &info)
 #else
 void Rtrtri(const char *uplo,const char *diag,INTEGER const n,REAL *a,INTEGER const lda,INTEGER &info)
 #endif
 {
+#if defined(MPLAPACK_BUILD_WITH_MPFR) && !defined(MPLAPACK_FREAL_INSTANCE)
+    // the fixed-precision kernels (mpblas/optimized/mpfr/openmp/Rfreal_blas.h)
+    if (Rtrtri_freal(uplo, diag, n, a, lda, info))
+        return;
+#endif
     const bool upper=Mlsame(uplo,"U");
     if((!upper && !Mlsame(uplo,"L")) || (!Mlsame(diag,"N") && !Mlsame(diag,"U")) || n<=0 || lda<std::max(INTEGER(1),n)) {
         Rtrtri_reference_cpu(uplo,diag,n,a,lda,info); return;

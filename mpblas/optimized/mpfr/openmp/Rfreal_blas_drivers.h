@@ -333,8 +333,6 @@ bool Ctrmm_freal(const char *side, const char *uplo, const char *transa, const c
 
 bool Ctrsm_freal(const char *side, const char *uplo, const char *transa, const char *diag, mplapackint const m, mplapackint const n, mpc_class const alpha, mpc_class *a, mplapackint const lda, mpc_class *b, mplapackint const ldb)
 {
-    if (!lsm(diag, "U"))
-        return false;
     const long na = lsm(side, "L") ? m : n;
     fcall cl((double)m * n * na / 2, 3);
     const COMPLEX al = cl.cx(alpha);
@@ -535,8 +533,6 @@ bool Ctpmv_freal(const char *uplo, const char *trans, const char *diag, mplapack
 
 bool Ctrsv_freal(const char *uplo, const char *trans, const char *diag, mplapackint const n, mpc_class *a, mplapackint const lda, mpc_class *x, mplapackint const incx)
 {
-    if (!lsm(diag, "U"))
-        return false;
     fcall cl((double)n * n / 2, 2);
     auto &A = cl.mat(a, n, n, lda, rg_tri(lsm(uplo, "U"), lsm(diag, "U")), F_IN);
     auto &X = cl.vec(x, n, incx, F_INOUT);
@@ -545,8 +541,6 @@ bool Ctrsv_freal(const char *uplo, const char *trans, const char *diag, mplapack
 
 bool Ctbsv_freal(const char *uplo, const char *trans, const char *diag, mplapackint const n, mplapackint const k, mpc_class *a, mplapackint const lda, mpc_class *x, mplapackint const incx)
 {
-    if (!lsm(diag, "U"))
-        return false;
     const bool upper = lsm(uplo, "U"), unit = lsm(diag, "U");
     fcall cl((double)n * (k + 1), 2);
     auto &A = cl.mat(a, k + 1, n, lda, upper ? rg_band(0, k, n, unit) : rg_band(k, 0, n, unit), F_IN);
@@ -556,8 +550,6 @@ bool Ctbsv_freal(const char *uplo, const char *trans, const char *diag, mplapack
 
 bool Ctpsv_freal(const char *uplo, const char *trans, const char *diag, mplapackint const n, mpc_class *ap, mpc_class *x, mplapackint const incx)
 {
-    if (!lsm(diag, "U"))
-        return false;
     fcall cl((double)n * n / 2, 2);
     auto &P = cl.packed(ap, n, F_IN);
     auto &X = cl.vec(x, n, incx, F_INOUT);
@@ -666,6 +658,126 @@ bool Raxpy_freal(mplapackint const n, mpfr_class const da, mpfr_class *dx, mplap
         if (X.ld != 1 || Y.ld != 1 || !mplapack_blas::blas_split(2.0 * n, n, [&](long p0, long p1) { Raxpy_ns::Raxpy_reference_cpu(p1 - p0, a, X.p + p0, 1, Y.p + p0, 1); }))
             Raxpy_ns::Raxpy_reference_cpu(n, a, X.p, X.ld, Y.p, Y.ld);
     });
+}
+
+bool Rgetrf_freal(mplapackint const m, mplapackint const n, mpfr_class *a, mplapackint const lda, mplapackint *ipiv, mplapackint &info)
+{
+    if (mplapack_blas::blas_env_long("MPLAPACK_MPFR_GEMM_WINOGRAD_CUTOFF", 0) > 0)
+        return false;
+    fcall cl((double)m * n * std::min(m, n), 3);
+    auto &A = cl.mat(a, m, n, lda, rg_all(), F_INOUT);
+    INTEGER inf = 0;
+    if (!cl.run([&] { Rgetrf_ns::Rgetrf(m, n, A.p, A.ld, ipiv, inf); }))
+        return false;
+    info = inf;
+    return true;
+}
+
+bool Rgetrf2_freal(mplapackint const m, mplapackint const n, mpfr_class *a, mplapackint const lda, mplapackint *ipiv, mplapackint &info)
+{
+    if (mplapack_blas::blas_env_long("MPLAPACK_MPFR_GEMM_WINOGRAD_CUTOFF", 0) > 0)
+        return false;
+    fcall cl((double)m * n * std::min(m, n), 3);
+    auto &A = cl.mat(a, m, n, lda, rg_all(), F_INOUT);
+    INTEGER inf = 0;
+    if (!cl.run([&] { Rgetrf_ns::Rgetrf2(m, n, A.p, A.ld, ipiv, inf); }))
+        return false;
+    info = inf;
+    return true;
+}
+
+bool Rpotrf_freal(const char *uplo, mplapackint const n, mpfr_class *a, mplapackint const lda, mplapackint &info)
+{
+    if (mplapack_blas::blas_env_long("MPLAPACK_MPFR_GEMM_WINOGRAD_CUTOFF", 0) > 0)
+        return false;
+    fcall cl((double)n * n * n / 3, 3);
+    auto &A = cl.mat(a, n, n, lda, rg_tri(lsm(uplo, "U")), F_INOUT);
+    INTEGER inf = 0;
+    if (!cl.run([&] { Rpotrf_ns::Rpotrf(uplo, n, A.p, A.ld, inf); }))
+        return false;
+    info = inf;
+    return true;
+}
+
+bool Rtrtri_freal(const char *uplo, const char *diag, mplapackint const n, mpfr_class *a, mplapackint const lda, mplapackint &info)
+{
+    if (mplapack_blas::blas_env_long("MPLAPACK_MPFR_GEMM_WINOGRAD_CUTOFF", 0) > 0)
+        return false;
+    fcall cl((double)n * n * n / 3, 3);
+    auto &A = cl.mat(a, n, n, lda, rg_tri(lsm(uplo, "U"), lsm(diag, "U")), F_INOUT);
+    INTEGER inf = 0;
+    if (!cl.run([&] { Rtrtri_ns::Rtrtri(uplo, diag, n, A.p, A.ld, inf); }))
+        return false;
+    info = inf;
+    return true;
+}
+
+bool Rlauum_freal(const char *uplo, mplapackint const n, mpfr_class *a, mplapackint const lda, mplapackint &info)
+{
+    if (mplapack_blas::blas_env_long("MPLAPACK_MPFR_GEMM_WINOGRAD_CUTOFF", 0) > 0)
+        return false;
+    fcall cl((double)n * n * n / 3, 3);
+    auto &A = cl.mat(a, n, n, lda, rg_tri(lsm(uplo, "U")), F_INOUT);
+    INTEGER inf = 0;
+    if (!cl.run([&] { Rlauum_ns::Rlauum(uplo, n, A.p, A.ld, inf); }))
+        return false;
+    info = inf;
+    return true;
+}
+
+bool Cgetrf_freal(mplapackint const m, mplapackint const n, mpc_class *a, mplapackint const lda, mplapackint *ipiv, mplapackint &info)
+{
+    fcall cl((double)m * n * std::min(m, n), 3);
+    auto &A = cl.mat(a, m, n, lda, rg_all(), F_INOUT);
+    INTEGER inf = 0;
+    if (!cl.run([&] { Cgetrf_ns::Cgetrf(m, n, A.p, A.ld, ipiv, inf); }))
+        return false;
+    info = inf;
+    return true;
+}
+
+bool Cgetrf2_freal(mplapackint const m, mplapackint const n, mpc_class *a, mplapackint const lda, mplapackint *ipiv, mplapackint &info)
+{
+    fcall cl((double)m * n * std::min(m, n), 3);
+    auto &A = cl.mat(a, m, n, lda, rg_all(), F_INOUT);
+    INTEGER inf = 0;
+    if (!cl.run([&] { Cgetrf_ns::Cgetrf2(m, n, A.p, A.ld, ipiv, inf); }))
+        return false;
+    info = inf;
+    return true;
+}
+
+bool Cpotrf_freal(const char *uplo, mplapackint const n, mpc_class *a, mplapackint const lda, mplapackint &info)
+{
+    fcall cl((double)n * n * n / 3, 3);
+    auto &A = cl.mat(a, n, n, lda, rg_tri(lsm(uplo, "U")), F_INOUT);
+    INTEGER inf = 0;
+    if (!cl.run([&] { Cpotrf_ns::Cpotrf(uplo, n, A.p, A.ld, inf); }))
+        return false;
+    info = inf;
+    return true;
+}
+
+bool Ctrtri_freal(const char *uplo, const char *diag, mplapackint const n, mpc_class *a, mplapackint const lda, mplapackint &info)
+{
+    fcall cl((double)n * n * n / 3, 3);
+    auto &A = cl.mat(a, n, n, lda, rg_tri(lsm(uplo, "U"), lsm(diag, "U")), F_INOUT);
+    INTEGER inf = 0;
+    if (!cl.run([&] { Ctrtri_ns::Ctrtri(uplo, diag, n, A.p, A.ld, inf); }))
+        return false;
+    info = inf;
+    return true;
+}
+
+bool Clauum_freal(const char *uplo, mplapackint const n, mpc_class *a, mplapackint const lda, mplapackint &info)
+{
+    fcall cl((double)n * n * n / 3, 3);
+    auto &A = cl.mat(a, n, n, lda, rg_tri(lsm(uplo, "U")), F_INOUT);
+    INTEGER inf = 0;
+    if (!cl.run([&] { Clauum_ns::Clauum(uplo, n, A.p, A.ld, inf); }))
+        return false;
+    info = inf;
+    return true;
 }
 
 } // namespace FRB_NS

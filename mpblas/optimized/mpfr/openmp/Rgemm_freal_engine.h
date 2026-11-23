@@ -36,7 +36,9 @@
 // intermediate can leave the exponent range.
 //
 // The includer has included <cstring>, <mpfr.h> and <mpblas_mpfr.h> and
-// defines MPFREAL_NS and MPFREAL_ENTRY (the name of the entry function).
+// defines MPFREAL_NS and MPFREAL_ENTRY (the name of the entry function; the
+// fixed-precision LAPACK of Rfreal_blas_inst.h uses freal_gemm on fr<PB>
+// arrays and defines none).
 
 #include "Rgemm_freal.h"
 #include "../lgpl/Rfreal_host.h"
@@ -72,6 +74,11 @@ template <int PB> struct freal_gemm {
         x->_mpfr_exp = f.exp;
         x->_mpfr_sign = f.sign;
     }
+    // the elements of fr<PB> (Rfreal_types.h: a cu_freal with the sign of its zero)
+    static inline void load(F &f, const mpfr_class &x) { load(f, x.get_mpfr_t()); }
+    static inline void store(mpfr_class &x, const F &f) { store(x.get_mpfr_t(), f); }
+    template <class E> static inline void load(F &f, const E &x) { f = x.v; }
+    template <class E> static inline void store(E &x, const F &f) { x.v = f; }
     // MPFR's signed zeros: a product with a zero factor is zero with the
     // product of the signs; a sum of two zeros is -0 only if both are -0.
     static inline F mul(const F &a, const F &b)
@@ -96,7 +103,7 @@ template <int PB> struct freal_gemm {
     }
 
     // beta C as the OpenMP loops form it: 0 (beta == 0), C (beta == 1), beta*C
-    static inline F scaled_c(const F &beta, int beta_kind, mpfr_srcptr c)
+    template <class E> static inline F scaled_c(const F &beta, int beta_kind, const E &c)
     {
         F v;
         if (beta_kind == 0) {
@@ -107,12 +114,14 @@ template <int PB> struct freal_gemm {
         return beta_kind == 1 ? v : mul(beta, v);
     }
 
-    static void run(bool nota, bool notb, long m, long n, long k, const mpfr_class &alpha_, const mpfr_class *A, long lda, const mpfr_class *B, long ldb,
-                    const mpfr_class &beta_, int beta_kind, mpfr_class *C, long ldc, bool parallel)
+    // E: mpfr_class or fr<PB>
+    template <class E>
+    static void run(bool nota, bool notb, long m, long n, long k, const E &alpha_, const E *A, long lda, const E *B, long ldb, const E &beta_, int beta_kind, E *C,
+                    long ldc, bool parallel)
     {
         F alpha, beta;
-        load(alpha, alpha_.get_mpfr_t());
-        load(beta, beta_.get_mpfr_t());
+        load(alpha, alpha_);
+        load(beta, beta_);
         const long mt = (m + MB - 1) / MB, nt = (n + NB - 1) / NB;
 #ifdef _OPENMP
 #pragma omp parallel if (parallel)
@@ -129,7 +138,7 @@ template <int PB> struct freal_gemm {
                     for (long jj = 0; jj < nb; jj++)
                         for (long ii = 0; ii < mb; ii++) {
                             if (nota)
-                                ct[ii + jj * MB] = scaled_c(beta, beta_kind, C[(i0 + ii) + (j0 + jj) * ldc].get_mpfr_t());
+                                ct[ii + jj * MB] = scaled_c(beta, beta_kind, C[(i0 + ii) + (j0 + jj) * ldc]);
                             else
                                 ct[ii + jj * MB].set_zero();
                         }
@@ -138,13 +147,13 @@ template <int PB> struct freal_gemm {
                         // bp[ll + jj KC] = op(B)(l0 + ll, j0 + jj)
                         for (long jj = 0; jj < nb; jj++)
                             for (long ll = 0; ll < kc; ll++)
-                                load(bp[ll + jj * KC], (notb ? B[(l0 + ll) + (j0 + jj) * ldb] : B[(j0 + jj) + (l0 + ll) * ldb]).get_mpfr_t());
+                                load(bp[ll + jj * KC], (notb ? B[(l0 + ll) + (j0 + jj) * ldb] : B[(j0 + jj) + (l0 + ll) * ldb]));
                         if (nota) {
                             // ap[ii + ll MB] = A(i0 + ii, l0 + ll);
                             // C(i, j) += (alpha op(B)(l, j)) A(i, l), l ascending
                             for (long ll = 0; ll < kc; ll++)
                                 for (long ii = 0; ii < mb; ii++)
-                                    load(ap[ii + ll * MB], A[(i0 + ii) + (l0 + ll) * lda].get_mpfr_t());
+                                    load(ap[ii + ll * MB], A[(i0 + ii) + (l0 + ll) * lda]);
                             for (long jj = 0; jj < nb; jj++) {
                                 F *c = ct + jj * MB;
                                 for (long ll = 0; ll < kc; ll++) {
@@ -159,7 +168,7 @@ template <int PB> struct freal_gemm {
                             // temp(i, j) += A(l, i) op(B)(l, j), l ascending
                             for (long ii = 0; ii < mb; ii++)
                                 for (long ll = 0; ll < kc; ll++)
-                                    load(ap[ll + ii * KC], A[(l0 + ll) + (i0 + ii) * lda].get_mpfr_t());
+                                    load(ap[ll + ii * KC], A[(l0 + ll) + (i0 + ii) * lda]);
                             for (long jj = 0; jj < nb; jj++)
                                 for (long ii = 0; ii < mb; ii++) {
                                     F t = ct[ii + jj * MB];
@@ -172,7 +181,7 @@ template <int PB> struct freal_gemm {
                     }
                     for (long jj = 0; jj < nb; jj++)
                         for (long ii = 0; ii < mb; ii++) {
-                            mpfr_ptr c = C[(i0 + ii) + (j0 + jj) * ldc].get_mpfr_t();
+                            E &c = C[(i0 + ii) + (j0 + jj) * ldc];
                             if (nota)
                                 store(c, ct[ii + jj * MB]);
                             else // C := beta C, then C += alpha temp
@@ -188,6 +197,7 @@ template <int PB> struct freal_gemm {
 
 } // namespace MPFREAL_NS
 
+#ifdef MPFREAL_ENTRY
 bool MPFREAL_ENTRY(int prec, bool nota, bool notb, long m, long n, long k, const mpfr_class &alpha, const mpfr_class *A, long lda, const mpfr_class *B, long ldb,
                    const mpfr_class &beta, int beta_kind, mpfr_class *C, long ldc, bool parallel)
 {
@@ -202,3 +212,4 @@ bool MPFREAL_ENTRY(int prec, bool nota, bool notb, long m, long n, long k, const
         return false;
     }
 }
+#endif

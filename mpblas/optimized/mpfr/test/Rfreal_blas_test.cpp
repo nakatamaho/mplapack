@@ -44,6 +44,7 @@
 #include <string>
 #include <vector>
 #include <mpblas_mpfr.h>
+#include <mplapack_mpfr.h>
 #ifdef _OPENMP
 #include <omp.h>
 #endif
@@ -116,6 +117,17 @@ MPLAPACK_FREAL_TEST_REF(CRrot, void, (I, C *, I, C *, I, R, R))
 MPLAPACK_FREAL_TEST_REF(Cdotc, C, (I, C *, I, C *, I))
 MPLAPACK_FREAL_TEST_REF(Cdotu, C, (I, C *, I, C *, I))
 MPLAPACK_FREAL_TEST_REF(RCasum, R, (I, C *, I))
+// the optimized LAPACK routines (mplapack/optimized/common)
+MPLAPACK_FREAL_TEST_REF(Rgetrf, void, (I, I, R *, I, I *, I &))
+MPLAPACK_FREAL_TEST_REF(Rgetrf2, void, (I, I, R *, I, I *, I &))
+MPLAPACK_FREAL_TEST_REF(Rpotrf, void, (const char *, I, R *, I, I &))
+MPLAPACK_FREAL_TEST_REF(Rtrtri, void, (const char *, const char *, I, R *, I, I &))
+MPLAPACK_FREAL_TEST_REF(Rlauum, void, (const char *, I, R *, I, I &))
+MPLAPACK_FREAL_TEST_REF(Cgetrf, void, (I, I, C *, I, I *, I &))
+MPLAPACK_FREAL_TEST_REF(Cgetrf2, void, (I, I, C *, I, I *, I &))
+MPLAPACK_FREAL_TEST_REF(Cpotrf, void, (const char *, I, C *, I, I &))
+MPLAPACK_FREAL_TEST_REF(Ctrtri, void, (const char *, const char *, I, C *, I, I &))
+MPLAPACK_FREAL_TEST_REF(Clauum, void, (const char *, I, C *, I, I &))
 
 namespace {
 
@@ -318,7 +330,7 @@ void level3(long m, long n, long k)
                             run_case("Ctrsm", w3, {}, {lda * na, ldb * n}, false, [&](bufs &b, bool lib) {
                                 tri(b, lib, true);
                                 CALL(Ctrsm, (s, u, t, d, m, n, ca, b.c[0].data(), lda, b.c[1].data(), ldb));
-                            }, d[0] == 'U');
+                            });
                         }
                 }
         }
@@ -405,10 +417,9 @@ void level2(long m, long n, long kl, long ku)
                                     run_case("Rtbsv", wt, {(k + 2) * n, lx}, {}, false, [&](bufs &b, bool lib) { shrink(b, 1); CALL(Rtbsv, (u, t, d, n, k, b.r[0].data(), k + 2, b.r[1].data(), ix)); });
                                     run_case("Rtpsv", wt, {np, lx}, {}, false, [&](bufs &b, bool lib) { shrink(b, 2); CALL(Rtpsv, (u, t, d, n, b.r[0].data(), b.r[1].data(), ix)); });
                                 }
-                                const bool unit = d[0] == 'U';
-                                run_case("Ctrsv", wt, {}, {ldn * n, lx}, false, [&](bufs &b, bool lib) { shrink(b, 0); CALL(Ctrsv, (u, t, d, n, b.c[0].data(), ldn, b.c[1].data(), ix)); }, unit);
-                                run_case("Ctbsv", wt, {}, {(k + 2) * n, lx}, false, [&](bufs &b, bool lib) { shrink(b, 1); CALL(Ctbsv, (u, t, d, n, k, b.c[0].data(), k + 2, b.c[1].data(), ix)); }, unit);
-                                run_case("Ctpsv", wt, {}, {np, lx}, false, [&](bufs &b, bool lib) { shrink(b, 2); CALL(Ctpsv, (u, t, d, n, b.c[0].data(), b.c[1].data(), ix)); }, unit);
+                                run_case("Ctrsv", wt, {}, {ldn * n, lx}, false, [&](bufs &b, bool lib) { shrink(b, 0); CALL(Ctrsv, (u, t, d, n, b.c[0].data(), ldn, b.c[1].data(), ix)); });
+                                run_case("Ctbsv", wt, {}, {(k + 2) * n, lx}, false, [&](bufs &b, bool lib) { shrink(b, 1); CALL(Ctbsv, (u, t, d, n, k, b.c[0].data(), k + 2, b.c[1].data(), ix)); });
+                                run_case("Ctpsv", wt, {}, {np, lx}, false, [&](bufs &b, bool lib) { shrink(b, 2); CALL(Ctpsv, (u, t, d, n, b.c[0].data(), b.c[1].data(), ix)); });
                             }
                     }
                 }
@@ -602,6 +613,100 @@ void blocks()
     });
 }
 
+// the LAPACK routines on well-conditioned matrices: factors, pivots, info
+void lapack(long m, long n)
+{
+    const long ld = m + 3, nn = std::min(m, n), ldn = n + 2;
+    auto lu = [&](const char *name, bool cplx, bool two) {
+        run_case(name, tag({}, {m, n}), {cplx ? 0 : ld * n}, {cplx ? ld * n : 0}, false, [&](bufs &b, bool lib) {
+            std::vector<I> piv((size_t)nn + 1, -7);
+            I info = -9;
+            if (cplx) {
+                if (two)
+                    CALL(Cgetrf2, (m, n, b.c[0].data(), ld, piv.data(), info));
+                else
+                    CALL(Cgetrf, (m, n, b.c[0].data(), ld, piv.data(), info));
+            } else {
+                if (two)
+                    CALL(Rgetrf2, (m, n, b.r[0].data(), ld, piv.data(), info));
+                else
+                    CALL(Rgetrf, (m, n, b.r[0].data(), ld, piv.data(), info));
+            }
+            b.rres = R((double)info);
+            for (long i = 0; i < nn; i++)
+                b.rres = b.rres * R(3.0) + R((double)piv[i]); // pivots compared through rres
+        });
+    };
+    lu("Rgetrf", false, false), lu("Rgetrf2", false, true), lu("Cgetrf", true, false), lu("Cgetrf2", true, true);
+    for (const char *u : UL) {
+        // Hermitian positive definite: A = B^H B + n I (the same in both runs)
+        auto spd = [&](bufs &b, bool cplx) {
+            if (cplx) {
+                std::vector<C> h((size_t)(ldn * n));
+                for (long j = 0; j < n; j++)
+                    for (long i = 0; i < n; i++) {
+                        C t = (i == j) ? C((double)n, 0.0) : C(0.0, 0.0);
+                        for (long l = 0; l < n; l++)
+                            t += conj(b.c[0][l + i * ldn]) * b.c[0][l + j * ldn];
+                        h[i + j * ldn] = i == j ? C(t.real(), R(0.0)) : t;
+                    }
+                b.c[0] = h;
+            } else {
+                std::vector<R> h((size_t)(ldn * n));
+                for (long j = 0; j < n; j++)
+                    for (long i = 0; i < n; i++) {
+                        R t = (i == j) ? R((double)n) : R(0.0);
+                        for (long l = 0; l < n; l++)
+                            t += b.r[0][l + i * ldn] * b.r[0][l + j * ldn];
+                        h[i + j * ldn] = t;
+                    }
+                b.r[0] = h;
+            }
+        };
+        const std::string w = tag({u}, {n});
+        run_case("Rpotrf", w, {ldn * n}, {}, false, [&](bufs &b, bool lib) {
+            spd(b, false);
+            I info = -9;
+            CALL(Rpotrf, (u, n, b.r[0].data(), ldn, info));
+            b.rres = R((double)info);
+        });
+        run_case("Cpotrf", w, {}, {ldn * n}, false, [&](bufs &b, bool lib) {
+            spd(b, true);
+            I info = -9;
+            CALL(Cpotrf, (u, n, b.c[0].data(), ldn, info));
+            b.rres = R((double)info);
+        });
+        run_case("Rlauum", w, {ldn * n}, {}, false, [&](bufs &b, bool lib) {
+            I info = -9;
+            CALL(Rlauum, (u, n, b.r[0].data(), ldn, info));
+            b.rres = R((double)info);
+        });
+        run_case("Clauum", w, {}, {ldn * n}, false, [&](bufs &b, bool lib) {
+            I info = -9;
+            CALL(Clauum, (u, n, b.c[0].data(), ldn, info));
+            b.rres = R((double)info);
+        });
+        for (const char *d : DG) {
+            const std::string wd = tag({u, d}, {n});
+            // a triangle with a dominant diagonal
+            run_case("Rtrtri", wd, {ldn * n}, {}, false, [&](bufs &b, bool lib) {
+                for (long j = 0; j < n; j++)
+                    b.r[0][j + j * ldn] = R(2.0) + abs(b.r[0][j + j * ldn]);
+                I info = -9;
+                CALL(Rtrtri, (u, d, n, b.r[0].data(), ldn, info));
+                b.rres = R((double)info);
+            });
+            run_case("Ctrtri", wd, {}, {ldn * n}, false, [&](bufs &b, bool lib) {
+                for (long j = 0; j < n; j++)
+                    b.c[0][j + j * ldn] = C(R(2.0) + abs(R(b.c[0][j + j * ldn].real())), R(b.c[0][j + j * ldn].imag()));
+                I info = -9;
+                CALL(Ctrtri, (u, d, n, b.c[0].data(), ldn, info));
+                b.rres = R((double)info);
+            });
+        }
+    }
+}
+
 } // namespace
 
 int main()
@@ -635,6 +740,10 @@ int main()
                 level1(301);
             declined();
             blocks();
+            lapack(9, 7);
+            lapack(30, 33);
+            if (big)
+                lapack(150, 140);
         }
     }
     long notused = 0;

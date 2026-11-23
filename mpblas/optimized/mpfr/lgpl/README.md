@@ -24,8 +24,8 @@ They provide the fixed-precision real `cu_freal<PB>` (bit-exact with MPFR
 round-to-nearest), its correctly rounded division and square root, and the
 complex `cu_fcomplex<PB>` (bit-exact with MPC for +, -, *) of the CPU MPFR
 BLAS kernels: `../openmp/Rgemm_freal_{x86,generic}.cpp` (Rgemm) and
-`../openmp/Rfreal_blas_<PB>.cpp` (the other routines, see
-`../openmp/Rfreal_blas.h`). The code of those files and of the headers they
+`../openmp/Rfreal_blas_<PB>.cpp` (the other BLAS routines and the optimized
+LAPACK routines, see `../openmp/Rfreal_blas.h`). The code of those files and of the headers they
 include from `../openmp` (`Rgemm_freal*.h`, `Rfreal_*.h`, `Rfreal_blas.cpp`)
 is BSD. Since the LGPL files are headers of templates, their code is
 compiled into

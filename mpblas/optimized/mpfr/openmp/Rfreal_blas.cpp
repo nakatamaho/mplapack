@@ -64,6 +64,7 @@ long mplapack_freal_l12_prec()
 #define MPLAPACK_FREAL_PRECISION_NS(P)                       \
     namespace frb##P {                                       \
     MPLAPACK_FREAL_ROUTINES(MPLAPACK_FREAL_NS_DECLARE)       \
+    MPLAPACK_FREAL_LAPACK_ROUTINES(MPLAPACK_FREAL_NS_DECLARE) \
     }
 MPFREAL_PRECISIONS(MPLAPACK_FREAL_PRECISION_NS)
 
@@ -144,3 +145,4 @@ int freal_blas_precision()
         }                                       \
     }
 MPLAPACK_FREAL_ROUTINES(MPLAPACK_FREAL_ENTRY)
+MPLAPACK_FREAL_LAPACK_ROUTINES(MPLAPACK_FREAL_ENTRY)

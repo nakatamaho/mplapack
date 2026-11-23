@@ -261,17 +261,31 @@ result that leaves [emin, emax] or a complex division (the solves with diag
 `MPLAPACK_MPFR_CPU_FREAL_L12_PREC` bits (512: their copies cost about as much
 as their operations) and Level 1 only on one thread. Not here: `Rcopy`,
 `Rswap`, `Ccopy`, `Cswap`, `iRamax`, `iCamax` (no arithmetic), `Rnrm2`,
-`RCnrm2` (MPFR's arithmetic parameters). `mpfr/test/Rfreal_blas_test` checks
-every routine against the reference code; `misc/gen_freal_blas.py` generates
-the drivers and the per-precision files.
+`RCnrm2` (MPFR's arithmetic parameters). The complex division and modulus
+(diagonal elements, pivots) are `mpc_div` and `mpc_abs` themselves.
+
+The optimized LAPACK routines (`mplapack/optimized/common`: `Rgetrf`,
+`Rgetrf2`, `Rpotrf`, `Rtrtri`, `Rlauum` and the complex ones) run entirely in
+`fr` / `fc` from one copy of the matrix: the same files are compiled in the
+instance with their BLAS calls going to the BLAS of `fr` / `fc` (`Rgemm`: the
+tiled kernel on the `fr` arrays when the exponent bound holds, else the
+reference code), `Rlamch` converted from MPFR; the routines made of them
+(`Rgesv`, `Rgetri`, `Rposv`, `Rpotri`, ...) follow. With
+`MPLAPACK_MPFR_GEMM_WINOGRAD_CUTOFF` set they are left to MPFR (the opt-in
+Winograd `Rgemm` has other rounding). Over the BLAS kernels this saves the
+copies of every call (n = 300: 0-10%).
+
+`mpfr/test/Rfreal_blas_test` checks every routine against the reference code;
+`misc/gen_freal_blas.py` generates the drivers and the per-precision files.
 
 | Xeon Gold 5122, MPFR / freal (s) | 256 bits | 512 bits | 1024 bits |
 |---|---|---|---|
-| Rgetrf n = 300, 1 thread | 1.16 / 0.44 (2.6x) | 1.76 / 0.68 (2.6x) | 2.81 / 1.32 (2.1x) |
-| Rpotrf n = 300, 1 thread | 0.59 / 0.25 (2.4x) | 0.90 / 0.38 (2.4x) | 1.44 / 0.74 (1.9x) |
-| Cgetrf n = 300, 1 thread | 5.13 / 2.10 (2.4x) | 6.69 / 3.11 (2.2x) | 12.2 / 6.12 (2.0x) |
-| Rgetrf n = 300, 4 threads | 0.34 / 0.16 (2.1x) | 0.45 / 0.25 (1.8x) | 0.81 / 0.45 (1.8x) |
-| Cgetrf n = 300, 4 threads | 1.54 / 0.70 (2.2x) | 2.06 / 1.03 (2.0x) | 3.63 / 1.97 (1.8x) |
+| Rgetrf n = 300, 1 thread | 1.16 / 0.42 (2.7x) | 1.54 / 0.65 (2.4x) | 2.81 / 1.30 (2.2x) |
+| Rpotrf n = 300, 1 thread | 0.59 / 0.25 (2.4x) | 0.80 / 0.38 (2.1x) | 1.44 / 0.75 (1.9x) |
+| Cgetrf n = 300, 1 thread | 5.13 / 2.04 (2.5x) | 6.87 / 3.03 (2.3x) | 12.2 / 5.93 (2.1x) |
+| Rgetrf n = 300, 4 threads | 0.33 / 0.15 (2.3x) | 0.44 / 0.22 (2.0x) | 0.81 / 0.44 (1.8x) |
+| Rpotrf n = 300, 4 threads | 0.17 / 0.09 (1.9x) | 0.23 / 0.13 (1.7x) | 0.43 / 0.27 (1.6x) |
+| Cgetrf n = 300, 4 threads | 1.57 / 0.61 (2.6x) | 2.00 / 0.92 (2.2x) | 3.75 / 1.75 (2.1x) |
 | Rsyrk, Rsymm, Rtrmm n = 120, 1 thread | 2.4-2.5x | 2.1x | 2.0x |
 | Rtrsm n = 120, 1 thread | 2.0x | 1.8x | 1.7x |
 | Cgemm, Cherk, Ctrsm n = 120, 1 thread | 2.3-2.5x | 2.1-2.2x | 1.9-2.0x |

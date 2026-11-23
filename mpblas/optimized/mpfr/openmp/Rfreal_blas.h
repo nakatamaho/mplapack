@@ -42,10 +42,11 @@
 //   - Level 1 and 2 above MPLAPACK_MPFR_CPU_FREAL_L12_PREC bits (default 512;
 //     the copies cost about as much as the operations), Level 1 with more
 //     than one OpenMP thread,
-//   - a result that overflows or underflows, or a complex division (the
-//     triangular solves with diag = N), found while running.
+//   - a result that overflows or underflows, found while running.
 // Without arithmetic (Rcopy, Rswap, Ccopy, Cswap, iRamax, iCamax) or with the
 // MPFR arithmetic parameters (Rnrm2, RCnrm2) the routines are not here.
+// MPLAPACK_FREAL_LAPACK_ROUTINES: the same for the optimized LAPACK routines,
+// run entirely in fr / fc (with a Winograd Rgemm switched on, the MPFR code).
 
 #ifndef _MPLAPACK_RFREAL_BLAS_H_
 #define _MPLAPACK_RFREAL_BLAS_H_
@@ -117,8 +118,24 @@
     X(Raxpy, (mplapackint const n, mpfr_class const da, mpfr_class *dx, mplapackint const incx, mpfr_class *dy, mplapackint const incy), (n, da, dx, incx, dy, incy))
 
 
+// The optimized LAPACK routines (mplapack/optimized/common), run entirely
+// with fr<PB> / fc<PB> -- their BLAS calls included -- from one copy of the
+// matrix: Rgesv, Rgetri, Rposv, Rpotri, ... are made of them.
+#define MPLAPACK_FREAL_LAPACK_ROUTINES(X) \
+    X(Rgetrf, (mplapackint const m, mplapackint const n, mpfr_class *a, mplapackint const lda, mplapackint *ipiv, mplapackint &info), (m, n, a, lda, ipiv, info)) \
+    X(Rgetrf2, (mplapackint const m, mplapackint const n, mpfr_class *a, mplapackint const lda, mplapackint *ipiv, mplapackint &info), (m, n, a, lda, ipiv, info)) \
+    X(Rpotrf, (const char *uplo, mplapackint const n, mpfr_class *a, mplapackint const lda, mplapackint &info), (uplo, n, a, lda, info)) \
+    X(Rtrtri, (const char *uplo, const char *diag, mplapackint const n, mpfr_class *a, mplapackint const lda, mplapackint &info), (uplo, diag, n, a, lda, info)) \
+    X(Rlauum, (const char *uplo, mplapackint const n, mpfr_class *a, mplapackint const lda, mplapackint &info), (uplo, n, a, lda, info)) \
+    X(Cgetrf, (mplapackint const m, mplapackint const n, mpc_class *a, mplapackint const lda, mplapackint *ipiv, mplapackint &info), (m, n, a, lda, ipiv, info)) \
+    X(Cgetrf2, (mplapackint const m, mplapackint const n, mpc_class *a, mplapackint const lda, mplapackint *ipiv, mplapackint &info), (m, n, a, lda, ipiv, info)) \
+    X(Cpotrf, (const char *uplo, mplapackint const n, mpc_class *a, mplapackint const lda, mplapackint &info), (uplo, n, a, lda, info)) \
+    X(Ctrtri, (const char *uplo, const char *diag, mplapackint const n, mpc_class *a, mplapackint const lda, mplapackint &info), (uplo, diag, n, a, lda, info)) \
+    X(Clauum, (const char *uplo, mplapackint const n, mpc_class *a, mplapackint const lda, mplapackint &info), (uplo, n, a, lda, info))
+
 #define MPLAPACK_FREAL_DECLARE(name, params, args) bool name##_freal params;
 MPLAPACK_FREAL_ROUTINES(MPLAPACK_FREAL_DECLARE)
+MPLAPACK_FREAL_LAPACK_ROUTINES(MPLAPACK_FREAL_DECLARE)
 #undef MPLAPACK_FREAL_DECLARE
 
 #endif

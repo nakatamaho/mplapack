@@ -33,18 +33,20 @@
 //   fr  +, -, *, / (mpfr_add, mpfr_sub, mpfr_mul, mpfr_div), unary -, abs,
 //       sqrt, comparisons;
 //   fc  +, - (per part), * (mpc_mul: correctly rounded parts; the zero rules
-//       of its mul_real / mul_imag paths), conj, real(), imag(); a real
-//       operand is (x, +0) (mpc_set_fr), as in the mpc_class expressions.
+//       of its mul_real / mul_imag paths), conj, real(), imag(); / and abs
+//       by mpc_div and mpc_abs themselves; a real operand is (x, +0)
+//       (mpc_set_fr), as in the mpc_class expressions.
 // Arithmetic on cu_freal<PB> (../lgpl/R*_host.h, LGPL-3.0-or-later) with
 // unbounded exponents: a nonzero result outside [emin, emax] of
 // mplapack_freal_tls (Rfreal_state.h) -- where MPFR overflows or underflows
-// -- and a complex division (not correctly rounded here) are reported, and
-// the call that made them is run by MPFR instead.
+// -- is reported, and the call that made it is run by MPFR instead.
 //
 // The includer defines MPFREAL_NS (its own namespace) and has included
 // ../lgpl/Rfreal_host.h, Rfround_host.h and Rfcomplex_host.h.
 
 #include <cmath>
+#include <mpc.h>
+#include <mpfr.h>
 #include "Rfreal_state.h"
 
 #if defined(__GNUC__) || defined(__clang__)
@@ -255,11 +257,62 @@ template <int PB> MPLAPACK_FREAL_NOINLINE fc<PB> fc_mul(const fc<PB> &a, const f
 template <int PB> inline fc<PB> operator+(const fc<PB> &a, const fc<PB> &b) { return fc<PB>(a.re + b.re, a.im + b.im); }
 template <int PB> inline fc<PB> operator-(const fc<PB> &a, const fc<PB> &b) { return fc<PB>(a.re - b.re, a.im - b.im); }
 template <int PB> inline fc<PB> operator*(const fc<PB> &a, const fc<PB> &b) { return fc_mul(a, b); }
-template <int PB> inline fc<PB> operator/(const fc<PB> &, const fc<PB> &)
+// MPC itself for the complex division and the modulus (correctly rounded;
+// rare in the BLAS and LAPACK code: diagonal elements, pivots)
+template <int PB> inline void fr_to_mpfr(mpfr_ptr x, const fr<PB> &f)
 {
-    mplapack_freal_fail(); // mpc_div is not here
-    return fc<PB>();
+    if (f.is_zero()) {
+        mpfr_set_zero(x, f.v.sign);
+        return;
+    }
+    mpfr_set_ui(x, 1, MPFR_RNDN); // a regular number to overwrite
+    for (int i = 0; i < cu_freal<PB>::N; i++)
+        x->_mpfr_d[i] = f.v.m[i];
+    x->_mpfr_exp = f.v.exp;
+    x->_mpfr_sign = f.v.sign;
 }
+template <int PB> inline fr<PB> fr_from_mpfr(mpfr_srcptr x)
+{
+    fr<PB> f;
+    if (mpfr_zero_p(x)) {
+        f.v.sign = mpfr_signbit(x) ? -1 : 1;
+        return f;
+    }
+    if (!mpfr_regular_p(x)) {
+        mplapack_freal_fail();
+        return f;
+    }
+    f.v.sign = mpfr_sgn(x) < 0 ? -1 : 1;
+    f.v.exp = mpfr_get_exp(x);
+    for (int i = 0; i < cu_freal<PB>::N; i++)
+        f.v.m[i] = x->_mpfr_d[i];
+    fr_check(f);
+    return f;
+}
+template <int PB> MPLAPACK_FREAL_NOINLINE fc<PB> fc_div(const fc<PB> &a, const fc<PB> &b)
+{
+    mpc_t x, y, z;
+    mpc_init2(x, PB), mpc_init2(y, PB), mpc_init2(z, PB);
+    fr_to_mpfr(mpc_realref(x), a.re), fr_to_mpfr(mpc_imagref(x), a.im);
+    fr_to_mpfr(mpc_realref(y), b.re), fr_to_mpfr(mpc_imagref(y), b.im);
+    mpc_div(z, x, y, MPC_RNDNN);
+    fc<PB> r(fr_from_mpfr<PB>(mpc_realref(z)), fr_from_mpfr<PB>(mpc_imagref(z)));
+    mpc_clear(x), mpc_clear(y), mpc_clear(z);
+    return r;
+}
+template <int PB> MPLAPACK_FREAL_NOINLINE fr<PB> abs(const fc<PB> &a)
+{
+    mpc_t x;
+    mpfr_t r;
+    mpc_init2(x, PB);
+    mpfr_init2(r, PB);
+    fr_to_mpfr(mpc_realref(x), a.re), fr_to_mpfr(mpc_imagref(x), a.im);
+    mpc_abs(r, x, MPFR_RNDN);
+    const fr<PB> f = fr_from_mpfr<PB>(r);
+    mpc_clear(x), mpfr_clear(r);
+    return f;
+}
+template <int PB> inline fc<PB> operator/(const fc<PB> &a, const fc<PB> &b) { return fc_div(a, b); }
 template <int PB> inline fc<PB> operator-(const fc<PB> &a) { return fc<PB>(-a.re, -a.im); }
 template <int PB> inline fc<PB> operator+(const fc<PB> &a) { return a; }
 template <int PB> inline fc<PB> conj(const fc<PB> &a) { return fc<PB>(a.re, -a.im); }
