@@ -50,6 +50,10 @@ void INVERSE_PUBLIC(const char *u,INTEGER const n,InverseHost *a,INTEGER const l
 // calls directly to the same optimized CPU engine, not another GPU attempt.
 #include "Rinverse_cpu_blas.h"
 #include "Rinverse_cpu_common.h"
+#if defined(MPLAPACK_BUILD_WITH_MPFR) && !defined(MPLAPACK_FREAL_INSTANCE)
+// The optimized sources included below call the global *_freal hooks.
+#include "../../../mpblas/optimized/mpfr/openmp/Rfreal_blas.h"
+#endif
 namespace {
 #if MPLAPACK_INVERSE_COMPLEX
 #include "Ctrtri.cpp"
