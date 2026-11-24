@@ -121,6 +121,10 @@ $(MPLAPACK_ACCEL_REFERENCE_SOURCES) \
 Rtrtri.cpp Ctrtri.cpp Rlauum.cpp Clauum.cpp Rpotri.cpp Cpotri.cpp Rgetri.cpp Cgetri.cpp Rinverse_gpu_cuda.cu \
 ../../../../mplapack/optimized/common/Rlaswp.cpp \
 ../../../../mplapack/optimized/common/Claswp.cpp \
+../../../../mplapack/optimized/common/Rsteqr.cpp \
+../../../../mplapack/optimized/common/Csteqr.cpp \
+../../../../mplapack/optimized/common/Rlasr.cpp \
+../../../../mplapack/optimized/common/Clasr.cpp \
 Rgetrs.cpp Rpotrs.cpp Rgesv.cpp Rposv.cpp Cgetrs.cpp Cpotrs.cpp Cgesv.cpp Cposv.cpp Rsolver_gpu_cuda.cu \
 Rgetrf.cpp Cgetrf.cpp Rgetrf_gpu_cuda.cu \
 ../../../../mplapack/optimized/common/Rgetrf2.cpp \

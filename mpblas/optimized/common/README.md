@@ -275,6 +275,14 @@ reference code), `Rlamch` converted from MPFR; the routines made of them
 Winograd `Rgemm` has other rounding). Over the BLAS kernels this saves the
 copies of every call (n = 300: 0-10%).
 
+`Rsteqr` and `Csteqr` also run as whole calls in `fr` / `fc`, including the
+plane rotations. `compz="N"` does not copy `Z` or `WORK`; `compz="I"`
+initializes `Z` without reading it. A standalone `Rlasr` or `Clasr` call uses
+the Level 2 precision cap and the usual minimum-work threshold (here `m*n`).
+Small `Rlasr` calls can cost more to copy than they save in arithmetic.
+Large rotations can split the independent rows or columns across OpenMP
+workers, without changing the order of rotation within each lane.
+
 `mpfr/test/Rfreal_blas_test` checks every routine against the reference code;
 `misc/gen_freal_blas.py` generates the drivers and the per-precision files.
 

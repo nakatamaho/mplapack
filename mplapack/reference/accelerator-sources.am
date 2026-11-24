@@ -269,7 +269,6 @@ MPLAPACK_ACCEL_REFERENCE_SOURCES = \
 ../../../../mplapack/reference/Clascl.cpp \
 ../../../../mplapack/reference/Clascl2.cpp \
 ../../../../mplapack/reference/Claset.cpp \
-../../../../mplapack/reference/Clasr.cpp \
 ../../../../mplapack/reference/Classq.cpp \
 ../../../../mplapack/reference/Claswlq.cpp \
 ../../../../mplapack/reference/Clasyf.cpp \
@@ -339,7 +338,6 @@ MPLAPACK_ACCEL_REFERENCE_SOURCES = \
 ../../../../mplapack/reference/Cstegr.cpp \
 ../../../../mplapack/reference/Cstein.cpp \
 ../../../../mplapack/reference/Cstemr.cpp \
-../../../../mplapack/reference/Csteqr.cpp \
 ../../../../mplapack/reference/Csycon.cpp \
 ../../../../mplapack/reference/Csycon_3.cpp \
 ../../../../mplapack/reference/Csycon_rook.cpp \
@@ -701,7 +699,6 @@ MPLAPACK_ACCEL_REFERENCE_SOURCES = \
 ../../../../mplapack/reference/Rlasq4.cpp \
 ../../../../mplapack/reference/Rlasq5.cpp \
 ../../../../mplapack/reference/Rlasq6.cpp \
-../../../../mplapack/reference/Rlasr.cpp \
 ../../../../mplapack/reference/Rlasrt.cpp \
 ../../../../mplapack/reference/Rlassq.cpp \
 ../../../../mplapack/reference/Rlasv2.cpp \
@@ -831,7 +828,6 @@ MPLAPACK_ACCEL_REFERENCE_SOURCES = \
 ../../../../mplapack/reference/Rstegr.cpp \
 ../../../../mplapack/reference/Rstein.cpp \
 ../../../../mplapack/reference/Rstemr.cpp \
-../../../../mplapack/reference/Rsteqr.cpp \
 ../../../../mplapack/reference/Rsterf.cpp \
 ../../../../mplapack/reference/Rstev.cpp \
 ../../../../mplapack/reference/Rstevd.cpp \
@@ -954,6 +950,10 @@ MPLAPACK_ACCEL_REFERENCE_SOURCES = \
 # OpenCL retains the reference solvers/inverses explicitly; MPFR retains the
 # reference GETRI/POTRI (GPU inverse entries are BF-only).
 MPLAPACK_ACCEL_REFERENCE_SOURCES_SHADOWED = \
+../../../../mplapack/reference/Rsteqr.cpp \
+../../../../mplapack/reference/Csteqr.cpp \
+../../../../mplapack/reference/Rlasr.cpp \
+../../../../mplapack/reference/Clasr.cpp \
 ../../../../mplapack/reference/Rgetri.cpp \
 ../../../../mplapack/reference/Cgetri.cpp \
 ../../../../mplapack/reference/Rpotri.cpp \

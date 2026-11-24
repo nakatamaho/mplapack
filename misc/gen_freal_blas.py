@@ -283,6 +283,46 @@ if (!cl.run([&] { NS::NAME(ARGS); }))
     return false;
 info = inf;
 return true;'''
+STEQR = '''const bool init = lsm(compz, "I"), update = lsm(compz, "V"), vectors = init || update;
+if ((!vectors && !lsm(compz, "N")) || n < 0 || ldz < (vectors ? std::max<INTEGER>(1, n) : 1))
+    return false;
+// The reference uses separate multiply/add operations in the default build.
+if (gmpfrxx_mkII::detail::build_options::enable_fma)
+    return false;
+// The scaling constants must fit the exponent bounds used by fcall;
+// also reject ranges too narrow for the algorithm's literals or eps^2.
+const long emin = mpfr_get_emin(), emax = mpfr_get_emax();
+if (n > 1 && (emin < -(1L << 40) || emax > (1L << 40) || emin > -2 * FRB_PB || emax < 4))
+    return false;
+fcall cl(std::max(1.0, (double)n * n * (vectors ? n : 1)), 3);
+REAL *dp = n > 1 ? cl.vec(d, n, 1, F_INOUT).p : nullptr;
+REAL *ep = n > 1 ? cl.vec(e, n - 1, 1, F_INOUT).p : nullptr;
+auto *zp = ((update && n > 1) || (init && n > 0)) ? cl.mat(z, n, n, ldz, rg_all(), init ? F_OUT : F_INOUT).p : nullptr;
+REAL *wp = vectors && n > 1 ? cl.vec(work, 2 * (n - 1), 1, F_INOUT).p : nullptr;
+INTEGER inf = 0;
+if (!cl.run([&] { NAME_ns::NAME(compz, n, dp, ep, zp, vectors ? std::max<INTEGER>(1, n) : 1, wp, inf); }))
+    return false;
+info = inf;
+return true;'''
+LASR = '''const bool left = lsm(side, "L");
+if ((!left && !lsm(side, "R")) || !(lsm(pivot, "V") || lsm(pivot, "T") || lsm(pivot, "B")) ||
+    !(lsm(direct, "F") || lsm(direct, "B")) || m <= 0 || n <= 0 || lda < m ||
+    gmpfrxx_mkII::detail::build_options::enable_fma || mpfr_get_emax() < 1)
+    return false;
+const INTEGER rotations = (left ? m : n) - 1;
+if (!c || !s)
+    return false;
+INTEGER active = 0;
+for (INTEGER j = 0; j < rotations; ++j)
+    if (!mpfr_zero_p(s[j].get_mpfr_t()) || !mpfr_number_p(c[j].get_mpfr_t()) || mpfr_cmp_ui(c[j].get_mpfr_t(), 1) != 0)
+        ++active;
+if (active == 0)
+    return false;
+fcall cl((double)active * (left ? n : m), 2);
+auto &C = cl.vec(c, rotations, 1, F_IN);
+auto &S = cl.vec(s, rotations, 1, F_IN);
+auto &A = cl.mat(a, m, n, lda, rg_all(), F_INOUT);
+return cl.run([&] { NAME(side, pivot, direct, m, n, C.p, S.p, A.p, A.ld); });'''
 # a Winograd Rgemm (opt-in) does not give the reference result: the MPFR code then
 WINO_R = 'mplapack_blas::blas_env_long("MPLAPACK_MPFR_GEMM_WINOGRAD_CUTOFF", 0) > 0'
 LB = {}
@@ -293,6 +333,8 @@ for r, c in [('R', 'false'), ('C', 'false')]:
     LB[r + 'potrf'] = TRI.replace('NS', r + 'potrf_ns').replace('NAME', r + 'potrf').replace('ARGS', 'uplo, n, A.p, A.ld, inf').replace('UNIT', '').replace('WINO', w)
     LB[r + 'trtri'] = TRI.replace('NS', r + 'trtri_ns').replace('NAME', r + 'trtri').replace('ARGS', 'uplo, diag, n, A.p, A.ld, inf').replace('UNIT', ', lsm(diag, "U")').replace('WINO', w)
     LB[r + 'lauum'] = TRI.replace('NS', r + 'lauum_ns').replace('NAME', r + 'lauum').replace('ARGS', 'uplo, n, A.p, A.ld, inf').replace('UNIT', '').replace('WINO', w)
+    LB[r + 'steqr'] = STEQR.replace('NAME', r + 'steqr')
+    LB[r + 'lasr'] = LASR.replace('NAME', r + 'lasr')
 for k in list(LB):
     LB[k] = LB[k].replace('if (false)\n    return false;\n', '')
 

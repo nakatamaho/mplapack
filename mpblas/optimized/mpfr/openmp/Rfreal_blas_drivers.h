@@ -780,4 +780,100 @@ bool Clauum_freal(const char *uplo, mplapackint const n, mpc_class *a, mplapacki
     return true;
 }
 
+bool Rsteqr_freal(const char *compz, mplapackint const n, mpfr_class *d, mpfr_class *e, mpfr_class *z, mplapackint const ldz, mpfr_class *work, mplapackint &info)
+{
+    const bool init = lsm(compz, "I"), update = lsm(compz, "V"), vectors = init || update;
+    if ((!vectors && !lsm(compz, "N")) || n < 0 || ldz < (vectors ? std::max<INTEGER>(1, n) : 1))
+        return false;
+    // The reference uses separate multiply/add operations in the default build.
+    if (gmpfrxx_mkII::detail::build_options::enable_fma)
+        return false;
+    // The scaling constants must fit the exponent bounds used by fcall;
+    // also reject ranges too narrow for the algorithm's literals or eps^2.
+    const long emin = mpfr_get_emin(), emax = mpfr_get_emax();
+    if (n > 1 && (emin < -(1L << 40) || emax > (1L << 40) || emin > -2 * FRB_PB || emax < 4))
+        return false;
+    fcall cl(std::max(1.0, (double)n * n * (vectors ? n : 1)), 3);
+    REAL *dp = n > 1 ? cl.vec(d, n, 1, F_INOUT).p : nullptr;
+    REAL *ep = n > 1 ? cl.vec(e, n - 1, 1, F_INOUT).p : nullptr;
+    auto *zp = ((update && n > 1) || (init && n > 0)) ? cl.mat(z, n, n, ldz, rg_all(), init ? F_OUT : F_INOUT).p : nullptr;
+    REAL *wp = vectors && n > 1 ? cl.vec(work, 2 * (n - 1), 1, F_INOUT).p : nullptr;
+    INTEGER inf = 0;
+    if (!cl.run([&] { Rsteqr_ns::Rsteqr(compz, n, dp, ep, zp, vectors ? std::max<INTEGER>(1, n) : 1, wp, inf); }))
+        return false;
+    info = inf;
+    return true;
+}
+
+bool Csteqr_freal(const char *compz, mplapackint const n, mpfr_class *d, mpfr_class *e, mpc_class *z, mplapackint const ldz, mpfr_class *work, mplapackint &info)
+{
+    const bool init = lsm(compz, "I"), update = lsm(compz, "V"), vectors = init || update;
+    if ((!vectors && !lsm(compz, "N")) || n < 0 || ldz < (vectors ? std::max<INTEGER>(1, n) : 1))
+        return false;
+    // The reference uses separate multiply/add operations in the default build.
+    if (gmpfrxx_mkII::detail::build_options::enable_fma)
+        return false;
+    // The scaling constants must fit the exponent bounds used by fcall;
+    // also reject ranges too narrow for the algorithm's literals or eps^2.
+    const long emin = mpfr_get_emin(), emax = mpfr_get_emax();
+    if (n > 1 && (emin < -(1L << 40) || emax > (1L << 40) || emin > -2 * FRB_PB || emax < 4))
+        return false;
+    fcall cl(std::max(1.0, (double)n * n * (vectors ? n : 1)), 3);
+    REAL *dp = n > 1 ? cl.vec(d, n, 1, F_INOUT).p : nullptr;
+    REAL *ep = n > 1 ? cl.vec(e, n - 1, 1, F_INOUT).p : nullptr;
+    auto *zp = ((update && n > 1) || (init && n > 0)) ? cl.mat(z, n, n, ldz, rg_all(), init ? F_OUT : F_INOUT).p : nullptr;
+    REAL *wp = vectors && n > 1 ? cl.vec(work, 2 * (n - 1), 1, F_INOUT).p : nullptr;
+    INTEGER inf = 0;
+    if (!cl.run([&] { Csteqr_ns::Csteqr(compz, n, dp, ep, zp, vectors ? std::max<INTEGER>(1, n) : 1, wp, inf); }))
+        return false;
+    info = inf;
+    return true;
+}
+
+bool Rlasr_freal(const char *side, const char *pivot, const char *direct, mplapackint const m, mplapackint const n, mpfr_class *c, mpfr_class *s, mpfr_class *a, mplapackint const lda)
+{
+    const bool left = lsm(side, "L");
+    if ((!left && !lsm(side, "R")) || !(lsm(pivot, "V") || lsm(pivot, "T") || lsm(pivot, "B")) ||
+        !(lsm(direct, "F") || lsm(direct, "B")) || m <= 0 || n <= 0 || lda < m ||
+        gmpfrxx_mkII::detail::build_options::enable_fma || mpfr_get_emax() < 1)
+        return false;
+    const INTEGER rotations = (left ? m : n) - 1;
+    if (!c || !s)
+        return false;
+    INTEGER active = 0;
+    for (INTEGER j = 0; j < rotations; ++j)
+        if (!mpfr_zero_p(s[j].get_mpfr_t()) || !mpfr_number_p(c[j].get_mpfr_t()) || mpfr_cmp_ui(c[j].get_mpfr_t(), 1) != 0)
+            ++active;
+    if (active == 0)
+        return false;
+    fcall cl((double)active * (left ? n : m), 2);
+    auto &C = cl.vec(c, rotations, 1, F_IN);
+    auto &S = cl.vec(s, rotations, 1, F_IN);
+    auto &A = cl.mat(a, m, n, lda, rg_all(), F_INOUT);
+    return cl.run([&] { Rlasr(side, pivot, direct, m, n, C.p, S.p, A.p, A.ld); });
+}
+
+bool Clasr_freal(const char *side, const char *pivot, const char *direct, mplapackint const m, mplapackint const n, mpfr_class *c, mpfr_class *s, mpc_class *a, mplapackint const lda)
+{
+    const bool left = lsm(side, "L");
+    if ((!left && !lsm(side, "R")) || !(lsm(pivot, "V") || lsm(pivot, "T") || lsm(pivot, "B")) ||
+        !(lsm(direct, "F") || lsm(direct, "B")) || m <= 0 || n <= 0 || lda < m ||
+        gmpfrxx_mkII::detail::build_options::enable_fma || mpfr_get_emax() < 1)
+        return false;
+    const INTEGER rotations = (left ? m : n) - 1;
+    if (!c || !s)
+        return false;
+    INTEGER active = 0;
+    for (INTEGER j = 0; j < rotations; ++j)
+        if (!mpfr_zero_p(s[j].get_mpfr_t()) || !mpfr_number_p(c[j].get_mpfr_t()) || mpfr_cmp_ui(c[j].get_mpfr_t(), 1) != 0)
+            ++active;
+    if (active == 0)
+        return false;
+    fcall cl((double)active * (left ? n : m), 2);
+    auto &C = cl.vec(c, rotations, 1, F_IN);
+    auto &S = cl.vec(s, rotations, 1, F_IN);
+    auto &A = cl.mat(a, m, n, lda, rg_all(), F_INOUT);
+    return cl.run([&] { Clasr(side, pivot, direct, m, n, C.p, S.p, A.p, A.ld); });
+}
+
 } // namespace FRB_NS

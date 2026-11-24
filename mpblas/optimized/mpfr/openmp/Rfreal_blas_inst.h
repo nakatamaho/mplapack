@@ -57,6 +57,7 @@
 #include "Rgemm_freal.h"
 #include "Rfreal_blas.h"
 #include <mplapack.h>
+#include <mplapack_arithmetic_params.h>
 #include "../../../../mplapack/optimized/common/Rlookahead_common.h"
 
 #if defined(__x86_64__) && (defined(__GNUC__) || defined(__clang__))
@@ -83,6 +84,8 @@ typedef fr<FRB_PB> REAL;
 typedef fc<FRB_PB> COMPLEX;
 using std::abs;
 using std::sqrt;
+using ::min;
+using ::max;
 // invalid arguments: the MPFR code runs and reports them
 inline void freal_xerbla(const char *, int) { mplapack_freal_fail(); }
 } // namespace FRB_NS
@@ -482,6 +485,140 @@ namespace Rlauum_ns {
 }
 namespace Clauum_ns {
 #include "../../../../mplapack/optimized/common/Clauum.cpp"
+}
+
+// Helpers for the tridiagonal QR iteration. Keep the generated LAPACK
+// arithmetic and evaluation order, including in the parallel rotations.
+namespace Rlartg_ns {
+namespace mplapack {
+struct rotation_limits {
+    REAL safmin, safmax, cutoff;
+    bool capped = false;
+};
+inline const rotation_limits &limits()
+{
+    struct cache {
+        long emin = 0, emax = 0;
+        rotation_limits p;
+    };
+    static thread_local cache c;
+    const long emin = mpfr_get_emin(), emax = mpfr_get_emax();
+    if (c.emin != emin || c.emax != emax) {
+        const auto ap = ::mplapack::get_arithmetic_params<mpfr_class>();
+        rotation_limits p;
+        p.safmin = fr_from_mpfr<FRB_PB>(ap.safmin.get_mpfr_t());
+        p.capped = mpfr_inf_p(ap.safmax.get_mpfr_t());
+        p.safmax = fr_from_mpfr<FRB_PB>((p.capped ? ap.rmax : ap.safmax).get_mpfr_t());
+        if (p.capped)
+            p.cutoff = sqrt(p.safmax / 2);
+        if (!mplapack_freal_tls.bad->load(std::memory_order_relaxed))
+            c.emin = emin, c.emax = emax;
+        else
+            c.emin = c.emax = 0;
+        c.p = p;
+    }
+    return c.p;
+}
+template <class T> const rotation_limits &get_arithmetic_params() { return limits(); }
+} // namespace mplapack
+#include "../../../../mplapack/reference/Rlartg.cpp"
+}
+inline void Rlartg(REAL const f, REAL const g, REAL &c, REAL &s, REAL &r)
+{
+    const auto &p = Rlartg_ns::mplapack::limits();
+    // MPFR can produce an infinite safmax (including with its default
+    // exponent range). Below sqrt(rmax/2), a finite cap at rmax changes
+    // neither the rtmax comparison nor the MIN in the scaling branch.
+    // Outside that region we cannot substitute a finite value safely.
+    if (p.capped && (abs(f) >= p.cutoff || abs(g) >= p.cutoff))
+        mplapack_freal_fail();
+    Rlartg_ns::Rlartg(f, g, c, s, r);
+}
+namespace Rlae2_ns {
+#include "../../../../mplapack/reference/Rlae2.cpp"
+}
+using Rlae2_ns::Rlae2;
+namespace Rlaev2_ns {
+#include "../../../../mplapack/reference/Rlaev2.cpp"
+}
+using Rlaev2_ns::Rlaev2;
+namespace Rlapy2_ns {
+#include "../../../../mplapack/reference/Rlapy2.cpp"
+}
+using Rlapy2_ns::Rlapy2;
+namespace Rlascl_ns {
+#include "../../../../mplapack/reference/Rlascl.cpp"
+}
+using Rlascl_ns::Rlascl;
+namespace Rlanst_ns {
+// STEQR uses only the max and infinity norms. Decline if a future
+// caller requests the Frobenius norm (which needs Blue scaling).
+inline void Rlassq(INTEGER, REAL *, INTEGER, REAL &, REAL &) { mplapack_freal_fail(); }
+#include "../../../../mplapack/reference/Rlanst.cpp"
+}
+using Rlanst_ns::Rlanst;
+namespace Rlasrt_ns {
+#include "../../../../mplapack/reference/Rlasrt.cpp"
+}
+using Rlasrt_ns::Rlasrt;
+namespace Rlaset_ns {
+#include "../../../../mplapack/reference/Rlaset.cpp"
+}
+using Rlaset_ns::Rlaset;
+namespace Claset_ns {
+#include "../../../../mplapack/reference/Claset.cpp"
+}
+using Claset_ns::Claset;
+namespace Rlasr_ns {
+#include "../../../../mplapack/reference/Rlasr.cpp"
+}
+namespace Clasr_ns {
+#include "../../../../mplapack/reference/Clasr.cpp"
+}
+
+template <class T, class Rotate>
+void lasr(Rotate rotate, const char *side, const char *pivot, const char *direct, INTEGER m, INTEGER n, REAL *c, REAL *s, T *a, INTEGER lda)
+{
+#ifdef _OPENMP
+    const bool left = Mlsame(side, "L");
+    const INTEGER lanes = left ? n : m;
+    if (lanes >= 16 && mplapack_blas::blas_env_long("MPLAPACK_BLAS_OMP", 1) != 0 &&
+        omp_get_max_threads() > 1 && !omp_in_parallel() &&
+        (double)m * n >= mplapack_blas::blas_env_long("MPLAPACK_BLAS_OMP_MIN", 8192)) {
+        const mplapack_blas::blas_thread_context ctx;
+#pragma omp parallel
+        {
+            const mplapack_blas::blas_thread_context::scope scope(ctx);
+            const INTEGER nt = omp_get_num_threads(), id = omp_get_thread_num();
+            const INTEGER begin = lanes / nt * id + std::min(lanes % nt, id);
+            const INTEGER size = lanes / nt + (id < lanes % nt);
+            if (size > 0) {
+                // Every lane sees the same sequence of rotations as in the
+                // serial call; only the independent rows or columns commute.
+                if (left)
+                    rotate(side, pivot, direct, m, size, c, s, a + begin * lda, lda);
+                else
+                    rotate(side, pivot, direct, size, n, c, s, a + begin, lda);
+            }
+        }
+        return;
+    }
+#endif
+    rotate(side, pivot, direct, m, n, c, s, a, lda);
+}
+inline void Rlasr(const char *side, const char *pivot, const char *direct, INTEGER m, INTEGER n, REAL *c, REAL *s, REAL *a, INTEGER lda)
+{
+    lasr(Rlasr_ns::Rlasr, side, pivot, direct, m, n, c, s, a, lda);
+}
+inline void Clasr(const char *side, const char *pivot, const char *direct, INTEGER m, INTEGER n, REAL *c, REAL *s, COMPLEX *a, INTEGER lda)
+{
+    lasr(Clasr_ns::Clasr, side, pivot, direct, m, n, c, s, a, lda);
+}
+namespace Rsteqr_ns {
+#include "../../../../mplapack/reference/Rsteqr.cpp"
+}
+namespace Csteqr_ns {
+#include "../../../../mplapack/reference/Csteqr.cpp"
 }
 } // namespace FRB_NS
 
