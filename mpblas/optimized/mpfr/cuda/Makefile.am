@@ -156,7 +156,8 @@ CLEANFILES = Rgemm_dlink_cuda.lo .libs/Rgemm_dlink_cuda.o Rgemm_dlink_cuda.o
 
 check_PROGRAMS = Rtrisolve_gpu_host_test_mpfr Rtrisolve_wave_order_host_test_mpfr Rfactor_gpu_host_test_mpfr Cfactor_gpu_host_test_mpfr solver_gpu_host_test_mpfr inverse_gpu_host_test_mpfr Rblas1_gpu_host_test_mpfr
 TESTS = Rtrisolve_gpu_host_test_mpfr Rtrisolve_wave_order_host_test_mpfr Rblas1_gpu_host_test_mpfr Rfactor_gpu_host_test_mpfr Cfactor_gpu_host_test_mpfr test/solver_host_sweep.sh test/inverse_host_sweep.sh cu_fzero_host_test_mpfr cu_fzero_device_test_mpfr cu_farith_host_test_mpfr cu_farith_device_test_mpfr
-check_PROGRAMS += cu_fzero_host_test_mpfr cu_farith_host_test_mpfr
+check_PROGRAMS += cu_fzero_host_test_mpfr cu_farith_host_test_mpfr inverse_fallback_host_test_mpfr
+TESTS += inverse_fallback_host_test_mpfr
 cu_fzero_host_test_mpfr_SOURCES = test/cu_fzero_test.cpp test/cu_freal_before_zero.cuh
 cu_fzero_host_test_mpfr_CXXFLAGS = $(AM_CXXFLAGS) -std=c++17
 cu_fzero_host_test_mpfr_LDADD = $(MPLAPACK_MPFR_LIBS)
@@ -220,6 +221,15 @@ solver_gpu_host_test_mpfr_LDFLAGS = -static -Wl,--disable-new-dtags -Wl,-rpath,$
 # no executable exports CPU BLAS symbols that could preempt the CUDA DSO.
 stack_device_ldadd = libmplapack_mpfr_opt_cuda.la $(MPLAPACK_MPFR_LIBS) $(CUDA_LIBS) -lcudart $(OPENMP_LIBS)
 stack_device_ldflags = -Wl,--disable-new-dtags -Wl,-rpath,$(MPC_LIBDIR):$(MPFR_LIBDIR):$(GMP_LIBDIR)
+
+# Exercise the actual CUDA library dispatchers, not host emulation.
+inverse_fallback_host_test_mpfr_SOURCES = test/Rinverse_fallback_test.cpp
+inverse_fallback_host_test_mpfr_CXXFLAGS = $(AM_CXXFLAGS) -std=c++17
+inverse_fallback_host_test_mpfr_LDADD = $(stack_device_ldadd)
+# Let the libtool wrapper's .libs take precedence over installed libraries.
+# Keep libcudart direct so the executable's RUNPATH can find it.
+inverse_fallback_host_test_mpfr_LDFLAGS = -Wl,--enable-new-dtags -Wl,--no-as-needed -Wl,-rpath,$(MPC_LIBDIR):$(MPFR_LIBDIR):$(GMP_LIBDIR):$(CUDATOOLKITHOME)/lib64
+
 check_PROGRAMS += Rfactor_gpu_device_test_mpfr Cfactor_gpu_device_test_mpfr solver_gpu_device_test_mpfr inverse_gpu_device_test_mpfr Rgemm_gpu_device_test_mpfr Cblas_gpu_device_test_mpfr blas3_gpu_device_test_mpfr stack_guard_host_test_mpfr
 stack_guard_host_test_mpfr_SOURCES = test/stack_guard_test.cpp test/stack_guard_stub/cuda_runtime.h
 stack_guard_host_test_mpfr_CPPFLAGS = -I$(srcdir)/test/stack_guard_stub
