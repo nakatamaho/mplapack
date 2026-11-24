@@ -49,7 +49,9 @@ kernel_new_mpfr_dlink.o: Rkernel_bench_mpfr_resident.o Makefile $(MPC_CUDA_LIBRA
 	$(NVCC) $(KERNEL_BENCH_CUDA_ARCH_FLAGS) -dlink $< $(MPC_CUDA_LIBRARY) -o $@
 CLEANFILES += kernel_new_mpfr_dlink.o
 Rkernel_bench_mpfr_cuda_kernel_SOURCES = Rkernel_bench.cpp
-Rkernel_bench_mpfr_cuda_kernel_LINK = $(LIBTOOL) --mode=link $(CXX) -o $@ $(CUDA_LDFLAGS) $(mpfr_cuda_libdepends) -lcupti $(OPENMP_CXXFLAGS)
+Rkernel_bench_mpfr_cuda_kernel_LINK = $(LIBTOOL) --mode=link $(CXX) -o $@ $(CUDA_LDFLAGS) $(CUPTI_LDFLAGS) \
+    $(LDFLAGS) $(mpfr_cuda_libdepends) $(CUPTI_LIBS) $(OPENMP_CXXFLAGS)
+Rkernel_bench_mpfr_cuda_kernel_CPPFLAGS = $(CUPTI_CPPFLAGS) $(AM_CPPFLAGS)
 Rkernel_bench_mpfr_cuda_kernel_CXXFLAGS = $(mpfr_cuda_cxxflags) -DKERNEL_BENCH_MPFR_CUDA
 Rkernel_bench_mpfr_opt_SOURCES = Rkernel_bench.cpp
 Rkernel_bench_mpfr_opt_CXXFLAGS = $(GMPFRXX_MKII_CPPFLAGS) $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR) -DMPLAPACK_BUILD_WITH_MPFR

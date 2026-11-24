@@ -225,4 +225,6 @@ autotools: the programs are in `Makefile.{dd,td,qd,mpfr}_cuda.am` (built
 with the CUDA libraries; `make -C benchmark Rkernel_bench.dd_cuda_kernel
 ...`).  CMake: `-DMPLAPACK_BUILD_BENCHMARKS=ON` with the CUDA libraries
 enabled builds the same programs in `<build>/benchmark`.  The MPFR GPU
-program links `libcupti` (CUDA toolkit).
+program (`Rkernel_bench.mpfr_cuda_kernel`) links `libcupti`. With autotools,
+configure searches the selected CUDA toolkit; use `--with-cupti-home=DIR`
+to search a different CUPTI root first.

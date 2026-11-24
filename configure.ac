@@ -486,6 +486,8 @@ AS_HELP_STRING([--enable-td-cuda], [Build libmplapack_td_opt_cuda: TD Rgemm on C
 
 AC_ARG_ENABLE(mpfr-cuda,
 AS_HELP_STRING([--enable-mpfr-cuda], [Build libmplapack_mpfr_opt_cuda: MPFR Rgemm on CUDA (needs mpc_cuda)]))
+AC_ARG_WITH(cupti-home,
+AS_HELP_STRING([--with-cupti-home=DIR], [CUPTI root for the MPFR CUDA kernel benchmark]))
 AC_ARG_WITH(mpc-cuda-includedir,
 AS_HELP_STRING([--with-mpc-cuda-includedir=DIR], [mpc_cuda include directory, containing mpc_cuda.cuh]),
 [MPC_CUDA_INCLUDEDIR="$withval"], [MPC_CUDA_INCLUDEDIR=""])
@@ -799,6 +801,75 @@ if test x$enable_mpfr_cuda = xyes; then
   fi
 fi
 AM_CONDITIONAL(ENABLE_MPFR_CUDA, test x$enable_mpfr_cuda = xyes)
+
+CUPTI_CPPFLAGS=
+CUPTI_LDFLAGS=
+CUPTI_LIBS=-lcupti
+if test x$enable_mpfr_cuda = xyes; then
+  AC_MSG_CHECKING([for CUPTI for the MPFR CUDA kernel benchmark])
+  AS_CASE([$with_cupti_home], [/* | ''], [], [with_cupti_home="$PWD/$with_cupti_home"])
+  cupti_real=`readlink -f "$NVCC" 2>/dev/null`
+  cupti_real_extras=
+  if test -n "$cupti_real"; then
+    cupti_real=`dirname "$(dirname "$cupti_real")"`
+    cupti_real_extras="$cupti_real/extras/CUPTI"
+    AS_CASE([$cupti_real_extras], ["$with_cupti_home" | "$CUDATOOLKITHOME/extras/CUPTI" | "$CUDATOOLKITHOME"], [cupti_real_extras=])
+    AS_CASE([$cupti_real], ["$with_cupti_home" | "$CUDATOOLKITHOME/extras/CUPTI" | "$CUDATOOLKITHOME"], [cupti_real=])
+  fi
+  cupti_lib=
+  cupti_save_CPPFLAGS=$CPPFLAGS
+  cupti_save_LIBS=$LIBS
+  for cupti_home in "$with_cupti_home" "$CUDATOOLKITHOME/extras/CUPTI" "$CUDATOOLKITHOME" "$cupti_real_extras" "$cupti_real"; do
+    test -n "$cupti_home" || continue
+    if test -f "$cupti_home/include/cupti.h"; then
+      CPPFLAGS="-I$cupti_home/include $CUDA_CFLAGS $cupti_save_CPPFLAGS"
+      for cupti_dir in "$cupti_home/lib$SUFFIX" "$cupti_home/lib"; do
+        for cupti_file in "$cupti_dir/libcupti.so" "$cupti_dir/libcupti.a"; do
+          test -f "$cupti_file" || continue
+          LIBS="$cupti_file $cupti_save_LIBS"
+          AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <cupti.h>]], [[
+#if CUPTI_API_VERSION <= 24
+            CUpti_ActivityKernel9 r;
+#else
+            CUpti_ActivityKernel11 r;
+#endif
+            (void)r;
+            uint32_t version;
+            CUpti_Activity *record = 0;
+            const char *message = 0;
+            return cuptiGetVersion(&version)
+              + cuptiActivityEnable(CUPTI_ACTIVITY_KIND_CONCURRENT_KERNEL)
+              + cuptiActivityGetNextRecord(0, 0, &record)
+              + cuptiGetResultString(CUPTI_SUCCESS, &message);
+          ]])], [cupti_lib=$cupti_file])
+          test -z "$cupti_lib" || break 3
+        done
+      done
+    fi
+    if test "$cupti_home" = "$with_cupti_home"; then
+      AC_MSG_RESULT([not usable in $cupti_home])
+      AC_MSG_WARN([CUPTI in $cupti_home is unusable; trying the CUDA toolkit])
+      AC_MSG_CHECKING([for CUPTI in the CUDA toolkit])
+    fi
+  done
+  CPPFLAGS=$cupti_save_CPPFLAGS
+  LIBS=$cupti_save_LIBS
+  if test -n "$cupti_lib"; then
+    AC_MSG_RESULT([$cupti_dir])
+    CUPTI_CPPFLAGS="-I$cupti_home/include"
+    CUPTI_LDFLAGS="-L$cupti_dir -Wl,-rpath,$cupti_dir "
+    if test "$cupti_lib" = "$cupti_dir/libcupti.a"; then
+      CUPTI_LIBS=-l:libcupti.a
+    fi
+  else
+    AC_MSG_RESULT([not found])
+    AC_MSG_WARN([no usable CUPTI found; use --with-cupti-home=DIR. The kernel benchmark will fall back to the compiler's default CUPTI search (including user CPPFLAGS/LDFLAGS).])
+  fi
+  CUPTI_LDFLAGS="${CUPTI_LDFLAGS}-Wl,-rpath,$CUDATOOLKITHOME/lib$SUFFIX"
+fi
+AC_SUBST(CUPTI_CPPFLAGS)
+AC_SUBST(CUPTI_LDFLAGS)
+AC_SUBST(CUPTI_LIBS)
 
 dnl enable QD version of MPLAPACK.
 AC_ARG_ENABLE(qd,
