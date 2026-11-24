@@ -12,6 +12,8 @@ from pathlib import Path
 import subprocess
 import time
 
+from kernel_bench import cuda_library_dir
+
 NAMES = ['Raxpy', 'Rcopy', 'iRamax', 'iCamax', 'Rdot', 'Cdotc', 'Cdotu',
          'Rasum', 'RCasum', 'Rnrm2', 'RCnrm2', 'Rtrsv', 'Rtbsv', 'Rtpsv',
          'Ctrsv', 'Ctbsv', 'Ctpsv', 'Rtrtri', 'Rlauum', 'Rpotri', 'Rgetri',
@@ -92,7 +94,7 @@ class Runner:
             self.spent += float(json.loads(overhead.read_text())['seconds'])
         self.limit = a.hours * 3600
         self.env = {k: v for k, v in os.environ.items() if not k.startswith(('MPLAPACK_', 'MPFRXX_', 'OMP_'))}
-        self.env['LD_LIBRARY_PATH'] = ':'.join(str(ROOT / 'external/i' / x / 'lib') for x in ('QD', 'MPFR', 'GMP', 'MPC')) + ':/usr/local/cuda/lib64:' + os.environ.get('LD_LIBRARY_PATH', '')
+        self.extra_libs = [str(ROOT / 'external/i' / x / 'lib') for x in ('QD', 'MPFR', 'GMP', 'MPC')]
 
     def measure(self, typ, kernel, method, n, phase):
         matches = [r for r in self.rows if (r['type'], r['kernel'], r['method'], int(r['n']), r['phase']) == (typ, kernel, method, n, phase)]
@@ -107,13 +109,16 @@ class Runner:
                     f.write(time.strftime('%Y-%m-%dT%H:%M:%S') + ' marker absent; sleeping120; no GPU execution\n')
                 time.sleep(120)
         b = 'mpfr' if typ == 'mpfr512' else typ
-        bindir = self.a.mpfr_bindir if b == 'mpfr' else self.a.bindir
+        bindir = Path(self.a.mpfr_bindir if b == 'mpfr' else self.a.bindir).resolve()
         suffix = ('cuda_resident' if b == 'mpfr' else 'cuda_kernel') if gpu else 'opt'
-        cmd = [str(Path(bindir).resolve() / f'Rkernel_bench.{b}_{suffix}'), kernel,
+        cmd = [str(bindir / f'Rkernel_bench.{b}_{suffix}'), kernel,
                'default' if method == 'cpu-default' else 'fast', str(n)]
         if phase == 'pilot':
             cmd += ['--reps', '1', '--warmup', '1']
         env = dict(self.env, OMP_NUM_THREADS='1' if gpu else '32', OMP_DYNAMIC='FALSE')
+        cuda_lib = cuda_library_dir(bindir)
+        env['LD_LIBRARY_PATH'] = ':'.join(self.extra_libs + ([cuda_lib] if cuda_lib else []) +
+                                          ([env['LD_LIBRARY_PATH']] if env.get('LD_LIBRARY_PATH') else []))
         if b == 'mpfr':
             env['MPFRXX_DEFAULT_PRECISION_BITS'] = '512'
         tag = f'{typ}_{kernel}_{method}_{n}_{phase}'
