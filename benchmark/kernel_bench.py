@@ -145,6 +145,59 @@ def series_for(t, method):
     return out
 
 
+def cuda_library_dir(bindir):
+    """Return the configured CUDA library dir, or the default for installed binaries."""
+
+    def settings(path, keys):
+        values = {}
+        try:
+            with open(path, encoding="utf-8", errors="replace") as f:
+                for line in f:
+                    key, sep, value = line.partition("=")
+                    key = key.split(":", 1)[0].strip()
+                    if sep and key in keys:
+                        value = value.strip()
+                        if value and not value.endswith("-NOTFOUND"):
+                            values[key] = value
+        except OSError:
+            pass
+        return values
+
+    directory = os.path.abspath(bindir)
+    has_cache = False
+    for _ in range(4):
+        path = os.path.join(directory, "CMakeCache.txt")
+        if os.path.isfile(path):
+            has_cache = True
+            cache = settings(path, {"CUDAToolkit_LIBRARY_DIR", "CUDA_CUDART", "CUDAToolkit_BIN_DIR"})
+            libdir = cache.get("CUDAToolkit_LIBRARY_DIR")
+            if libdir and os.path.isdir(libdir):
+                return libdir
+            cudart = cache.get("CUDA_CUDART")
+            if cudart and os.path.isdir(os.path.dirname(cudart)):
+                return os.path.dirname(cudart)
+            cuda_bin = cache.get("CUDAToolkit_BIN_DIR")
+            if cuda_bin:
+                libdir = os.path.join(os.path.dirname(os.path.normpath(cuda_bin)), "lib64")
+                if os.path.isdir(libdir):
+                    return libdir
+            break
+        directory = os.path.dirname(directory)
+
+    makefile_path = os.path.join(bindir, "Makefile")
+    makefile = settings(makefile_path, {"CUDATOOLKITHOME"})
+    cuda_home = makefile.get("CUDATOOLKITHOME")
+    if cuda_home:
+        libdir = os.path.join(cuda_home, "lib64")
+        if os.path.isdir(libdir):
+            return libdir
+    if not has_cache and not os.path.isfile(makefile_path):
+        libdir = "/usr/local/cuda/lib64"
+        if os.path.isdir(libdir):
+            return libdir
+    return None
+
+
 class Runner:
     def __init__(self, a):
         self.bindir = os.path.abspath(a.bindir)
@@ -162,8 +215,11 @@ class Runner:
         e.update(TYPES[t][2])
         # libtool wrappers add only the MPLAPACK libraries: the bundled QD/MPFR/GMP/MPC too
         top = os.path.dirname(self.bindir)
-        extra = [os.path.join(top, "external", "i", x, "lib") for x in ("QD", "MPFR", "GMP", "MPC")] + ["/usr/local/cuda/lib64"]
+        extra = [os.path.join(top, "external", "i", x, "lib") for x in ("QD", "MPFR", "GMP", "MPC")]
         extra = [d for d in extra if os.path.isdir(d)]
+        cuda_lib = cuda_library_dir(self.bindir)
+        if cuda_lib:
+            extra.append(cuda_lib)
         e["LD_LIBRARY_PATH"] = ":".join(extra + ([e["LD_LIBRARY_PATH"]] if e.get("LD_LIBRARY_PATH") else []))
         # the GPU programs run one host thread (packing in the MPFR entries may use OpenMP)
         e["OMP_NUM_THREADS"] = self.threads if method == "cpu" else "1"

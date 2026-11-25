@@ -227,4 +227,8 @@ with the CUDA libraries; `make -C benchmark Rkernel_bench.dd_cuda_kernel
 enabled builds the same programs in `<build>/benchmark`.  The MPFR GPU
 program (`Rkernel_bench.mpfr_cuda_kernel`) links `libcupti`. With autotools,
 configure searches the selected CUDA toolkit; use `--with-cupti-home=DIR`
-to search a different CUPTI root first.
+to search a different CUPTI root first. CMake selects a matching CUPTI header
+and library from the toolkit's CUPTI directories, falling back to `CUDA::cupti`.
+The runners prepend the configured CUDA library directory to `LD_LIBRARY_PATH`
+when found; only without build metadata do they fall back to
+`/usr/local/cuda/lib64`, if it exists.
