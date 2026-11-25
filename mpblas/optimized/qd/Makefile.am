@@ -111,6 +111,10 @@ $(MPLAPACK_OPT_REFERENCE_SOURCES) \
 ../../../mplapack/optimized/common/Ctrtri.cpp \
 ../../../mplapack/optimized/common/Rlauum.cpp \
 ../../../mplapack/optimized/common/Clauum.cpp \
+../../../mplapack/optimized/common/Rsteqr.cpp \
+../../../mplapack/optimized/common/Csteqr.cpp \
+../../../mplapack/optimized/common/Rlasr.cpp \
+../../../mplapack/optimized/common/Clasr.cpp \
 $(MPLAPACK_QD_OPTIMIZED_SOURCES)
 
 libmplapack_qd_opt_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO) -Wl,-rpath,$(libdir)

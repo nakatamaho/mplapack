@@ -82,6 +82,10 @@ int freal_blas_precision()
     if (mode != 1 || !cpu)
         return 0;
     const mpfr_prec_t p = mpfrxx::default_precision_bits();
+    // Fixed-precision kernels construct the literal 1 without MPFR range
+    // rounding, including on the one-element STEQR initialization path.
+    if (mpfr_get_emin() > 1 || mpfr_get_emax() < 1)
+        return 0;
     if (mpfr_get_default_rounding_mode() != MPFR_RNDN || mpfrxx::default_mpc_rounding_mode() != MPC_RNDNN)
         return 0;
     if (mpfrxx::default_mpc_real_precision_bits() != p || mpfrxx::default_mpc_imag_precision_bits() != p)

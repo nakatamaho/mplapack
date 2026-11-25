@@ -130,6 +130,10 @@ Rblas1_kernel_cuda.h Rblas1_device_body.cuh Rblas1_bridge_body.h Rblas1_dynamic_
 Rtrisolve_kernel_cuda.h Rtrisolve_device_body.cuh Rtrisolve_bridge_body.h \
 ../../../../mplapack/optimized/common/Rlaswp.cpp \
 ../../../../mplapack/optimized/common/Claswp.cpp \
+../../../../mplapack/optimized/common/Rsteqr.cpp \
+../../../../mplapack/optimized/common/Csteqr.cpp \
+../../../../mplapack/optimized/common/Rlasr.cpp \
+../../../../mplapack/optimized/common/Clasr.cpp \
 Rgetrs.cpp Rpotrs.cpp Rgesv.cpp Rposv.cpp Cgetrs.cpp Cpotrs.cpp Cgesv.cpp Cposv.cpp \
 Rsolver_device_body.cuh Rsolver_bridge_body.h \
 Rgetrf.cpp \

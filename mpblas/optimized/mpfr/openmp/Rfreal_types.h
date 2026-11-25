@@ -197,6 +197,30 @@ template <int PB> inline bool operator>=(const fr<PB> &a, const fr<PB> &b) { ret
 template <int PB> inline bool operator==(const fr<PB> &a, double b) { return b == 0.0 ? a.is_zero() : a == fr<PB>(b); }
 template <int PB> inline bool operator!=(const fr<PB> &a, double b) { return !(a == b); }
 
+template <int PB> inline fr<PB> pow2(const fr<PB> &a) { return a * a; }
+// MPLAPACK's MPFR sign uses a comparison, so -0 in b counts as positive.
+template <int PB> inline fr<PB> sign(const fr<PB> &a, const fr<PB> &b)
+{
+    return !b.is_zero() && b.v.sign < 0 ? -abs(a) : abs(a);
+}
+// MPFR min/max order the two signed zeros; the 3-argument MPLAPACK
+// overload instead uses comparisons and keeps the first operand on ties.
+template <int PB> inline fr<PB> min(const fr<PB> &a, const fr<PB> &b)
+{
+    return b < a || (a.is_zero() && b.is_zero() && b.v.sign < 0) ? b : a;
+}
+template <int PB> inline fr<PB> max(const fr<PB> &a, const fr<PB> &b)
+{
+    return a < b || (a.is_zero() && b.is_zero() && b.v.sign > 0) ? b : a;
+}
+template <int PB> inline fr<PB> max(const fr<PB> &a, const fr<PB> &b, const fr<PB> &c)
+{
+    const auto &r = a < b ? b : a;
+    return r < c ? c : r;
+}
+template <int PB> inline fr<PB> operator/(const fr<PB> &a, int b) { return a / fr<PB>(b); }
+template <int PB> inline fr<PB> operator*(int a, const fr<PB> &b) { return fr<PB>(a) * b; }
+
 template <int PB> struct fc {
     fr<PB> re, im;
     fc() {}

@@ -42,6 +42,7 @@
 #include <map>
 #include <random>
 #include <string>
+#include <thread>
 #include <vector>
 #include <mpblas_mpfr.h>
 #include <mplapack_mpfr.h>
@@ -49,6 +50,9 @@
 #include <omp.h>
 #endif
 #include "../openmp/Rfreal_state.h"
+#include "../openmp/Rfreal_blas.h"
+#include <mpblas.h>
+#include <mplapack.h>
 
 typedef mpfr_class R;
 typedef mpc_class C;
@@ -128,8 +132,20 @@ MPLAPACK_FREAL_TEST_REF(Cgetrf2, void, (I, I, C *, I, I *, I &))
 MPLAPACK_FREAL_TEST_REF(Cpotrf, void, (const char *, I, C *, I, I &))
 MPLAPACK_FREAL_TEST_REF(Ctrtri, void, (const char *, const char *, I, C *, I, I &))
 MPLAPACK_FREAL_TEST_REF(Clauum, void, (const char *, I, C *, I, I &))
+MPLAPACK_FREAL_TEST_REF(Rlasr, void, (const char *, const char *, const char *, I, I, R *, R *, R *, I))
+MPLAPACK_FREAL_TEST_REF(Clasr, void, (const char *, const char *, const char *, I, I, R *, R *, C *, I))
 
 namespace {
+// Calling the library's STEQR reference directly would still dispatch LASR.
+// Compile the same source here with the rotations pinned to MPFR/MPC.
+namespace qr_ref {
+#define Rlasr Rlasr_reference_cpu
+#define Clasr Clasr_reference_cpu
+#include "../../../../mplapack/reference/Rsteqr.cpp"
+#include "../../../../mplapack/reference/Csteqr.cpp"
+#undef Clasr
+#undef Rlasr
+} // namespace qr_ref
 
 std::mt19937_64 rng(20261123);
 gmp_randstate_t gstate;
@@ -197,7 +213,7 @@ struct bufs {
 // runs f(b, true) (the library: the kernels where they apply) and f(b, false)
 // (the reference) on copies of the same operands; compares every operand
 void run_case(const std::string &name, const std::string &what, std::initializer_list<long> rsz, std::initializer_list<long> csz, bool tame,
-              const std::function<void(bufs &, bool)> &f, bool expect_used = true)
+              const std::function<void(bufs &, bool)> &f, bool expect_used = true, bool require_dispatch = false)
 {
     bufs a;
     int t = 0;
@@ -230,11 +246,11 @@ void run_case(const std::string &name, const std::string &what, std::initializer
         for (size_t i = 0; i < g.c[q].size() && ok; i++)
             ok = same(g.c[q][i], r.c[q][i]);
     }
-    if (!ok || (expect_used && !u && !tame)) {
-        if (!ok || std::getenv("FREAL_TEST_VERBOSE"))
-            std::printf("%s %ld %s: %s\n", ok ? "NOT USED" : "FAIL", prec, name.c_str(), what.c_str());
-        if (!ok)
-            failures++;
+    if (!ok || (require_dispatch && u != expect_used)) {
+        std::printf("FAIL %ld %s: %s (%s)\n", prec, name.c_str(), what.c_str(), !ok ? "result mismatch" : "unexpected dispatch");
+        failures++;
+    } else if (expect_used && !u && !tame && std::getenv("FREAL_TEST_VERBOSE")) {
+        std::printf("NOT USED %ld %s: %s\n", prec, name.c_str(), what.c_str());
     }
 }
 
@@ -707,6 +723,176 @@ void lapack(long m, long n)
     }
 }
 
+void tridiagonal_qr()
+{
+    for (I n : {0, 1, 2, 9, 23}) {
+        const I ldz = n + 3, ne = std::max<I>(0, n - 1);
+        for (bool split : {false, true}) {
+            if (split && n < 9)
+                continue;
+            const auto prepare = [&](bufs &b) {
+                if (split) {
+                    b.r[1][1] = -R(0.0);
+                    b.r[1][n / 2] = R(0.0);
+                }
+            };
+            for (const char *compz : {"N", "I", "V"}) {
+                const bool vectors = *compz != 'N';
+                const std::string label = std::string(compz) + ", n=" + std::to_string(n) + (split ? ", split" : "");
+                run_case("Rsteqr", label, {n, ne, vectors ? 2 * ne : 0, vectors ? ldz * n : 0}, {}, true, [&](bufs &b, bool lib) {
+                    prepare(b);
+                    I info = -9;
+                    if (lib) {
+                        // Test the whole-call hook, not a possible LASR dispatch
+                        // from the MPFR fallback.
+                        Rsteqr_freal(compz, n, b.r[0].data(), b.r[1].data(), b.r[3].data(), vectors ? ldz : 1, b.r[2].data(), info);
+                    } else {
+                        qr_ref::Rsteqr(compz, n, b.r[0].data(), b.r[1].data(), b.r[3].data(), vectors ? ldz : 1, b.r[2].data(), info);
+                    }
+                    b.rres = R(info);
+                }, true, true);
+                run_case("Csteqr", label, {n, ne, vectors ? 2 * ne : 0}, {vectors ? ldz * n : 0}, true, [&](bufs &b, bool lib) {
+                    prepare(b);
+                    I info = -9;
+                    if (lib) {
+                        Csteqr_freal(compz, n, b.r[0].data(), b.r[1].data(), b.c[0].data(), vectors ? ldz : 1, b.r[2].data(), info);
+                    } else {
+                        qr_ref::Csteqr(compz, n, b.r[0].data(), b.r[1].data(), b.c[0].data(), vectors ? ldz : 1, b.r[2].data(), info);
+                    }
+                    b.rres = R(info);
+                }, true, true);
+            }
+        }
+    }
+}
+
+void public_tridiagonal_qr()
+{
+    const I n = 9, ldz = n + 3, ne = n - 1;
+    run_case("Rsteqr", "public I", {n, ne, 2 * ne, ldz * n}, {}, true, [&](bufs &b, bool lib) {
+        I info = -9;
+        (lib ? Rsteqr : qr_ref::Rsteqr)("I", n, b.r[0].data(), b.r[1].data(), b.r[3].data(), ldz, b.r[2].data(), info);
+        b.rres = R(info);
+    }, true, true);
+    run_case("Csteqr", "public I", {n, ne, 2 * ne}, {ldz * n}, true, [&](bufs &b, bool lib) {
+        I info = -9;
+        (lib ? Csteqr : qr_ref::Csteqr)("I", n, b.r[0].data(), b.r[1].data(), b.c[0].data(), ldz, b.r[2].data(), info);
+        b.rres = R(info);
+    }, true, true);
+}
+
+void plane_rotations(I m, I n)
+{
+    const I lda = m + 3;
+    for (const char *side : {"L", "R"})
+        for (const char *pivot : {"V", "T", "B"})
+            for (const char *direct : {"F", "B"}) {
+                const I nr = (*side == 'L' ? m : n) - 1;
+                const std::string label = std::string(side) + pivot + direct;
+                const bool expect = prec <= 512;
+                auto coefficients = [](bufs &b) {
+                    b.r[0][0] = R(1.0);
+                    b.r[1][0] = -R(0.0); // identity rotation
+                    b.r[0][1] = R(0.0);
+                    b.r[1][1] = -R(1.0); // quarter turn, including signed zeros
+                };
+                run_case("Rlasr", label, {nr, nr, lda * n}, {}, false, [&](bufs &b, bool lib) {
+                    coefficients(b);
+                    (lib ? Rlasr : Rlasr_reference_cpu)(side, pivot, direct, m, n, b.r[0].data(), b.r[1].data(), b.r[2].data(), lda);
+                }, expect, true);
+                run_case("Clasr", label, {nr, nr}, {lda * n}, false, [&](bufs &b, bool lib) {
+                    coefficients(b);
+                    (lib ? Clasr : Clasr_reference_cpu)(side, pivot, direct, m, n, b.r[0].data(), b.r[1].data(), b.c[0].data(), lda);
+                }, expect, true);
+            }
+}
+
+// Make a rotation overflow in the last row (a worker with OpenMP).
+// The hook must decline without writing any part of A back.
+void rotation_range_failure()
+{
+    const I m = 32;
+    const long emax = mpfr_get_emax();
+    R c(2), s(0);
+    std::vector<R> a(2 * m, R(1));
+    a[m - 1] = R(16);
+    const auto before = a;
+    mpfr_set_emax(5);
+    const bool ran = Rlasr_freal("R", "V", "F", m, 2, &c, &s, a.data(), m);
+    mpfr_set_emax(emax);
+    checks++;
+    if (ran || !std::equal(a.begin(), a.end(), before.begin(), [](const R &x, const R &y) { return same(x, y); })) {
+        std::printf("FAIL %ld Rlasr: range failure wrote back\n", prec);
+        failures++;
+    }
+
+    // COMPZ=I writes the literal 1 even on the one-element quick return.
+    // If MPFR cannot represent it, the hook must leave that work to MPFR.
+    R z;
+    I info = -9;
+    mpfr_set_emax(0);
+    const bool initialized = Rsteqr_freal("I", 1, nullptr, nullptr, &z, 1, nullptr, info);
+    mpfr_set_emax(emax);
+    checks++;
+    if (initialized || info != -9 || !same(z, R(0))) {
+        std::printf("FAIL %ld Rsteqr: unrepresentable identity wrote back\n", prec);
+        failures++;
+    }
+}
+
+// Construct the operands on the parent so the hook sees a fresh MPFR thread.
+template <class T, class Hook, class Driver>
+void fresh_thread_identity(const char *name, Hook hook, Driver driver, Driver reference)
+{
+    T z, actual, expected, zero;
+    std::thread worker([&] {
+        I info = -9, actual_info = -9, expected_info = -9;
+        const bool ran = hook("I", 1, nullptr, nullptr, &z, 1, nullptr, info);
+        driver("I", 1, nullptr, nullptr, &actual, 1, nullptr, actual_info);
+        reference("I", 1, nullptr, nullptr, &expected, 1, nullptr, expected_info);
+        checks++;
+        if (mpfr_get_emax() != 0 || ran || info != -9 || !same(z, zero) ||
+            expected_info != 0 || actual_info != expected_info || !same(actual, expected)) {
+            std::printf("FAIL %s: fresh-thread identity range\n", name);
+            failures++;
+        }
+    });
+    worker.join();
+}
+
+// The tridiagonal fits in the narrowed range, but its largest eigenvalue
+// overflows when STEQR undoes the scaling after the QL iterations.
+void steqr_range_failure()
+{
+    const I n = 3, ldz = n + 1;
+    struct operands {
+        R d[n], e[n - 1], z[ldz * n], work[2 * (n - 1)];
+        I info = -9;
+    };
+    const R scale = ldexp(R(1), 1198);
+    const operands input{{3 * scale, 3 * scale, 3 * scale}, {2 * scale, 2 * scale}};
+    auto hook = input, actual = input, expected = input;
+    const auto call = [](auto f, operands &a) { return f("I", n, a.d, a.e, a.z, ldz, a.work, a.info); };
+    const auto equal = [](const operands &a, const operands &b) {
+        const auto eq = [](const R &x, const R &y) { return same(x, y); };
+        return a.info == b.info && std::equal(a.d, a.d + n, b.d, eq) &&
+               std::equal(a.e, a.e + n - 1, b.e, eq) && std::equal(a.z, a.z + ldz * n, b.z, eq) &&
+               std::equal(a.work, a.work + 2 * (n - 1), b.work, eq);
+    };
+    const long emax = mpfr_get_emax();
+    mpfr_set_emax(1200);
+    const bool ran = call(Rsteqr_freal, hook);
+    call(Rsteqr, actual);
+    call(qr_ref::Rsteqr, expected);
+    mpfr_set_emax(emax);
+    checks++;
+    if (ran || !equal(hook, input) || !equal(actual, expected) || expected.info != 0 ||
+        !mpfr_inf_p(expected.d[n - 1].get_mpfr_t()) || same(expected.work[0], input.work[0])) {
+        std::printf("FAIL %ld Rsteqr: mid-call range failure\n", prec);
+        failures++;
+    }
+}
+
 } // namespace
 
 int main()
@@ -714,6 +900,7 @@ int main()
     gmp_randinit_default(gstate);
     gmp_randseed_ui(gstate, 20261123);
     setenv("MPLAPACK_MPFR_CPU_FREAL_MIN", "1", 1);
+    setenv("MPLAPACK_MPFR_CPU_FREAL_L12_PREC", "512", 1);
     setenv("MPLAPACK_BLAS_OMP_MIN", "1", 1);
     const long precs[] = {512, 128, 192, 448, 1024, 2048};
 #ifdef _OPENMP
@@ -742,10 +929,28 @@ int main()
             blocks();
             lapack(9, 7);
             lapack(30, 33);
-            if (big)
+            tridiagonal_qr();
+            plane_rotations(5, 7);
+            // Above the level-2 precision limit, a fallback's LASR cannot
+            // increment the counter and mask a missed public STEQR dispatch.
+            if (p == 1024)
+                public_tridiagonal_qr();
+            if (p == 512) {
+                rotation_range_failure();
+                steqr_range_failure();
+            }
+            if (big) {
                 lapack(150, 140);
+                plane_rotations(23, 19);
+            }
         }
     }
+    mpfrxx::set_default_precision_bits(128);
+    mpfrxx::set_default_mpc_precision_bits(128);
+    setenv("MPFRXX_DEFAULT_PRECISION_BITS", "128", 1);
+    setenv("MPFRXX_DEFAULT_EMAX", "0", 1);
+    fresh_thread_identity<R>("Rsteqr", Rsteqr_freal, Rsteqr, qr_ref::Rsteqr);
+    fresh_thread_identity<C>("Csteqr", Csteqr_freal, Csteqr, qr_ref::Csteqr);
     long notused = 0;
     for (auto &c : calls)
         if (used[c.first] == 0) {

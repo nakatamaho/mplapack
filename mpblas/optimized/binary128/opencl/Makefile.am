@@ -105,6 +105,10 @@ $(MPLAPACK_ACCEL_REFERENCE_SOURCES) \
 ../../../../mplapack/reference/Rposv.cpp ../../../../mplapack/reference/Cposv.cpp \
 ../../../../mplapack/optimized/common/Rlaswp.cpp \
 ../../../../mplapack/optimized/common/Claswp.cpp \
+../../../../mplapack/optimized/common/Rsteqr.cpp \
+../../../../mplapack/optimized/common/Csteqr.cpp \
+../../../../mplapack/optimized/common/Rlasr.cpp \
+../../../../mplapack/optimized/common/Clasr.cpp \
 ../../../../mplapack/optimized/common/Rgetrf.cpp \
 ../../../../mplapack/optimized/common/Cgetrf.cpp \
 ../../../../mplapack/optimized/common/Rgetrf2.cpp \
