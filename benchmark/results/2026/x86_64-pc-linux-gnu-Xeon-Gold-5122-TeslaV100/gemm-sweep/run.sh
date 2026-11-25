@@ -1,6 +1,5 @@
 #!/bin/bash
-# dd/td/qd Rgemm on the V100 with the sizes of the MPFR 512 sweep
-# (../mpfr512-sweep, ../../*TeslaA100/gemm-sweep): kernel only
+# dd/td/qd Rgemm on the V100: kernel only
 # (benchmark/run_gemm_sweep.sh: multiples of 7 and 31 and powers of two to
 # 4096, best of 3 after one warm-up for n <= 2000, one run above), NN/NT/TN/TT.
 set -u
