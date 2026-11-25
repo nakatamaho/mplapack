@@ -1,8 +1,8 @@
 #!/bin/bash
-# MPFR 512 on the V100, following ../../x86_64-pc-linux-gnu-Ryzen-Threadripper-3970X-TeslaA100/mpfr512-sweep-2:
-# Rgemm NN/NT/TN/TT kernel-only sweeps (as ../../*TeslaA100/gemm-sweep), then
-# Rgetrf / Rpotrf L / Rpotrf U through the GPU entries (whole entry incl. packing
-# and transfers, warmup 1, best of 3 for n <= 2000, 1 run above), all to 4096.
+# MPFR 512 on the V100: kernel-only Rgemm NN/NT/TN/TT sweeps (multiples of
+# 7 and 31 and powers of two), then Rgetrf / Rpotrf L / Rpotrf U GPU entries
+# (whole call incl. packing and transfers; multiples of 13 and powers of two).
+# Both sweep to 4096, best of 3 after one warm-up for n <= 2000, one run above.
 set -u
 R=$(cd "$(dirname "$0")/../../../../.." && pwd)
 O=$(cd "$(dirname "$0")" && pwd)

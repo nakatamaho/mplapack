@@ -1,0 +1,49 @@
+2026-11-25T11:46:54 dd ngpus=1 n=1024 start load=1.13 3.56 4.06 gpu_procs=0
+2026-11-25T11:46:55 dd ngpus=1 n=1024 end rc=0 load=1.13 3.56 4.06 gpu_procs=0
+2026-11-25T11:46:55 dd ngpus=1 n=2048 start load=1.13 3.56 4.06 gpu_procs=0
+2026-11-25T11:46:57 dd ngpus=1 n=2048 end rc=0 load=1.13 3.56 4.06 gpu_procs=0
+2026-11-25T11:46:57 dd ngpus=1 n=4096 start load=1.13 3.56 4.06 gpu_procs=0
+2026-11-25T11:47:04 dd ngpus=1 n=4096 end rc=0 load=1.26 3.51 4.03 gpu_procs=0
+2026-11-25T11:47:05 dd ngpus=1 n=8192 start load=1.26 3.51 4.03 gpu_procs=0
+2026-11-25T11:47:44 dd ngpus=1 n=8192 end rc=0 load=1.17 3.20 3.91 gpu_procs=0
+2026-11-25T11:47:44 dd ngpus=2 n=1024 start load=1.17 3.20 3.91 gpu_procs=0
+2026-11-25T11:47:45 dd ngpus=2 n=1024 end rc=0 load=1.17 3.20 3.91 gpu_procs=0
+2026-11-25T11:47:45 dd ngpus=2 n=2048 start load=1.17 3.20 3.91 gpu_procs=0
+2026-11-25T11:47:47 dd ngpus=2 n=2048 end rc=0 load=1.17 3.20 3.91 gpu_procs=0
+2026-11-25T11:47:47 dd ngpus=2 n=4096 start load=1.17 3.20 3.91 gpu_procs=0
+2026-11-25T11:47:54 dd ngpus=2 n=4096 end rc=0 load=1.15 3.13 3.88 gpu_procs=0
+2026-11-25T11:47:54 dd ngpus=2 n=8192 start load=1.15 3.13 3.88 gpu_procs=0
+2026-11-25T11:48:23 dd ngpus=2 n=8192 end rc=0 load=1.17 2.94 3.79 gpu_procs=0
+2026-11-25T11:48:23 td ngpus=1 n=1024 start load=1.17 2.94 3.79 gpu_procs=0
+2026-11-25T11:48:25 td ngpus=1 n=1024 end rc=0 load=1.17 2.94 3.79 gpu_procs=0
+2026-11-25T11:48:25 td ngpus=1 n=2048 start load=1.17 2.94 3.79 gpu_procs=0
+2026-11-25T11:48:29 td ngpus=1 n=2048 end rc=0 load=1.15 2.91 3.77 gpu_procs=0
+2026-11-25T11:48:29 td ngpus=1 n=4096 start load=1.15 2.91 3.77 gpu_procs=0
+2026-11-25T11:48:51 td ngpus=1 n=4096 end rc=0 load=1.11 2.79 3.71 gpu_procs=0
+2026-11-25T11:48:51 td ngpus=1 n=8192 start load=1.11 2.79 3.71 gpu_procs=0
+2026-11-25T11:50:48 td ngpus=1 n=8192 end rc=0 load=1.19 2.25 3.40 gpu_procs=0
+2026-11-25T11:50:48 td ngpus=2 n=1024 start load=1.19 2.25 3.40 gpu_procs=0
+2026-11-25T11:50:49 td ngpus=2 n=1024 end rc=0 load=1.19 2.25 3.40 gpu_procs=0
+2026-11-25T11:50:49 td ngpus=2 n=2048 start load=1.19 2.25 3.40 gpu_procs=0
+2026-11-25T11:50:54 td ngpus=2 n=2048 end rc=0 load=1.18 2.23 3.39 gpu_procs=0
+2026-11-25T11:50:54 td ngpus=2 n=4096 start load=1.18 2.23 3.39 gpu_procs=0
+2026-11-25T11:51:11 td ngpus=2 n=4096 end rc=0 load=1.22 2.18 3.35 gpu_procs=0
+2026-11-25T11:51:11 td ngpus=2 n=8192 start load=1.22 2.18 3.35 gpu_procs=0
+2026-11-25T11:52:37 td ngpus=2 n=8192 end rc=0 load=1.41 1.99 3.18 gpu_procs=0
+2026-11-25T11:52:37 qd ngpus=1 n=1024 start load=1.41 1.99 3.18 gpu_procs=0
+2026-11-25T11:52:39 qd ngpus=1 n=1024 end rc=0 load=1.38 1.98 3.17 gpu_procs=0
+2026-11-25T11:52:39 qd ngpus=1 n=2048 start load=1.38 1.98 3.17 gpu_procs=0
+2026-11-25T11:52:47 qd ngpus=1 n=2048 end rc=0 load=1.35 1.96 3.16 gpu_procs=0
+2026-11-25T11:52:47 qd ngpus=1 n=4096 start load=1.35 1.96 3.16 gpu_procs=0
+2026-11-25T11:53:28 qd ngpus=1 n=4096 end rc=0 load=1.16 1.82 3.05 gpu_procs=0
+2026-11-25T11:53:28 qd ngpus=1 n=8192 start load=1.16 1.82 3.05 gpu_procs=0
+2026-11-25T11:57:14 qd ngpus=1 n=8192 end rc=0 load=1.16 1.46 2.63 gpu_procs=0
+2026-11-25T11:57:14 qd ngpus=2 n=1024 start load=1.16 1.46 2.63 gpu_procs=0
+2026-11-25T11:57:17 qd ngpus=2 n=1024 end rc=0 load=1.16 1.46 2.63 gpu_procs=0
+2026-11-25T11:57:17 qd ngpus=2 n=2048 start load=1.16 1.46 2.63 gpu_procs=0
+2026-11-25T11:57:24 qd ngpus=2 n=2048 end rc=0 load=1.21 1.46 2.62 gpu_procs=0
+2026-11-25T11:57:24 qd ngpus=2 n=4096 start load=1.21 1.46 2.62 gpu_procs=0
+2026-11-25T11:57:57 qd ngpus=2 n=4096 end rc=0 load=1.26 1.45 2.58 gpu_procs=0
+2026-11-25T11:57:57 qd ngpus=2 n=8192 start load=1.26 1.45 2.58 gpu_procs=0
+2026-11-25T12:00:38 qd ngpus=2 n=8192 end rc=0 load=1.61 1.52 2.41 gpu_procs=0
+2026-11-25T12:00:38 done load=1.61 1.52 2.41 gpu_procs=0
