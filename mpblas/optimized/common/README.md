@@ -263,6 +263,7 @@ as their operations) and Level 1 only on one thread. Not here: `Rcopy`,
 `Rswap`, `Ccopy`, `Cswap`, `iRamax`, `iCamax` (no arithmetic), `Rnrm2`,
 `RCnrm2` (MPFR's arithmetic parameters). The complex division and modulus
 (diagonal elements, pivots) are `mpc_div` and `mpc_abs` themselves.
+The freal paths do not preserve MPFR exception flags.
 
 The optimized LAPACK routines (`mplapack/optimized/common`: `Rgetrf`,
 `Rgetrf2`, `Rpotrf`, `Rtrtri`, `Rlauum` and the complex ones) run entirely in
@@ -282,6 +283,15 @@ the Level 2 precision cap and the usual minimum-work threshold (here `m*n`).
 Small `Rlasr` calls can cost more to copy than they save in arithmetic.
 Large rotations can split the independent rows or columns across OpenMP
 workers, without changing the order of rotation within each lane.
+
+`Rgebrd` and `Cgebrd` likewise keep the matrix, reflector outputs and
+workspace in `fr` / `fc` across the reference panel (`*labrd`), trailing
+GEMM updates and unblocked tail (`*gebd2`). The reflectors use the reference
+Blue norm with the same MPFR scaling constants. The Level 3 minimum-work
+policy applies; GEMM/GEMV and the copies honor `MPLAPACK_BLAS_OMP=0`.
+Workspace queries stay on the reference path. Padding and unused workspace
+are preserved; unsupported precisions, nonfinite operands, or a range or
+allocation failure leave the original buffers for the reference fallback.
 
 `mpfr/test/Rfreal_blas_test` checks every routine against the reference code;
 `misc/gen_freal_blas.py` generates the drivers and the per-precision files.

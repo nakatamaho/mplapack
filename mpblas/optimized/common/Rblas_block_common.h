@@ -80,6 +80,9 @@
 #include <cstdlib>
 #include <cstring>
 #include <complex>
+#include <memory>
+#include <new>
+#include <stdexcept>
 #include <type_traits>
 #include <vector>
 #include <utility>
@@ -112,21 +115,37 @@ struct blk_buffer {
     void *get(size_t bytes)
     {
         if (bytes > n) {
+            const size_t capacity = (bytes + 4095) / 4096 * 4096;
+            void *next = std::aligned_alloc(4096, capacity);
+            if (!next)
+                throw std::bad_alloc();
             std::free(p);
-            n = (bytes + 4095) / 4096 * 4096;
-            p = std::aligned_alloc(4096, n);
+            p = next;
+            n = capacity;
         }
         return p;
     }
 };
 
-// The packing buffers of the calling thread, kept between the calls (a new
-// page-aligned allocation per call costs more than a small product).  The
-// engine calls of a thread run one after another, so one set suffices.
-inline blk_buffer &blk_thread_buffer(int i)
+// Cache one set of packing buffers per worker on the calling thread. All
+// workers' allocations must succeed before entering OpenMP or updating C.
+struct blk_scratch {
+    blk_buffer a, b, mask;
+    void *ap, *bp, *mp;
+};
+
+inline blk_scratch *blk_team_scratch(int team)
 {
-    static thread_local blk_buffer b[3];
-    return b[i];
+    static thread_local blk_scratch serial;
+    if (team == 1)
+        return &serial;
+    static thread_local std::unique_ptr<blk_scratch[]> workers;
+    static thread_local int capacity = 0;
+    if (team > capacity) {
+        workers.reset(new blk_scratch[team]);
+        capacity = team;
+    }
+    return workers.get();
 }
 
 // ---- value kernel ----
@@ -555,7 +574,11 @@ struct blk_all_tiles {
 // references that stay valid during the call.  With tile > 0, the blocks
 // are tile x tile and only those (bi, bj) for which tiles(bi, bj) holds are
 // updated (Rsyrk: the blocks off the diagonal of a triangle).
-template <class K, class Context, class T, class FX, class FB, class FS, class FT = blk_all_tiles> void blk_update(int mode, long m, long n, long k, T *C, long ldc, FX x, FB coef, FS skip, bool use_skip, bool parallel, long tile = 0, FT tiles = FT())
+struct blk_no_init {
+    void operator()(long, long, long, long) const {}
+};
+
+template <class K, class Context, class T, class FX, class FB, class FS, class FT = blk_all_tiles, class FI = blk_no_init> void blk_update(int mode, long m, long n, long k, T *C, long ldc, FX x, FB coef, FS skip, bool use_skip, bool parallel, long tile = 0, FT tiles = FT(), FI init = FI())
 {
     typedef typename K::slot S;
     const int MR = K::MR, NR = K::NR, W = K::W;
@@ -582,16 +605,29 @@ template <class K, class Context, class T, class FX, class FB, class FS, class F
     // the buffers for the blocks of this call
     const long MCb = std::min(MC, m), NCb = std::min(NC, n), KCb = std::min(KC, k);
     const int team = (int)std::min<long>(nthreads, nbi * nbj);
+    blk_scratch *const scratch = blk_team_scratch(team);
+    const size_t a_bytes = sizeof(S) * W * ((MCb + MR - 1) / MR * MR) * KCb;
+    const size_t b_bytes = sizeof(S) * W * ((NCb + NR - 1) / NR * NR) * KCb;
+    const size_t mask_bytes = ((NCb + NR - 1) / NR * NR) * KCb;
+    for (int t = 0; t < team; ++t) {
+        scratch[t].ap = scratch[t].a.get(a_bytes);
+        scratch[t].bp = scratch[t].b.get(b_bytes);
+        scratch[t].mp = use_skip ? scratch[t].mask.get(mask_bytes + (NCb + NR - 1) / NR) : nullptr;
+    }
     const Context ctx;
 #ifdef _OPENMP
-#pragma omp parallel if (parallel && team > 1) num_threads(team > 1 ? team : 1)
+#pragma omp parallel if (team > 1) num_threads(team)
 #endif
     {
         const typename Context::scope sc(ctx);
-        S *Ap = static_cast<S *>(blk_thread_buffer(0).get(sizeof(S) * (size_t)(W * ((MCb + MR - 1) / MR * MR) * KCb)));
-        S *Bp = static_cast<S *>(blk_thread_buffer(1).get(sizeof(S) * (size_t)(W * ((NCb + NR - 1) / NR * NR) * KCb)));
-        unsigned char *Mp = use_skip ? static_cast<unsigned char *>(blk_thread_buffer(2).get((size_t)(((NCb + NR - 1) / NR * NR) * KCb))) : 0;
-        std::vector<unsigned char> anyskip((size_t)((NCb + NR - 1) / NR));
+        int t = 0;
+#ifdef _OPENMP
+        t = omp_get_thread_num();
+#endif
+        auto *Ap = static_cast<S *>(scratch[t].ap);
+        auto *Bp = static_cast<S *>(scratch[t].bp);
+        auto *Mp = static_cast<unsigned char *>(scratch[t].mp);
+        auto *anyskip = Mp ? Mp + mask_bytes : nullptr;
 #ifdef _OPENMP
 #pragma omp for schedule(dynamic, 1)
 #endif
@@ -600,6 +636,7 @@ template <class K, class Context, class T, class FX, class FB, class FS, class F
                 continue;
             const long i0 = (blk % nbi) * MC, j0 = (blk / nbi) * NC;
             const long mc = std::min(MC, m - i0), nc = std::min(NC, n - j0);
+            init(i0, j0, mc, nc);
             for (long p0 = 0; p0 < k; p0 += KC) {
                 const long kc = std::min(KC, k - p0);
                 // B: micro-panels of NR columns, kc x NR each; anyskip: whether
@@ -865,40 +902,49 @@ template <class Context, class F> void blk_columns(long n, bool par, F f)
 // Returns false (the caller runs its own code) for m*n*k < min_mnk (default:
 // MPLAPACK_BLAS_BLOCK_MIN, 32768) or with MPLAPACK_BLAS_BLOCK=0.  alpha != 0
 // and m, n > 0 are assumed.
-template <class Context, class T> bool blk_gemm(bool nota, bool notb, long m, long n, long k, const T &alpha, const T *A, long lda, const T *B, long ldb, const T &beta, T *C, long ldc, double min_mnk = -1.0)
+template <class Context, class T> bool blk_gemm(bool nota, bool notb, long m, long n, long k, const T &alpha, const T *A, long lda, const T *B, long ldb, const T &beta, T *C, long ldc, double min_mnk = -1.0) try
 {
     typedef typename blk_kernel_of<T>::type K;
     const long use = blk_env("MPLAPACK_BLAS_BLOCK", 1);
     if (use == 0 || (use == 1 && !blk_profitable<T>::value) || (min_mnk < 0.0 ? blk_small(use, (double)m * n * k, 0, 150) : (double)m * n * k < min_mnk))
         return false;
     const bool par = blk_parallel((double)m * n * k);
-    blk_columns<Context>(n, par, [&](long j) {
+    const auto scale = [&](long i0, long j0, long mc, long nc) {
         if (beta == 0.0) {
-            for (long i = 0; i < m; i++)
-                C[i + j * ldc] = 0.0;
+            for (long j = j0; j < j0 + nc; ++j)
+                for (long i = i0; i < i0 + mc; ++i)
+                    C[i + j * ldc] = 0.0;
         } else if (beta != 1.0) {
-            for (long i = 0; i < m; i++)
-                C[i + j * ldc] = beta * C[i + j * ldc];
+            for (long j = j0; j < j0 + nc; ++j)
+                for (long i = i0; i < i0 + mc; ++i)
+                    C[i + j * ldc] = beta * C[i + j * ldc];
         }
-    });
-    if (k <= 0)
+    };
+    if (k <= 0) {
+        blk_columns<Context>(n, par, [&](long j) { scale(0, j, m, 1); });
         return true;
+    }
     if (nota) {
         std::vector<T> temp((size_t)(k * n)); // temp = alpha*op(b)(l,j)
         blk_columns<Context>(n, par, [&](long j) {
             for (long l = 0; l < k; l++)
                 temp[(size_t)(l + j * k)] = alpha * (notb ? B[l + j * ldb] : B[j + l * ldb]);
         });
-        blk_update<K, Context>(BLK_ADD, m, n, k, C, ldc, [&](long i, long l) -> const T & { return A[i + l * lda]; }, [&](long l, long j) -> const T & { return temp[(size_t)(l + j * k)]; }, blk_no_skip(), false, par);
+        blk_update<K, Context>(BLK_ADD, m, n, k, C, ldc, [&](long i, long l) -> const T & { return A[i + l * lda]; }, [&](long l, long j) -> const T & { return temp[(size_t)(l + j * k)]; }, blk_no_skip(), false, par, 0, blk_all_tiles(), scale);
     } else {
         std::vector<T> temp((size_t)(m * n), T(0.0)); // temp = 0
         blk_update<K, Context>(BLK_DOT, m, n, k, temp.data(), m, [&](long i, long l) -> const T & { return A[l + i * lda]; }, [&](long l, long j) -> const T & { return notb ? B[l + j * ldb] : B[j + l * ldb]; }, blk_no_skip(), false, par);
         blk_columns<Context>(n, par, [&](long j) {
+            scale(0, j, m, 1);
             for (long i = 0; i < m; i++)
                 C[i + j * ldc] += alpha * temp[(size_t)(i + j * m)];
         });
     }
     return true;
+} catch (const std::bad_alloc &) {
+    return false;
+} catch (const std::length_error &) {
+    return false;
 }
 
 // ---- Cgemm ----
@@ -907,7 +953,9 @@ template <class Context, class T> bool blk_gemm(bool nota, bool notb, long m, lo
 // c(i,j) += temp*a(i,l), temp = alpha*op(b)(l,j); op(A) = A' or A^H:
 // temp = zero; temp += op(a)(l,i)*op(b)(l,j); c = alpha*temp [+ beta*c].
 // op(b)(l,j) is b(l,j), b(j,l) or conj(b(j,l)).  Same conditions as blk_gemm.
-template <class Context, class T> bool blk_cgemm(bool nota, bool conja, bool notb, bool conjb, long m, long n, long k, const T &alpha, const T *A, long lda, const T *B, long ldb, const T &beta, T *C, long ldc)
+// Whole-call fixed-precision drivers must see allocation failures so they
+// can discard their private operands; the public GEMM can just fall back.
+template <class Context, bool propagate_alloc_failure, class T> bool blk_cgemm(bool nota, bool conja, bool notb, bool conjb, long m, long n, long k, const T &alpha, const T *A, long lda, const T *B, long ldb, const T &beta, T *C, long ldc) try
 {
     typedef typename blk_kernel_of<T>::type K;
     const long use = blk_env("MPLAPACK_BLAS_BLOCK", 1);
@@ -918,23 +966,27 @@ template <class Context, class T> bool blk_cgemm(bool nota, bool conja, bool not
     // op(b)(l,j)
     const auto opb = [&](long l, long j) -> T { return notb ? B[l + j * ldb] : (conjb ? T(conj(B[j + l * ldb])) : B[j + l * ldb]); };
     if (nota) {
-        blk_columns<Context>(n, par, [&](long j) {
+        const auto scale = [&](long i0, long j0, long mc, long nc) {
             if (beta == zero) {
-                for (long i = 0; i < m; i++)
-                    C[i + j * ldc] = zero;
+                for (long j = j0; j < j0 + nc; ++j)
+                    for (long i = i0; i < i0 + mc; ++i)
+                        C[i + j * ldc] = zero;
             } else if (beta != one) {
-                for (long i = 0; i < m; i++)
-                    C[i + j * ldc] = beta * C[i + j * ldc];
+                for (long j = j0; j < j0 + nc; ++j)
+                    for (long i = i0; i < i0 + mc; ++i)
+                        C[i + j * ldc] = beta * C[i + j * ldc];
             }
-        });
-        if (k <= 0)
+        };
+        if (k <= 0) {
+            blk_columns<Context>(n, par, [&](long j) { scale(0, j, m, 1); });
             return true;
+        }
         std::vector<T> temp((size_t)(k * n)); // temp = alpha*op(b)(l,j)
         blk_columns<Context>(n, par, [&](long j) {
             for (long l = 0; l < k; l++)
                 temp[(size_t)(l + j * k)] = alpha * opb(l, j);
         });
-        blk_update<K, Context>(BLK_ADD, m, n, k, C, ldc, [&](long i, long l) -> const T & { return A[i + l * lda]; }, [&](long l, long j) -> const T & { return temp[(size_t)(l + j * k)]; }, blk_no_skip(), false, par);
+        blk_update<K, Context>(BLK_ADD, m, n, k, C, ldc, [&](long i, long l) -> const T & { return A[i + l * lda]; }, [&](long l, long j) -> const T & { return temp[(size_t)(l + j * k)]; }, blk_no_skip(), false, par, 0, blk_all_tiles(), scale);
         return true;
     }
     // op(a)(l,i) and op(b)(l,j) as matrices (conjugates copied; copies keep
@@ -964,6 +1016,14 @@ template <class Context, class T> bool blk_cgemm(bool nota, bool conja, bool not
         }
     });
     return true;
+} catch (const std::bad_alloc &) {
+    if (propagate_alloc_failure)
+        throw;
+    return false;
+} catch (const std::length_error &) {
+    if (propagate_alloc_failure)
+        throw;
+    return false;
 }
 
 // f(i0, i1) for blocks of 64 rows of [0, m), in parallel when par.

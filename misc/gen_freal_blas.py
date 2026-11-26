@@ -283,6 +283,52 @@ if (!cl.run([&] { NS::NAME(ARGS); }))
     return false;
 info = inf;
 return true;'''
+GEBRD = '''const INTEGER k = std::min(m, n), maxdim = std::max(m, n);
+if (k <= 0 || lda < m || lwork < maxdim || gmpfrxx_mkII::detail::build_options::enable_fma || WINO)
+    return false;
+const long emin = mpfr_get_emin(), emax = mpfr_get_emax();
+if (emin < -(1L << 40) || emax > (1L << 40) || emin > -2 * FRB_PB || emax < 54)
+    return false;
+// Guard the reference's dimension/workspace arithmetic, including the
+// final increment of strided BLAS loops. Workspace values must also be
+// exactly representable by the instance's integer-to-double conversion.
+const INTEGER lim = std::numeric_limits<INTEGER>::max();
+if (m > lim - n || lda > (lim - 1) / n)
+    return false;
+const INTEGER sum = m + n;
+const INTEGER nb = std::max<INTEGER>(1, iMlaenv(1, "NAME", " ", m, n, -1, -1));
+const INTEGER nbmin = std::max<INTEGER>(1, iMlaenv(2, "NAME", " ", m, n, -1, -1));
+if (sum > lim / std::max(nb, nbmin) || sum > (1L << 53) / nb)
+    return false;
+const INTEGER nw = std::min(lwork, sum * nb);
+using Host = HOST;
+using Fixed = typename value_of<Host>::type;
+const size_t cap = std::numeric_limits<std::ptrdiff_t>::max() / std::max(sizeof(Host), sizeof(Fixed));
+if ((size_t)n > cap / (size_t)lda || (size_t)nw > cap)
+    return false;
+try {
+    fcall cl((double)m * n * k, 3);
+    auto &A = cl.mat(a, m, n, lda, rg_all(), F_INOUT);
+    auto &D = cl.vec(d, k, 1, F_OUT);
+    REAL unused_e;
+    REAL *ep = k > 1 ? cl.vec(e, k - 1, 1, F_OUT).p : &unused_e;
+    auto &Q = cl.vec(tauq, k, 1, F_OUT);
+    auto &P = cl.vec(taup, k, 1, F_OUT);
+    // Preserve workspace slots not written by the panel/tail schedules.
+    auto &W = cl.vec(work, nw, 1, F_INOUT);
+    INTEGER inf = 0;
+    if (!cl.run([&] {
+            gebrd_ns::norm_ns::prepare();
+            gebrd_ns::NAME(m, n, A.p, A.ld, D.p, ep, Q.p, P.p, W.p, nw, inf);
+        }))
+        return false;
+    info = inf;
+    return true;
+} catch (const std::bad_alloc &) {
+    return false;
+} catch (const std::length_error &) {
+    return false;
+}'''
 STEQR = '''const bool init = lsm(compz, "I"), update = lsm(compz, "V"), vectors = init || update;
 if ((!vectors && !lsm(compz, "N")) || n < 0 || ldz < (vectors ? std::max<INTEGER>(1, n) : 1))
     return false;
@@ -333,6 +379,8 @@ for r, c in [('R', 'false'), ('C', 'false')]:
     LB[r + 'potrf'] = TRI.replace('NS', r + 'potrf_ns').replace('NAME', r + 'potrf').replace('ARGS', 'uplo, n, A.p, A.ld, inf').replace('UNIT', '').replace('WINO', w)
     LB[r + 'trtri'] = TRI.replace('NS', r + 'trtri_ns').replace('NAME', r + 'trtri').replace('ARGS', 'uplo, diag, n, A.p, A.ld, inf').replace('UNIT', ', lsm(diag, "U")').replace('WINO', w)
     LB[r + 'lauum'] = TRI.replace('NS', r + 'lauum_ns').replace('NAME', r + 'lauum').replace('ARGS', 'uplo, n, A.p, A.ld, inf').replace('UNIT', '').replace('WINO', w)
+    wg = WINO_R if r == 'R' else 'mplapack_blas::blas_env_long("MPLAPACK_MPFR_CGEMM_WINOGRAD_CUTOFF", 0) > 0'
+    LB[r + 'gebrd'] = GEBRD.replace('NAME', r + 'gebrd').replace('HOST', 'mpfr_class' if r == 'R' else 'mpc_class').replace('WINO', wg)
     LB[r + 'steqr'] = STEQR.replace('NAME', r + 'steqr')
     LB[r + 'lasr'] = LASR.replace('NAME', r + 'lasr')
 for k in list(LB):

@@ -42,8 +42,12 @@
 #include <algorithm>
 #include <atomic>
 #include <cmath>
+#include <cstddef>
 #include <cstring>
 #include <deque>
+#include <limits>
+#include <memory>
+#include <stdexcept>
 #include <vector>
 #include <mpblas.h>
 #ifdef _OPENMP
@@ -382,11 +386,13 @@ inline bool freal_gemm_fast(bool nota, bool notb, long m, long n, long k, const 
     if (top > (double)mplapack_freal_tls.emax || bottom < (double)mplapack_freal_tls.emin)
         return false;
 #ifdef _OPENMP
-    const bool parallel = omp_get_max_threads() >= 2 && (double)m * n * k >= (double)mplapack_blas::blas_env_long("MPLAPACK_BLAS_OMP_MIN", 32768) && !omp_in_parallel();
+    const bool parallel = mplapack_blas::blas_env_long("MPLAPACK_BLAS_OMP", 1) != 0 && omp_get_max_threads() >= 2 &&
+                          (double)m * n * k >= (double)mplapack_blas::blas_env_long("MPLAPACK_BLAS_OMP_MIN", 32768) && !omp_in_parallel();
 #else
     const bool parallel = false;
 #endif
-    freal_gemm<FRB_PB>::run<REAL>(nota, notb, m, n, k, alpha, A, lda, B, ldb, beta, beta_kind, C, ldc, parallel);
+    if (!freal_gemm<FRB_PB>::run<REAL>(nota, notb, m, n, k, alpha, A, lda, B, ldb, beta, beta_kind, C, ldc, parallel))
+        mplapack_freal_fail();
     return true;
 }
 inline void Rgemm(const char *transa, const char *transb, INTEGER const m, INTEGER const n, INTEGER const k, REAL const alpha, REAL *a, INTEGER const lda, REAL *b,
@@ -614,6 +620,84 @@ inline void Clasr(const char *side, const char *pivot, const char *direct, INTEG
 {
     lasr(Clasr_ns::Clasr, side, pivot, direct, m, n, c, s, a, lda);
 }
+// GEBRD's panels and unblocked tail use the same reference schedules,
+// including the scaled Blue norm and reflector/division formulas.
+namespace gebrd_ns {
+namespace norm_ns {
+// Adapt just the machine constants the BLAS reference norms read. Prepare
+// them once per call from the same MPFR arithmetic parameters, not per norm.
+namespace mplapack {
+struct norm_params {
+    REAL rmax, sfmin, eps;
+};
+struct blue_params {
+    REAL tsml, tbig, ssml, sbig;
+};
+static thread_local norm_params norm;
+static thread_local blue_params blue;
+template <class T> inline const norm_params &get_arithmetic_params() { return norm; }
+inline const blue_params &make_blue_scaling_params(const norm_params &) { return blue; }
+} // namespace mplapack
+inline void prepare()
+{
+    const auto p = ::mplapack::get_arithmetic_params<mpfr_class>();
+    const auto b = ::mplapack::make_blue_scaling_params(p);
+    auto fixed = [](const mpfr_class &x) {
+        if (mpfr_get_prec(x.get_mpfr_t()) != FRB_PB)
+            mplapack_freal_fail();
+        return fr_from_mpfr<FRB_PB>(x.get_mpfr_t());
+    };
+    mplapack::norm = {fixed(p.rmax), fixed(p.sfmin), fixed(p.eps)};
+    mplapack::blue = {fixed(b.tsml), fixed(b.tbig), fixed(b.ssml), fixed(b.sbig)};
+}
+#include "../../../reference/Rnrm2.cpp"
+#include "../../../reference/RCnrm2.cpp"
+} // namespace norm_ns
+using norm_ns::Rnrm2;
+using norm_ns::RCnrm2;
+#include "../../../../mplapack/reference/iMladlc.cpp"
+#include "../../../../mplapack/reference/iMladlr.cpp"
+#include "../../../../mplapack/reference/iMlazlc.cpp"
+#include "../../../../mplapack/reference/iMlazlr.cpp"
+inline REAL gebrd_rlamch(const char *what)
+{
+    const auto &p = norm_ns::mplapack::norm;
+    switch (*what) {
+    case 'O': return p.rmax;
+    case 'S': return p.sfmin;
+    case 'E': return p.eps;
+    default:
+        mplapack_freal_fail();
+        return REAL();
+    }
+}
+#undef Rlamch
+#define Rlamch gebrd_rlamch
+#define Rlapy2 gebrd_rlapy2
+#include "../../../../mplapack/reference/Rlapy2.cpp"
+#include "../../../../mplapack/reference/Rladiv.cpp"
+#include "../../../../mplapack/reference/Cladiv.cpp"
+#include "../../../../mplapack/reference/Rlapy3.cpp"
+#include "../../../../mplapack/reference/Rlarfg.cpp"
+#undef Rlapy2
+#include "../../../../mplapack/reference/Clarfg.cpp"
+#undef Rlamch
+#define Rlamch FRB_NS::freal_rlamch
+#include "../../../../mplapack/reference/Rlarf1f.cpp"
+#include "../../../../mplapack/reference/Clarf1f.cpp"
+#include "../../../../mplapack/reference/Rlabrd.cpp"
+#include "../../../../mplapack/reference/Clabrd.cpp"
+#include "../../../../mplapack/reference/Rgebd2.cpp"
+#include "../../../../mplapack/reference/Cgebd2.cpp"
+// The driver bounds the exact integer workspace sizes to 53 bits.
+#undef castREAL
+#define castREAL(x) REAL(static_cast<double>(x))
+#include "../../../../mplapack/reference/Rgebrd.cpp"
+#include "../../../../mplapack/reference/Cgebrd.cpp"
+#undef castREAL
+#define castREAL castREAL_mpfr
+} // namespace gebrd_ns
+
 namespace Rsteqr_ns {
 #include "../../../../mplapack/reference/Rsteqr.cpp"
 }
@@ -770,7 +854,7 @@ template <class S> struct operand : operand_base {
 inline bool copy_parallel(double elements)
 {
 #ifdef _OPENMP
-    return elements >= 4096 && omp_get_max_threads() >= 2 && !omp_in_parallel();
+    return elements >= 4096 && mplapack_blas::blas_env_long("MPLAPACK_BLAS_OMP", 1) != 0 && omp_get_max_threads() >= 2 && !omp_in_parallel();
 #else
     (void)elements;
     return false;
@@ -838,8 +922,9 @@ struct fcall {
     }
     template <class S> operand<S> &mat(S *X, long rows, long cols, long ld, fregion rg, int mode)
     {
-        operand<S> *o = new operand<S>;
-        ops.push_back(o);
+        std::unique_ptr<operand<S>> pending(new operand<S>);
+        ops.push_back(pending.get());
+        operand<S> *o = pending.release();
         o->X = X, o->rows = rows, o->cols = cols, o->xld = ld, o->rg = rg, o->mode = mode;
         o->ld = std::max(rows, 1L);
         o->p = 0;
@@ -905,7 +990,13 @@ struct fcall {
                 if (i != j && (ops[i]->mode & F_OUT) && ranges_meet(ops[i]->bytes, ops[j]->bytes))
                     return false;
         const unsigned long orphan = mplapack_freal_orphan.load();
-        f();
+        try {
+            f();
+        } catch (const std::bad_alloc &) {
+            return false;
+        } catch (const std::length_error &) {
+            return false;
+        }
         if (bad.load() || mplapack_freal_orphan.load() != orphan)
             return false;
         for (size_t i = 0; i < ops.size(); i++)

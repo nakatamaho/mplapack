@@ -40,6 +40,12 @@
 // fixed-precision LAPACK of Rfreal_blas_inst.h uses freal_gemm on fr<PB>
 // arrays and defines none).
 
+#include <limits>
+#include <memory>
+#include <new>
+#ifdef _OPENMP
+#include <omp.h>
+#endif
 #include "Rgemm_freal.h"
 #include "../lgpl/Rfreal_host.h"
 
@@ -116,9 +122,22 @@ template <int PB> struct freal_gemm {
 
     // E: mpfr_class or fr<PB>
     template <class E>
-    static void run(bool nota, bool notb, long m, long n, long k, const E &alpha_, const E *A, long lda, const E *B, long ldb, const E &beta_, int beta_kind, E *C,
+    static bool run(bool nota, bool notb, long m, long n, long k, const E &alpha_, const E *A, long lda, const E *B, long ldb, const E &beta_, int beta_kind, E *C,
                     long ldc, bool parallel)
     {
+        // Allocate before entering OpenMP and before writing any tiles, so
+        // allocation failure can safely decline to the caller's fallback.
+        size_t lanes = 1;
+#ifdef _OPENMP
+        if (parallel)
+            lanes = omp_get_max_threads();
+#endif
+        constexpr size_t stride = MB * KC + KC * NB + MB * NB;
+        if (lanes > std::numeric_limits<std::ptrdiff_t>::max() / sizeof(F) / stride)
+            return false;
+        std::unique_ptr<F[]> scratch(new (std::nothrow) F[lanes * stride]);
+        if (!scratch)
+            return false;
         F alpha, beta;
         load(alpha, alpha_);
         load(beta, beta_);
@@ -127,7 +146,11 @@ template <int PB> struct freal_gemm {
 #pragma omp parallel if (parallel)
 #endif
         {
-            F *ap = new F[MB * KC], *bp = new F[KC * NB], *ct = new F[MB * NB];
+            size_t lane = 0;
+#ifdef _OPENMP
+            lane = omp_get_thread_num();
+#endif
+            F *ap = scratch.get() + lane * stride, *bp = ap + MB * KC, *ct = bp + KC * NB;
 #ifdef _OPENMP
 #pragma omp for collapse(2) schedule(dynamic)
 #endif
@@ -188,10 +211,8 @@ template <int PB> struct freal_gemm {
                                 store(c, add(scaled_c(beta, beta_kind, c), mul(alpha, ct[ii + jj * MB])));
                         }
                 }
-            delete[] ap;
-            delete[] bp;
-            delete[] ct;
         }
+        return true;
     }
 };
 
@@ -204,8 +225,7 @@ bool MPFREAL_ENTRY(int prec, bool nota, bool notb, long m, long n, long k, const
     switch (prec) {
 #define MPFREAL_CASE(P)                                                                                                                                        \
     case P:                                                                                                                                                    \
-        MPFREAL_NS::freal_gemm<P>::run(nota, notb, m, n, k, alpha, A, lda, B, ldb, beta, beta_kind, C, ldc, parallel);                                         \
-        return true;
+        return MPFREAL_NS::freal_gemm<P>::run(nota, notb, m, n, k, alpha, A, lda, B, ldb, beta, beta_kind, C, ldc, parallel);
         MPFREAL_PRECISIONS(MPFREAL_CASE)
 #undef MPFREAL_CASE
     default:
