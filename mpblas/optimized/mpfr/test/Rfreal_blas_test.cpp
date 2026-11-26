@@ -35,11 +35,14 @@
 // calls they decline (NaN, Inf, another precision, a complex division,
 // overflow, rounding mode) give the MPFR result.
 
+#include <cerrno>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
 #include <functional>
+#include <limits>
 #include <map>
+#include <type_traits>
 #include <random>
 #include <string>
 #include <thread>
@@ -57,6 +60,28 @@
 typedef mpfr_class R;
 typedef mpc_class C;
 typedef mplapackint I;
+
+#if defined(__linux__) && defined(__ELF__)
+// Interpose only in this test executable (which links the optimized archive).
+// Other threads and allocations outside the test use the normal allocator.
+static thread_local bool fail_packing_alloc = false;
+static thread_local int packing_alloc_failures = 0;
+extern "C" void *aligned_alloc(size_t alignment, size_t size) noexcept
+{
+    if (fail_packing_alloc && alignment == 4096) {
+        ++packing_alloc_failures;
+        errno = ENOMEM;
+        return nullptr;
+    }
+    void *p = nullptr;
+    const int err = posix_memalign(&p, alignment, size);
+    if (err) {
+        errno = err;
+        return nullptr;
+    }
+    return p;
+}
+#endif
 
 #define MPLAPACK_FREAL_TEST_REF(name, ret, params) ret name##_reference_cpu params;
 // the reference routines of the library (../../common/blas/<name>_omp.cpp)
@@ -147,6 +172,61 @@ namespace qr_ref {
 #undef Rlasr
 } // namespace qr_ref
 
+// Pin the BLAS calls of the MPFR/MPC oracle to the reference loops rather
+// than letting them dispatch their own freal hooks.
+namespace gebrd_ref {
+#define Rgemm gebrd_Rgemm
+#define Raxpy gebrd_Raxpy
+#include "../../../reference/Rgemm.cpp"
+#include "../../../reference/Raxpy.cpp"
+#define Rgemv Rgemv_reference_cpu
+#define Rscal Rscal_reference_cpu
+#define Rger Rger_reference_cpu
+#define Cgemm Cgemm_reference_cpu
+#define Cgemv Cgemv_reference_cpu
+#define Cscal Cscal_reference_cpu
+#define CRscal CRscal_reference_cpu
+#define Caxpy Caxpy_reference_cpu
+#define Cgerc Cgerc_reference_cpu
+#define Rlarfg gebrd_Rlarfg
+#define Clarfg gebrd_Clarfg
+#define Rlarf1f gebrd_Rlarf1f
+#define Clarf1f gebrd_Clarf1f
+#define Rlabrd gebrd_Rlabrd
+#define Clabrd gebrd_Clabrd
+#define Rgebd2 gebrd_Rgebd2
+#define Cgebd2 gebrd_Cgebd2
+#include "../../../../mplapack/reference/Rlarfg.cpp"
+#include "../../../../mplapack/reference/Clarfg.cpp"
+#include "../../../../mplapack/reference/Rlarf1f.cpp"
+#include "../../../../mplapack/reference/Clarf1f.cpp"
+#include "../../../../mplapack/reference/Rlabrd.cpp"
+#include "../../../../mplapack/reference/Clabrd.cpp"
+#include "../../../../mplapack/reference/Rgebd2.cpp"
+#include "../../../../mplapack/reference/Cgebd2.cpp"
+#include "../../../../mplapack/reference/Rgebrd.cpp"
+#include "../../../../mplapack/reference/Cgebrd.cpp"
+#undef Cgebd2
+#undef Rgebd2
+#undef Clabrd
+#undef Rlabrd
+#undef Clarf1f
+#undef Rlarf1f
+#undef Clarfg
+#undef Rlarfg
+#undef Cgerc
+#undef Caxpy
+#undef CRscal
+#undef Cscal
+#undef Cgemv
+#undef Cgemm
+#undef Rger
+#undef Rscal
+#undef Rgemv
+#undef Raxpy
+#undef Rgemm
+} // namespace gebrd_ref
+
 std::mt19937_64 rng(20261123);
 gmp_randstate_t gstate;
 long failures = 0, checks = 0;
@@ -192,16 +272,20 @@ C cv()
 R rs(int kind) { return kind == 0 ? R(0.0) : kind == 1 ? R(1.0) : kind == 2 ? R(-0.0) : rv(); }
 C cs(int kind) { return kind == 0 ? C(0.0, 0.0) : kind == 1 ? C(1.0, 0.0) : kind == 2 ? C(R(0.0), -R(0.0)) : cv(); }
 
-bool same(const R &a, const R &b)
+bool same_mpfr(mpfr_srcptr x, mpfr_srcptr y)
 {
-    mpfr_srcptr x = a.get_mpfr_t(), y = b.get_mpfr_t();
     if (mpfr_get_prec(x) != mpfr_get_prec(y))
         return false;
     if (mpfr_nan_p(x) || mpfr_nan_p(y))
         return mpfr_nan_p(x) && mpfr_nan_p(y);
     return mpfr_equal_p(x, y) && mpfr_signbit(x) == mpfr_signbit(y);
 }
-bool same(const C &a, const C &b) { return same(R(a.real()), R(b.real())) && same(R(a.imag()), R(b.imag())); }
+bool same(const R &a, const R &b) { return same_mpfr(a.get_mpfr_t(), b.get_mpfr_t()); }
+bool same(const C &a, const C &b)
+{
+    return same_mpfr(mpc_realref(a.mpc_data()), mpc_realref(b.mpc_data())) &&
+           same_mpfr(mpc_imagref(a.mpc_data()), mpc_imagref(b.mpc_data()));
+}
 
 struct bufs {
     std::vector<R> r[4];
@@ -893,10 +977,200 @@ void steqr_range_failure()
     }
 }
 
+#if defined(__linux__) && defined(__ELF__)
+template <class T, class Driver>
+void gemm_packing_failure(const char *name, Driver driver, Driver ref, mpfr_rnd_t rounding)
+{
+    const I n = 32; // 32^3 reaches the forced block engine's minimum work.
+    const T alpha(3.0), beta(2.0);
+    std::vector<T> a(n * n, T(2.0)), b(n * n, T(-3.0)), actual(n * n, T(4.0)), expected = actual;
+    // Directed rounding bypasses fixed precision, isolating the host engine.
+    mpfr_set_default_rounding_mode(rounding);
+    const int before = packing_alloc_failures;
+    fail_packing_alloc = true;
+    driver("N", "N", n, n, n, alpha, a.data(), n, b.data(), n, beta, actual.data(), n);
+    fail_packing_alloc = false;
+    ref("N", "N", n, n, n, alpha, a.data(), n, b.data(), n, beta, expected.data(), n);
+    mpfr_set_default_rounding_mode(MPFR_RNDN);
+    ++checks;
+    if (packing_alloc_failures == before || !std::equal(actual.begin(), actual.end(), expected.begin(), [](const T &x, const T &y) { return same(x, y); })) {
+        ++failures;
+        std::printf("FAIL %ld %s: packing allocation failure public fallback (%d injected failures)\n", prec, name, packing_alloc_failures - before);
+    }
+}
+#endif
+
+template <class T, class Hook, class Public, class Ref>
+void bidiagonal(const char *name, Hook hook, Public pub, Ref ref, bool blocked)
+{
+    struct operands {
+        std::vector<T> a, tq, tp, w;
+        std::vector<R> d, e;
+        I info = -777;
+        operands(I m, I n, I lda, I lw) : a(lda * n, T(-0.0)), tq(std::min(m, n), T(-3.0)), tp(tq),
+                                          w(lw + 2, T(-7.0)), d(tq.size(), R(-4.0)), e(d) {}
+        bool operator==(const operands &y) const
+        {
+            auto eq = [](const auto &a, const auto &b) {
+                return std::equal(a.begin(), a.end(), b.begin(), [](const auto &u, const auto &v) { return same(u, v); });
+            };
+            return info == y.info && eq(a, y.a) && eq(tq, y.tq) && eq(tp, y.tp) && eq(w, y.w) && eq(d, y.d) && eq(e, y.e);
+        }
+    };
+    auto verify = [&](bool ok, const char *label, I m, I n, I lw) {
+        ++checks;
+        if (!ok) {
+            ++failures;
+            std::printf("FAIL %ld %s: %s (%ld x %ld, lwork=%ld)\n", prec, name, label, (long)m, (long)n, (long)lw);
+        }
+    };
+    const I nb = iMlaenv(1, name, " ", 256, 256, -1, -1);
+    const I nx = std::max(nb, iMlaenv(3, name, " ", 256, 256, -1, -1));
+    for (auto [m, n] : {std::pair<I, I>{0, 4}, {4, 0}}) {
+        const I lda = std::max<I>(1, m), lw = 1;
+        T a(-3.0), tq(-4.0), tp(-5.0), w[] = {T(-6.0), T(-7.0)};
+        R d(-8.0), e(-9.0);
+        I info = -777;
+        const auto before = mplapack_freal_done.load();
+        pub(m, n, &a, lda, &d, &e, &tq, &tp, w, lw, info);
+        verify(info == 0 && same(w[0], T(1.0)) && same(w[1], T(-7.0)) &&
+                   same(a, T(-3.0)) && same(tq, T(-4.0)) && same(tp, T(-5.0)) &&
+                   same(d, R(-8.0)) && same(e, R(-9.0)) && mplapack_freal_done.load() == before,
+               "public quick return", m, n, lw);
+    }
+    std::vector<std::pair<I, I>> sizes{{1, 1}, {1, 7}, {7, 1}, {2, 7}, {9, 4}, {5, 5}, {7, 7}};
+    if (blocked) {
+        sizes.insert(sizes.end(), {{nb - 1, nb + 4}, {nb + 5, nb + 1}, {nx + 1, nx + 1}, {nx + nb + 2, nx + 5}, {nx + 3, nx + nb + 1}});
+    }
+    for (auto [m, n] : sizes) {
+        const I lda = m + 3, opt = (m + n) * nb;
+        const std::vector<I> work_sizes = std::min(m, n) > nx ? std::vector<I>{opt + 3, (m + n) * (nb - 1), std::max(m, n)} : std::vector<I>{opt};
+        for (I lw : work_sizes) {
+            operands input(m, n, lda, lw);
+            for (I j = 0; j < n; ++j)
+                for (I i = 0; i < m; ++i) {
+                    if (m == 5 && n == 5) // identity/zero reflectors and signed zero
+                        input.a[i + j * lda] = T(i == j ? 1.0 : -0.0);
+                    else if constexpr (std::is_same_v<T, R>)
+                        input.a[i + j * lda] = rv();
+                    else
+                        input.a[i + j * lda] = cv();
+                }
+            auto call = [&](auto f, operands &o, I lwork) {
+                return f(m, n, o.a.data(), lda, o.d.data(), o.e.data(), o.tq.data(), o.tp.data(), o.w.data(), lwork, o.info);
+            };
+            auto got = input, expected = input, actual = input;
+            const bool ran = call(hook, got, lw);
+            call(ref, expected, lw);
+            verify(ran && got == expected && got.info == 0, ran ? "MPFR result mismatch" : "hook declined", m, n, lw);
+#if defined(__linux__) && defined(__ELF__)
+            if constexpr (std::is_same_v<T, C>) {
+                if (prec == 128 && m == nx + 1 && n == nx + 1 && lw == opt + 3) {
+                    const char *old_block = std::getenv("MPLAPACK_BLAS_BLOCK");
+                    const std::string saved_block = old_block ? old_block : "";
+                    const bool had_block = old_block != nullptr;
+                    setenv("MPLAPACK_BLAS_BLOCK", "2", 1);
+                    // A fresh caller has no cached packing buffers.
+                    std::thread worker([&] {
+                        mpfrxx::set_default_precision_bits(128);
+                        mpfrxx::set_default_mpc_precision_bits(128);
+#ifdef _OPENMP
+                        omp_set_num_threads(1);
+#endif
+                        auto declined = input, fallback = input;
+                        auto oracle = input;
+                        call(ref, oracle, lw);
+                        fail_packing_alloc = true;
+                        const bool fault_ran = call(hook, declined, lw);
+                        const int direct_hits = packing_alloc_failures;
+                        call(pub, fallback, lw);
+                        const int public_hits = packing_alloc_failures - direct_hits;
+                        fail_packing_alloc = false;
+                        verify(direct_hits > 0 && !fault_ran && declined == input, "packing allocation failure leaves outputs untouched", m, n, lw);
+                        verify(public_hits > 0 && fallback == oracle && oracle.info == 0, "packing allocation failure public fallback", m, n, lw);
+                        gemm_packing_failure<R>("Rgemm", Rgemm, gebrd_ref::gebrd_Rgemm, MPFR_RNDU);
+                        gemm_packing_failure<C>("Cgemm", Cgemm, Cgemm_reference_cpu, MPFR_RNDN);
+                        gemm_packing_failure<C>("Cgemm", Cgemm, Cgemm_reference_cpu, MPFR_RNDU);
+                    });
+                    worker.join();
+                    if (had_block)
+                        setenv("MPLAPACK_BLAS_BLOCK", saved_block.c_str(), 1);
+                    else
+                        unsetenv("MPLAPACK_BLAS_BLOCK");
+                }
+            }
+#endif
+            if (m <= 9) {
+                const auto before = mplapack_freal_done.load();
+                call(pub, actual, lw);
+                verify(actual == expected && mplapack_freal_done.load() == before + 1, "public dispatch", m, n, lw);
+                actual = expected = input;
+                const auto query_before = mplapack_freal_done.load();
+                call(pub, actual, -1);
+                call(ref, expected, -1);
+                verify(actual == expected && !call(hook, got, -1) && mplapack_freal_done.load() == query_before, "workspace query", m, n, -1);
+            }
+            if (prec == 128 && m == 9 && n == 4) {
+                actual = expected = got = input;
+                mpfr_set_default_rounding_mode(MPFR_RNDU);
+                mpfrxx::set_default_mpc_rounding_mode(MPFR_RNDU);
+                const bool directed_ran = call(hook, got, lw);
+                call(pub, actual, lw);
+                call(ref, expected, lw);
+                mpfrxx::set_default_mpc_rounding_mode(MPFR_RNDN);
+                mpfr_set_default_rounding_mode(MPFR_RNDN);
+                verify(!directed_ran && got == input && actual == expected && expected.info == 0, "directed rounding fallback", m, n, lw);
+                if constexpr (std::is_same_v<T, C>) {
+                    // Change only the imaginary component of one matrix entry.
+                    actual = expected = got = input;
+                    for (auto *o : {&input, &got, &actual, &expected})
+                        mpfr_prec_round(mpc_imagref(o->a[0].mpc_data()), prec + 1, MPFR_RNDN);
+                    const bool asymmetric_ran = call(hook, got, lw);
+                    call(pub, actual, lw);
+                    call(ref, expected, lw);
+                    verify(!asymmetric_ran && got == input && actual == expected && expected.info == 0, "asymmetric MPC precision fallback", m, n, lw);
+                }
+            }
+        }
+    }
+    const I m = 4, n = 3, lda = m + 2, lw = std::max(m, n);
+    const long emin = mpfr_get_emin(), emax = mpfr_get_emax();
+    const mpfr_flags_t flags = mpfr_flags_save();
+    for (int bad = 0; bad < 8; ++bad) {
+        operands input(m, n, lda, lw);
+        R x(1);
+        if (bad == 0)
+            mpfr_set_nan(x.get_mpfr_t());
+        if (bad == 1)
+            mpfr_set_inf(x.get_mpfr_t(), 1);
+        if (bad == 2) // a nonzero result below emin, even after reflector scaling
+            mpfr_set_ui_2exp(x.get_mpfr_t(), 1, emin, MPFR_RNDN);
+        if (bad == 3) // norm of the first column overflows
+            mpfr_set_ui_2exp(x.get_mpfr_t(), 3, emax - 2, MPFR_RNDN);
+        for (I i = 0; i < m; ++i)
+            input.a[i] = (bad == 2 && i < 3) ? T(1.0) : T(x);
+        if (bad == 4) // destination precision differs
+            mpfr_prec_round(input.d[0].get_mpfr_t(), prec + 1, MPFR_RNDN);
+        auto got = input;
+        const I huge = std::numeric_limits<I>::max();
+        const I bm = bad == 5 ? huge : bad == 6 ? 0 : m;
+        const I bw = bad == 5 ? huge : bad == 7 ? lw - 1 : lw;
+        const bool ran = hook(bm, n, got.a.data(), bad == 5 ? huge : lda, got.d.data(), got.e.data(),
+                              got.tq.data(), got.tp.data(), got.w.data(), bw, got.info);
+        verify(!ran && got == input, ("decline " + std::to_string(bad)).c_str(), m, n, lw);
+    }
+    mpfr_flags_restore(flags, MPFR_FLAGS_ALL);
+}
 } // namespace
 
 int main()
 {
+#if defined(__x86_64__) && (defined(__GNUC__) || defined(__clang__))
+    if (!__builtin_cpu_supports("bmi2") || !__builtin_cpu_supports("adx")) {
+        std::puts("SKIP: freal requires BMI2 and ADX on x86-64");
+        return 77;
+    }
+#endif
     gmp_randinit_default(gstate);
     gmp_randseed_ui(gstate, 20261123);
     setenv("MPLAPACK_MPFR_CPU_FREAL_MIN", "1", 1);
@@ -935,6 +1209,10 @@ int main()
             // increment the counter and mask a missed public STEQR dispatch.
             if (p == 1024)
                 public_tridiagonal_qr();
+            if ((p == 512 || p == 128) && !gmpfrxx_mkII::detail::build_options::enable_fma) {
+                bidiagonal<R>("Rgebrd", Rgebrd_freal, Rgebrd, gebrd_ref::Rgebrd, big);
+                bidiagonal<C>("Cgebrd", Cgebrd_freal, Cgebrd, gebrd_ref::Cgebrd, big || (p == 128 && omp));
+            }
             if (p == 512) {
                 rotation_range_failure();
                 steqr_range_failure();

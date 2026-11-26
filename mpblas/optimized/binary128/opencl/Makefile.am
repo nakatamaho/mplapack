@@ -106,6 +106,8 @@ $(MPLAPACK_ACCEL_REFERENCE_SOURCES) \
 ../../../../mplapack/optimized/common/Rlaswp.cpp \
 ../../../../mplapack/optimized/common/Claswp.cpp \
 ../../../../mplapack/optimized/common/Rsteqr.cpp \
+../../../../mplapack/optimized/common/Rgebrd.cpp \
+../../../../mplapack/optimized/common/Cgebrd.cpp \
 ../../../../mplapack/optimized/common/Csteqr.cpp \
 ../../../../mplapack/optimized/common/Rlasr.cpp \
 ../../../../mplapack/optimized/common/Clasr.cpp \

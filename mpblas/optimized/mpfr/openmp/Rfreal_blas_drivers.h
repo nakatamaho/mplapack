@@ -780,6 +780,106 @@ bool Clauum_freal(const char *uplo, mplapackint const n, mpc_class *a, mplapacki
     return true;
 }
 
+bool Rgebrd_freal(mplapackint const m, mplapackint const n, mpfr_class *a, mplapackint const lda, mpfr_class *d, mpfr_class *e, mpfr_class *tauq, mpfr_class *taup, mpfr_class *work, mplapackint const lwork, mplapackint &info)
+{
+    const INTEGER k = std::min(m, n), maxdim = std::max(m, n);
+    if (k <= 0 || lda < m || lwork < maxdim || gmpfrxx_mkII::detail::build_options::enable_fma || mplapack_blas::blas_env_long("MPLAPACK_MPFR_GEMM_WINOGRAD_CUTOFF", 0) > 0)
+        return false;
+    const long emin = mpfr_get_emin(), emax = mpfr_get_emax();
+    if (emin < -(1L << 40) || emax > (1L << 40) || emin > -2 * FRB_PB || emax < 54)
+        return false;
+    // Guard the reference's dimension/workspace arithmetic, including the
+    // final increment of strided BLAS loops. Workspace values must also be
+    // exactly representable by the instance's integer-to-double conversion.
+    const INTEGER lim = std::numeric_limits<INTEGER>::max();
+    if (m > lim - n || lda > (lim - 1) / n)
+        return false;
+    const INTEGER sum = m + n;
+    const INTEGER nb = std::max<INTEGER>(1, iMlaenv(1, "Rgebrd", " ", m, n, -1, -1));
+    const INTEGER nbmin = std::max<INTEGER>(1, iMlaenv(2, "Rgebrd", " ", m, n, -1, -1));
+    if (sum > lim / std::max(nb, nbmin) || sum > (1L << 53) / nb)
+        return false;
+    const INTEGER nw = std::min(lwork, sum * nb);
+    using Host = mpfr_class;
+    using Fixed = typename value_of<Host>::type;
+    const size_t cap = std::numeric_limits<std::ptrdiff_t>::max() / std::max(sizeof(Host), sizeof(Fixed));
+    if ((size_t)n > cap / (size_t)lda || (size_t)nw > cap)
+        return false;
+    try {
+        fcall cl((double)m * n * k, 3);
+        auto &A = cl.mat(a, m, n, lda, rg_all(), F_INOUT);
+        auto &D = cl.vec(d, k, 1, F_OUT);
+        REAL unused_e;
+        REAL *ep = k > 1 ? cl.vec(e, k - 1, 1, F_OUT).p : &unused_e;
+        auto &Q = cl.vec(tauq, k, 1, F_OUT);
+        auto &P = cl.vec(taup, k, 1, F_OUT);
+        // Preserve workspace slots not written by the panel/tail schedules.
+        auto &W = cl.vec(work, nw, 1, F_INOUT);
+        INTEGER inf = 0;
+        if (!cl.run([&] {
+                gebrd_ns::norm_ns::prepare();
+                gebrd_ns::Rgebrd(m, n, A.p, A.ld, D.p, ep, Q.p, P.p, W.p, nw, inf);
+            }))
+            return false;
+        info = inf;
+        return true;
+    } catch (const std::bad_alloc &) {
+        return false;
+    } catch (const std::length_error &) {
+        return false;
+    }
+}
+
+bool Cgebrd_freal(mplapackint const m, mplapackint const n, mpc_class *a, mplapackint const lda, mpfr_class *d, mpfr_class *e, mpc_class *tauq, mpc_class *taup, mpc_class *work, mplapackint const lwork, mplapackint &info)
+{
+    const INTEGER k = std::min(m, n), maxdim = std::max(m, n);
+    if (k <= 0 || lda < m || lwork < maxdim || gmpfrxx_mkII::detail::build_options::enable_fma || mplapack_blas::blas_env_long("MPLAPACK_MPFR_CGEMM_WINOGRAD_CUTOFF", 0) > 0)
+        return false;
+    const long emin = mpfr_get_emin(), emax = mpfr_get_emax();
+    if (emin < -(1L << 40) || emax > (1L << 40) || emin > -2 * FRB_PB || emax < 54)
+        return false;
+    // Guard the reference's dimension/workspace arithmetic, including the
+    // final increment of strided BLAS loops. Workspace values must also be
+    // exactly representable by the instance's integer-to-double conversion.
+    const INTEGER lim = std::numeric_limits<INTEGER>::max();
+    if (m > lim - n || lda > (lim - 1) / n)
+        return false;
+    const INTEGER sum = m + n;
+    const INTEGER nb = std::max<INTEGER>(1, iMlaenv(1, "Cgebrd", " ", m, n, -1, -1));
+    const INTEGER nbmin = std::max<INTEGER>(1, iMlaenv(2, "Cgebrd", " ", m, n, -1, -1));
+    if (sum > lim / std::max(nb, nbmin) || sum > (1L << 53) / nb)
+        return false;
+    const INTEGER nw = std::min(lwork, sum * nb);
+    using Host = mpc_class;
+    using Fixed = typename value_of<Host>::type;
+    const size_t cap = std::numeric_limits<std::ptrdiff_t>::max() / std::max(sizeof(Host), sizeof(Fixed));
+    if ((size_t)n > cap / (size_t)lda || (size_t)nw > cap)
+        return false;
+    try {
+        fcall cl((double)m * n * k, 3);
+        auto &A = cl.mat(a, m, n, lda, rg_all(), F_INOUT);
+        auto &D = cl.vec(d, k, 1, F_OUT);
+        REAL unused_e;
+        REAL *ep = k > 1 ? cl.vec(e, k - 1, 1, F_OUT).p : &unused_e;
+        auto &Q = cl.vec(tauq, k, 1, F_OUT);
+        auto &P = cl.vec(taup, k, 1, F_OUT);
+        // Preserve workspace slots not written by the panel/tail schedules.
+        auto &W = cl.vec(work, nw, 1, F_INOUT);
+        INTEGER inf = 0;
+        if (!cl.run([&] {
+                gebrd_ns::norm_ns::prepare();
+                gebrd_ns::Cgebrd(m, n, A.p, A.ld, D.p, ep, Q.p, P.p, W.p, nw, inf);
+            }))
+            return false;
+        info = inf;
+        return true;
+    } catch (const std::bad_alloc &) {
+        return false;
+    } catch (const std::length_error &) {
+        return false;
+    }
+}
+
 bool Rsteqr_freal(const char *compz, mplapackint const n, mpfr_class *d, mpfr_class *e, mpfr_class *z, mplapackint const ldz, mpfr_class *work, mplapackint &info)
 {
     const bool init = lsm(compz, "I"), update = lsm(compz, "V"), vectors = init || update;

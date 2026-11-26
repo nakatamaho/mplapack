@@ -107,7 +107,12 @@ bool Cgemm_omp(const char *transa, const char *transb, INTEGER const m, INTEGER 
             return true;
     }
     // the small-block engine where it is faster (../Rblas_block_common.h)
-    if (!(alpha == COMPLEX(0.0, 0.0)) && blk_cgemm<blas_thread_context>(nota, ls(transa, "C"), notb, ls(transb, "C"), m, n, k, alpha, a, lda, b, ldb, beta, c, ldc))
+#ifdef MPLAPACK_FREAL_INSTANCE
+    constexpr bool propagate_alloc_failure = true;
+#else
+    constexpr bool propagate_alloc_failure = false;
+#endif
+    if (!(alpha == COMPLEX(0.0, 0.0)) && blk_cgemm<blas_thread_context, propagate_alloc_failure>(nota, ls(transa, "C"), notb, ls(transb, "C"), m, n, k, alpha, a, lda, b, ldb, beta, c, ldc))
         return true;
 #ifdef MPLAPACK_CBLAS_SIMD_AVAILABLE
     if (nota ? cgemm_simd<COMPLEX>(notb, ls(transb, "C"), m, n, k, alpha, a, lda, b, ldb, beta, c, ldc) : cgemm_t_simd<COMPLEX>(ls(transa, "C"), notb, ls(transb, "C"), m, n, k, alpha, a, lda, b, ldb, beta, c, ldc))

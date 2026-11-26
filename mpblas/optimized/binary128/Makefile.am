@@ -110,6 +110,8 @@ $(MPLAPACK_OPT_REFERENCE_SOURCES) \
 ../../../mplapack/optimized/common/Rlauum.cpp \
 ../../../mplapack/optimized/common/Clauum.cpp \
 ../../../mplapack/optimized/common/Rsteqr.cpp \
+../../../mplapack/optimized/common/Rgebrd.cpp \
+../../../mplapack/optimized/common/Cgebrd.cpp \
 ../../../mplapack/optimized/common/Csteqr.cpp \
 ../../../mplapack/optimized/common/Rlasr.cpp \
 ../../../mplapack/optimized/common/Clasr.cpp \

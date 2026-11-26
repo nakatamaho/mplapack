@@ -16,7 +16,6 @@ MPLAPACK_ACCEL_REFERENCE_SOURCES = \
 ../../../../mplapack/reference/Cgebak.cpp \
 ../../../../mplapack/reference/Cgebal.cpp \
 ../../../../mplapack/reference/Cgebd2.cpp \
-../../../../mplapack/reference/Cgebrd.cpp \
 ../../../../mplapack/reference/Cgecon.cpp \
 ../../../../mplapack/reference/Cgedmd.cpp \
 ../../../../mplapack/reference/Cgedmdq.cpp \
@@ -480,7 +479,6 @@ MPLAPACK_ACCEL_REFERENCE_SOURCES = \
 ../../../../mplapack/reference/Rgebak.cpp \
 ../../../../mplapack/reference/Rgebal.cpp \
 ../../../../mplapack/reference/Rgebd2.cpp \
-../../../../mplapack/reference/Rgebrd.cpp \
 ../../../../mplapack/reference/Rgecon.cpp \
 ../../../../mplapack/reference/Rgedmd.cpp \
 ../../../../mplapack/reference/Rgedmdq.cpp \
@@ -951,6 +949,8 @@ MPLAPACK_ACCEL_REFERENCE_SOURCES = \
 # reference GETRI/POTRI (GPU inverse entries are BF-only).
 MPLAPACK_ACCEL_REFERENCE_SOURCES_SHADOWED = \
 ../../../../mplapack/reference/Rsteqr.cpp \
+../../../../mplapack/reference/Rgebrd.cpp \
+../../../../mplapack/reference/Cgebrd.cpp \
 ../../../../mplapack/reference/Csteqr.cpp \
 ../../../../mplapack/reference/Rlasr.cpp \
 ../../../../mplapack/reference/Clasr.cpp \

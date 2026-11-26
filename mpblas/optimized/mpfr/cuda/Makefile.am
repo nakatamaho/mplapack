@@ -131,6 +131,8 @@ Rtrisolve_kernel_cuda.h Rtrisolve_device_body.cuh Rtrisolve_bridge_body.h \
 ../../../../mplapack/optimized/common/Rlaswp.cpp \
 ../../../../mplapack/optimized/common/Claswp.cpp \
 ../../../../mplapack/optimized/common/Rsteqr.cpp \
+../../../../mplapack/optimized/common/Rgebrd.cpp \
+../../../../mplapack/optimized/common/Cgebrd.cpp \
 ../../../../mplapack/optimized/common/Csteqr.cpp \
 ../../../../mplapack/optimized/common/Rlasr.cpp \
 ../../../../mplapack/optimized/common/Clasr.cpp \

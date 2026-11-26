@@ -132,6 +132,8 @@
     X(Cpotrf, (const char *uplo, mplapackint const n, mpc_class *a, mplapackint const lda, mplapackint &info), (uplo, n, a, lda, info)) \
     X(Ctrtri, (const char *uplo, const char *diag, mplapackint const n, mpc_class *a, mplapackint const lda, mplapackint &info), (uplo, diag, n, a, lda, info)) \
     X(Clauum, (const char *uplo, mplapackint const n, mpc_class *a, mplapackint const lda, mplapackint &info), (uplo, n, a, lda, info)) \
+    X(Rgebrd, (mplapackint const m, mplapackint const n, mpfr_class *a, mplapackint const lda, mpfr_class *d, mpfr_class *e, mpfr_class *tauq, mpfr_class *taup, mpfr_class *work, mplapackint const lwork, mplapackint &info), (m, n, a, lda, d, e, tauq, taup, work, lwork, info)) \
+    X(Cgebrd, (mplapackint const m, mplapackint const n, mpc_class *a, mplapackint const lda, mpfr_class *d, mpfr_class *e, mpc_class *tauq, mpc_class *taup, mpc_class *work, mplapackint const lwork, mplapackint &info), (m, n, a, lda, d, e, tauq, taup, work, lwork, info)) \
     X(Rsteqr, (const char *compz, mplapackint const n, mpfr_class *d, mpfr_class *e, mpfr_class *z, mplapackint const ldz, mpfr_class *work, mplapackint &info), (compz, n, d, e, z, ldz, work, info)) \
     X(Csteqr, (const char *compz, mplapackint const n, mpfr_class *d, mpfr_class *e, mpc_class *z, mplapackint const ldz, mpfr_class *work, mplapackint &info), (compz, n, d, e, z, ldz, work, info)) \
     X(Rlasr, (const char *side, const char *pivot, const char *direct, mplapackint const m, mplapackint const n, mpfr_class *c, mpfr_class *s, mpfr_class *a, mplapackint const lda), (side, pivot, direct, m, n, c, s, a, lda)) \
